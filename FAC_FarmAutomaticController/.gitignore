@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+.history/
 
 # Expo
 .expo/
@@ -14,6 +15,7 @@ web-build/
 *.p8
 *.p12
 *.key
+*.json
 *.mobileprovision
 
 # Metro
