@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, TouchableOpacity, Alert, TextInput } from 'react-native';
 
 
 export default function App() {
@@ -11,6 +11,11 @@ export default function App() {
         <SensorTempText title1={'46.6%'} title2={'Humadity'}></SensorTempText>
         <SensorTempText title1={'30'} title2={'Air'}></SensorTempText>
       </View>
+
+      <TextInput
+      style={styles.TextValue}
+      placeholder='Value...'/>
+
       <View style={{flexDirection: 'row'}}>
         <CustomButton title={'Get Data'} onPress={() => Alert.alert('Get Data Already')}/>
         <CustomButton title={'Send Data'} onPress={() => Alert.alert('Send Data Already')}/>
@@ -35,7 +40,7 @@ const CustomButton = ({ onPress, title }) => {
     <TouchableOpacity
       style={[
         styles.button,
-        { backgroundColor: isPressed ? '#3f4b73' : 'white' }
+        { backgroundColor: isPressed ? '#2D314A' : 'white' }
       ]}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
@@ -44,7 +49,7 @@ const CustomButton = ({ onPress, title }) => {
       <Text style={[
         styles.btn_data, 
         { fontWeight: 'bold' }, 
-        { color: isPressed ? 'white' : '#3f4b73' }]}>{title}</Text>
+        { color: isPressed ? 'white' : '#2D314A' }]}>{title}</Text>
     </TouchableOpacity>
   );
 };
@@ -64,6 +69,14 @@ const styles = StyleSheet.create({
     // borderColor: 'black',
     // borderWidth: 1,
     // padding: 5
+  },
+  TextValue: {
+    background: '#fff',
+    borderColor: 'black',
+    borderWidth: 1,
+    padding: 5,
+    borderRadius: 8,
+    marginBottom: 30,
   },
   TextInSensorArea:{
     fontWeight: 'bold',
