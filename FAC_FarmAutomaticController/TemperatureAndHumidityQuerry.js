@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 const sql = require('mssql');
 
-class HistoryCheck {
+class TemperatureAndHumidity {
     constructor(config) {
         config = this.config;
     }
