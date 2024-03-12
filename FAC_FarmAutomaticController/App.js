@@ -62,19 +62,29 @@ class App extends Component {
   }
 
   sendMessage = () =>{
-    var message = new Paho.MQTT.Message("cuong : hehelo");
+    
+    var message = new Paho.MQTT.Message(JSON.stringify({"cuong": "hello"}));;
     message.destinationName = this.state.topic;
     client.send(message);
   }
   onConnectionLost=(responseObject)=>{
+    if (responseObject.errorCode !== 0) {
+      console.log('onConnectionLost:' + responseObject.errorMessage);
+    }
     this.connect();
+    this.subscribeTopic();
   }
 
   onMessageArrived = (message )=> {
-   
-    console.log('onMessageArrived:' + JSON.parse(message.payloadString));
+    
+    console.log( message.payloadString);
+    let myData = JSON.parse(message)
+  
+
+
    
   }
+ 
 
   handleSliderChange = (value) => {
     
