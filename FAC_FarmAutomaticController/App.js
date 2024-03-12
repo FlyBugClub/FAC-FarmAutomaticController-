@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Alert, TextInput, Image, Switch } from 'react-native';
+import React, { Component, useState } from 'react';
+import { StyleSheet, Text, View, Button, TouchableOpacity, Alert, TextInput, Image, Switch,Pressable  } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Slider from '@react-native-community/slider';
+import { SegmentedArc } from '@shipt/segmented-arc-for-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import init from 'react_native_mqtt';
 
@@ -31,7 +32,8 @@ class App extends Component {
       messageList: [],
       sliderValue: 0,
       statusAuto: false,
-      statusManual: false
+      statusManual: false,
+      showArcRanges: false
     };
     client.onConnectionLost = this.onConnectionLost;
     client.onMessageArrived = this.onMessageArrived;
@@ -98,9 +100,51 @@ class App extends Component {
     console.log("haha");
     this.sendMessage();
 };
+segments = [
+  {
+    scale: 0.25,
+    filledColor: '#FF746E',
+    emptyColor: '#F2F3F5',
+    data: { label: 'Red' }
+  },
+  {
+    scale: 0.25,
+    filledColor: '#F5E478',
+    emptyColor: '#F2F3F5',
+    data: { label: 'Yellow' }
+  },
+  {
+    scale: 0.25,
+    filledColor: '#78F5CA',
+    emptyColor: '#F2F3F5',
+    data: { label: 'Green' }
+  },
+  {
+    scale: 0.25,
+    filledColor: '#6E73FF',
+    emptyColor: '#F2F3F5',
+    data: { label: 'Blue' }
+  }
+];
+
+ranges = ['10', '20', '30', '40', '50'];
+
+handlePress = () => {
+  this.setState(prevState => ({
+    showArcRanges: !prevState.showArcRanges,
+  }));
+};
+
+renderContent = metaData => (
+  <Pressable onPress={this.handlePress} style={{ alignItems: 'center' }}>
+    <Text style={{ fontSize: 16, paddingTop: 16 }}>{metaData.lastFilledSegment.data.label}</Text>
+    <Text style={{ lineHeight: 80, fontSize: 24 }}>Humidity</Text>
+  </Pressable>
+);
 
   render() {
     const { status, messageList,sliderValue  } = this.state;
+    
     return (
       // <View style={styles.container}>
       //   <View style={styles.sensor_value}>
@@ -173,7 +217,18 @@ class App extends Component {
           </View>
           <View style={{flexDirection: 'row'}}>
             <View style={styles.ShortBoardControl}>
-              
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <SegmentedArc
+                segments={this.segments}
+                fillValue={70}
+                isAnimated={true}
+                animationDelay={1000}
+                showArcRanges={this.state.showArcRanges}
+                ranges={this.ranges}
+              >
+                {this.renderContent}
+              </SegmentedArc>
+              </View>
             </View>
             <View style={styles.ShortBoardControl}>
               <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold', marginTop: 10}}>Custom mode</Text>
