@@ -15,6 +15,7 @@
     "@react-native-async-storage/async-storage": "^1.22.3",
     "@react-native-community/slider": "^4.5.0",
     "@rneui/base": "^4.0.0-rc.8",
+    "@shipt/segmented-arc-for-react-native": "^1.0.1",
     "expo": "~50.0.11",
     "expo-status-bar": "~1.11.1",
     "mssql": "^10.0.2",
