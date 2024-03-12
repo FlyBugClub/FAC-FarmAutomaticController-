@@ -1,10 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
+import { StatusBar } from 'expo-status-bar';
+
 import { StyleSheet, Text, View, Button, TouchableOpacity, Alert, TextInput, Image, Switch } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import init from 'react_native_mqtt';
+
+
 
 init({
   size: 10000,
@@ -19,73 +22,106 @@ const options = {
   path: '/mqtt',
   id: 'id_' + parseInt(Math.random()*100000)
 };
-
+let globalVariable = '0.0';
+// 创建客户端实例
 client = new Paho.MQTT.Client(options.host, options.port, options.path);
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      topic: "tr6r/cuong",
+  constructor(props){
+    super(props)
+    this.state={
+      id : 'cuong',
+      topic: 'tr6r/cuong',
+      subscribedTopic: '',
+      sliderValue : 0,
       message: '',
       messageList: [],
-      sliderValue: 0,
-      statusAuto: false,
-      statusManual: false
+      status: '',
+      statusManual : false,
+      statusAuto : false,
+      isEnabled: false,
+      message_humid:"0.0",
+
+      
     };
     client.onConnectionLost = this.onConnectionLost;
     client.onMessageArrived = this.onMessageArrived;
   }
+  
+  // 连接成功
   onConnect = () => {
     console.log('onConnect');
-
+    this.setState({ status: 'connected' });
+    this.subscribeTopic();
   }
-
+  // 连接失败
   onFailure = (err) => {
     console.log('Connect failed!');
- 
+    console.log(err);
+    this.setState({ status: 'failed' });
+    // this.setState({ status: '', subscribedTopic: '' });
+    this.onConnect();
   }
-
+  // 连接 MQTT 服务器
   connect = () => {
-
+    this.setState(
+      { status: 'isFetching' },
+      () => {
         client.connect({
           onSuccess: this.onConnect,
           useSSL: false,
           timeout: 3,
           onFailure: this.onFailure
         });
-
+      }
+    );
   }
-
-  subscribeTopic = () => {  
-    client.subscribe(this.state.topic, { qos: 0 });
-  }
-
-  sendMessage = () =>{
-    
-    var message = new Paho.MQTT.Message(JSON.stringify({"cuong": "hello"}));;
-    message.destinationName = this.state.topic;
-    client.send(message);
-  }
+  // 连接丢失
   onConnectionLost=(responseObject)=>{
     if (responseObject.errorCode !== 0) {
       console.log('onConnectionLost:' + responseObject.errorMessage);
     }
-    this.connect();
-    this.subscribeTopic();
+    this.setState({ status: 'disconnected' });
+    this.onConnect();
   }
+  // 收到消息
 
-  onMessageArrived = (message )=> {
-    
-    console.log( message.payloadString);
-    let myData = JSON.parse(message)
-  
-
-
-   
+  onChangeTopic = (text) => {
+    this.setState({ topic: "tr6r/cuong" });
   }
- 
-
+  // 主题订阅
+  subscribeTopic = () => {
+    this.setState(
+      { subscribedTopic: this.state.topic },
+      () => {
+        client.subscribe(this.state.topic, { qos: 0 });
+        console.log("ok")
+      }
+    );
+  }
+  // 取消订阅
+  unSubscribeTopic = () => {
+    client.unsubscribe(this.state.subscribedTopic);
+    this.setState({ subscribedTopic: '' });
+  }
+  onChangeMessage = (text) => {
+    this.setState({ message: text });
+  }
+  // 消息发布
+  sendMessage = () =>{
+    const Data = {
+      "Id": this.state.id,
+      "StateManual": this.state.statusManual,
+      "slide_value": Math.round(this.state.sliderValue),
+      "toogleAuto" : this.state.statusAuto,
+      "humid" : this.state.humid
+    };
+    const jsonString = JSON.stringify(Data);
+    var message = new Paho.MQTT.Message(jsonString);
+    message.destinationName = this.state.subscribedTopic;
+    client.send(message);
+    console.log("send");
+  }
   handleSliderChange = (value) => {
     
     this.setState({ sliderValue: value });
@@ -94,72 +130,73 @@ class App extends Component {
   handleSliderComplete = (value) => {
     // Khi người dùng kết thúc việc điều chỉnh slider, bạn có thể lấy giá trị ở đây
     this.setState({ sliderValue: value });
-    console.log('Slider value after complete:', value);
+    this.sendMessage();
+  };
+  toggleSwitch = () => {
+    this.setState((prevState) => ({
+      isEnabled: !prevState.isEnabled,
+    }));
+    if (this.state.statusAuto == true)
+    {
+      this.state.statusAuto = false
+    }
+    else if (this.state.statusAuto == false)
+    {
+      this.state.statusAuto = true
+    }
+    this.sendMessage();
   };
 
-  pressauto =  () => {
-    
-      console.log("hehe");
-      this.subscribeTopic();
-  };
+ 
 
   pressmanual =  () => {
-    
-    console.log("haha");
-    this.sendMessage();
-};
+    if (this.state.statusManual == false)
+    {
+      this.state.statusManual = true;
+      console.log('true');
+      this.sendMessage();
+    }
+    else if (this.state.statusManual == true)
+    {
+      this.state.statusManual = false;
+      console.log('fasle');
+      this.sendMessage();
+    }
+  };
+
+
+
+
+  
+  onMessageArrived = (message )=> {
+    console.log(message.payloadString);
+    var jsonString = message.payloadString;
+    const keyValuePairs = jsonString.slice(1, -1).split(',');
+
+    keyValuePairs.forEach(pair => {
+      const [key, value] = pair.split(':').map(item => item.trim());
+     if (key === '"humid"')
+     {
+      globalVariable = value;
+     }
+    });
+  }
+  componentDidMount() {
+    // Thay đổi tin nhắn mỗi 2 giây (điều chỉnh khoảng thời gian tùy vào nhu cầu)
+    this.interval = setInterval(() => {
+      this.setState({ message_humid: globalVariable });
+      
+    }, 2000);
+  }
+
+  componentWillUnmount() {
+    // Xóa interval để tránh rò rỉ bộ nhớ
+    clearInterval(this.interval);
+  }
 
   render() {
-    const { status, messageList,sliderValue  } = this.state;
+    const { status, messageList,sliderValue,isEnabled  ,message_humid } = this.state;
     return (
-      // <View style={styles.container}>
-      //   <View style={styles.sensor_value}>
-      //     <SensorTempText title1={'26°C'} title2={'Temp'}></SensorTempText>
-      //     <SensorTempText title1={'46.6%'} title2={'Humidity'}></SensorTempText>
-      //     <SensorTempText title1={'30'} title2={'Air'}></SensorTempText>
-      //   </View>
-
-      //   <Slider 
-      //             style={{width: 200, height: 40}}
-      //             minimumValue={50}
-      //             maximumValue={95}
-      //             value={sliderValue}
-      //             onValueChange={this.handleSliderChange}
-      //             onSlidingComplete={this.handleSliderComplete}
-      //   />
-      //   <Text style={styles.sliderValueText}>Slider Value: {Math.round(sliderValue)}</Text>
-
-      //   <View style={{ flexDirection: 'row' }}>
-      //     <CustomButton
-      //        type='solid'
-      //        title='CONNECT'
-      //        onPress={this.connect}
-      //        buttonStyle={{
-      //         marginBottom:50,
-      //         backgroundColor: status === 'failed' ? 'red' : '#397af8'
-      //       }}
-      //       icon={{ name: 'lan-connect', type: 'material-community', color: 'white' }}
-      //       loading={status === 'isFetching' ? true : false}
-      //       disabled={status === 'isFetching' ? true : false}
-      //     />
-      //     <CustomButton
-      //       title={'Auto'}
-          
-      //       onPress={this.pressauto}
-          
-      //     />
-
-      //     <CustomButton
-      //       title={'Manual'}
-          
-      //       onPress={this.pressmanual}
-          
-      //     />
-      //   </View>
-
-      //   <StatusBar style="auto" />
-      // </View>
-
       <View style={styles.container}>
         <View style={styles.BackDropTop}>
           <View style={styles.TitleTopArea}>
@@ -179,7 +216,8 @@ class App extends Component {
               <View style={styles.IconStatus}></View>
               <Text>Online</Text>
             </View>
-            <BtnConnect style={{}} title={'Connected'} disabled/>
+            <BtnConnect style={{}} title={'Connected'} onPress={this.connect}  loading={status === 'isFetching' ? true : false}
+              disabled={status === 'isFetching' ? true : false} />
           </View>
           <View style={{flexDirection: 'row'}}>
             <View style={styles.ShortBoardControl}>
@@ -187,7 +225,7 @@ class App extends Component {
             </View>
             <View style={styles.ShortBoardControl}>
               <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold', marginTop: 10}}>Custom mode</Text>
-              <BtnCustomMode onPress={() => {}} title="On"/>
+              <BtnCustomMode  onPress={this.pressmanual} title="On"/>
             </View>
           </View>
           <View style={styles.LongtBoardControl}>
@@ -203,11 +241,18 @@ class App extends Component {
                 <Text style={{marginLeft: 10, marginRight: 10, marginTop: 6}}>
                 {this.state.isEnabled ? 'ON' : 'OFF'}</Text>
               </View>
-              <BtnTogleAutoMode />
+              <Switch
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={this.toggleSwitch}
+                value={isEnabled}
+              />
             </View>
             <View style={{flexDirection: 'row', marginBottom: 10}}>
               <View style={{flexDirection: 'row', flex: 1}}>
                 <Text style={{marginLeft: 15, marginRight: 10, marginTop: 6}}>Huminity</Text>
+                <Text >{message_humid}</Text>
                 <Slider 
                   style={{width: 200, height: 40}}
                   minimumValue={50}
@@ -263,7 +308,7 @@ class CustomButton extends Component {
 
 class BtnConnect extends Component {
   render() {
-    const { onPress, title, disabled , isPressed, onPressIn, onPressOut } = this.props;
+    const { onPress, title, disabled , isPressed, onPressIn, onPressOut} = this.props;
     return (
       <TouchableOpacity
         style={[
@@ -295,17 +340,21 @@ class BtnCustomMode extends Component {
     // Khi nút được nhấn, đảo ngược trạng thái
     this.setState(prevState => ({ isOn: !prevState.isOn }));
   }
+  
 
   render() {
-    const { title, isPressed} = this.props;
+    const { title, isPressed, onPressOut,onPress} = this.props;
     const { isOn } = this.state;
+    var classapp = new App();
     return (
       <TouchableOpacity
         style={[
           styles.BtnCustomMode,
           { backgroundColor: isOn ? '#81BB4D' : '#CDCDCD'}
         ]}
-        onPress={this.handlePress}
+        
+        onPressOut={this.handlePress}
+        onPress = {onPress}
       >
         <Text style={[styles.BtnCustomModeText, { color:'#fff', fontWeight: 'bold' }]}>
           {isOn ? 'ON' : 'OFF'}
@@ -315,34 +364,37 @@ class BtnCustomMode extends Component {
   }
 }
 
-class BtnTogleAutoMode extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isEnabled: false // Khởi tạo trạng thái ban đầu là disabled
-    };
-  }
+// class BtnTogleAutoMode extends Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       isEnabled: false // Khởi tạo trạng thái ban đầu là disabled
+//     };
+//   }
 
-  toggleSwitch = () => {
-    this.setState(previousState => ({
-      isEnabled: !previousState.isEnabled // Khi nút được nhấn, đảo ngược trạng thái
-    }));
-  };
+//   toggleSwitch = () => {
+//     this.setState(previousState => ({
+//       isEnabled: !previousState.isEnabled // Khi nút được nhấn, đảo ngược trạng thái
+//     }));
+//   };
 
-  render() {
-    return (
-      <View style={{marginRight: 15}}>
-        <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={this.state.isEnabled ? "#f5dd4b" : "#f4f3f4"}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={this.toggleSwitch}
-          value={this.state.isEnabled}
-        />
-      </View>
-    );
-  }
-}
+//   render() {
+//     const {onValueChange,onChange,test} = this.props;
+//     return (
+
+//       <View style={{marginRight: 15}}>
+//         <Switch
+//           trackColor={{ false: "#767577", true: "#81b0ff" }}
+//           thumbColor={this.state.isEnabled ? "#f5dd4b" : "#f4f3f4"}
+//           ios_backgroundColor="#3e3e3e"
+//           onValueChange = {this.toggleSwitch}
+//           test = {test}
+//           value={this.state.isEnabled}
+//         />
+//       </View>
+//     );
+//   }
+// }
 
 const styles = StyleSheet.create({
   container: {
