@@ -1,4 +1,3 @@
-import React, { Component } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity, Alert, TextInput, Image, Switch,Pressable  } from 'react-native';
@@ -7,8 +6,6 @@ import Slider from '@react-native-community/slider';
 import { SegmentedArc } from '@shipt/segmented-arc-for-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import init from 'react_native_mqtt';
-
-
 
 init({
   size: 10000,
@@ -24,7 +21,7 @@ const options = {
   id: 'id_' + parseInt(Math.random()*100000)
 };
 let globalVariable = '0.0';
-// 创建客户端实例
+
 client = new Paho.MQTT.Client(options.host, options.port, options.path);
 
 class App extends Component {
@@ -34,7 +31,7 @@ class App extends Component {
       id : 'cuong',
       topic: 'tr6r/cuong',
       subscribedTopic: '',
-      sliderValue : 0,
+      sliderValue : 50,
       message: '',
       messageList: [],
       status: '',
@@ -50,13 +47,13 @@ class App extends Component {
     client.onMessageArrived = this.onMessageArrived;
   }
   
-  // 连接成功
+  
   onConnect = () => {
     console.log('onConnect');
     this.setState({ status: 'connected' });
     this.subscribeTopic();
   }
-  // 连接失败
+  
   onFailure = (err) => {
     console.log('Connect failed!');
     console.log(err);
@@ -64,7 +61,7 @@ class App extends Component {
     // this.setState({ status: '', subscribedTopic: '' });
     this.onConnect();
   }
-  // 连接 MQTT 服务器
+ 
   connect = () => {
     this.setState(
       { status: 'isFetching' },
@@ -78,7 +75,7 @@ class App extends Component {
       }
     );
   }
-  // 连接丢失
+  
   onConnectionLost=(responseObject)=>{
     if (responseObject.errorCode !== 0) {
       console.log('onConnectionLost:' + responseObject.errorMessage);
@@ -86,12 +83,12 @@ class App extends Component {
     this.setState({ status: 'disconnected' });
     this.onConnect();
   }
-  // 收到消息
+ 
 
   onChangeTopic = (text) => {
     this.setState({ topic: "tr6r/cuong" });
   }
-  // 主题订阅
+ 
   subscribeTopic = () => {
     this.setState(
       { subscribedTopic: this.state.topic },
@@ -101,7 +98,7 @@ class App extends Component {
       }
     );
   }
-  // 取消订阅
+ 
   unSubscribeTopic = () => {
     client.unsubscribe(this.state.subscribedTopic);
     this.setState({ subscribedTopic: '' });
@@ -109,7 +106,7 @@ class App extends Component {
   onChangeMessage = (text) => {
     this.setState({ message: text });
   }
-  // 消息发布
+ 
   sendMessage = () =>{
     const Data = {
       "Id": this.state.id,
@@ -192,7 +189,7 @@ segments = [
   }
 ];
 
-ranges = ['10', '20', '30', '40', '50'];
+ranges = ['60', '70', '80', '90', '100'];
 handlePress = () => {
   this.setState(prevState => ({
     showArcRanges: !prevState.showArcRanges,
@@ -201,13 +198,10 @@ handlePress = () => {
 renderContent = metaData => (
   <Pressable onPress={this.handlePress} style={{ alignItems: 'center' }}>
     <Text style={{ fontSize: 16, paddingTop: 16 }}>{metaData.lastFilledSegment.data.label}</Text>
-    <Text style={{ lineHeight: 80, fontSize: 24 }}>Humidity</Text>
+    <Text style={{ lineHeight: 80, fontSize: 24 }}>{globalVariable}</Text>
   </Pressable>
 );
 
-
-
-  
   onMessageArrived = (message )=> {
     console.log(message.payloadString);
     var jsonString = message.payloadString;
@@ -226,7 +220,7 @@ renderContent = metaData => (
     this.interval = setInterval(() => {
       this.setState({ message_humid: globalVariable });
       
-    }, 2000);
+    }, 1000);
   }
 
   componentWillUnmount() {
@@ -249,75 +243,100 @@ renderContent = metaData => (
             <Image style={styles.ImgTitleTop} source={require('./assets/NamBaoNgu.png')}/>
           </View>
         </View>
-
+        
         <View style={{alignItems: 'center'}}>
-          <View style={styles.ConnectArea}>
-            <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
-              <View style={styles.IconStatus}></View>
-              <Text>Online</Text>
-            </View>
-            <BtnConnect style={{}} title={'Connected'} onPress={this.connect}  loading={status === 'isFetching' ? true : false}
-              disabled={status === 'isFetching' ? true : false} />
-          </View>
-          <View style={{flexDirection: 'row'}}>
-            <View style={styles.ShortBoardControl}>
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <SegmentedArc
-                segments={this.segments}
-                fillValue={70}
-                isAnimated={true}
-                animationDelay={1000}
-                showArcRanges={this.state.showArcRanges}
-                ranges={this.ranges}
-              >
-                {this.renderContent}
-              </SegmentedArc>
+            {this.state.status === 'connected' ? (
+
+             <View style={{alignItems: 'center'}}>
+             <View style={styles.ConnectArea}>
+               <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
+                 <View style={styles.IconStatus}></View>
+                 <Text>Online</Text>
+               </View>
+               <BtnConnect style={{}} title={'Disconnected'} onPress={() => {client.disconnect();this.setState({ status: '', subscribedTopic: '' });}}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} />
+             </View>
+             <View style={{flexDirection: 'row'}}>
+               <View style={styles.ShortBoardControl}>
+                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                   <SegmentedArc
+                   segments={this.segments}
+                   fillValue={70}
+                   isAnimated={true}
+                   animationDelay={1000}
+                   showArcRanges={this.state.showArcRanges}
+                   ranges={this.ranges}
+                 >
+                   {this.renderContent}
+                 </SegmentedArc>
+                 </View>
+               </View>
+               <View style={styles.ShortBoardControl}>
+                 <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold', marginTop: 10}}>Custom mode</Text>
+                 <BtnCustomMode  onPress={this.pressmanual} title="On"/>
+               </View>
+             </View>
+             <View style={styles.LongtBoardControl}>
+               <Text  style={{
+                 color: '#8B934B', 
+                 fontSize: 16, 
+                 fontWeight: 'bold',
+                 marginTop: 10,
+                 marginLeft: 15}}>Auto mode</Text>
+               <View style={{flexDirection: 'row', marginTop: 10, marginBottom: 10}}>
+                 <View style={{flexDirection: 'row', flex: 1}}>
+                   <Text style={{marginLeft: 15, marginRight: 10, marginTop: 6}}>Active</Text>
+                   <Text style={{marginLeft: 10, marginRight: 10, marginTop: 6}}>
+                   {this.state.isEnabled ? 'ON' : 'OFF'}</Text>
+                 </View>
+                 <Switch
+                   trackColor={{ false: "#767577", true: "#81b0ff" }}
+                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                   ios_backgroundColor="#3e3e3e"
+                   onValueChange={this.toggleSwitch}
+                   value={isEnabled}
+                 />
+               </View>
+               <View style={{flexDirection: 'row', marginBottom: 10}}>
+                 <View style={{flexDirection: 'row', flex: 1}}>
+                   <Text style={{marginLeft: 15, marginRight: 10, marginTop: 6}}>Huminity</Text>
+                  
+                   <Slider 
+                     style={{width: 200, height: 40}}
+                     minimumValue={50}
+                     maximumValue={95}
+                     value={sliderValue}
+                     onValueChange={this.handleSliderChange}
+                     onSlidingComplete={this.handleSliderComplete}
+                     minimumTrackTintColor={'#A4AC86'}
+                   />
+                 </View>
+                 <Text style={{marginRight: 15, marginTop: 5, fontSize: 16}}>{Math.round(sliderValue)}%</Text>
+               </View>
+             </View>
+             </View>
+            ) : (
+
+
+              <View style={styles.ConnectArea}>
+              <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
+                <View style={styles.IconStatus1}></View>
+                <Text>Offline</Text>
               </View>
-            </View>
-            <View style={styles.ShortBoardControl}>
-              <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold', marginTop: 10}}>Custom mode</Text>
-              <BtnCustomMode  onPress={this.pressmanual} title="On"/>
-            </View>
-          </View>
-          <View style={styles.LongtBoardControl}>
-            <Text  style={{
-              color: '#8B934B', 
-              fontSize: 16, 
-              fontWeight: 'bold',
-              marginTop: 10,
-              marginLeft: 15}}>Auto mode</Text>
-            <View style={{flexDirection: 'row', marginTop: 10, marginBottom: 10}}>
-              <View style={{flexDirection: 'row', flex: 1}}>
-                <Text style={{marginLeft: 15, marginRight: 10, marginTop: 6}}>Active</Text>
-                <Text style={{marginLeft: 10, marginRight: 10, marginTop: 6}}>
-                {this.state.isEnabled ? 'ON' : 'OFF'}</Text>
-              </View>
-              <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={this.toggleSwitch}
-                value={isEnabled}
+              <BtnConnect
+                style={{}}
+                title={'Connected'}
+                onPress={this.connect}
+                loading={status === 'isFetching' ? true : false}
+                disabled={status === 'isFetching' ? true : false}
               />
             </View>
-            <View style={{flexDirection: 'row', marginBottom: 10}}>
-              <View style={{flexDirection: 'row', flex: 1}}>
-                <Text style={{marginLeft: 15, marginRight: 10, marginTop: 6}}>Huminity</Text>
-                <Text >{message_humid}</Text>
-                <Slider 
-                  style={{width: 200, height: 40}}
-                  minimumValue={50}
-                  maximumValue={95}
-                  value={sliderValue}
-                  onValueChange={this.handleSliderChange}
-                  onSlidingComplete={this.handleSliderComplete}
-                  minimumTrackTintColor={'#A4AC86'}
-                />
-              </View>
-              <Text style={{marginRight: 15, marginTop: 5, fontSize: 16}}>{Math.round(sliderValue)}%</Text>
-            </View>
-          </View>
+
+
+            )}
+            
         </View>
+
+        
       </View>
     );
   }
@@ -415,38 +434,6 @@ class BtnCustomMode extends Component {
   }
 }
 
-// class BtnTogleAutoMode extends Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       isEnabled: false // Khởi tạo trạng thái ban đầu là disabled
-//     };
-//   }
-
-//   toggleSwitch = () => {
-//     this.setState(previousState => ({
-//       isEnabled: !previousState.isEnabled // Khi nút được nhấn, đảo ngược trạng thái
-//     }));
-//   };
-
-//   render() {
-//     const {onValueChange,onChange,test} = this.props;
-//     return (
-
-//       <View style={{marginRight: 15}}>
-//         <Switch
-//           trackColor={{ false: "#767577", true: "#81b0ff" }}
-//           thumbColor={this.state.isEnabled ? "#f5dd4b" : "#f4f3f4"}
-//           ios_backgroundColor="#3e3e3e"
-//           onValueChange = {this.toggleSwitch}
-//           test = {test}
-//           value={this.state.isEnabled}
-//         />
-//       </View>
-//     );
-//   }
-// }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -507,6 +494,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#73A942',
     borderRadius: 20,
   },
+  IconStatus1: {
+    width: 8,
+    height: 8,
+    marginTop: 6,
+    marginRight: 5,
+    marginLeft: 15,
+    backgroundColor: '#ff0000',
+    borderRadius: 20,
+  },
   BtnConnect: {
     height: 25,
     paddingLeft: 8,
@@ -551,7 +547,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     marginTop: 16,
-    borderRadius: '50%',
+    borderRadius: 50,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
