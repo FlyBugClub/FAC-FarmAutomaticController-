@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Image, Switch,Pressable  } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity, Image, Switch,Pressable ,ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,7 +20,7 @@ const options = {
   path: '/mqtt',
   id: 'id_' + parseInt(Math.random()*100000)
 };
-let globalVariable = '0.0';
+let globalVariable = '50.0';
 
 client = new Paho.MQTT.Client(options.host, options.port, options.path);
 
@@ -30,11 +30,11 @@ export default class Details extends Component {
     this.state={
       id : 'cuong',
       topic: 'tr6r/cuong',
-      subscribedTopic: '',
+      subscribedTopic: 'g',
       sliderValue : 50,
-      message: '',
+      message: 'g',
       messageList: [],
-      status: '',
+      status: 'g',
       statusManual : false,
       statusAuto : false,
       isEnabled: false,
@@ -84,8 +84,8 @@ export default class Details extends Component {
     if (responseObject.errorCode !== 0) {
       console.log('onConnectionLost:' + responseObject.errorMessage);
     }
-    this.setState({ status: 'disconnected' });
-    this.onConnect();
+    // this.setState({ status: 'disconnected' });
+    // this.onConnect();
   }
  
 
@@ -98,7 +98,7 @@ export default class Details extends Component {
       { subscribedTopic: this.state.topic },
       () => {
         client.subscribe(this.state.topic, { qos: 0 });
-        console.log("ok")
+        // console.log("ok")
       }
     );
   }
@@ -119,11 +119,17 @@ export default class Details extends Component {
       "toogleAuto" : this.state.statusAuto,
       "humid" : this.state.humid
     };
-    const jsonString = JSON.stringify(Data);
-    var message = new Paho.MQTT.Message(jsonString);
-    message.destinationName = this.state.subscribedTopic;
-    client.send(message);
-    console.log("send");
+    if (this.state.status === "connected") 
+    { 
+      const jsonString = JSON.stringify(Data); 
+      var message = new Paho.MQTT.Message(jsonString); 
+      message.destinationName = this.state.subscribedTopic; 
+      client.send(message); 
+    } 
+    else 
+    { 
+        this.connect(); 
+    } 
   }
   handleSliderChange = (value) => {
     
@@ -156,13 +162,13 @@ export default class Details extends Component {
     if (this.state.statusManual == false)
     {
       this.state.statusManual = true;
-      console.log('true');
+      // console.log('true');
       this.sendMessage();
     }
     else if (this.state.statusManual == true)
     {
       this.state.statusManual = false;
-      console.log('fasle');
+      // console.log('fasle');
       this.sendMessage();
     }
   };
@@ -185,7 +191,7 @@ export default class Details extends Component {
     this.interval = setInterval(() => {
       this.setState({ message_humid: globalVariable });
       
-    }, 1000);
+    }, 2000);
   }
 
   componentWillUnmount() {
@@ -197,6 +203,7 @@ export default class Details extends Component {
     const { status, messageList,sliderValue,isEnabled  ,message_humid } = this.state;
     return (
       <View style={styles.container}>
+        <ScrollView>
         <View style={styles.BackDropTop}>
           <View style={styles.TitleTopArea}>
             <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" />
@@ -218,7 +225,7 @@ export default class Details extends Component {
                     <View style={styles.IconStatus}></View>
                     <Text>Online</Text>
                 </View>
-                <BtnConnect style={{}} title={'Disconnected'} onPress={() => {client.disconnect();this.setState({ status: '', subscribedTopic: '' });}}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} />
+                <BtnConnect style={{}} title={'Disconnected'} onPress={() => {client.disconnect();this.setState({ status: 'dssconnect' });}}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
                 </View>
                 <View style={{flexDirection: 'row'}}>
                 <View style={styles.ShortBoardControl}>
@@ -233,7 +240,7 @@ export default class Details extends Component {
                         textVertPosition: 0.5,
                         waveAnimateTime: 1000,
                         }}
-                        value={50}
+                        value={parseFloat(globalVariable)} 
                         width={130}
                         height={130}
                     />
@@ -317,7 +324,7 @@ export default class Details extends Component {
             
         </View>
 
-        
+        </ScrollView>
       </View>
     );
   }
