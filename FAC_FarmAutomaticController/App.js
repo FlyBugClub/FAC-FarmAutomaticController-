@@ -7,6 +7,8 @@ import { SegmentedArc } from '@shipt/segmented-arc-for-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import init from 'react_native_mqtt';
 
+import { LiquidGauge } from 'react-native-liquid-gauge';
+
 init({
   size: 10000,
   storageBackend: AsyncStorage,
@@ -258,16 +260,20 @@ renderContent = metaData => (
              <View style={{flexDirection: 'row'}}>
                <View style={styles.ShortBoardControl}>
                  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                   <SegmentedArc
-                   segments={this.segments}
-                   fillValue={70}
-                   isAnimated={true}
-                   animationDelay={1000}
-                   showArcRanges={this.state.showArcRanges}
-                   ranges={this.ranges}
-                 >
-                   {this.renderContent}
-                 </SegmentedArc>
+                 <LiquidGauge
+                    config={{
+                      circleColor: '#4ea8de',
+                      textColor: '#0077b6',
+                      waveTextColor: '#0096c7',
+                      waveColor: '#48cae4',
+                      circleThickness: 0.2,
+                      textVertPosition: 0.5,
+                      waveAnimateTime: 1000,
+                    }}
+                    value={50}
+                    width={130}
+                    height={130}
+                  />
                  </View>
                </View>
                <View style={styles.ShortBoardControl}>
