@@ -243,9 +243,9 @@ export default class Details extends Component {
         <ScrollView>
         <View style={styles.BackDropTop}>
           <View style={styles.TitleTopArea}>
-            <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" />
+            {/* <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" /> */}
             <Text style={styles.TitleTop}>MUSHROOM FARM</Text>
-            <Icon style={styles.IconTop} name="cog" size={30} color="#fff" />
+            {/* <Icon style={styles.IconTop} name="cog" size={30} color="#fff" /> */}
           </View>
           <Text style={[styles.TitleTop, {fontSize: 20}, {textAlign: 'center'}, {marginTop: 5}]}>Farm 1</Text>
           <View style={{alignItems: 'center'}}>
@@ -262,27 +262,28 @@ export default class Details extends Component {
                     <View style={styles.IconStatus}></View>
                     <Text>{this.state.status}</Text>
                 </View>
-                {/* <BtnConnect style={{}} title={'Disconnected'} onPress={() => {this.setState({ status: 'disconnect' });client.disconnect();}}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} />  */}
                 <BtnConnect style={{}} title={'Disconnected'} onPress={this.disconnect}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
-
                 </View>
                 <View style={{flexDirection: 'row'}}>
                 <View style={styles.ShortBoardControl}>
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <LiquidGauge
-                        config={{
-                        circleColor: '#4ea8de',
-                        textColor: '#0077b6',
-                        waveTextColor: '#0096c7',
-                        waveColor: '#48cae4',
-                        circleThickness: 0.2,
-                        textVertPosition: 0.5,
-                        waveAnimateTime: 1000,
-                        }}
-                        value={parseFloat(globalVariable)} 
-                        width={130}
-                        height={130}
-                    />
+                    <TouchableOpacity onPress={this.HistoryPage}>
+                      <LiquidGauge
+                          config={{
+                          circleColor: '#4ea8de',
+                          textColor: '#0077b6',
+                          waveTextColor: '#0096c7',
+                          waveColor: '#48cae4',
+                          circleThickness: 0.2,
+                          textVertPosition: 0.5,
+                          waveAnimateTime: 1000,
+                          }}
+                          value={parseFloat(globalVariable)} 
+                          width={130}
+                          height={130}
+                      />
+                    </TouchableOpacity>
+                    
                     </View>
                 </View>
                 <View style={styles.ShortBoardControl}>
@@ -331,7 +332,7 @@ export default class Details extends Component {
                     </Text>
                 </View>
                 </View>
-                <View style={[styles.ShortBoardControl, {marginTop: 10}]}>
+                {/* <View style={[styles.ShortBoardControl, {marginTop: 10}]}>
                     <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
                         <TouchableOpacity onPress={this.HistoryPage}>
                             <Icon style={styles.IconTop} name="history" size={80} color="#8B934B" />
@@ -339,26 +340,25 @@ export default class Details extends Component {
                         </TouchableOpacity>
                     </View>
                     
-                </View>
+                </View> */}
              </View>
             ) : (
 
 
               <View style={styles.ConnectArea}>
-              <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
-                <View style={styles.IconStatus1}></View>
+                <View style={{flexDirection: 'row', }}>
+                  <View style={styles.IconStatus1}></View>
                 <Text>{this.state.status}</Text>
-              </View>
-              <BtnConnect
-                style={{}}
-                title={'Connected'}
-                onPress={this.connect}
-                loading={status == 'isFetching' ? true : false}
-                disabled={status == 'isFetching' ? true : false}
-              />
+                </View>
+                <View style={{ flexDirection: 'row-reverse', flex: 1}}>
+                  <BtnConnect
+                    title={'Connected'}
+                    onPress={this.connect}
+                    loading={status === 'isFetching' ? true : false}
+                    disabled={status === 'isFetching' ? true : false}
+                  />
+                </View>
             </View>
-
-
             )}
             
         </View>
@@ -376,7 +376,9 @@ class BtnConnect extends Component {
       <TouchableOpacity
         style={[
           styles.BtnConnect,
-          { backgroundColor: isPressed ? '#2D314A' : (disabled ? '#F0F0F0' : '#2D3A3A')}
+          { backgroundColor: isPressed ? '#2D314A' : (disabled ? '#F0F0F0' : '#2D3A3A'),
+            marginRight: 15
+          }
         ]}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
@@ -440,17 +442,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   TitleTopArea: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     backgroundColor: 'While',
     justifyContent: 'space-between',
     marginTop: 50,
   },
   TitleTop: {
+    textAlign: 'center',
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff'
   },
   IconTop: {
+    textAlign: 'center',
     marginLeft: 15,
     marginRight: 15,
     marginTop: 5,
@@ -474,7 +478,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     alignItems: 'center',
-    justifyContent: 'space-evenly'
+    // justifyContent: 'space-evenly'
 
   },
   IconStatus: {
@@ -499,7 +503,7 @@ const styles = StyleSheet.create({
     height: 25,
     paddingLeft: 8,
     paddingRight: 8,
-    marginLeft: 100,
+    // marginLeft: 100,
     backgroundColor: '#F0F0F0',
     borderRadius: 16,
     // borderWidth: 1,
