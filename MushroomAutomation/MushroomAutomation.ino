@@ -7,20 +7,22 @@
 #include <ArduinoJson.h>
 // Thông tin về MQTT Broker
 #define mqtt_server "broker.emqx.io"
-const uint16_t mqtt_port = 1883; //Port của MQTT broker
-#define mqtt_topic_temp "temperature"
-#define mqtt_topic_humi "humidity"
-PubSubClient client(espClient);
-StaticJsonDocument<256> doc;
-
-Adafruit_SHT31 sht31 = Adafruit_SHT31();
-
 #include "secret_pass.h"
 
 #define BLYNK_PRINT Serial
 
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
+const uint16_t mqtt_port = 1883; //Port của MQTT broker
+#define mqtt_topic_temp "temperature"
+#define mqtt_topic_humi "humidity"
+WiFiClient espClient;
+PubSubClient client(espClient);
+StaticJsonDocument<256> doc;
+
+Adafruit_SHT31 sht31 = Adafruit_SHT31();
+
+
 
 const int pumpPin = D6; // Chân kết nối của máy bơm với ESP8266
 
@@ -30,7 +32,22 @@ float desiredHumidity = 60.0;
 
 unsigned long lastSprayTime = 0;
 unsigned long lastCheckTime = 0;
-
+void reconnect() {
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    if (client.connect("helloem")) {
+      // Đăng kí nhận gói tin tại topic wemos/ledstatus
+      client.subscribe(mqtt_topic_humi);
+      client.subscribe(mqtt_topic_temp);
+      
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      delay(5000);
+    }
+  }
+}
 void setup() {
   pinMode(pumpPin, OUTPUT);
   Serial.begin(9600);
@@ -147,42 +164,10 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.println(topic);
   String checkLed;
-if(String(topic) == mqtt_topic_humi){
-  // Parse the JSON message
-  StaticJsonDocument<200> jsonDocument;
-  deserializeJson(jsonDocument, payload, length);
-  const String ledStatus = jsonDocument["statusLed"];
-  checkLed = ledStatus;
-  Serial.println("Message received: ");
-  Serial.print("StatusLed: ");
-  Serial.println(ledStatus);
-  
-   if (ledStatus == "on") {
-    digitalWrite(led, HIGH);
-  } else if (ledStatus == "off")  {
-    digitalWrite(led, LOW);
-  }
+
 }
 
-if(String(topic) == mqtt_topic_temp){
-  // Parse the JSON message
-  StaticJsonDocument<200> jsonDocument;
-  deserializeJson(jsonDocument, payload, length);
-  int gasStatus = jsonDocument["statusGas"];
-  Serial.println("Message received: ");
-  Serial.print("statusGas: ");
-  Serial.println(gasStatus);
-  
-   if (gasStatus > 320) {
-    digitalWrite(led, LOW);
-  } else if (gasStatus < 320 && checkLed == "on") {
-    digitalWrite(led, HIGH);
-  }
-  else if(gasStatus < 320 && checkLed == "off"){
-    digitalWrite(led, LOW);
-  }
-}
-}
+
 void publishLedData(String ledStatus ) {
   char buffer[256];
   size_t n = serializeJson(doc, buffer);
@@ -191,33 +176,18 @@ void publishLedData(String ledStatus ) {
   doc["statusLed"] = ledStatus;
   
   n = serializeJson(doc, buffer);
-  client.publish(mqtt_topic_led, buffer, n);
+  client.publish(mqtt_topic_temp, buffer, n);
   
 }
-void publishGasData(int gasStatus) {
-  char buffer[256];
-  size_t n = serializeJson(doc, buffer);
+// void publishGasData(int gasStatus) {
+//   char buffer[256];
+//   size_t n = serializeJson(doc, buffer);
   
   
-  doc["statusGas"] = gasStatus;
+//   doc["statusGas"] = gasStatus;
   
-  n = serializeJson(doc, buffer);
-  client.publish(mqtt_topic_gas, buffer, n);
+//   n = serializeJson(doc, buffer);
+//   client.publish(mqtt_topic_gas, buffer, n);
   
-}
-void reconnect() {
-  while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    if (client.connect("helloem")) {
-      // Đăng kí nhận gói tin tại topic wemos/ledstatus
-      client.subscribe(mqtt_topic_humi);
-      client.subscribe(mqtt_topic_temp);
-      
-    } else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      delay(5000);
-    }
-  }
-}
+// }
+
