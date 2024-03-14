@@ -258,11 +258,13 @@ export default class Details extends Component {
 
              <View style={{alignItems: 'center'}}>
                 <View style={styles.ConnectArea}>
-                <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
-                    <View style={styles.IconStatus}></View>
-                    <Text>{this.state.status}</Text>
-                </View>
-                <BtnConnect style={{}} title={'Disconnected'} onPress={this.disconnect}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
+                  <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
+                      <View style={styles.IconStatus}></View>
+                      <Text>{this.state.status}</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row-reverse', flex: 1}}> 
+                    <BtnConnect style={{}} title={'Disconnected'} onPress={this.disconnect}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
+                  </View> 
                 </View>
                 <View style={{flexDirection: 'row'}}>
                 <View style={styles.ShortBoardControl}>
