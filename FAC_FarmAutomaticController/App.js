@@ -11,7 +11,7 @@ const Stack = createNativeStackNavigator();
 export default RootComponent = function() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Details" screenOptions={{headerShown: false}}>
+      <Stack.Navigator initialRouteName="History" screenOptions={{headerShown: false}}>
         <Stack.Screen name='Details' component={Details}/>
         <Stack.Screen name='History' component={History}/>
       </Stack.Navigator>

@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity, Image,Alert, Switch,Pressable ,ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import init from 'react_native_mqtt';
@@ -147,6 +147,7 @@ export default class Details extends Component {
     client.unsubscribe(this.state.subscribedTopic);
     this.setState({ subscribedTopic: '' });
   }
+
   onChangeMessage = (text) => {
     this.setState({ message: text });
   }
@@ -168,6 +169,7 @@ export default class Details extends Component {
     } 
  
   }
+
   handleSliderChange = (value) => {
     
     this.setState({ sliderValue: value });
@@ -178,6 +180,7 @@ export default class Details extends Component {
     this.setState({ sliderValue: value });
     this.sendMessage();
   };
+
   toggleSwitch = () => {
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled,
@@ -192,8 +195,6 @@ export default class Details extends Component {
     }
     this.sendMessage();
   };
-
- 
 
   pressmanual =  () => {
     if (this.state.statusManual == false)
@@ -223,6 +224,7 @@ export default class Details extends Component {
      }
     });
   }
+
   componentDidMount() {
     // Thay đổi tin nhắn mỗi 2 giây (điều chỉnh khoảng thời gian tùy vào nhu cầu)
     this.interval = setInterval(() => {
@@ -241,7 +243,7 @@ export default class Details extends Component {
     return (
       <View style={styles.container}>
         <ScrollView>
-        <View style={styles.BackDropTop}>
+        <LinearGradient colors={['#aacc00', '#80b918', '#55a630']}  style={styles.BackDropTop}>
           <View style={styles.TitleTopArea}>
             {/* <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" /> */}
             <Text style={styles.TitleTop}>MUSHROOM FARM</Text>
@@ -251,7 +253,7 @@ export default class Details extends Component {
           <View style={{alignItems: 'center'}}>
             <Image style={styles.ImgTitleTop} source={require('../assets/NamBaoNgu.png')}/>
           </View>
-        </View>
+        </LinearGradient>
         
         <View style={{alignItems: 'center'}}>
             {(this.state.status === 'connected'|| this.state.status === 'lostconnect') ? (
