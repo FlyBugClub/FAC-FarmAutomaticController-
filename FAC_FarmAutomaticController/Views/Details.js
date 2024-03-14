@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Image, Switch,Pressable ,ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity, Image,Alert, Switch,Pressable ,ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,7 +34,7 @@ export default class Details extends Component {
       sliderValue : 50,
       message: 'g',
       messageList: [],
-      status: 'g',
+      status: 'disconnected',
       statusManual : false,
       statusAuto : false,
       isEnabled: false,
@@ -55,6 +55,7 @@ export default class Details extends Component {
   onConnect = () => {
     console.log('onConnect');
     this.setState({ status: 'connected' });
+    
     this.subscribeTopic();
   }
   
@@ -63,29 +64,68 @@ export default class Details extends Component {
     console.log(err);
     this.setState({ status: 'failed' });
     // this.setState({ status: '', subscribedTopic: '' });
-    this.onConnect();
+    this.connect();
   }
  
   connect = () => {
-    this.setState(
-      { status: 'isFetching' },
-      () => {
-        client.connect({
-          onSuccess: this.onConnect,
-          useSSL: false,
-          timeout: 3,
-          onFailure: this.onFailure
-        });
-      }
-    );
+    if (this.state.status !== "isFetching")
+    {
+      this.setState(
+        { status: 'isFetching' },
+        () => {
+          client.connect({
+            onSuccess: this.onConnect,
+            useSSL: false,
+            timeout: 3,
+            onFailure: this.onFailure
+          });
+        }
+      );
+    }
+    
+  }
+
+  reconnect = () => {
+    
+      this.setState(
+        { status: 'lostconnect' },
+        () => {
+          client.connect({
+            onSuccess: this.onConnect,
+            useSSL: false,
+            timeout: 3,
+            onFailure: this.onFailure
+          });
+        }
+      );
+    
+    
   }
   
+  disconnect = () => {
+    
+      this.setState(
+        { status: 'disconnect' },
+        () => {
+          client.disconnect();
+        }
+      );
+    
+    
+  }
+
   onConnectionLost=(responseObject)=>{
     if (responseObject.errorCode !== 0) {
       console.log('onConnectionLost:' + responseObject.errorMessage);
     }
     // this.setState({ status: 'disconnected' });
-    // this.onConnect();
+    
+    if (this.state.status !== "disconnect")
+    {
+      this.setState({ status: 'lostconnect' });
+      this.reconnect();
+    }
+    
   }
  
 
@@ -126,10 +166,7 @@ export default class Details extends Component {
       message.destinationName = this.state.subscribedTopic; 
       client.send(message); 
     } 
-    else 
-    { 
-        this.connect(); 
-    } 
+ 
   }
   handleSliderChange = (value) => {
     
@@ -217,15 +254,17 @@ export default class Details extends Component {
         </View>
         
         <View style={{alignItems: 'center'}}>
-            {this.state.status === 'connected' ? (
+            {(this.state.status === 'connected'|| this.state.status === 'lostconnect') ? (
 
              <View style={{alignItems: 'center'}}>
                 <View style={styles.ConnectArea}>
                 <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
                     <View style={styles.IconStatus}></View>
-                    <Text>Online</Text>
+                    <Text>{this.state.status}</Text>
                 </View>
-                <BtnConnect style={{}} title={'Disconnected'} onPress={() => {client.disconnect();this.setState({ status: 'dssconnect' });}}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
+                {/* <BtnConnect style={{}} title={'Disconnected'} onPress={() => {this.setState({ status: 'disconnect' });client.disconnect();}}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} />  */}
+                <BtnConnect style={{}} title={'Disconnected'} onPress={this.disconnect}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
+
                 </View>
                 <View style={{flexDirection: 'row'}}>
                 <View style={styles.ShortBoardControl}>
@@ -308,14 +347,14 @@ export default class Details extends Component {
               <View style={styles.ConnectArea}>
               <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
                 <View style={styles.IconStatus1}></View>
-                <Text>Offline</Text>
+                <Text>{this.state.status}</Text>
               </View>
               <BtnConnect
                 style={{}}
                 title={'Connected'}
                 onPress={this.connect}
-                loading={status === 'isFetching' ? true : false}
-                disabled={status === 'isFetching' ? true : false}
+                loading={status == 'isFetching' ? true : false}
+                disabled={status == 'isFetching' ? true : false}
               />
             </View>
 
