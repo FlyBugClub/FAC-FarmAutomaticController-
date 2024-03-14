@@ -258,7 +258,7 @@ export default class Details extends Component {
 
              <View style={{alignItems: 'center'}}>
                 <View style={styles.ConnectArea}>
-                  <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
+                  <View style={{flexDirection: 'row'}}>
                       <View style={styles.IconStatus}></View>
                       <Text>{this.state.status}</Text>
                   </View>
@@ -334,15 +334,6 @@ export default class Details extends Component {
                     </Text>
                 </View>
                 </View>
-                {/* <View style={[styles.ShortBoardControl, {marginTop: 10}]}>
-                    <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
-                        <TouchableOpacity onPress={this.HistoryPage}>
-                            <Icon style={styles.IconTop} name="history" size={80} color="#8B934B" />
-                            <Text style={{textAlign: 'center'}}>History</Text>
-                        </TouchableOpacity>
-                    </View>
-                    
-                </View> */}
              </View>
             ) : (
 
@@ -350,11 +341,11 @@ export default class Details extends Component {
               <View style={styles.ConnectArea}>
                 <View style={{flexDirection: 'row', }}>
                   <View style={styles.IconStatus1}></View>
-                <Text>{this.state.status}</Text>
+                  <Text>{this.state.status}</Text>
                 </View>
                 <View style={{ flexDirection: 'row-reverse', flex: 1}}>
                   <BtnConnect
-                    title={'Connected'}
+                    title={'Connect'}
                     onPress={this.connect}
                     loading={status === 'isFetching' ? true : false}
                     disabled={status === 'isFetching' ? true : false}
