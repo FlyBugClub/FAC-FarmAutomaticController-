@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Dimensions} from 'react-native';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 // Dữ liệu mẫu cho biểu đồ
@@ -10,28 +11,26 @@ const data = {
     datasets: [
       {
         data: [80, 84, 75, 87, 77, 79, 89],
-        color: (opacity = 1) => `rgba(0, 119, 182, ${opacity})`,
-        strokeWidth: 2
+        color: (opacity = 1) => `rgba(0, 119, 182, ${opacity})`, // optional
+        strokeWidth: 2 // optional
       }
     ],
-};
+    legend: ["Humidity"] // optional
+  };
 
 // Cấu hình cho biểu đồ
 const chartConfig = {
-    backgroundGradientFrom: '#fff',
-    backgroundGradientTo: '#fff',
-    decimalPlaces: 2,
+    backgroundGradientFrom: "#fafafa",
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientTo: "#fafafa",
+    backgroundGradientToOpacity: 1,
     color: (opacity = 1) => `rgba(2, 62, 138, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(2, 62, 138, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
-    propsForDots: {
-      r: "6",
-      strokeWidth: "2",
-      stroke: "#808080"
-    }
-};
+    strokeWidth: 2, // optional, default 3
+    barPercentage: 0.5,
+    useShadowColorFromDataset: true, // optional
+  };
+
+const screenWidth = Dimensions.get("window").width;
 
 export default class History extends Component {
     DetailsPage = () => {
@@ -43,19 +42,21 @@ export default class History extends Component {
         
         return(
             <View style={styles.container}>
+                <LinearGradient colors={['#aacc00', '#80b918', '#55a630']}  style={styles.NavigationTop}>
+                    <SafeAreaView>
+                        <Text style={{textAlign: 'center', fontSize: 23, marginBottom: 15, color: '#fff'}}>History</Text>
+                    </SafeAreaView>
+                </LinearGradient>
                 <SafeAreaView>
-                    <View style={styles.ChartArea}>
-                        <LineChart
-                        data={data}
-                        width={380}
-                        height={256}
-                        verticalLabelRotation={30}
-                        chartConfig={chartConfig}
-                        bezier
-                        />
-                    </View>
+                    <LineChart
+                    data={data}
+                    width={screenWidth}
+                    height={256}
+                    verticalLabelRotation={30}
+                    chartConfig={chartConfig}
+                    bezier
+                    />
                     
-                    <Text>History Page</Text>
                     <TouchableOpacity onPress={ this.DetailsPage }>
                         <Text>Back to details</Text>
                     </TouchableOpacity>
@@ -81,4 +82,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 2,
     },
+    NavigationTop: {
+        width: '100%',
+        height: 100,
+        backgroundColor: '#73A942',
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
+        marginBottom: 10,
+      },
 })
