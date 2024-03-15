@@ -42,7 +42,7 @@ export default class History extends Component {
         
         return(
             <View style={styles.container}>
-                <LinearGradient colors={['#aacc00', '#80b918', '#55a630']}  style={styles.NavigationTop}>
+                <LinearGradient colors={['#55a630', '#80b918', '#aacc00']}  style={styles.NavigationTop}>
                     <SafeAreaView>
                         <Text style={{textAlign: 'center', fontSize: 23, marginBottom: 15, color: '#fff'}}>History</Text>
                     </SafeAreaView>
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     },
     NavigationTop: {
         width: '100%',
-        height: 100,
+        height: 90,
         backgroundColor: '#73A942',
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
