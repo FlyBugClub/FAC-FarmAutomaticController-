@@ -50,8 +50,8 @@ export default class History extends Component {
         return(
             <View style={styles.container}>
                 <LinearGradient colors={['#55a630', '#80b918', '#aacc00']}  style={styles.NavigationTop}>
-                    <SafeAreaView>
-                        <Text style={{textAlign: 'center', fontSize: 23, marginBottom: 15, color: '#fff'}}>History</Text>
+                    <SafeAreaView style={{alignItems: 'center', justifyContent: 'center'}}>
+                        <Text style={{textAlign: 'center', fontSize: 23, color: '#fff'}}>History</Text>
                     </SafeAreaView>
                 </LinearGradient>
                 <SafeAreaView>
@@ -365,9 +365,9 @@ export default class History extends Component {
                         <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
                     </View>
 
-                    {/* <TouchableOpacity onPress={ this.DetailsPage }>
+                    <TouchableOpacity onPress={ this.DetailsPage }>
                         <Text>Back to details</Text>
-                    </TouchableOpacity> */}
+                    </TouchableOpacity>
                     </ScrollView>
                 </SafeAreaView>
             </View>
@@ -393,11 +393,13 @@ const styles = StyleSheet.create({
     },
     NavigationTop: {
         width: '100%',
-        height: 90,
+        height: 80,
         backgroundColor: '#73A942',
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
         marginBottom: 10,
+        alignItems: 'center', 
+        justifyContent: 'center',
     },
     DataArea: {
         flexDirection: 'row',

@@ -269,32 +269,33 @@ export default class Details extends Component {
                     <BtnConnect style={{}} title={'Disconnected'} onPress={this.disconnect}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
                   </View> 
                 </View>
-                <View style={{flexDirection: 'row'}}>
-                <View style={styles.ShortBoardControl}>
-                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <TouchableOpacity onPress={this.HistoryPage}>
-                      <LiquidGauge
-                          config={{
-                          circleColor: '#4ea8de',
-                          textColor: '#0077b6',
-                          waveTextColor: '#0096c7',
-                          waveColor: '#48cae4',
-                          circleThickness: 0.2,
-                          textVertPosition: 0.5,
-                          waveAnimateTime: 1000,
-                          }}
-                          value={parseFloat(globalVariable)} 
-                          width={130}
-                          height={130}
-                      />
-                    </TouchableOpacity>
-                    
-                    </View>
-                </View>
-                <View style={styles.ShortBoardControl}>
-                    <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold', marginTop: 10}}>Custom mode</Text>
-                    <BtnCustomMode  onPress={this.pressmanual} title="On"/>
-                </View>
+                <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-around'}}>
+                  <View style={styles.ShortBoardControl}>
+                      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <TouchableOpacity onPress={this.HistoryPage}>
+                          <LiquidGauge
+                              config={{
+                              circleColor: '#4ea8de',
+                              textColor: '#0077b6',
+                              waveTextColor: '#0096c7',
+                              waveColor: '#48cae4',
+                              circleThickness: 0.2,
+                              textVertPosition: 0.5,
+                              waveAnimateTime: 1000,
+                              }}
+                              value={parseFloat(globalVariable)} 
+                              width={130}
+                              height={130}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                  </View>
+                  <View style={[styles.ShortBoardControl, {marginRight: 8}]}>
+                      <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold'}}>Custom mode</Text>
+                      <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        <BtnCustomMode  onPress={this.pressmanual} title="On"/>
+                      </View>
+                  </View>
                 </View>
                 <View style={styles.LongtBoardControl}>
                 <Text  style={{
@@ -431,7 +432,9 @@ const styles = StyleSheet.create({
   },
   BackDropTop: {
     width: '100%',
-    height: 262,
+    height: 250,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#73A942',
     borderBottomLeftRadius: 200,
     borderBottomRightRadius: 200,
@@ -441,7 +444,7 @@ const styles = StyleSheet.create({
     // flexDirection: 'row',
     backgroundColor: 'While',
     justifyContent: 'space-between',
-    marginTop: 50,
+    marginTop: 0,
   },
   TitleTop: {
     textAlign: 'center',
@@ -510,12 +513,11 @@ const styles = StyleSheet.create({
     color: '#A6A6A6'
   },
   ShortBoardControl: {
-    width: 170,
-    height: 170,
+    width: '45%',
     marginTop: 20,
     marginBottom: 10,
-    marginLeft: 10,
-    marginRight: 10,
+    paddingBottom: 15,
+    paddingTop: 15,
     backgroundColor: '#fff',
     borderRadius: 20,
     shadowColor: '#000',
@@ -538,7 +540,7 @@ const styles = StyleSheet.create({
   BtnCustomMode: {
     width: 100,
     height: 100,
-    marginTop: 16,
+    marginTop: 10,
     borderRadius: 50,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
