@@ -5,7 +5,7 @@ import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import init from 'react_native_mqtt';
 
-import { LiquidGauge } from 'react-native-liquid-gauge';
+// import { LiquidGauge } from 'react-native-liquid-gauge';
 
 init({
   size: 10000,
@@ -84,14 +84,20 @@ export default class Details extends Component {
     }
     
   }
-
+  onreConnect = () => {
+    console.log('onConnect');
+    this.setState({ status: 'connected' });
+    
+    this.subscribeTopic();
+    this.sendMessage();
+  }
   reconnect = () => {
     
       this.setState(
         { status: 'lostconnect' },
         () => {
           client.connect({
-            onSuccess: this.onConnect,
+            onSuccess: this.onreConnect,
             useSSL: false,
             timeout: 3,
             onFailure: this.onFailure
@@ -260,7 +266,7 @@ export default class Details extends Component {
                 <View style={styles.ConnectArea}>
                   <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
                       <View style={styles.IconStatus}></View>
-                      <Text>{this.state.status}</Text>
+                      <Text>connected</Text>
                   </View>
                   <View style={{ flexDirection: 'row-reverse', flex: 1}}> 
                     <BtnConnect style={{}} title={'Disconnected'} onPress={this.disconnect}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
@@ -270,7 +276,7 @@ export default class Details extends Component {
                 <View style={styles.ShortBoardControl}>
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <TouchableOpacity onPress={this.HistoryPage}>
-                      <LiquidGauge
+                      {/* <LiquidGauge
                           config={{
                           circleColor: '#4ea8de',
                           textColor: '#0077b6',
@@ -283,7 +289,7 @@ export default class Details extends Component {
                           value={parseFloat(globalVariable)} 
                           width={130}
                           height={130}
-                      />
+                      /> */}
                     </TouchableOpacity>
                     
                     </View>
@@ -350,7 +356,7 @@ export default class Details extends Component {
               <View style={styles.ConnectArea}>
                 <View style={{flexDirection: 'row', }}>
                   <View style={styles.IconStatus1}></View>
-                <Text>{this.state.status}</Text>
+                <Text>disconnect</Text>
                 </View>
                 <View style={{ flexDirection: 'row-reverse', flex: 1}}>
                   <BtnConnect
