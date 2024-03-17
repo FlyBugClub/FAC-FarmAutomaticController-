@@ -1,11 +1,12 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Image,Alert, Switch,Pressable ,ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import init from 'react_native_mqtt';
 
 import { LiquidGauge } from 'react-native-liquid-gauge';
+import { Icon } from '@rneui/base';
 
 init({
   size: 10000,
