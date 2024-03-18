@@ -15,15 +15,22 @@ init({
   enableCache: true,
   sync : {}
 });
+// const options = {
+//   host: 'broker.emqx.io',
+//   port: 8083,
+//   path: '/mqtt',
+//   id: 'id_' + parseInt(Math.random()*100000)
+// };
 const options = {
-  host: 'broker.emqx.io',
-  port: 8083,
-  path: '/mqtt',
+  host: 'iot.eclipse.org', 
+  port: 80, 
+  path: '/ws', 
   id: 'id_' + parseInt(Math.random()*100000)
 };
 let globalVariable = '50.0';
 
-client = new Paho.MQTT.Client(options.host, options.port, options.path);
+// client = new Paho.MQTT.Client(options.host, options.port, options.path);
+client = new Paho.MQTT.Client("wss://d77ae1842ab3462d947a50556d8d9ed7.s1.eu.hivemq.cloud:8884/mqtt","i");
 
 export default class Details extends Component {
   constructor(props){
@@ -68,23 +75,26 @@ export default class Details extends Component {
     this.connect();
   }
  
-  connect = () => {
-    if (this.state.status !== "isFetching")
-    {
-      this.setState(
-        { status: 'isFetching' },
-        () => {
-          client.connect({
-            onSuccess: this.onConnect,
-            useSSL: false,
-            timeout: 3,
-            onFailure: this.onFailure
-          });
-        }
-      );
-    }
-    
-  }
+  connect = () => { 
+    if (this.state.status !== "isFetching") 
+    { 
+      this.setState( 
+        { status: 'isFetching' }, 
+        () => { 
+ 
+          client.connect({ 
+             
+            userName: "cuong", 
+            password: "11111111", 
+            useSSL: false, 
+            onSuccess: this.onConnect, 
+            timeout: 3, 
+            onFailure: this.onFailure 
+          }); 
+        } 
+      ); 
+    } 
+  } 
 
   reconnect = () => {
     
