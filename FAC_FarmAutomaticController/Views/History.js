@@ -41,7 +41,7 @@ const screenWidth = Dimensions.get("window").width;
 
 export default class History extends Component {
     DetailsPage = () => {
-        console.log("DetailsPage");
+        console.log("Details Page");
         this.props.navigation.navigate('Details'); // 'History' là tên của màn hình History trong định tuyến của bạn
     };
 
