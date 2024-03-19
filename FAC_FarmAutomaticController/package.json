@@ -15,8 +15,10 @@
     "@nassim99/react-native-gauge": "^0.0.8",
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-community/slider": "4.4.2",
+    "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.16",
     "@react-navigation/native-stack": "^6.9.25",
+    "@react-navigation/stack": "^6.3.29",
     "@rneui/base": "^4.0.0-rc.8",
     "@shopify/react-native-skia": "0.1.221",
     "d3": "^7.9.0",
@@ -39,7 +41,9 @@
     "react-native-svg": "14.1.0",
     "react-native-vector-icons": "^10.0.3",
     "react-native-web": "^0.19.10",
-    "slug": "^9.0.0"
+    "slug": "^9.0.0",
+    "react-native-gesture-handler": "~2.14.0",
+    "@react-native-masked-view/masked-view": "0.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

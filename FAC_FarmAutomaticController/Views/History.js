@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Dimensions, Fla
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from '@rneui/base';
+import AnDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import { bounds } from '@shopify/react-native-skia';
 
 
@@ -97,7 +98,7 @@ export default class History extends Component {
                                     <Text style={{fontSize: 25}}>82%</Text>
                                 </View>
                                 <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
+                                    <AnDesign name="pump" size={50} color={'#00b4d8'}/>
                                     <Text style={{fontSize: 25}}>6</Text>
                                 </View>
                             </View>
