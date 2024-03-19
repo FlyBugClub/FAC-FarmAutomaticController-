@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image, FlatList, ScrollView, statusbar} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image, FlatList, ScrollView, StatusBar} from 'react-native';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -23,8 +23,8 @@ export default class Home extends Component {
     render() {
         return(
             <SafeAreaView style={styles.safeContainer}>
+                <StatusBar backgroundColor="#ebf2f2"/>
                 <View style={styles.container}>
-                    <StatusBar backgroundColor="#ebf2f2"/>
                     <View style={styles.header}>
                         <Text style={styles.monthText}>March</Text>
                         <View style={styles.calendarArea}>
