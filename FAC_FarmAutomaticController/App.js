@@ -19,10 +19,10 @@ const Tab = createBottomTabNavigator();
 // Tạo Stack Navigator
 function StackNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name='Home' component={Home}/>
       <Stack.Screen name='Login' component={Login}/>
       <Stack.Screen name='SignUp' component={SignUp}/>
-      <Stack.Screen name='Home' component={Home}/>
       <Stack.Screen name='Details' component={Details}/>
       <Stack.Screen name='History' component={History}/>
       <Stack.Screen name='AddFarm' component={AddFarm}/>

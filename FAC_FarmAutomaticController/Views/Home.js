@@ -3,6 +3,7 @@ import { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image, FlatList, ScrollView, statusbar} from 'react-native';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import { LinearGradient } from 'expo-linear-gradient';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Icon } from '@rneui/base';
 
 export default class Home extends Component {
@@ -62,7 +63,7 @@ export default class Home extends Component {
                         <Text style={styles.littleText}>Farm</Text>
                         <TouchableOpacity style={styles.famrItem} onPress={this.DetailPage}>
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                <Icon name="water-drop" size={50} color={'#333'}/>
+                                <Ionicons name="water-outline" size={50} color={'#333'}/>
                                 <View>
                                     <Text style={styles.titleItem} numberOfLines={1}> Farm 1: Nấm Bào Ngư hải sản</Text>
                                     <Text style={{ color: '#333', marginTop: 5 }}> 75% - 86%</Text>

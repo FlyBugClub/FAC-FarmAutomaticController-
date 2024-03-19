@@ -12,12 +12,15 @@ export default class Login extends Component {
     };
     render() {
         return(
-            <View>
-                <Text>Login Page</Text>
-                <TouchableOpacity onPress={ this.SignUpPage }>
-                        <Text>SignUp</Text>
-                </TouchableOpacity>
-            </View>
+            <SafeAreaView>
+                <View>
+                    <Text>Login Page</Text>
+                    <TouchableOpacity onPress={ this.SignUpPage }>
+                            <Text>SignUp</Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+            
         )
     }
 }
