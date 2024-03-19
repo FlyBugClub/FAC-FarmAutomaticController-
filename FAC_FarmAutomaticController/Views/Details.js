@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -253,6 +253,7 @@ export default class Details extends Component {
     const { status, messageList,sliderValue,isEnabled  ,message_humid } = this.state;
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="#aacc00"/>
         <ScrollView>
         <LinearGradient colors={['#aacc00', '#80b918', '#55a630']}  style={styles.BackDropTop}>
           <View style={styles.TitleTopArea}>
@@ -442,7 +443,7 @@ const styles = StyleSheet.create({
   },
   BackDropTop: {
     width: '100%',
-    height: 250,
+    height: 225,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#73A942',
@@ -451,12 +452,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   TitleTopArea: {
-    // flexDirection: 'row',
     backgroundColor: 'While',
     justifyContent: 'space-between',
-    marginTop: 0,
   },
   TitleTop: {
+    marginTop: 8,
     textAlign: 'center',
     fontSize: 28,
     fontWeight: 'bold',
