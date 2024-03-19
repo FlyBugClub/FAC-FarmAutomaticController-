@@ -24,6 +24,7 @@ export default class Home extends Component {
         return(
             <SafeAreaView style={styles.safeContainer}>
                 <View style={styles.container}>
+                    <StatusBar backgroundColor="#ebf2f2"/>
                     <View style={styles.header}>
                         <Text style={styles.monthText}>March</Text>
                         <View style={styles.calendarArea}>

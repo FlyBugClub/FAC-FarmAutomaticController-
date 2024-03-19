@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -113,7 +113,7 @@ export default RootComponent = function() {
     //   </Stack.Navigator>
     // </NavigationContainer>
 
-
+    
     <NavigationContainer>
       <TabNavigator/>
     </NavigationContainer>
