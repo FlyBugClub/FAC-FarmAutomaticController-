@@ -1,11 +1,12 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Image,Alert, Switch,Pressable ,ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView, StatusBar } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import init from 'react_native_mqtt';
 
-// import { LiquidGauge } from 'react-native-liquid-gauge';
+import { LiquidGauge } from 'react-native-liquid-gauge';
+import { Icon } from '@rneui/base';
 
 init({
   size: 10000,
@@ -21,13 +22,14 @@ init({
 //   id: 'id_' + parseInt(Math.random()*100000)
 // };
 const options = {
-  host: 'iot.eclipse.org',
-  port: 80,
-  path: '/ws',
+  host: 'iot.eclipse.org', 
+  port: 80, 
+  path: '/ws', 
   id: 'id_' + parseInt(Math.random()*100000)
 };
 let globalVariable = '50.0';
 
+// client = new Paho.MQTT.Client(options.host, options.port, options.path);
 client = new Paho.MQTT.Client("wss://d77ae1842ab3462d947a50556d8d9ed7.s1.eu.hivemq.cloud:8884/mqtt","i");
 
 export default class Details extends Component {
@@ -73,34 +75,27 @@ export default class Details extends Component {
     this.connect();
   }
  
-  connect = () => {
-    if (this.state.status !== "isFetching")
-    {
-      this.setState(
-        { status: 'isFetching' },
-        () => {
+  connect = () => { 
+    if (this.state.status !== "isFetching") 
+    { 
+      this.setState( 
+        { status: 'isFetching' }, 
+        () => { 
+ 
+          client.connect({ 
+             
+            userName: "cuong", 
+            password: "11111111", 
+            useSSL: false, 
+            onSuccess: this.onConnect, 
+            timeout: 3, 
+            onFailure: this.onFailure 
+          }); 
+        } 
+      ); 
+    } 
+  } 
 
-          client.connect({
-            
-            userName: "cuong",
-            password: "11111111",
-            useSSL: false,
-            onSuccess: this.onConnect,
-            timeout: 3,
-            onFailure: this.onFailure
-          });
-        }
-      );
-    }
-    
-  }
-  onreConnect = () => {
-    console.log('onConnect');
-    this.setState({ status: 'connected' });
-    
-    this.subscribeTopic();
-    this.sendMessage();
-  }
   reconnect = () => {
     
       this.setState(
@@ -163,6 +158,7 @@ export default class Details extends Component {
     client.unsubscribe(this.state.subscribedTopic);
     this.setState({ subscribedTopic: '' });
   }
+
   onChangeMessage = (text) => {
     this.setState({ message: text });
   }
@@ -184,6 +180,7 @@ export default class Details extends Component {
     } 
  
   }
+
   handleSliderChange = (value) => {
     
     this.setState({ sliderValue: value });
@@ -194,6 +191,7 @@ export default class Details extends Component {
     this.setState({ sliderValue: value });
     this.sendMessage();
   };
+
   toggleSwitch = () => {
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled,
@@ -208,8 +206,6 @@ export default class Details extends Component {
     }
     this.sendMessage();
   };
-
- 
 
   pressmanual =  () => {
     if (this.state.statusManual == false)
@@ -239,6 +235,7 @@ export default class Details extends Component {
      }
     });
   }
+
   componentDidMount() {
     // Thay đổi tin nhắn mỗi 2 giây (điều chỉnh khoảng thời gian tùy vào nhu cầu)
     this.interval = setInterval(() => {
@@ -256,8 +253,9 @@ export default class Details extends Component {
     const { status, messageList,sliderValue,isEnabled  ,message_humid } = this.state;
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="#aacc00"/>
         <ScrollView>
-        <View style={styles.BackDropTop}>
+        <LinearGradient colors={['#aacc00', '#80b918', '#55a630']}  style={styles.BackDropTop}>
           <View style={styles.TitleTopArea}>
             {/* <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" /> */}
             <Text style={styles.TitleTop}>MUSHROOM FARM</Text>
@@ -267,14 +265,14 @@ export default class Details extends Component {
           <View style={{alignItems: 'center'}}>
             <Image style={styles.ImgTitleTop} source={require('../assets/NamBaoNgu.png')}/>
           </View>
-        </View>
+        </LinearGradient>
         
         <View style={{alignItems: 'center'}}>
             {(this.state.status === 'connected'|| this.state.status === 'lostconnect') ? (
 
              <View style={{alignItems: 'center'}}>
                 <View style={styles.ConnectArea}>
-                  <View style={[{flexDirection: 'row'}, {marginLeft: -20}]}>
+                  <View style={{flexDirection: 'row'}}>
                       <View style={styles.IconStatus}></View>
                       <Text>connected</Text>
                   </View>
@@ -282,32 +280,33 @@ export default class Details extends Component {
                     <BtnConnect style={{}} title={'Disconnected'} onPress={this.disconnect}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
                   </View> 
                 </View>
-                <View style={{flexDirection: 'row'}}>
-                <View style={styles.ShortBoardControl}>
-                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <TouchableOpacity onPress={this.HistoryPage}>
-                      {/* <LiquidGauge
-                          config={{
-                          circleColor: '#4ea8de',
-                          textColor: '#0077b6',
-                          waveTextColor: '#0096c7',
-                          waveColor: '#48cae4',
-                          circleThickness: 0.2,
-                          textVertPosition: 0.5,
-                          waveAnimateTime: 1000,
-                          }}
-                          value={parseFloat(globalVariable)} 
-                          width={130}
-                          height={130}
-                      /> */}
-                    </TouchableOpacity>
-                    
-                    </View>
-                </View>
-                <View style={styles.ShortBoardControl}>
-                    <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold', marginTop: 10}}>Custom mode</Text>
-                    <BtnCustomMode  onPress={this.pressmanual} title="On"/>
-                </View>
+                <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-around'}}>
+                  <View style={styles.ShortBoardControl}>
+                      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                        <TouchableOpacity onPress={this.HistoryPage}>
+                          <LiquidGauge
+                              config={{
+                              circleColor: '#4ea8de',
+                              textColor: '#0077b6',
+                              waveTextColor: '#0096c7',
+                              waveColor: '#48cae4',
+                              circleThickness: 0.2,
+                              textVertPosition: 0.5,
+                              waveAnimateTime: 1000,
+                              }}
+                              value={parseFloat(globalVariable)} 
+                              width={130}
+                              height={130}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                  </View>
+                  <View style={[styles.ShortBoardControl, {marginRight: 8}]}>
+                      <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold'}}>Custom mode</Text>
+                      <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        <BtnCustomMode  onPress={this.pressmanual} title="On"/>
+                      </View>
+                  </View>
                 </View>
                 <View style={styles.LongtBoardControl}>
                 <Text  style={{
@@ -350,15 +349,6 @@ export default class Details extends Component {
                     </Text>
                 </View>
                 </View>
-                {/* <View style={[styles.ShortBoardControl, {marginTop: 10}]}>
-                    <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
-                        <TouchableOpacity onPress={this.HistoryPage}>
-                            <Icon style={styles.IconTop} name="history" size={80} color="#8B934B" />
-                            <Text style={{textAlign: 'center'}}>History</Text>
-                        </TouchableOpacity>
-                    </View>
-                    
-                </View> */}
              </View>
             ) : (
 
@@ -366,11 +356,11 @@ export default class Details extends Component {
               <View style={styles.ConnectArea}>
                 <View style={{flexDirection: 'row', }}>
                   <View style={styles.IconStatus1}></View>
-                <Text>disconnect</Text>
+                  <Text>{this.state.status}</Text>
                 </View>
                 <View style={{ flexDirection: 'row-reverse', flex: 1}}>
                   <BtnConnect
-                    title={'Connected'}
+                    title={'Connect'}
                     onPress={this.connect}
                     loading={status === 'isFetching' ? true : false}
                     disabled={status === 'isFetching' ? true : false}
@@ -453,19 +443,20 @@ const styles = StyleSheet.create({
   },
   BackDropTop: {
     width: '100%',
-    height: 262,
+    height: 225,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#73A942',
     borderBottomLeftRadius: 200,
     borderBottomRightRadius: 200,
     marginBottom: 10,
   },
   TitleTopArea: {
-    // flexDirection: 'row',
     backgroundColor: 'While',
     justifyContent: 'space-between',
-    marginTop: 50,
   },
   TitleTop: {
+    marginTop: 8,
     textAlign: 'center',
     fontSize: 28,
     fontWeight: 'bold',
@@ -532,12 +523,11 @@ const styles = StyleSheet.create({
     color: '#A6A6A6'
   },
   ShortBoardControl: {
-    width: 170,
-    height: 170,
+    width: '45%',
     marginTop: 20,
     marginBottom: 10,
-    marginLeft: 10,
-    marginRight: 10,
+    paddingBottom: 15,
+    paddingTop: 15,
     backgroundColor: '#fff',
     borderRadius: 20,
     shadowColor: '#000',
@@ -560,7 +550,7 @@ const styles = StyleSheet.create({
   BtnCustomMode: {
     width: 100,
     height: 100,
-    marginTop: 16,
+    marginTop: 10,
     borderRadius: 50,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
