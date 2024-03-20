@@ -2,16 +2,10 @@ import pyodbc
 from flask import Flask, jsonify
 import json
 # Thiết lập các thông số kết nối
-# server = 'sql.bsite.net\MSSQL2016'  # Tên server và instance của SQL Server
-# database = 'ngunemay123_SampleDB'     # Tên cơ sở dữ liệu của bạn
-# username = 'ngunemay123_SampleDB'                  # Tên người dùng SQL Server
-# password = 'conchongu0123'                    # Mật khẩu SQL Server
-
-server = 'DINHCUONG\SQLEXPRESS'  # Tên server và instance của SQL Server
-database = 'DB_FAC2'     # Tên cơ sở dữ liệu của bạn
-username = 'sa'                  # Tên người dùng SQL Server
-password = '1'                    # Mật khẩu SQL Server
-
+server = 'sql.bsite.net\\MSSQL2016'  # Tên server và instance của SQL Server
+database = 'ngunemay123_SampleDB'     # Tên cơ sở dữ liệu của bạn
+username = 'ngunemay123_SampleDB'                  # Tên người dùng SQL Server
+password = 'conchongu0123'                    # Mật khẩu SQL Server
 
 # Tạo chuỗi kết nối
 conn_str = f'DRIVER=ODBC Driver 17 for SQL Server;SERVER={server};DATABASE={database};UID={username};PWD={password}'
@@ -26,6 +20,7 @@ cursor = conn.cursor()
 # In dữ liệu
 
 app = Flask(__name__)
+
 @app.route('/api/login/<string:email>', methods=['GET'])
 def login(email):
     # cursor.execute('SELECT * FROM dbo.Users')
@@ -37,8 +32,6 @@ def login(email):
         # Nếu tìm thấy user, trả về thông tin của user
         user = {
             'id': row.id_user,  # Giả sử id là cột định danh của người dùng
-            'gmail': row.gmail,
-            'password': row.password
             # Các trường khác nếu cần thiết
         }
         return jsonify(user)
@@ -58,8 +51,6 @@ def get_esp(id_user):
     if rows:
         for row in rows:
             result = {}
-            result['id_esp'] = row[0]
-            result['id_user'] = row[1]
             result['id_equipment'] = row[2]
             esp.append(result)
             # Nếu tìm thấy user, trả về thông tin của user
@@ -98,7 +89,26 @@ def get_infoesp(id_esp):
         # Nếu không tìm thấy user, trả về thông báo lỗi
         return jsonify({'error': 'esp not found'}), 404
 
-
+@app.route('/api/get_equipmentlastinfo/<string:id_esp>',methods=['GET'])
+def get_infodevive(id_esp):
+    cursor.execute(f'''
+    SELECT ev.id_equipment, ev.[values], ev.[status]
+    FROM EquipmentValues ev
+    INNER JOIN (
+        SELECT id_equipment, MAX(id) AS max_id
+        FROM EquipmentValues
+        WHERE id_equipment IN (
+            SELECT id_equipment
+            FROM EquipmentManagement
+            WHERE id_esp = '{id_esp}'
+        )
+        GROUP BY id_equipment
+    ) AS max_id ON ev.id_equipment = max_id.id_equipment AND ev.id = max_id.max_id
+                   ''')
+    devive_list_last_status =  cursor.fetchall()
+    print(devive_list_last_status)
+    return jsonify(devive_list_last_status)
+    
 if __name__ == '__main__':
     app.run(debug=True)
     conn.close()
