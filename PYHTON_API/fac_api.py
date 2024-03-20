@@ -106,8 +106,9 @@ def get_infodevive(id_esp):
     ) AS max_id ON ev.id_equipment = max_id.id_equipment AND ev.id = max_id.max_id
                    ''')
     devive_list_last_status =  cursor.fetchall()
-    print(devive_list_last_status)
-    return jsonify(devive_list_last_status)
+    json_data = [dict(zip(('id_equipment', 'values', 'status'), item)) for item in devive_list_last_status]
+    print(json_data)
+    return jsonify(json_data)
     
 if __name__ == '__main__':
     app.run(debug=True)
