@@ -2,16 +2,21 @@ import pyodbc
 from flask import Flask, jsonify
 import json
 # Thiết lập các thông số kết nối
-server = 'sql.bsite.net\MSSQL2016'  # Tên server và instance của SQL Server
-database = 'ngunemay123_SampleDB'     # Tên cơ sở dữ liệu của bạn
-username = 'ngunemay123_SampleDB'                   # Tên người dùng SQL Server
-password = 'conchongu0123'                    # Mật khẩu SQL Server
+# server = 'sql.bsite.net\MSSQL2016'  # Tên server và instance của SQL Server
+# database = 'ngunemay123_SampleDB'     # Tên cơ sở dữ liệu của bạn
+# username = 'ngunemay123_SampleDB'                  # Tên người dùng SQL Server
+# password = 'conchongu0123'                    # Mật khẩu SQL Server
+
+server = 'DINHCUONG\SQLEXPRESS'  # Tên server và instance của SQL Server
+database = 'DB_FAC2'     # Tên cơ sở dữ liệu của bạn
+username = 'sa'                  # Tên người dùng SQL Server
+password = '1'                    # Mật khẩu SQL Server
+
 
 # Tạo chuỗi kết nối
 conn_str = f'DRIVER=ODBC Driver 17 for SQL Server;SERVER={server};DATABASE={database};UID={username};PWD={password}'
 # Kết nối đến cơ sở dữ liệu
 conn = pyodbc.connect(conn_str)
-
 # Tạo một đối tượng cursor để thực thi các truy vấn SQL
 cursor = conn.cursor()
 
@@ -21,22 +26,77 @@ cursor = conn.cursor()
 # In dữ liệu
 
 app = Flask(__name__)
-@app.route('/api/hello', methods=['GET'])
-def hello():
-    cursor.execute('SELECT * FROM tbl_Humid')
+@app.route('/api/login/<string:email>', methods=['GET'])
+def login(email):
+    # cursor.execute('SELECT * FROM dbo.Users')
     # Lấy tất cả các dòng dữ liệu
+   
+    cursor.execute('SELECT * FROM dbo.Users WHERE gmail = ?', (email,))
+    row = cursor.fetchone()
+    if row:
+        # Nếu tìm thấy user, trả về thông tin của user
+        user = {
+            'id': row.id_user,  # Giả sử id là cột định danh của người dùng
+            'gmail': row.gmail,
+            'password': row.password
+            # Các trường khác nếu cần thiết
+        }
+        return jsonify(user)
+    else:
+        # Nếu không tìm thấy user, trả về thông báo lỗi
+        return jsonify({'error': 'User not found'}), 404
+    
+
+@app.route('/api/get_esp/<string:id_user>', methods=['GET'])
+def get_esp(id_user):
+    # cursor.execute('SELECT * FROM dbo.Users')
+    # Lấy tất cả các dòng dữ liệu
+   
+    cursor.execute('SELECT * FROM dbo.Esp WHERE id_user = ?', (id_user,))
     rows = cursor.fetchall()
+    esp = []
+    if rows:
+        for row in rows:
+            result = {}
+            result['id_esp'] = row[0]
+            result['id_user'] = row[1]
+            result['id_equipment'] = row[2]
+            esp.append(result)
+            # Nếu tìm thấy user, trả về thông tin của user
+        return jsonify(esp)
+    else:
+        # Nếu không tìm thấy user, trả về thông báo lỗi
+        return jsonify({'error': 'esp not found'}), 404
+    
+    
+@app.route('/api/get_infoesp/<string:id_esp>', methods=['GET'])
+def get_infoesp(id_esp):
+    cursor.execute('''
+        SELECT TOP 1 * 
+        FROM dbo.Humid 
+        WHERE id_esp = ? 
+        ORDER BY id_esp DESC
+    ''', (id_esp,))
 
-    # Chuyển đổi dữ liệu thành một danh sách các từ điển
-    results = []
-    for row in rows:
-        result = {}
-        for i, column in enumerate(cursor.description):
-            result[column[0]] = row[i]
-        results.append(result)
-
-    # Trả về dữ liệu dưới dạng JSON
-    return jsonify(results)
+    cursor.execute('''
+        SELECT * 
+        FROM dbo.Pump 
+        WHERE id_esp = ?
+       
+    ''', (id_esp,))
+    last_pump_row = cursor.fetchone()
+    last_humid_row = cursor.fetchone()
+   
+    esp = []
+    if last_pump_row:
+        print("________________________-")
+        print(last_pump_row)
+        print("________________________-")
+        print(last_humid_row)
+        return jsonify(last_pump_row)
+    else:
+        # Nếu không tìm thấy user, trả về thông báo lỗi
+        return jsonify({'error': 'esp not found'}), 404
 
 
 if __name__ == '__main__':
