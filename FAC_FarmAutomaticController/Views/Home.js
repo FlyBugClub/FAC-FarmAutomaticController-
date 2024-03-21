@@ -2,12 +2,10 @@ import * as React from 'react';
 import { Component, useState,useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image, FlatList, ScrollView, StatusBar} from 'react-native';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
-import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Icon } from '@rneui/base';
 import MyContext from '../DataContext.js';
 import { index } from 'd3-array';
-
 
 export default class Home extends Component {
     LoginPage = () => {
@@ -36,7 +34,7 @@ export default class Home extends Component {
     render() {
         const farmHouseList = [];
         // Sử dụng forEach để thêm các phần tử vào mảng items
-        [...Array(10)].forEach((_, index) => {
+        [...Array(2)].forEach((_, index) => {
             farmHouseList.push(
                 <View>
                     <TouchableOpacity style={styles.famrItem} onPress={this.DetailPage}>
@@ -56,44 +54,46 @@ export default class Home extends Component {
         });
 
         return(
-            
-            <SafeAreaView style={styles.safeContainer}>
-            <StatusBar backgroundColor="#ebf2f2" barStyle={'dark-content'}/>
+            <View style={styles.safeContainer}>
+                <StatusBar backgroundColor="#ebf2f2" barStyle={'dark-content'}/>
                    <View style={styles.container}>
                     <View style={styles.header}>
-                        <Text style={styles.monthText}>March</Text>
-                        <View style={styles.calendarArea}>
-                            <View style={styles.calendar}>
-                                <View style={{alignItems:'center'}}>
-                                    <Text>Mon</Text>
-                                    <Text style={styles.dayNumberText}>8</Text>
+                        <SafeAreaView>
+                           <Text style={styles.monthText}>March</Text>
+                            <View style={styles.calendarArea}>
+                                <View style={styles.calendar}>
+                                    <View style={{alignItems:'center'}}>
+                                        <Text style={{color: 'white'}}>Mon</Text>
+                                        <Text style={styles.dayNumberText}>8</Text>
+                                    </View>
+                                    <View style={{alignItems:'center'}}>
+                                        <Text style={{color: 'white'}}>Tue</Text>
+                                        <Text style={styles.dayNumberText}>9</Text>
+                                    </View>
+                                    <View style={{alignItems:'center'}}>
+                                        <Text style={{color: 'white'}}>Wed</Text>
+                                        <Text style={styles.dayNumberText}>10</Text>
+                                    </View>
+                                    <View style={[styles.active ,{alignItems:'center'}]}>
+                                        <Text style={{color: 'white'}}>Thu</Text>
+                                        <Text style={styles.dayNumberText}>11</Text>
+                                    </View>
+                                    <View style={{alignItems:'center'}}>
+                                        <Text style={{color: 'white'}}>Fri</Text>
+                                        <Text style={styles.dayNumberText}>12</Text>
+                                    </View>
+                                    <View style={{alignItems:'center'}}>
+                                        <Text style={{color: 'white'}}>Sat</Text>
+                                        <Text style={styles.dayNumberText}>13</Text>
+                                    </View>
+                                    <View style={{alignItems:'center'}}>
+                                        <Text style={{color: 'white'}}>Sun</Text>
+                                        <Text style={styles.dayNumberText}>14</Text>
+                                    </View>
                                 </View>
-                                <View style={{alignItems:'center'}}>
-                                    <Text>Tue</Text>
-                                    <Text style={styles.dayNumberText}>9</Text>
-                                </View>
-                                <View style={{alignItems:'center'}}>
-                                    <Text>Wed</Text>
-                                    <Text style={styles.dayNumberText}>10</Text>
-                                </View>
-                                <View style={[styles.active ,{alignItems:'center'}]}>
-                                    <Text>Thu</Text>
-                                    <Text style={styles.dayNumberText}>11</Text>
-                                </View>
-                                <View style={{alignItems:'center'}}>
-                                    <Text>Fri</Text>
-                                    <Text style={styles.dayNumberText}>12</Text>
-                                </View>
-                                <View style={{alignItems:'center'}}>
-                                    <Text>Sat</Text>
-                                    <Text style={styles.dayNumberText}>13</Text>
-                                </View>
-                                <View style={{alignItems:'center'}}>
-                                    <Text>Sun</Text>
-                                    <Text style={styles.dayNumberText}>14</Text>
-                                </View>
-                            </View>
-                        </View>
+                            </View> 
+                        </SafeAreaView>
+                        
                     </View>
                     <View style={styles.body}>
                     <MyContext.Consumer>
@@ -102,39 +102,7 @@ export default class Home extends Component {
                     console.log(message)
                     }}
                     </MyContext.Consumer>
-                        {/* <Text style={[styles.littleText, {color: '#333'}]}>Today</Text> */}
                         <ScrollView style={{height:'73%'}} showsVerticalScrollIndicator={false}>
-                            {/* <View>
-                                <View>
-                                    <LinearGradient colors={['#aacc00', '#80b918', '#55a630']} style={styles.famrItem}>
-                                        <TouchableOpacity onPress={this.DetailPage} 
-                                        style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between'}}>
-                                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                                <Ionicons name="water-outline" size={50} color={'#dee2e6'}/>
-                                                <View>
-                                                    <Text style={[styles.titleItem, {color: '#dee2e6'}]} numberOfLines={1}> Farm 1: Nấm Bào Ngư hải sản</Text>
-                                                    <Text style={{ color: '#dee2e6', marginTop: 5 }}> 75% - 86%</Text>
-                                                </View>
-                                            </View>
-                                            <Image style={styles.imgItem} source={require('../assets/NamBaoNgu.png')}/>
-                                        </TouchableOpacity>
-                                    </LinearGradient>
-                                    <LinearGradient colors={['#aacc00', '#80b918', '#55a630']} style={styles.famrItem}>
-                                        <TouchableOpacity onPress={this.DetailPage} 
-                                        style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between'}}>
-                                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                                <Ionicons name="water-outline" size={50} color={'#dee2e6'}/>
-                                                <View>
-                                                    <Text style={[styles.titleItem, {color: '#dee2e6'}]} numberOfLines={1}> Farm 4: Nấm Kim Châm</Text>
-                                                    <Text style={{ color: '#dee2e6', marginTop: 5 }}> 75% - 86%</Text>
-                                                </View>
-                                            </View>
-                                            <Image style={styles.imgItem} source={require('../assets/NamBaoNgu.png')}/>
-                                        </TouchableOpacity>
-                                    </LinearGradient>
-                                </View>
-                            </View> */}
-
                             <View style={{marginTop: 8}}>
                                 <Text style={styles.littleText}>Farm house</Text>
                                 <View>
@@ -142,13 +110,9 @@ export default class Home extends Component {
                                 </View>
                             </View>
                         </ScrollView>
-                        
-                        
-
                     </View>
                 </View>
-            </SafeAreaView>
-            
+            </View>
         )
     }
 }
@@ -165,9 +129,9 @@ const styles = StyleSheet.create({
     },
     header: {
         width: '100%',
-        height: 110,
+        height: 150,
         marginBottom: 6,
-        backgroundColor: '#ebf2f2',
+        backgroundColor: '#2BA84A',
         borderBottomRightRadius: 30,
         borderBottomLeftRadius: 30,
     },
@@ -189,19 +153,20 @@ const styles = StyleSheet.create({
     active: {
         padding: 3,
         borderWidth: 1.2,
-        borderColor: '#248232',
+        borderColor: 'white',
         borderRadius: 8
     },
     monthText: {
         marginLeft: 40,
         marginBottom: 12,
-        color: '#2BA84A',
+        color: 'white',
         fontWeight: 'bold',
         fontSize: 18
     },
     dayNumberText: {
         fontWeight: 'bold',
-        marginTop: 5
+        marginTop: 5,
+        color: 'white'
     },
     littleText: {
         marginLeft: 20,

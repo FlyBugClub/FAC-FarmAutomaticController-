@@ -3,21 +3,15 @@ import { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image, ScrollView} from 'react-native';
 
 
-export default class AddFarm extends Component {
-    LoginPage = () => {
-        console.log("Login Page");
-        this.props.navigation.navigate('Login'); 
-    };
-
+export default class User extends Component {
     render() {
         return(
             <SafeAreaView style={styles.safeContainer}>
                 <View style={styles.container}>
-                    <Text>Add More Farm Here</Text>
+                    <Text>User Page</Text>
                 </View>
             </SafeAreaView>
-            
-        );
+        )
     }
 }
 
