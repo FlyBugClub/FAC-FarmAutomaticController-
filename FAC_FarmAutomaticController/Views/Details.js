@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView, StatusBar, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
 import { LiquidGauge } from 'react-native-liquid-gauge';
@@ -99,15 +99,17 @@ export default class Details extends Component {
         
         <ScrollView>
         <LinearGradient colors={['#aacc00', '#80b918', '#55a630']}  style={styles.BackDropTop}>
-          <View style={styles.TitleTopArea}>
-            {/* <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" /> */}
-            <Text style={styles.TitleTop}>MUSHROOM FARM</Text>
-            {/* <Icon style={styles.IconTop} name="cog" size={30} color="#fff" /> */}
-          </View>
-          <Text style={[styles.TitleTop, {fontSize: 20}, {textAlign: 'center'}, {marginTop: 5}]}>Farm 1</Text>
-          <View style={{alignItems: 'center'}}>
-            <Image style={styles.ImgTitleTop} source={require('../assets/NamBaoNgu.png')}/>
-          </View>
+          <SafeAreaView>
+            <View style={styles.TitleTopArea}>
+              {/* <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" /> */}
+              <Text style={styles.TitleTop}>MUSHROOM FARM</Text>
+              {/* <Icon style={styles.IconTop} name="cog" size={30} color="#fff" /> */}
+            </View>
+            <Text style={[styles.TitleTop, {fontSize: 20}, {textAlign: 'center'}, {marginTop: 5}]}>Farm 1</Text>
+            <View style={{alignItems: 'center'}}>
+              <Image style={styles.ImgTitleTop} source={require('../assets/NamBaoNgu.png')}/>
+            </View>
+          </SafeAreaView>
         </LinearGradient>
         
         <View style={{alignItems: 'center'}}>
@@ -260,7 +262,7 @@ const styles = StyleSheet.create({
   },
   BackDropTop: {
     width: '100%',
-    height: 225,
+    height: 260,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#73A942',

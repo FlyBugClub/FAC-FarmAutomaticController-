@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Dimensions, FlatList, ScrollView, statusbar} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Dimensions, ScrollView, statusbar} from 'react-native';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import { LinearGradient } from 'expo-linear-gradient';
 import { Icon } from '@rneui/base';
 import AnDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import { bounds } from '@shopify/react-native-skia';
+import { index } from 'd3-array';
 
 
 // Dữ liệu mẫu cho biểu đồ
@@ -40,6 +41,9 @@ const chartConfig = {
 
 const screenWidth = Dimensions.get("window").width;
 
+
+
+
 export default class History extends Component {
     DetailsPage = () => {
         console.log("Details Page");
@@ -47,7 +51,41 @@ export default class History extends Component {
     };
 
     render() {
-        
+        const items = [];
+        // Sử dụng forEach để thêm các phần tử vào mảng items
+        [...Array(10)].forEach((_, index) => {
+            items.push(
+                <View key={index}>
+                    <View style={{marginLeft: 30}}>
+                            <View style={{
+                                flexDirection: 'row',
+                                alignItems: 'center', 
+                                marginBottom: 5, 
+                                marginTop: 5}}>
+                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
+                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
+                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
+                            </View>
+                            <View style={{
+                                flexDirection: 'row', 
+                                marginBottom: 5, 
+                                marginTop: 5, 
+                                justifyContent: 'space-between'}}>
+                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
+                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
+                                    <Text style={{fontSize: 25}}>82%</Text>
+                                </View>
+                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
+                                    <AnDesign name="pump" size={50} color={'#00b4d8'}/>
+                                    <Text style={{fontSize: 25}}>{index}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
+                </View>
+            );
+        });
+
         return(
             <View style={styles.container}>
                 <LinearGradient colors={['#55a630', '#80b918', '#aacc00']}  style={styles.NavigationTop}>
@@ -77,7 +115,8 @@ export default class History extends Component {
                     </View>
                     <ScrollView>
                     {/* Data here */}
-                    <View>
+                    {items}
+                    {/* <View>
                         <View style={{marginLeft: 30}}>
                             <View style={{
                                 flexDirection: 'row',
@@ -104,267 +143,7 @@ export default class History extends Component {
                             </View>
                         </View>
                         <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <Icon name="heat-pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                    </View>
+                    </View> */}
 
                     <TouchableOpacity onPress={ this.DetailsPage }>
                         <Text>Back to details</Text>
