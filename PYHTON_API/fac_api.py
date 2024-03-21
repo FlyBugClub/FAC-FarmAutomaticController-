@@ -60,34 +60,6 @@ def get_esp(id_user):
         return jsonify({'error': 'esp not found'}), 404
     
     
-@app.route('/api/get_infoesp/<string:id_esp>', methods=['GET'])
-def get_infoesp(id_esp):
-    cursor.execute('''
-        SELECT TOP 1 * 
-        FROM dbo.Humid 
-        WHERE id_esp = ? 
-        ORDER BY id_esp DESC
-    ''', (id_esp,))
-
-    cursor.execute('''
-        SELECT * 
-        FROM dbo.Pump 
-        WHERE id_esp = ?
-       
-    ''', (id_esp,))
-    last_pump_row = cursor.fetchone()
-    last_humid_row = cursor.fetchone()
-   
-    esp = []
-    if last_pump_row:
-        print("________________________-")
-        print(last_pump_row)
-        print("________________________-")
-        print(last_humid_row)
-        return jsonify(last_pump_row)
-    else:
-        # Nếu không tìm thấy user, trả về thông báo lỗi
-        return jsonify({'error': 'esp not found'}), 404
 
 @app.route('/api/get_equipmentlastinfo/<string:id_esp>',methods=['GET'])
 def get_infodevive(id_esp):
@@ -106,7 +78,7 @@ def get_infodevive(id_esp):
     ) AS max_id ON ev.id_equipment = max_id.id_equipment AND ev.id = max_id.max_id
                    ''')
     devive_list_last_status =  cursor.fetchall()
-    json_data = [dict(zip(('id_equipment', 'values', 'status'), item)) for item in devive_list_last_status]
+    json_data = [dict(zip(('id_equipment', 'values', 'status','datetime'), item)) for item in devive_list_last_status]
     print(json_data)
     return jsonify(json_data)
     
