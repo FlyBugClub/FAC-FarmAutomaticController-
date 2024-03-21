@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { Component, useState } from 'react';
+import { Component, useState,useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image, FlatList, ScrollView, StatusBar} from 'react-native';
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Icon } from '@rneui/base';
+import MyContext from '../DataContext.js';
+
 
 export default class Home extends Component {
     LoginPage = () => {
@@ -16,15 +18,26 @@ export default class Home extends Component {
         this.props.navigation.navigate('SignUp'); 
     };
     DetailPage = () => {
-        console.log("Details Page");
+        this.handleUpdateMessage();
         this.props.navigation.navigate('Details'); 
     };
 
+
+    static contextType = MyContext;
+
+    handleUpdateMessage = () => {
+      // Lấy giá trị context và cập nhật dữ liệu trong MyContext từ Home component
+      const { addDataAtIndex } = this.context;
+      addDataAtIndex({ id_esp1: 'ESP0001',id_esp2:"ESP002" },1);
+    };
+
+
     render() {
         return(
+            
             <SafeAreaView style={styles.safeContainer}>
-                <StatusBar backgroundColor="#ebf2f2" barStyle={'dark-content'}/>
-                <View style={styles.container}>
+            <StatusBar backgroundColor="#ebf2f2" barStyle={'dark-content'}/>
+                   <View style={styles.container}>
                     <View style={styles.header}>
                         <Text style={styles.monthText}>March</Text>
                         <View style={styles.calendarArea}>
@@ -61,6 +74,12 @@ export default class Home extends Component {
                         </View>
                     </View>
                     <View style={styles.body}>
+                    <MyContext.Consumer>
+                    {contextData => {
+                    const  message  = contextData;
+                    console.log(message)
+                    }}
+                    </MyContext.Consumer>
                         <Text style={[styles.littleText, {color: '#333'}]}>Today</Text>
                         <ScrollView style={{height:'73%'}} showsVerticalScrollIndicator={false}>
                             <View>

@@ -2,196 +2,46 @@ import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import init from 'react_native_mqtt';
-
 import { LiquidGauge } from 'react-native-liquid-gauge';
 import { Icon } from '@rneui/base';
-
-init({
-  size: 10000,
-  storageBackend: AsyncStorage,
-  defaultExpires: 1000 * 3600 * 24,
-  enableCache: true,
-  sync : {}
-});
-// const options = {
-//   host: 'broker.emqx.io',
-//   port: 8083,
-//   path: '/mqtt',
-//   id: 'id_' + parseInt(Math.random()*100000)
-// };
-const options = {
-  host: 'iot.eclipse.org', 
-  port: 80, 
-  path: '/ws', 
-  id: 'id_' + parseInt(Math.random()*100000)
-};
+import MyContext from '../DataContext.js';
 let globalVariable = '50.0';
-
-// client = new Paho.MQTT.Client(options.host, options.port, options.path);
-client = new Paho.MQTT.Client("wss://d77ae1842ab3462d947a50556d8d9ed7.s1.eu.hivemq.cloud:8884/mqtt","i");
 
 export default class Details extends Component {
   constructor(props){
     super(props)
     this.state={
-      id : 'cuong',
-      topic: 'tr6r/cuong',
-      subscribedTopic: 'g',
       sliderValue : 50,
-      message: 'g',
-      messageList: [],
-      status: 'disconnected',
       statusManual : false,
       statusAuto : false,
       isEnabled: false,
       message_humid:"0.0",
-
-      
       showArcRanges: false
     };
-    client.onConnectionLost = this.onConnectionLost;
-    client.onMessageArrived = this.onMessageArrived;
   }
-  
+  componentDidMount() {
+    // Dispatch một action để lấy dữ liệu từ Redux store (nếu cần)
+    this.props.fetchData();
+  }
   HistoryPage = () => {
     console.log("HistoryPage");
     this.props.navigation.navigate('History'); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
   
-  onConnect = () => {
-    console.log('onConnect');
-    this.setState({ status: 'connected' });
-    
-    this.subscribeTopic();
-  }
-  
-  onFailure = (err) => {
-    console.log('Connect failed!');
-    console.log(err);
-    this.setState({ status: 'failed' });
-    // this.setState({ status: '', subscribedTopic: '' });
-    this.connect();
-  }
- 
-  connect = () => { 
-    if (this.state.status !== "isFetching") 
-    { 
-      this.setState( 
-        { status: 'isFetching' }, 
-        () => { 
- 
-          client.connect({ 
-             
-            userName: "cuong", 
-            password: "11111111", 
-            useSSL: false, 
-            onSuccess: this.onConnect, 
-            timeout: 3, 
-            onFailure: this.onFailure 
-          }); 
-        } 
-      ); 
-    } 
-  } 
-
-  reconnect = () => {
-    
-      this.setState(
-        { status: 'lostconnect' },
-        () => {
-          client.connect({
-            onSuccess: this.onreConnect,
-            useSSL: false,
-            timeout: 3,
-            onFailure: this.onFailure
-          });
-        }
-      );
-    
-    
-  }
-  
-  disconnect = () => {
-    
-      this.setState(
-        { status: 'disconnect' },
-        () => {
-          client.disconnect();
-        }
-      );
-    
-    
-  }
-
-  onConnectionLost=(responseObject)=>{
-    if (responseObject.errorCode !== 0) {
-      console.log('onConnectionLost:' + responseObject.errorMessage);
-    }
-    // this.setState({ status: 'disconnected' });
-    
-    if (this.state.status !== "disconnect")
-    {
-      this.setState({ status: 'lostconnect' });
-      this.reconnect();
-    }
-    
-  }
- 
-
-  onChangeTopic = (text) => {
-    this.setState({ topic: "tr6r/cuong" });
-  }
- 
-  subscribeTopic = () => {
-    this.setState(
-      { subscribedTopic: this.state.topic },
-      () => {
-        client.subscribe(this.state.topic, { qos: 0 });
-        // console.log("ok")
-      }
-    );
-  }
- 
-  unSubscribeTopic = () => {
-    client.unsubscribe(this.state.subscribedTopic);
-    this.setState({ subscribedTopic: '' });
-  }
-
-  onChangeMessage = (text) => {
-    this.setState({ message: text });
-  }
- 
-  sendMessage = () =>{
-    const Data = {
-      "Id": this.state.id,
-      "StateManual": this.state.statusManual,
-      "slide_value": Math.round(this.state.sliderValue),
-      "toogleAuto" : this.state.statusAuto,
-      "humid" : this.state.humid
-    };
-    if (this.state.status === "connected") 
-    { 
-      const jsonString = JSON.stringify(Data); 
-      var message = new Paho.MQTT.Message(jsonString); 
-      message.destinationName = this.state.subscribedTopic; 
-      client.send(message); 
-    } 
- 
-  }
-
   handleSliderChange = (value) => {
     
     this.setState({ sliderValue: value });
   };
+ 
+
+ 
 
   handleSliderComplete = (value) => {
     // Khi người dùng kết thúc việc điều chỉnh slider, bạn có thể lấy giá trị ở đây
     this.setState({ sliderValue: value });
     this.sendMessage();
   };
-
+  sendMessage= () => {};
   toggleSwitch = () => {
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled,
@@ -222,20 +72,6 @@ export default class Details extends Component {
     }
   };
 
-  onMessageArrived = (message )=> {
-    console.log(message.payloadString);
-    var jsonString = message.payloadString;
-    const keyValuePairs = jsonString.slice(1, -1).split(',');
-
-    keyValuePairs.forEach(pair => {
-      const [key, value] = pair.split(':').map(item => item.trim());
-     if (key === '"humid"')
-     {
-      globalVariable = value;
-     }
-    });
-  }
-
   componentDidMount() {
     // Thay đổi tin nhắn mỗi 2 giây (điều chỉnh khoảng thời gian tùy vào nhu cầu)
     this.interval = setInterval(() => {
@@ -253,7 +89,14 @@ export default class Details extends Component {
     const { status, messageList,sliderValue,isEnabled  ,message_humid } = this.state;
     return (
       <View style={styles.container}>
+        <MyContext.Consumer>
+        {contextData => {
+          const  message  = contextData;
+          console.log(message)
+        }}
+      </MyContext.Consumer>
         <StatusBar backgroundColor="#aacc00"/>
+        
         <ScrollView>
         <LinearGradient colors={['#aacc00', '#80b918', '#55a630']}  style={styles.BackDropTop}>
           <View style={styles.TitleTopArea}>
@@ -268,18 +111,9 @@ export default class Details extends Component {
         </LinearGradient>
         
         <View style={{alignItems: 'center'}}>
-            {(this.state.status === 'connected'|| this.state.status === 'lostconnect') ? (
+        
 
              <View style={{alignItems: 'center'}}>
-                <View style={styles.ConnectArea}>
-                  <View style={{flexDirection: 'row'}}>
-                      <View style={styles.IconStatus}></View>
-                      <Text>connected</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row-reverse', flex: 1}}> 
-                    <BtnConnect style={{}} title={'Disconnected'} onPress={this.disconnect}  loading={status === 'isFetching' ? true : false}disabled={status === 'isFetching' ? true : false} /> 
-                  </View> 
-                </View>
                 <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-around'}}>
                   <View style={styles.ShortBoardControl}>
                       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -304,7 +138,7 @@ export default class Details extends Component {
                   <View style={[styles.ShortBoardControl, {marginRight: 8}]}>
                       <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold'}}>Custom mode</Text>
                       <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                        <BtnCustomMode  onPress={this.pressmanual} title="On"/>
+                        <BtnCustomMode  onPress={this.sendMessage} title="On"/>
                       </View>
                   </View>
                 </View>
@@ -325,7 +159,7 @@ export default class Details extends Component {
                     trackColor={{ false: "#767577", true: "#81b0ff" }}
                     thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                     ios_backgroundColor="#3e3e3e"
-                    onValueChange={this.toggleSwitch}
+                    onValueChange={this.sendMessage}
                     value={isEnabled}
                     style={{marginRight: 15}}
                     />
@@ -350,24 +184,7 @@ export default class Details extends Component {
                 </View>
                 </View>
              </View>
-            ) : (
-
-
-              <View style={styles.ConnectArea}>
-                <View style={{flexDirection: 'row', }}>
-                  <View style={styles.IconStatus1}></View>
-                  <Text>{this.state.status}</Text>
-                </View>
-                <View style={{ flexDirection: 'row-reverse', flex: 1}}>
-                  <BtnConnect
-                    title={'Connect'}
-                    onPress={this.connect}
-                    loading={status === 'isFetching' ? true : false}
-                    disabled={status === 'isFetching' ? true : false}
-                  />
-                </View>
-            </View>
-            )}
+            
             
         </View>
 

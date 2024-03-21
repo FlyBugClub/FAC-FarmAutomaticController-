@@ -1,10 +1,13 @@
 import * as React from 'react';
+import { useState } from 'react';
+
 import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import IconFeather from 'react-native-vector-icons/Feather';
 import 'react-native-gesture-handler';
+import MyContext from './DataContext.js';
 
 import Login from './Views/Login'
 import SignUp from './Views/SignUp'
@@ -19,6 +22,7 @@ const Tab = createBottomTabNavigator();
 // Tạo Stack Navigator
 function StackNavigator() {
   return (
+
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name='Home' component={Home}/>
       <Stack.Screen name='Login' component={Login}/>
@@ -34,6 +38,7 @@ function StackNavigator() {
 function TabNavigator() {
   const navigation = useNavigation();
   return (
+    
     <Tab.Navigator  
     screenOptions={{
       headerShown: false,
@@ -102,6 +107,27 @@ function TabNavigator() {
 };
 
 export default RootComponent = function() {
+  // const [contextData, setContextData] = useState([]);
+  
+  // const updateContextData = (newData) => {
+  //   setContextData({ ...contextData, ...newData });
+  // };
+  const [dataArray, setDataArray] = useState([{ id_user: 'CT0001' }, {"id_esp1": "ESP0001", "id_esp2": "ESP002"}]);
+
+  // Hàm để thêm phần tử mới vào mảng
+  // const addData = (newItem) => {
+  //   setDataArray([...dataArray, newItem]);
+  // };
+  const addDataAtIndex = (newItem, index) => {
+    // Sao chép mảng ban đầu để tránh thay đổi trực tiếp mảng gốc
+    const newDataArray = [...dataArray];
+  
+    // Ghi đè giá trị mới vào index được chỉ định
+    newDataArray[index] = newItem;
+  
+    // Cập nhật mảng mới vào state
+    setDataArray(newDataArray);
+  };
   return (
     // <NavigationContainer>
     //   <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
@@ -112,11 +138,18 @@ export default RootComponent = function() {
     //     <Stack.Screen name='History' component={History}/>
     //   </Stack.Navigator>
     // </NavigationContainer>
-
     
+     
+    // <NavigationContainer>
+    //   <TabNavigator/>
+    // </NavigationContainer>
+    // <MyContext.Provider value={{ ...contextData, updateContextData }}>
+    <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
     <NavigationContainer>
-      <TabNavigator/>
+      <TabNavigator />
     </NavigationContainer>
+  </MyContext.Provider>
+ 
   )
 }
 
