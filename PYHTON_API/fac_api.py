@@ -1,6 +1,7 @@
 import pyodbc 
 from flask import Flask, jsonify
 import json
+from flask import request
 # Thiết lập các thông số kết nối
 server = 'sql.bsite.net\\MSSQL2016'  # Tên server và instance của SQL Server
 database = 'ngunemay123_SampleDB'     # Tên cơ sở dữ liệu của bạn
@@ -18,6 +19,7 @@ cursor = conn.cursor()
 
 
 # In dữ liệu
+
 
 app = Flask(__name__)
 
@@ -109,7 +111,32 @@ def get_infodevive(id_esp):
     json_data = [dict(zip(('id_equipment', 'values', 'status'), item)) for item in devive_list_last_status]
     print(json_data)
     return jsonify(json_data)
-    
+@app.route('/api/get_historydevice',methods=['GET'])
+
+# format of date time 'yyyy-mm-dd hh:mm:ss.sss' 
+#                 exp:'2024-03-21 08:12:38.927'
+def get_history_device():
+    id_equipment = request.args.get('id_equipment')
+    date_start = request.args.get('date_start')
+    date_end = request.args.get('date_end')
+    if id_equipment is None or date_start is None or date_end is None:
+        return jsonify({'error':'Missing parameter'}),400
+    cursor.execute(f'''
+    select * from EquipmentValues
+    where id_equipment ={id_equipment}
+    and [datetime] between {date_start} and {date_end}
+    ''')
+    equipment_data = cursor.fetchall()
+    # if equipment_data:
+    #     for i in equipment_data:
+    #         i[4] 
+    json_data = [dict(zip(('id_equipment', 'values', 'status','id','datetime'), item)) for item in equipment_data]
+    if json_data:
+        for i in json_data:
+            temp = i['datetime']
+            temp = temp.strftime('%Y-%m-%d %H:%M:%S.%f')
+            i['datetime'] = temp
+    return jsonify(json_data)
 if __name__ == '__main__':
     app.run(debug=True)
     conn.close()
