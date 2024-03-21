@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Icon } from '@rneui/base';
 import MyContext from '../DataContext.js';
+import { index } from 'd3-array';
 
 
 export default class Home extends Component {
@@ -33,6 +34,27 @@ export default class Home extends Component {
 
 
     render() {
+        const farmHouseList = [];
+        // Sử dụng forEach để thêm các phần tử vào mảng items
+        [...Array(10)].forEach((_, index) => {
+            farmHouseList.push(
+                <View>
+                    <TouchableOpacity style={styles.famrItem} onPress={this.DetailPage}>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <Ionicons name="water-outline" size={50} color={'#333'}/>
+                            <View>
+                                <Text style={styles.titleItem} numberOfLines={1}> Farm {index}: Nấm Bào Ngư hải sản</Text>
+                                <Text style={{ color: '#333', marginTop: 5 }}> 75% - 86%</Text>
+                            </View>
+                        </View>
+                        <View>
+                            <Image style={styles.imgItem} source={require('../assets/NamBaoNgu.png')}/>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            );
+        });
+
         return(
             
             <SafeAreaView style={styles.safeContainer}>
@@ -80,10 +102,9 @@ export default class Home extends Component {
                     console.log(message)
                     }}
                     </MyContext.Consumer>
-                        <Text style={[styles.littleText, {color: '#333'}]}>Today</Text>
+                        {/* <Text style={[styles.littleText, {color: '#333'}]}>Today</Text> */}
                         <ScrollView style={{height:'73%'}} showsVerticalScrollIndicator={false}>
-                            <View>
-                                {/* Dữ liệu mẫu */}
+                            {/* <View>
                                 <View>
                                     <LinearGradient colors={['#aacc00', '#80b918', '#55a630']} style={styles.famrItem}>
                                         <TouchableOpacity onPress={this.DetailPage} 
@@ -112,70 +133,12 @@ export default class Home extends Component {
                                         </TouchableOpacity>
                                     </LinearGradient>
                                 </View>
-                            </View>
+                            </View> */}
+
                             <View style={{marginTop: 8}}>
                                 <Text style={styles.littleText}>Farm house</Text>
                                 <View>
-                                    <TouchableOpacity style={styles.famrItem} onPress={this.DetailPage}>
-                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                            <Ionicons name="water-outline" size={50} color={'#333'}/>
-                                            <View>
-                                                <Text style={styles.titleItem} numberOfLines={1}> Farm 1: Nấm Bào Ngư hải sản</Text>
-                                                <Text style={{ color: '#333', marginTop: 5 }}> 75% - 86%</Text>
-                                            </View>
-                                        </View>
-                                        <View>
-                                            <Image style={styles.imgItem} source={require('../assets/NamBaoNgu.png')}/>
-                                        </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.famrItem} onPress={this.DetailPage}>
-                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                            <Ionicons name="water-outline" size={50} color={'#333'}/>
-                                            <View>
-                                                <Text style={styles.titleItem} numberOfLines={1}> Farm 2: Nấm Bào Ngư hải sản</Text>
-                                                <Text style={{ color: '#333', marginTop: 5 }}> 75% - 86%</Text>
-                                            </View>
-                                        </View>
-                                        <View>
-                                            <Image style={styles.imgItem} source={require('../assets/NamBaoNgu.png')}/>
-                                        </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.famrItem} onPress={this.DetailPage}>
-                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                            <Ionicons name="water-outline" size={50} color={'#333'}/>
-                                            <View>
-                                                <Text style={styles.titleItem} numberOfLines={1}> Farm 4: Nấm Bào Ngư hải sản</Text>
-                                                <Text style={{ color: '#333', marginTop: 5 }}> 75% - 86%</Text>
-                                            </View>
-                                        </View>
-                                        <View>
-                                            <Image style={styles.imgItem} source={require('../assets/NamBaoNgu.png')}/>
-                                        </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.famrItem} onPress={this.DetailPage}>
-                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                            <Ionicons name="water-outline" size={50} color={'#333'}/>
-                                            <View>
-                                                <Text style={styles.titleItem} numberOfLines={1}> Farm 8: Nấm Bào Ngư hải sản</Text>
-                                                <Text style={{ color: '#333', marginTop: 5 }}> 75% - 86%</Text>
-                                            </View>
-                                        </View>
-                                        <View>
-                                            <Image style={styles.imgItem} source={require('../assets/NamBaoNgu.png')}/>
-                                        </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.famrItem} onPress={this.DetailPage}>
-                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                            <Ionicons name="water-outline" size={50} color={'#333'}/>
-                                            <View>
-                                                <Text style={styles.titleItem} numberOfLines={1}> Farm 6: Nấm Bào Ngư hải sản</Text>
-                                                <Text style={{ color: '#333', marginTop: 5 }}> 75% - 86%</Text>
-                                            </View>
-                                        </View>
-                                        <View>
-                                            <Image style={styles.imgItem} source={require('../assets/NamBaoNgu.png')}/>
-                                        </View>
-                                    </TouchableOpacity>
+                                    {farmHouseList}
                                 </View>
                             </View>
                         </ScrollView>
