@@ -93,63 +93,34 @@ export default class History extends Component {
                         <Text style={{textAlign: 'center', fontSize: 23, color: '#fff'}}>History</Text>
                     </SafeAreaView>
                 </LinearGradient>
-                <SafeAreaView>
-                    <LineChart
-                    data={data}
-                    width={screenWidth+ 30}
-                    height={256}
-                    verticalLabelRotation={30}
-                    chartConfig={chartConfig}
-                    bezier
-                    style={{marginLeft: 20}}
-                    />
-                    <View style={styles.DataArea}>
-                        <View>
-                            <Text style={{textAlign: 'center', fontSize: 14}}>82%</Text>
-                            <Text style={{fontSize: 14, color: '#8B934B', fontWeight: 'bold'}}>Humidity</Text>
-                        </View>
-                        <View>
-                            <Text style={{textAlign: 'center', fontSize: 14}}>8</Text>
-                            <Text style={{fontSize: 14, color: '#8B934B', fontWeight: 'bold'}}>Pump</Text>
-                        </View>
+                <LineChart
+                data={data}
+                width={screenWidth+ 30}
+                height={256}
+                verticalLabelRotation={30}
+                chartConfig={chartConfig}
+                bezier
+                style={{marginLeft: 20}}
+                />
+                <View style={styles.DataArea}>
+                    <View>
+                        <Text style={{textAlign: 'center', fontSize: 14}}>82%</Text>
+                        <Text style={{fontSize: 14, color: '#8B934B', fontWeight: 'bold'}}>Humidity</Text>
                     </View>
-                    <ScrollView>
-                    {/* Data here */}
-                    {items}
-                    {/* <View>
-                        <View style={{marginLeft: 30}}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center', 
-                                marginBottom: 5, 
-                                marginTop: 5}}>
-                                <Icon name="schedule" size={20} color={'#b8b8b8'}/>
-                                <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
-                                <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
-                            </View>
-                            <View style={{
-                                flexDirection: 'row', 
-                                marginBottom: 5, 
-                                marginTop: 5, 
-                                justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginLeft: 45}}>
-                                    <Icon name="water-drop" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>82%</Text>
-                                </View>
-                                <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 85}}>
-                                    <AnDesign name="pump" size={50} color={'#00b4d8'}/>
-                                    <Text style={{fontSize: 25}}>6</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{borderWidth: 0.5, borderColor: '#b8b8b8'}}></View>
-                    </View> */}
-
-                    <TouchableOpacity onPress={ this.DetailsPage }>
-                        <Text>Back to details</Text>
-                    </TouchableOpacity>
+                    <View>
+                        <Text style={{textAlign: 'center', fontSize: 14}}>8</Text>
+                        <Text style={{fontSize: 14, color: '#8B934B', fontWeight: 'bold'}}>Pump</Text>
+                    </View>
+                </View>
+                <View style={{width: '100%', height: '43%'}}>
+                    <ScrollView style={{}} showsVerticalScrollIndicator={false}>
+                        {/* Data here */}
+                        {items}
                     </ScrollView>
-                </SafeAreaView>
+                    {/* <TouchableOpacity onPress={ this.DetailsPage }>
+                            <Text>Back to details</Text>
+                        </TouchableOpacity> */}
+                </View>
             </View>
         );
     }
@@ -182,8 +153,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     DataArea: {
+        width: '90%',
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-around',
         marginTop: 15,
         marginBottom: 15
     },
