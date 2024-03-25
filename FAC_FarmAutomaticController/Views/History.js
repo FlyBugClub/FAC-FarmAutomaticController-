@@ -56,17 +56,19 @@ export default class History extends Component {
         [...Array(10)].forEach((_, index) => {
             items.push(
                 <View key={index}>
-                    <View style={{marginLeft: 30}}>
+                    <View style={{width: '100%'}}>
                             <View style={{
                                 flexDirection: 'row',
                                 alignItems: 'center', 
                                 marginBottom: 5, 
+                                marginLeft: 5,
                                 marginTop: 5}}>
                                 <Icon name="schedule" size={20} color={'#b8b8b8'}/>
                                 <Text style={{color: '#b8b8b8', fontSize: 12, marginRight: 5}}>25/02/2024</Text>
                                 <Text style={{color: '#b8b8b8', fontSize: 12}}>16:38</Text>
                             </View>
                             <View style={{
+                                width: '100%',
                                 flexDirection: 'row', 
                                 marginBottom: 5, 
                                 marginTop: 5, 
@@ -88,7 +90,7 @@ export default class History extends Component {
 
         return(
             <View style={styles.container}>
-                <LinearGradient colors={['#55a630', '#80b918', '#aacc00']}  style={styles.NavigationTop}>
+                <LinearGradient colors={['#bfd200', '#aacc00', '#80b918']}  style={styles.NavigationTop}>
                     <SafeAreaView style={{alignItems: 'center', justifyContent: 'center'}}>
                         <Text style={{textAlign: 'center', fontSize: 23, color: '#fff'}}>History</Text>
                     </SafeAreaView>
@@ -105,11 +107,11 @@ export default class History extends Component {
                 <View style={styles.DataArea}>
                     <View>
                         <Text style={{textAlign: 'center', fontSize: 14}}>82%</Text>
-                        <Text style={{fontSize: 14, color: '#8B934B', fontWeight: 'bold'}}>Humidity</Text>
+                        <Text style={{fontSize: 14, color: '#80b918', fontWeight: 'bold'}}>Humidity</Text>
                     </View>
                     <View>
                         <Text style={{textAlign: 'center', fontSize: 14}}>8</Text>
-                        <Text style={{fontSize: 14, color: '#8B934B', fontWeight: 'bold'}}>Pump</Text>
+                        <Text style={{fontSize: 14, color: '#80b918', fontWeight: 'bold'}}>Pump</Text>
                     </View>
                 </View>
                 <View style={{width: '100%', height: '43%'}}>
@@ -117,9 +119,6 @@ export default class History extends Component {
                         {/* Data here */}
                         {items}
                     </ScrollView>
-                    {/* <TouchableOpacity onPress={ this.DetailsPage }>
-                            <Text>Back to details</Text>
-                        </TouchableOpacity> */}
                 </View>
             </View>
         );

@@ -59,9 +59,9 @@ function TabNavigator() {
             style={{ 
               width: 25,
               height: 25,
-              tintColor: focused ? '#2BA84A' : '#333'
+              tintColor: focused ? '#80b918' : '#333'
              }}/>
-            <Text style={{ color: focused ? '#2BA84A' : '#333', fontSize: 12 }}>Home</Text>
+            <Text style={{ color: focused ? '#80b918' : '#333', fontSize: 12 }}>Home</Text>
           </View>
         ),
       }}/>
@@ -71,7 +71,7 @@ function TabNavigator() {
             <View style={{
               width: 70,
               height: 70,
-              backgroundColor: '#2BA84A',
+              backgroundColor: '#80b918',
               borderRadius: 35,
               justifyContent: 'center',
               alignItems: 'center',
@@ -98,9 +98,9 @@ function TabNavigator() {
             style={{ 
               width: 25,
               height: 25,
-              tintColor: focused ? '#2BA84A' : '#333'
+              tintColor: focused ? '#80b918' : '#333'
              }}/>
-            <Text style={{ color: focused ? '#2BA84A' : '#333', fontSize: 12 }}>User</Text>
+            <Text style={{ color: focused ? '#80b918' : '#333', fontSize: 12 }}>User</Text>
           </View>
         ),
       }}/>
