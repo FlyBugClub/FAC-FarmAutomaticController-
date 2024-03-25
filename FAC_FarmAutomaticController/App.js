@@ -131,37 +131,17 @@ export default RootComponent = function() {
     setDataArray(newDataArray);
   };
   return (
-    // <NavigationContainer>
-    //   <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
-    //     <Stack.Screen name='Login' component={Login}/>
-    //     <Stack.Screen name='SignUp' component={SignUp}/>
-    //     <Stack.Screen name='Home' component={Home}/>
-    //     <Stack.Screen name='Details' component={Details}/>
-    //     <Stack.Screen name='History' component={History}/>
-    //   </Stack.Navigator>
-    // </NavigationContainer>
-    
-     
-    // <NavigationContainer>
-    //   <TabNavigator/>
-    // </NavigationContainer>
-    // <MyContext.Provider value={{ ...contextData, updateContextData }}>
     <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
-    {/* <NavigationContainer>
-      <TabNavigator />
-    </NavigationContainer> */}
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='TabNavigator' component={TabNavigator}/>
-        <Stack.Screen name='Home' component={Home}/>
-      <Stack.Screen name='SignUp' component={SignUp}/>
-      <Stack.Screen name='Details' component={Details}/>
-      <Stack.Screen name='History' component={History}/>
-      <Stack.Screen name='AddFarm' component={AddFarm}/>
+        {/* <Stack.Screen name='Home' component={Home}/> */}
+        <Stack.Screen name='SignUp' component={SignUp}/>
+        <Stack.Screen name='Details' component={Details}/>
+        <Stack.Screen name='History' component={History}/>
+        <Stack.Screen name='AddFarm' component={AddFarm}/>
       </Stack.Navigator>
-      
-      {/* <TabNavigator /> */}
     </NavigationContainer>
   </MyContext.Provider>
  
