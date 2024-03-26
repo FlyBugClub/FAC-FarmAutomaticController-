@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image, ScrollView} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image} from 'react-native';
 
 
 export default class User extends Component {
     render() {
         return(
             <SafeAreaView style={styles.safeContainer}>
-                <View style={styles.container}>
-                    <Text>User Page</Text>
-                </View>
+                <Image source={require('../assets/img/avatar_user.jpg')} style={styles.avatar}/>
+
+                <Text style={styles.textInfo}>Username: Henry Devil</Text>
+                <Text style={styles.textInfo}>Email: Henry Devil</Text>
+                <Text style={styles.textInfo}>Phone: +84 5487 5441 875</Text>
             </SafeAreaView>
         )
     }
@@ -18,6 +20,7 @@ export default class User extends Component {
 const styles = StyleSheet.create({
     safeContainer: {
         flex: 1,
+        alignItems: 'center',
         backgroundColor: '#ebf2f2'
     },
     container: {
@@ -25,4 +28,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         alignItems: 'center',
     },
+    avatar: {
+        width: 150,
+        height: 150,
+        marginTop: 50,
+        marginBottom: 30,
+        borderRadius: 120,
+    },
+    textInfo: {
+        marginTop: 1,
+        marginBottom: 1,
+        // fontWeight: 'bold',
+        fontSize: 16
+    }
 })

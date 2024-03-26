@@ -24,20 +24,33 @@ export default class Login extends Component {
     };
     render() {
         return(
-            <ImageBackground style={styles.bgImage}
-            source={require('../assets/background/bgfarm05.jpg')}>
-                <SafeAreaView style={styles.container}>
-                    <Text style={styles.textLogin}>Login</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Email'/>
-                    <TextInput style={styles.inputAccount} placeholder='Password' secureTextEntry={true}/>
-                    <TouchableOpacity onPress={ () => this.props.navigation.navigate('TabNavigator') } style={styles.bntLogin}>
-                        <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={ this.SignUpPage }>
-                        <Text style={{color: 'white', marginTop: 10}}>Don't you have account!</Text>
-                    </TouchableOpacity>
-                </SafeAreaView>
-            </ImageBackground>
+            // <ImageBackground style={styles.bgImage}
+            // source={require('../assets/background/bgfarm05.jpg')}>
+            //     <SafeAreaView style={styles.container}>
+            //         <Text style={styles.textLogin}>Login</Text>
+            //         <TextInput style={styles.inputAccount} placeholder='Email'/>
+            //         <TextInput style={styles.inputAccount} placeholder='Password' secureTextEntry={true}/>
+            //         <TouchableOpacity onPress={ () => this.props.navigation.navigate('TabNavigator') } style={styles.bntLogin}>
+            //             <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Login</Text>
+            //         </TouchableOpacity>
+            //         <TouchableOpacity onPress={ this.SignUpPage }>
+            //             <Text style={{color: 'white', marginTop: 10}}>Don't you have account!</Text>
+            //         </TouchableOpacity>
+            //     </SafeAreaView>
+            // </ImageBackground>
+
+            <SafeAreaView style={styles.container}>
+                <Text style={styles.textLogin}>Login</Text>
+                <TextInput style={styles.inputAccount} placeholder='Email'/>
+                <TextInput style={styles.inputAccount} placeholder='Password' secureTextEntry={true}/>
+                <TouchableOpacity onPress={ () => this.props.navigation.navigate('TabNavigator') } style={styles.bntLogin}>
+                    <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Login</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={ this.SignUpPage }>
+                    <Text style={{color: '#333', marginTop: 10, fontSize: 12}}>Don't you have account!</Text>
+                </TouchableOpacity>
+            </SafeAreaView>
+            
         )
     }
 }
@@ -47,6 +60,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'white'
       },
     bgImage: {
         flex: 1,
@@ -71,11 +85,11 @@ const styles = StyleSheet.create({
         margin: 5,
         paddingTop: 5,
         paddingBottom: 5,
-        paddingLeft: 10,
-        paddingRight: 10,
+        paddingLeft: 15,
+        paddingRight: 15,
         borderRadius: 24,
         opacity: 0.9,
-        backgroundColor: 'white'
+        backgroundColor: '#edede9'
     },
     bntLogin: {
         width: '75%',
