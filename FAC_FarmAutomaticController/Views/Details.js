@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView, StatusBar, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
-import { LiquidGauge } from 'react-native-liquid-gauge';
+// import { LiquidGauge } from 'react-native-liquid-gauge';
 import { Icon } from '@rneui/base';
 import MyContext from '../DataContext.js';
 let globalVariable = '50.0';
@@ -120,7 +120,7 @@ export default class Details extends Component {
                   <View style={styles.ShortBoardControl}>
                       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <TouchableOpacity onPress={this.HistoryPage}>
-                          <LiquidGauge
+                          {/* <LiquidGauge
                               config={{
                               circleColor: '#4ea8de',
                               textColor: '#0077b6',
@@ -133,7 +133,7 @@ export default class Details extends Component {
                               value={parseFloat(globalVariable)} 
                               width={130}
                               height={130}
-                          />
+                          /> */}
                         </TouchableOpacity>
                       </View>
                   </View>

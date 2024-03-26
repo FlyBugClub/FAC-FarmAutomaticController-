@@ -7,7 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Icon } from '@rneui/base';
 import MyContext from '../DataContext.js';
 import { index } from 'd3-array';
-
+import axios from "axios";
 const data = [];
 export default class Home extends Component {
     LoginPage = () => {
@@ -25,26 +25,12 @@ export default class Home extends Component {
     };
     
 
+
     static contextType = MyContext;
     GetEquidmentValues = async  (index) => {
-        try {
-      // Lấy giá trị context và cập nhật dữ liệu trong MyContext từ Home component
-      const { addDataAtIndex } = this.context;
-      console.log('http://127.0.0.1:5000/api/get_equipmentlastinfo/'+data[index])
-      const response = await fetch('http://127.0.0.1:5000/api/get_equipmentlastinfo/'+data[index]);
-    //   if (!response.ok) {
-    //       throw new Error('Failed to fetch data');
-    //   }
-
-    console.log("haha");
-
-      const data_equidmentvalues = await response.json();
-    //   Tiếp tục xử lý dữ liệu nhận được từ API
-      console.log("hêh");
-      addDataAtIndex({ id_esp1: 'ESP0001',id_esp2:"ESP002" },1);
-        }catch (error) {
-            console.error('Error fetching data:', error);
-        }
+        fetch('http://192.168.1.194/Today/api/login/admin@gmail.com/123456')
+            .then(res=>res.json())
+            .then(json=>console.log(json))
     };
 
     render() {
