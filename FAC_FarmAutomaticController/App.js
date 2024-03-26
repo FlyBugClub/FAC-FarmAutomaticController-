@@ -15,6 +15,7 @@ import Home from './Views/Home'
 import Details from './Views/Details'
 import History from './Views/History'
 import AddFarm from './Views/AddFarm'
+import User from './Views/User.js'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,6 +31,7 @@ function StackNavigator() {
       <Stack.Screen name='Details' component={Details}/>
       <Stack.Screen name='History' component={History}/>
       <Stack.Screen name='AddFarm' component={AddFarm}/>
+      <Stack.Screen name='User' component={User}/>
     </Stack.Navigator>
   );
 };
@@ -45,7 +47,7 @@ function TabNavigator() {
       tabBarShowLabel: false,
       tabBarStyle: {
         backgroundColor: '#ebf2f2',
-        height: 90
+        height: '10%'
       }
     }}>
       <Tab.Screen name="Home" component={StackNavigator}  options={{
@@ -57,9 +59,9 @@ function TabNavigator() {
             style={{ 
               width: 25,
               height: 25,
-              tintColor: focused ? '#2BA84A' : '#333'
+              tintColor: focused ? '#80b918' : '#333'
              }}/>
-            <Text style={{ color: focused ? '#2BA84A' : '#333', fontSize: 12 }}>Home</Text>
+            <Text style={{ color: focused ? '#80b918' : '#333', fontSize: 12 }}>Home</Text>
           </View>
         ),
       }}/>
@@ -69,7 +71,7 @@ function TabNavigator() {
             <View style={{
               width: 70,
               height: 70,
-              backgroundColor: '#2BA84A',
+              backgroundColor: '#80b918',
               borderRadius: 35,
               justifyContent: 'center',
               alignItems: 'center',
@@ -87,18 +89,18 @@ function TabNavigator() {
           </TouchableOpacity>
         ),        
       }}/>
-      <Tab.Screen name="Login" component={Login} options={{
+      <Tab.Screen name="Us" component={User} options={{
         tabBarIcon: ({focused}) => (
           <View style={{alignItems: 'center', justifyContent: 'center'}}>
             <Image 
-            source={require('./assets/img/login.png')}
+            source={require('./assets/img/user.png')}
             resizeMode="contain"
             style={{ 
               width: 25,
               height: 25,
-              tintColor: focused ? '#2BA84A' : '#333'
+              tintColor: focused ? '#80b918' : '#333'
              }}/>
-            <Text style={{ color: focused ? '#2BA84A' : '#333', fontSize: 12 }}>Login</Text>
+            <Text style={{ color: focused ? '#80b918' : '#333', fontSize: 12 }}>User</Text>
           </View>
         ),
       }}/>
@@ -129,24 +131,17 @@ export default RootComponent = function() {
     setDataArray(newDataArray);
   };
   return (
-    // <NavigationContainer>
-    //   <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
-    //     <Stack.Screen name='Login' component={Login}/>
-    //     <Stack.Screen name='SignUp' component={SignUp}/>
-    //     <Stack.Screen name='Home' component={Home}/>
-    //     <Stack.Screen name='Details' component={Details}/>
-    //     <Stack.Screen name='History' component={History}/>
-    //   </Stack.Navigator>
-    // </NavigationContainer>
-    
-     
-    // <NavigationContainer>
-    //   <TabNavigator/>
-    // </NavigationContainer>
-    // <MyContext.Provider value={{ ...contextData, updateContextData }}>
     <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
     <NavigationContainer>
-      <TabNavigator />
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Screen name='Login' component={Login}/>
+        <Stack.Screen name='TabNavigator' component={TabNavigator}/>
+        {/* <Stack.Screen name='Home' component={Home}/> */}
+        <Stack.Screen name='SignUp' component={SignUp}/>
+        <Stack.Screen name='Details' component={Details}/>
+        <Stack.Screen name='History' component={History}/>
+        <Stack.Screen name='AddFarm' component={AddFarm}/>
+      </Stack.Navigator>
     </NavigationContainer>
   </MyContext.Provider>
  

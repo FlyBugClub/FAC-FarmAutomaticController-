@@ -95,10 +95,10 @@ export default class Details extends Component {
           console.log(message)
         }}
       </MyContext.Consumer>
-        <StatusBar backgroundColor="#aacc00"/>
+        <StatusBar backgroundColor="#bfd200"/>
         
         <ScrollView>
-        <LinearGradient colors={['#aacc00', '#80b918', '#55a630']}  style={styles.BackDropTop}>
+        <LinearGradient colors={['#bfd200', '#aacc00', '#80b918']}  style={styles.BackDropTop}>
           <SafeAreaView>
             <View style={styles.TitleTopArea}>
               {/* <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" /> */}
@@ -138,7 +138,7 @@ export default class Details extends Component {
                       </View>
                   </View>
                   <View style={[styles.ShortBoardControl, {marginRight: 8}]}>
-                      <Text style={{color: '#8B934B', fontSize: 16, fontWeight: 'bold'}}>Custom mode</Text>
+                      <Text style={{color: '#80b918', fontSize: 16, fontWeight: 'bold'}}>Custom mode</Text>
                       <View style={{justifyContent: 'center', alignItems: 'center'}}>
                         <BtnCustomMode  onPress={this.sendMessage} title="On"/>
                       </View>
@@ -146,7 +146,7 @@ export default class Details extends Component {
                 </View>
                 <View style={styles.LongtBoardControl}>
                 <Text  style={{
-                    color: '#8B934B', 
+                    color: '#80b918', 
                     fontSize: 16, 
                     fontWeight: 'bold',
                     marginTop: 10,
