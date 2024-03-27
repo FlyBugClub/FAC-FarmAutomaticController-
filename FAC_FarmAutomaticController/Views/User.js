@@ -10,7 +10,7 @@ export default class User extends Component {
                 <Image source={require('../assets/img/avatar_user.jpg')} style={styles.avatar}/>
 
                 <Text style={styles.textInfo}>Username: Henry Devil</Text>
-                <Text style={styles.textInfo}>Email: Henry Devil</Text>
+                <Text style={styles.textInfo}>Email: HenryDevil@gmail.com</Text>
                 <Text style={styles.textInfo}>Phone: +84 5487 5441 875</Text>
             </SafeAreaView>
         )

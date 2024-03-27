@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Icon } from '@rneui/base';
 import MyContext from '../DataContext.js';
 import { index } from 'd3-array';
-import axios from "axios";
+// import axios from "axios";
 const data = [];
 export default class Home extends Component {
     LoginPage = () => {
@@ -19,8 +19,8 @@ export default class Home extends Component {
     };
     DetailPage = (index) => {
         console.log(index)
-        this.GetEquidmentValues(index);
-        // this.props.navigation.navigate('Details'); 
+        // this.GetEquidmentValues(index);
+        this.props.navigation.navigate('Details'); 
     };
     
 

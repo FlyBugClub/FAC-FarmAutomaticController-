@@ -9,6 +9,7 @@ import History from './History'
 import HomeScreen from './Home'
 import UserScreen from './User'
 import AddFarm from './AddFarm'
+import ForgotPassword from './ForgotPassword'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -23,6 +24,7 @@ function Home() {
         <Stack.Screen name='History' component={History}/>
         <Stack.Screen name='AddFarm' component={AddFarm}/>
         <Stack.Screen name='User' component={UserScreen}/>
+        <Stack.Screen name='ForgotPassword' component={ForgotPassword}/>
     </Stack.Navigator>
 }
 

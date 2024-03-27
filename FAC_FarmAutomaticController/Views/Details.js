@@ -1,10 +1,11 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView, StatusBar, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Button,ScrollView, StatusBar, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
-// import { LiquidGauge } from 'react-native-liquid-gauge';
+import { LiquidGauge } from 'react-native-liquid-gauge';
 import { Icon } from '@rneui/base';
 import MyContext from '../DataContext.js';
+import * as Notifications from 'expo-notifications'
 let globalVariable = '50.0';
 
 export default class Details extends Component {
@@ -85,14 +86,26 @@ export default class Details extends Component {
     clearInterval(this.interval);
   }
 
+  async schedulePushNotification() {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "fucking wow shit! 📬",
+        body: 'Con me may :)))',
+        data: { data: 'goes here' },
+      },
+      trigger: { seconds: 5 },
+    });
+    console.log('hello email');
+  }
+
   render() {
     const { status, messageList,sliderValue,isEnabled  ,message_humid } = this.state;
     return (
       <View style={styles.container}>
         <MyContext.Consumer>
         {contextData => {
-          const  message  = contextData;
-          console.log(message)
+          // const  message  = contextData;
+          // console.log(message)
         }}
       </MyContext.Consumer>
         <StatusBar backgroundColor="#bfd200"/>
@@ -120,7 +133,7 @@ export default class Details extends Component {
                   <View style={styles.ShortBoardControl}>
                       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <TouchableOpacity onPress={this.HistoryPage}>
-                          {/* <LiquidGauge
+                          <LiquidGauge
                               config={{
                               circleColor: '#4ea8de',
                               textColor: '#0077b6',
@@ -133,7 +146,7 @@ export default class Details extends Component {
                               value={parseFloat(globalVariable)} 
                               width={130}
                               height={130}
-                          /> */}
+                          />
                         </TouchableOpacity>
                       </View>
                   </View>
@@ -189,7 +202,7 @@ export default class Details extends Component {
             
             
         </View>
-
+        <Button title='Schedule test notification' onPress={() => this.schedulePushNotification()}/>
         </ScrollView>
       </View>
     );
