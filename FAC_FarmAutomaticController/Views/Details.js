@@ -2,11 +2,12 @@ import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView, StatusBar, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
-// import { LiquidGauge } from 'react-native-liquid-gauge';
+import { LiquidGauge } from 'react-native-liquid-gauge';
 import { Icon } from '@rneui/base';
 import MyContext from '../DataContext.js';
+import apiUrl from '../apiURL.js'
 let globalVariable = '50.0';
-
+var flag_humid_respect = 0;
 export default class Details extends Component {
   constructor(props){
     super(props)
@@ -19,6 +20,7 @@ export default class Details extends Component {
       showArcRanges: false
     };
   }
+  static contextType = MyContext;
   componentDidMount() {
     // Dispatch một action để lấy dữ liệu từ Redux store (nếu cần)
     this.props.fetchData();
@@ -58,6 +60,7 @@ export default class Details extends Component {
   };
 
   pressmanual =  () => {
+    
     if (this.state.statusManual == false)
     {
       this.state.statusManual = true;
@@ -87,14 +90,46 @@ export default class Details extends Component {
 
   render() {
     const { status, messageList,sliderValue,isEnabled  ,message_humid } = this.state;
+    const { dataArray } = this.context;
+    const url = apiUrl+`getequidmentvalues/${dataArray[1]["id_esp"]}`;
+    fetch(url)
+            .then(res=>{
+                return res.json();
+              })
+            .then((json)=>{
+              if (json != null)
+              {
+                
+                if (Object.values(json[0]) == 0)
+                {
+                  this.setState({ isEnabled: false });
+                }
+                else   this.setState({ isEnabled: true });
+                
+                for (const key in json) {
+                  // console.log(Object.keys(json[key]));
+                  const keys_dht = Object.keys(json[key])
+                  
+                  if (keys_dht.includes("id_dht") && flag_humid_respect == 0) {
+                    flag_humid_respect = 1;
+                    this.setState({ sliderValue: json[key]["respect"] });
+              
+                  }
+                 
+              }
+
+                  
+              }
+            });
+       
     return (
       <View style={styles.container}>
-        <MyContext.Consumer>
+        {/* <MyContext.Consumer>
         {contextData => {
-          const  message  = contextData;
-          console.log(message)
+          // const  message  = contextData;
+          // console.log(message)
         }}
-      </MyContext.Consumer>
+      </MyContext.Consumer> */}
         <StatusBar backgroundColor="#bfd200"/>
         
         <ScrollView>
@@ -120,7 +155,7 @@ export default class Details extends Component {
                   <View style={styles.ShortBoardControl}>
                       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                         <TouchableOpacity onPress={this.HistoryPage}>
-                          {/* <LiquidGauge
+                          <LiquidGauge
                               config={{
                               circleColor: '#4ea8de',
                               textColor: '#0077b6',
@@ -133,14 +168,14 @@ export default class Details extends Component {
                               value={parseFloat(globalVariable)} 
                               width={130}
                               height={130}
-                          /> */}
+                          />
                         </TouchableOpacity>
                       </View>
                   </View>
                   <View style={[styles.ShortBoardControl, {marginRight: 8}]}>
                       <Text style={{color: '#80b918', fontSize: 16, fontWeight: 'bold'}}>Custom mode</Text>
                       <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                        <BtnCustomMode  onPress={this.sendMessage} title="On"/>
+                        <BtnCustomMode  onPress={this.pressmanual} title="On"/>
                       </View>
                   </View>
                 </View>

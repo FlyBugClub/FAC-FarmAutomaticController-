@@ -114,7 +114,8 @@ export default RootComponent = function() {
   // const updateContextData = (newData) => {
   //   setContextData({ ...contextData, ...newData });
   // };
-  const [dataArray, setDataArray] = useState([{ id_user: 'CT0001' }, {"id_esp1": "ESP0001", "id_esp2": "ESP002"}]);
+  // const [dataArray, setDataArray] = useState([{ id_user: 'CT0001' }, {id_esp1: "ESP0001", id_esp2: "ESP002"}]);
+  const [dataArray, setDataArray] = useState([]);
 
   // Hàm để thêm phần tử mới vào mảng
   // const addData = (newItem) => {
@@ -123,10 +124,10 @@ export default RootComponent = function() {
   const addDataAtIndex = (newItem, index) => {
     // Sao chép mảng ban đầu để tránh thay đổi trực tiếp mảng gốc
     const newDataArray = [...dataArray];
-  
+    
     // Ghi đè giá trị mới vào index được chỉ định
-    newDataArray[index] = newItem;
-  
+    newDataArray.splice(index, 1, newItem);
+    
     // Cập nhật mảng mới vào state
     setDataArray(newDataArray);
   };

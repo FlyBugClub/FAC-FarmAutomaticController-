@@ -7,8 +7,11 @@ import { Icon } from '@rneui/base';
 import MyContext from '../DataContext.js';
 import { index } from 'd3-array';
 import axios from "axios";
+
 const data = [];
+// 
 export default class Home extends Component {
+    
     LoginPage = () => {
         console.log("Login Page");
         this.props.navigation.navigate('Login'); 
@@ -18,38 +21,44 @@ export default class Home extends Component {
         this.props.navigation.navigate('SignUp'); 
     };
     DetailPage = (index) => {
-        console.log(index)
+        // console.log(index)
         this.GetEquidmentValues(index);
-        // this.props.navigation.navigate('Details'); 
+        
     };
-    
-
-
     static contextType = MyContext;
     GetEquidmentValues = async  (index) => {
-        fetch('http://192.168.1.194/Today/api/login/admin@gmail.com/123456')
-            .then(res=>res.json())
-            .then(json=>console.log(json))
+        const { addDataAtIndex } = this.context;
+        addDataAtIndex(data[index],1);
+        this.props.navigation.navigate('Details'); 
     };
 
     render() {
         const { dataArray } = this.context;
+        // console.log(dataArray)
         // const jsonObject = JSON.parse(dataArray[1]);
-        const keyCount = Object.keys(dataArray[1]).length;
+        var keyCount = 0;
+        for (const key in dataArray[0]) {
+            if (key === "id_user") {
+              break; 
+            }
+            keyCount = keyCount + 1; 
+        }
+        
         const handleDetailPress = (index) => {
             this.DetailPage(index);
         };
         const farmHouseList = [];
         // Sử dụng forEach để thêm các phần tử vào mảng items
         [...Array(keyCount)].forEach((_, index) => {
-            data[index] = Object.values(dataArray[1])[index];
+            data[index] = Object.values(dataArray[0])[index];
+            // console.log(data)
             farmHouseList.push(
                 <View>
                     <TouchableOpacity style={styles.famrItem} onPress={() => handleDetailPress(index)}>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             <Ionicons name="water-outline" size={50} color={'#333'}/>
                             <View>
-                                <Text style={styles.titleItem} numberOfLines={1}> Farm {index}: {Object.values(dataArray[1])[index]}</Text>
+                                <Text style={styles.titleItem} numberOfLines={1}> Farm {index}: {data[index]["name_esp"]}</Text>
                                 <Text style={{ color: '#333', marginTop: 5 }}> 75% - 86%</Text>
                             </View>
                         </View>
@@ -104,12 +113,12 @@ export default class Home extends Component {
                         
                     </View>
                     <View style={styles.body}>
-                    <MyContext.Consumer>
+                    {/* <MyContext.Consumer>
                     {contextData => {
                     const  message  = contextData;
                     console.log(message)
                     }}
-                    </MyContext.Consumer>
+                    </MyContext.Consumer> */}
                         <ScrollView style={{height:'73%'}} showsVerticalScrollIndicator={false}>
                             <View style={{marginTop: 8}}>
                                 <Text style={styles.littleText}>Farm house</Text>
