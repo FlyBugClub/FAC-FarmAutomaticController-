@@ -9,7 +9,9 @@ import {
     Statusbar, 
     TextInput,
     Image,
-    ScrollView} from 'react-native';
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback,
+    Keyboard} from 'react-native';
 import MyContext from '../DataContext.js';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
@@ -80,40 +82,53 @@ export default class Login extends Component {
         
         return(
             <SafeAreaView style={styles.container}>
-                <Image source={require('../assets/img/pump.png')} style={styles.img}/>
-                <Text style={styles.textLogin}>Login</Text>
-                <View style={styles.inputArea}>
-                    <MCIcon name="email" size={28} color={'#2BA84A'}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Email'/>
-                </View>
-                <View style={styles.inputArea}>
-                    <MIcon name="password" size={28} color={'#2BA84A'}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Password' secureTextEntry={true}/>
-                </View>
-
-                <View style={styles.functionArea}>
-                    <View>
-                        <TouchableOpacity  onPress={this.toggleCheckbox} style={styles.checkboxArea}>
-                            <View style={[styles.checkbox, isChecked && styles.checked]}>
-                                {isChecked && <Ionicons name="checkmark" size={14} color="white" />}
+                <KeyboardAvoidingView behavior='padding' style={styles.container}>
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.container}>
+                        <View style={styles.container}>
+                            <Image source={require('../assets/img/pump.png')} style={styles.img}/>
+                            <Text style={styles.textLogin}>Login</Text>
+                            <View style={styles.inputArea}>
+                                <MCIcon name="email" size={28} color={'#2BA84A'}/>
+                                <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
+                                <TextInput style={styles.inputAccount} 
+                                placeholder='Email'
+                                keyboardType='email-address'
+                                onSubmitEditing={() => this.refs.txtPassword.focus()}/>
                             </View>
-                            <Text style={styles.label}>Remember</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{marginRight: 15}}>
-                        <TouchableOpacity onPress={this.ResetPasswordPage}>
-                            <Text style={{color:'#0077b6'}}>Forgot password</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <TouchableOpacity onPress={ () => this.props.navigation.navigate('TabNavigator') } style={styles.bntLogin}>
-                    <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Login</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={this.handleLogin}>
-                    <Text style={{color: '#333', marginTop: 10, fontSize: 12}}>Don't you have account!</Text>
-                </TouchableOpacity>
+                            <View style={styles.inputArea}>
+                                <MIcon name="password" size={28} color={'#2BA84A'}/>
+                                <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
+                                <TextInput style={styles.inputAccount} 
+                                placeholder='Password' 
+                                secureTextEntry={true}
+                                ref={"txtPassword"}/>
+                            </View>
+
+                            <View style={styles.functionArea}>
+                                <View>
+                                    <TouchableOpacity  onPress={this.toggleCheckbox} style={styles.checkboxArea}>
+                                        <View style={[styles.checkbox, isChecked && styles.checked]}>
+                                            {isChecked && <Ionicons name="checkmark" size={14} color="white" />}
+                                        </View>
+                                        <Text style={styles.label}>Remember</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={{marginRight: 15}}>
+                                    <TouchableOpacity onPress={this.ResetPasswordPage}>
+                                        <Text style={{color:'#0077b6'}}>Forgot password</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            <TouchableOpacity onPress={ () => this.props.navigation.navigate('TabNavigator') } style={styles.bntLogin}>
+                                <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Login</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.SignUpPage}>
+                                <Text style={{color: '#333', marginTop: 10, fontSize: 12}}>Don't you have account!</Text>
+                            </TouchableOpacity>
+                        </View>
+                        
+                    </TouchableWithoutFeedback>
+                </KeyboardAvoidingView>
             </SafeAreaView>
         )
     }
@@ -121,6 +136,7 @@ export default class Login extends Component {
 
 const styles = StyleSheet.create({
     container: {
+        width: '100%',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -198,7 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     },
     bntLogin: {
-        width: '75%',
+        width: "75%",
         height: 35,
         marginTop: 15,
         backgroundColor: '#2BA84A',

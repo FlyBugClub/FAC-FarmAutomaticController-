@@ -1,12 +1,18 @@
 import * as React from 'react';
 import { Component, useState } from 'react';
-import { StyleSheet, Text, View, TextInput,TouchableOpacity, SafeAreaView, Image, ScrollView, StatusBar} from 'react-native';
+import { StyleSheet, Text, View,TouchableOpacity, SafeAreaView, StatusBar} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 export default class AddFarm extends Component {
-    LoginPage = () => {
-        console.log("Login Page");
-        this.props.navigation.navigate('Login'); 
+    OpenCamera = () => {
+        console.log("Open Camera");
+        this.props.navigation.navigate('CameraCreateNewFarmHouse'); 
+    };
+
+    AddDevicePage = () => {
+        console.log("Add Device Page");
+        this.props.navigation.navigate('AddDevice'); 
     };
 
     render() {
@@ -19,16 +25,14 @@ export default class AddFarm extends Component {
                     </SafeAreaView>
                 </LinearGradient>
                 <SafeAreaView style={styles.safeContainer}>
-                    <View style={{width: '90%'}}>
-                        <ScrollView>
-                            <TextInput style={styles.input} placeholder='Farm house name'/>
-                            <TextInput style={styles.input} placeholder=''/>
-                            <TextInput style={styles.input} placeholder=''/>
-                            <TextInput style={styles.input} placeholder=''/>
-                            <TouchableOpacity style={styles.btnAdd}>
-                                <Text style={styles.btnText}>Add new</Text>
-                            </TouchableOpacity>
-                        </ScrollView>
+                    <View style={{width: '90%'}}>    
+                        <TouchableOpacity style={styles.btnAdd} onPress={this.OpenCamera}>
+                            <Text style={styles.btnText}>Create new farm house</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.btnAdd} onPress={this.AddDevicePage}>
+                            <Text style={styles.btnText}>Add device</Text>
+                        </TouchableOpacity>
+                        
                     </View>
                 </SafeAreaView>
             </View>

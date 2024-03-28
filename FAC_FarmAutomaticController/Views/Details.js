@@ -45,7 +45,23 @@ export default class Details extends Component {
     this.sendMessage();
   };
   sendMessage= () => {};
-  toggleSwitch = () => {
+
+  autoSwitch = () => {
+    this.setState((prevState) => ({
+      isEnabled: !prevState.isEnabled,
+    }));
+    if (this.state.statusAuto == true)
+    {
+      this.state.statusAuto = false
+    }
+    else if (this.state.statusAuto == false)
+    {
+      this.state.statusAuto = true
+    }
+    this.sendMessage();
+  };
+
+  customSwitch = () => {
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled,
     }));
@@ -161,9 +177,109 @@ export default class Details extends Component {
         </LinearGradient>
         
         <View style={{alignItems: 'center'}}>
-        
-
              <View style={{alignItems: 'center'}}>
+             <TouchableOpacity onPress={this.HistoryPage}>
+              <View style={styles.ChartArea}>
+                <View style={{
+                  backgroundColor: '#80b918',
+                  marginTop: 5,
+                  paddingBottom: 2,
+                  paddingRight: 8,
+                  paddingLeft: 8,
+                  borderRadius: 16,
+                }}>
+                  <Text style={{color: 'white', marginTop: 5, marginLeft: 5, textAlign: 'center'}}>Water Pump 1</Text>
+                </View>
+
+                <View style={{justifyContent: 'center', width: '100%'}}>
+                  <View style={styles.ChartPart}>
+                    <View style={styles.LiquidGaugeArea}>
+                      <Text style={styles.TitleChartArea}>Humidity</Text>
+                      <LiquidGauge
+                        config={{
+                        circleColor: '#4ea8de',
+                        textColor: '#0077b6',
+                        waveTextColor: '#0096c7',
+                        waveColor: '#48cae4',
+                        circleThickness: 0.2,
+                        textVertPosition: 0.5,
+                        waveAnimateTime: 1000,
+                        }}
+                        value={parseFloat(globalVariable)} 
+                        width={60}
+                        height={60}
+                      />
+                    </View>
+                    <View style={styles.LiquidGaugeArea}>
+                      <Text style={styles.TitleChartArea}>pH</Text>
+                      <LiquidGauge
+                        config={{
+                        circleColor: '#4ea8de',
+                        textColor: '#0077b6',
+                        waveTextColor: '#0096c7',
+                        waveColor: '#48cae4',
+                        circleThickness: 0.2,
+                        textVertPosition: 0.5,
+                        waveAnimateTime: 1000,
+                        }}
+                        value={parseFloat(globalVariable)} 
+                        width={60}
+                        height={60}
+                      />
+                    </View>
+                    <View style= {{width: '50%'}}>
+                      <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                        <View style={styles.LiquidGaugeArea}>
+                          <Text style={styles.TitleChartArea}>Automatic</Text>
+                          <View style={{marginTop: 10}}>
+                            <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={this.autoSwitch}
+                            value={isEnabled}
+                            />
+                          </View>
+                        </View>
+                        <View style={styles.LiquidGaugeArea}>
+                          <Text style={styles.TitleChartArea}>Custom</Text>
+                          <View style={{marginTop: 10}}>
+                            <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={this.customSwitch}
+                            value={isEnabled}
+                            style={{marginRight: 15}}
+                            />
+                          </View>
+                          
+                        </View>
+                      </View>
+
+                      <View style={{flexDirection: 'row'}}>
+                        <Slider 
+                          style={{width: 130, height: 40}}
+                          minimumValue={50}
+                          maximumValue={95}
+                          value={sliderValue}
+                          onValueChange={this.handleSliderChange}
+                          onSlidingComplete={this.handleSliderComplete}
+                          minimumTrackTintColor={'#A4AC86'}
+                        />
+                        <Text style={{marginLeft: 10, marginTop: 6, fontSize: 16}}>
+                          {Math.round(sliderValue)}%
+                        </Text>
+                      </View>
+                    </View>
+                    
+                  </View>
+                </View>
+                
+                
+              </View>
+             </TouchableOpacity>
+                
                 <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-around'}}>
                   <View style={styles.ShortBoardControl}>
                       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -388,6 +504,34 @@ const styles = StyleSheet.create({
   BtnConnectText: {
     marginTop: 2,
     color: '#A6A6A6'
+  },
+  ChartArea: {
+    width: '93%',
+    backgroundColor: 'white',
+    paddingBottom: 5,
+    paddingTop: 5,
+    paddingRight: 10,
+    paddingLeft: 10,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  ChartPart: {
+    width: '100%',
+    flexDirection: 'row', 
+    justifyContent: 'space-around', 
+    marginTop: 10
+  },
+  LiquidGaugeArea: {
+    alignItems: 'center',
+    marginBottom: 5
+
+  },
+  TitleChartArea:{
+    marginTop: 5,
+    marginBottom: 5
   },
   ShortBoardControl: {
     width: '45%',

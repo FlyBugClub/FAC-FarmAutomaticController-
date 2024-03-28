@@ -25,7 +25,9 @@ export default class ForgotPassword extends Component {
                 <View style={styles.inputArea}>
                     <MCIcon name="email" size={28} color={'#2BA84A'}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Email'/>
+                    <TextInput style={styles.inputAccount} 
+                    placeholder='Email'
+                    keyboardType='email-address'/>
                 </View>
                 <TouchableOpacity onPress={ this.LoginPage } style={styles.bntLogin}>
                     <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Send</Text>

@@ -20,6 +20,11 @@ import AddFarm from './Views/AddFarm'
 import User from './Views/User.js'
 import ForgotPassword from './Views/ForgotPassword.js'
 import OTP from './Views/OTP.js'
+import CameraCreateNewFarmHouse from './Views/CameraCreateNewFarmHouse.js'
+import CameraConnectDevice from './Views/CameraConnectDevice.js'
+import AddDevice from './Views/AddDevice.js'
+
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,6 +42,9 @@ function StackNavigator() {
       <Stack.Screen name='AddFarm' component={AddFarm}/>
       <Stack.Screen name='User' component={User}/>
       <Stack.Screen name='ForgotPassword' component={ForgotPassword}/>
+      <Stack.Screen name='CameraCreateNewFarmHouse' component={CameraCreateNewFarmHouse}/>
+      <Stack.Screen name='CameraConnectDevice' component={CameraConnectDevice}/>
+      <Stack.Screen name='AddDevice' component={AddDevice}/>
     </Stack.Navigator>
   );
 };
@@ -136,7 +144,9 @@ export default RootComponent = function() {
   //   setContextData({ ...contextData, ...newData });
   // };
   // const [dataArray, setDataArray] = useState([{ id_user: 'CT0001' }, {id_esp1: "ESP0001", id_esp2: "ESP002"}]);
-  const [dataArray, setDataArray] = useState([]);
+  const [dataArray, setDataArray] = useState([
+    {"0": {"id_esp": "ESP0001", "name_esp": null},"id_user": "CT0001", "gmail": "admin@gmail.com", "membership": "1", "name": "cuong", "phone_no": "0999999"}
+  ]);
 
   // Hàm để thêm phần tử mới vào mảng
   // const addData = (newItem) => {
