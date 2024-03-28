@@ -1,13 +1,15 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import IconFeather from 'react-native-vector-icons/Feather';
 import 'react-native-gesture-handler';
 import MyContext from './DataContext.js';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 
 import Login from './Views/Login'
 import SignUp from './Views/SignUp'
@@ -16,6 +18,8 @@ import Details from './Views/Details'
 import History from './Views/History'
 import AddFarm from './Views/AddFarm'
 import User from './Views/User.js'
+import ForgotPassword from './Views/ForgotPassword.js'
+import OTP from './Views/OTP.js'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,6 +36,7 @@ function StackNavigator() {
       <Stack.Screen name='History' component={History}/>
       <Stack.Screen name='AddFarm' component={AddFarm}/>
       <Stack.Screen name='User' component={User}/>
+      <Stack.Screen name='ForgotPassword' component={ForgotPassword}/>
     </Stack.Navigator>
   );
 };
@@ -108,7 +113,23 @@ function TabNavigator() {
   );
 };
 
+// Tạo Thông Báo Ngoài Màn Hình
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
 export default RootComponent = function() {
+  const [expoPushToken, setExpoPushToken] = useState();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
+  }, []);
+  console.log('Token: ', expoPushToken);
+
   // const [contextData, setContextData] = useState([]);
   
   // const updateContextData = (newData) => {
@@ -132,21 +153,55 @@ export default RootComponent = function() {
     setDataArray(newDataArray);
   };
   return (
+    
     <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
+        {/* <Stack.Screen name='OTP' component={OTP}/> */}
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='TabNavigator' component={TabNavigator}/>
-        {/* <Stack.Screen name='Home' component={Home}/> */}
         <Stack.Screen name='SignUp' component={SignUp}/>
-        <Stack.Screen name='Details' component={Details}/>
-        <Stack.Screen name='History' component={History}/>
-        <Stack.Screen name='AddFarm' component={AddFarm}/>
+        <Stack.Screen name='ForgotPassword' component={ForgotPassword}/>
       </Stack.Navigator>
     </NavigationContainer>
   </MyContext.Provider>
- 
   )
+}
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+  
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    // Learn more about projectId:
+    // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
+    token = (await Notifications.getExpoPushTokenAsync({ 
+      projectId: 'your-project-id'
+    })).data;
+    console.log(token);
+  } else {
+    alert('Must use physical device for Push Notifications');
+  }
+
+  return token;
 }
 
 const style = StyleSheet.create({

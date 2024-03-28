@@ -1,11 +1,12 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Pressable ,ScrollView, StatusBar, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert, Switch, Button,ScrollView, StatusBar, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Slider from '@react-native-community/slider';
 import { LiquidGauge } from 'react-native-liquid-gauge';
 import { Icon } from '@rneui/base';
 import MyContext from '../DataContext.js';
 import apiUrl from '../apiURL.js'
+import * as Notifications from 'expo-notifications'
 let globalVariable = '50.0';
 var flag_humid_respect = 0;
 export default class Details extends Component {
@@ -86,6 +87,18 @@ export default class Details extends Component {
   componentWillUnmount() {
     // Xóa interval để tránh rò rỉ bộ nhớ
     clearInterval(this.interval);
+  }
+
+  async schedulePushNotification() {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "fucking wow shit! 📬",
+        body: 'Con me may :)))',
+        data: { data: 'goes here' },
+      },
+      trigger: { seconds: 5 },
+    });
+    console.log('hello email');
   }
 
   render() {
@@ -224,7 +237,7 @@ export default class Details extends Component {
             
             
         </View>
-
+        <Button title='Schedule test notification' onPress={() => this.schedulePushNotification()}/>
         </ScrollView>
       </View>
     );

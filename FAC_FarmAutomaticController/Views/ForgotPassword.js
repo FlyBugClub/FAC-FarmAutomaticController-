@@ -1,46 +1,34 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, statusbar, TextInput, Image} from 'react-native';
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { 
+    StyleSheet, 
+    Text, 
+    View, 
+    TouchableOpacity, 
+    SafeAreaView, 
+    TextInput,
+    Image} from 'react-native';
+    import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default class SignUp extends Component {
+import App from '../App'
+
+export default class ForgotPassword extends Component {
     LoginPage = () => {
         console.log("Login Page");
         this.props.navigation.navigate('Login'); 
     };
-
     render() {
         return(
             <SafeAreaView style={styles.container}>
-                <Image source={require('../assets/img/pH.png')} style={styles.img}/>
-                <Text style={styles.textLogin}>SignUp</Text>
-                <View style={styles.inputArea}>
-                    <Image source={require('../assets/img/user01.png')} style={styles.imgInput}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Username'/>
-                </View>
+                <Image source={require('../assets/img/paper-plane.png')} style={styles.img}/>
+                <Text style={styles.textLogin}>Forgot password</Text>
                 <View style={styles.inputArea}>
                     <MCIcon name="email" size={28} color={'#2BA84A'}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
                     <TextInput style={styles.inputAccount} placeholder='Email'/>
                 </View>
-                <View style={styles.inputArea}>
-                    <Image source={require('../assets/img/iphone.png')} style={styles.imgInput}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Phone number'/>
-                </View>
-                <View style={styles.inputArea}>
-                    <Image source={require('../assets/img/padlock.png')} style={styles.imgInput}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Password' secureTextEntry={true}/>
-                </View>
-                <View style={styles.inputArea}>
-                    <Image source={require('../assets/img/password.png')} style={styles.imgInput}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Verify password' secureTextEntry={true}/>
-                </View>
                 <TouchableOpacity onPress={ this.LoginPage } style={styles.bntLogin}>
-                    <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>SignUp</Text>
+                    <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Send</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         )
@@ -64,11 +52,6 @@ const styles = StyleSheet.create({
         height: 150,
         marginBottom: 40,
         marginTop: -100,
-        tintColor: '#2BA84A'
-    },
-    imgInput: {
-        width: 28,
-        height: 28,
         tintColor: '#2BA84A'
     },
     textLogin: {
@@ -102,6 +85,33 @@ const styles = StyleSheet.create({
         paddingBottom: 5,
         opacity: 0.9,
         backgroundColor: '#edede9'
+    },
+    functionArea: {
+        width: '75%', 
+        // borderWidth: 2, 
+        // borderColor: '#333', 
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    checkboxArea: {
+        flexDirection: 'row', 
+        alignItems: 'center',
+        marginTop: 5,
+        marginLeft: 10
+    },
+    checkbox: {
+        width: 16,
+        height: 16,
+        borderWidth: 1.8,
+        borderColor: '#333',
+        borderRadius: 4,
+        marginRight: 10,
+      },
+    checked: {
+    backgroundColor: '#0077b6',
+    },
+    label: {
+    fontSize: 14,
     },
     bntLogin: {
         width: '75%',
