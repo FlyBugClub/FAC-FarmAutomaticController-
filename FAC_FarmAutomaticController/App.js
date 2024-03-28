@@ -19,6 +19,7 @@ import History from './Views/History'
 import AddFarm from './Views/AddFarm'
 import User from './Views/User.js'
 import ForgotPassword from './Views/ForgotPassword.js'
+import OTP from './Views/OTP.js'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -155,6 +156,7 @@ export default RootComponent = function() {
     <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
+        {/* <Stack.Screen name='OTP' component={OTP}/> */}
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='TabNavigator' component={TabNavigator}/>
         <Stack.Screen name='SignUp' component={SignUp}/>

@@ -20,15 +20,16 @@ export default class ForgotPassword extends Component {
     render() {
         return(
             <SafeAreaView style={styles.container}>
-                <Image source={require('../assets/img/paper-plane.png')} style={styles.img}/>
-                <Text style={styles.textLogin}>Forgot password</Text>
+                <Image source={require('../assets/img/otp.png')} style={styles.img}/>
+                <Text style={styles.textLogin}>Verify OTP!</Text>
                 <View style={styles.inputArea}>
-                    <MCIcon name="email" size={28} color={'#2BA84A'}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Email'/>
+                    <TextInput style={styles.inputAccount}/>
+                    <TextInput style={styles.inputAccount}/>
+                    <TextInput style={styles.inputAccount}/>
+                    <TextInput style={styles.inputAccount}/>
                 </View>
                 <TouchableOpacity onPress={ this.LoginPage } style={styles.bntLogin}>
-                    <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Send</Text>
+                    <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Verify</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         )
@@ -67,8 +68,7 @@ const styles = StyleSheet.create({
         borderRadius: 24,
     },
     inputArea: {
-        width: '75%',
-        backgroundColor: '#edede9',
+        width: '80%',
         borderRadius: 24, 
         flexDirection: 'row',
         alignItems: 'center',
@@ -78,11 +78,11 @@ const styles = StyleSheet.create({
         marginBottom: 8
     },
     inputAccount: {
-        width: '80%',
-        height: 40,
-        margin: 5,
-        paddingTop: 5,
-        paddingBottom: 5,
+        width: 50,
+        height: 50,
+        margin: 10,
+        padding: 5,
+        borderRadius: 12,
         opacity: 0.9,
         backgroundColor: '#edede9'
     },

@@ -15,7 +15,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 
-function Home() {
+function HomeScreen() {
     <Stack.Navigator>
         <Stack.Screen name='Home' component={HomeScreen}/>
         <Stack.Screen name='Login' component={Login}/>
@@ -38,7 +38,7 @@ function Tab () {
         height: 90
     }
     }}>
-        <Tab.Screen name="Home" component={Home}  options={{
+        <Tab.Screen name="Home" component={HomeScreen}  options={{
             tabBarIcon: ({focused}) => (
             <View style={{alignItems: 'center', justifyContent: 'center'}}>
                 <Image 
