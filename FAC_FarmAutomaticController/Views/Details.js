@@ -158,202 +158,199 @@ export default class Details extends Component {
           // const  message  = contextData;
           // console.log(message)
         }}
-      </MyContext.Consumer> */}
+        </MyContext.Consumer> */}
         <StatusBar backgroundColor="#bfd200"/>
         
         <ScrollView>
-        <LinearGradient colors={['#bfd200', '#aacc00', '#80b918']}  style={styles.BackDropTop}>
-          <SafeAreaView>
-            <View style={styles.TitleTopArea}>
-              {/* <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" /> */}
-              <Text style={styles.TitleTop}>MUSHROOM FARM</Text>
-              {/* <Icon style={styles.IconTop} name="cog" size={30} color="#fff" /> */}
-            </View>
-            <Text style={[styles.TitleTop, {fontSize: 20}, {textAlign: 'center'}, {marginTop: 5}]}>Farm 1</Text>
-            <View style={{alignItems: 'center'}}>
-              <Image style={styles.ImgTitleTop} source={require('../assets/NamBaoNgu.png')}/>
-            </View>
-          </SafeAreaView>
-        </LinearGradient>
+          <LinearGradient colors={['#bfd200', '#aacc00', '#80b918']}  style={styles.BackDropTop}>
+            <SafeAreaView>
+              <View style={styles.TitleTopArea}>
+                {/* <Icon style={styles.IconTop} name="chevron-left" size={30} color="#fff" /> */}
+                <Text style={styles.TitleTop}>MUSHROOM FARM</Text>
+                {/* <Icon style={styles.IconTop} name="cog" size={30} color="#fff" /> */}
+              </View>
+              <Text style={[styles.TitleTop, {fontSize: 20}, {textAlign: 'center'}, {marginTop: 5}]}>Farm 1</Text>
+              <View style={{alignItems: 'center'}}>
+                <Image style={styles.ImgTitleTop} source={require('../assets/NamBaoNgu.png')}/>
+              </View>
+            </SafeAreaView>
+          </LinearGradient>
         
-        <View style={{alignItems: 'center'}}>
-             <View style={{alignItems: 'center'}}>
-             <TouchableOpacity onPress={this.HistoryPage}>
-              <View style={styles.ChartArea}>
-                <View style={{
-                  backgroundColor: '#80b918',
-                  marginTop: 5,
-                  paddingBottom: 2,
-                  paddingRight: 8,
-                  paddingLeft: 8,
-                  borderRadius: 16,
-                }}>
-                  <Text style={{color: 'white', marginTop: 5, marginLeft: 5, textAlign: 'center'}}>Water Pump 1</Text>
-                </View>
+          <View style={{alignItems: 'center'}}>
+              <View style={{alignItems: 'center'}}>
+              <TouchableOpacity onPress={this.HistoryPage}>
+                <View style={styles.ChartArea}>
+                  <View style={{
+                    backgroundColor: '#80b918',
+                    marginTop: 5,
+                    paddingBottom: 2,
+                    paddingRight: 8,
+                    paddingLeft: 8,
+                    borderRadius: 16,
+                  }}>
+                    <Text style={{color: 'white', marginTop: 5, marginLeft: 5, textAlign: 'center'}}>Water Pump 1</Text>
+                  </View>
 
-                <View style={{justifyContent: 'center', width: '100%'}}>
-                  <View style={styles.ChartPart}>
-                    <View style={styles.LiquidGaugeArea}>
-                      <Text style={styles.TitleChartArea}>Humidity</Text>
-                      <LiquidGauge
-                        config={{
-                        circleColor: '#4ea8de',
-                        textColor: '#0077b6',
-                        waveTextColor: '#0096c7',
-                        waveColor: '#48cae4',
-                        circleThickness: 0.2,
-                        textVertPosition: 0.5,
-                        waveAnimateTime: 1000,
-                        }}
-                        value={parseFloat(globalVariable)} 
-                        width={60}
-                        height={60}
-                      />
-                    </View>
-                    <View style={styles.LiquidGaugeArea}>
-                      <Text style={styles.TitleChartArea}>pH</Text>
-                      <LiquidGauge
-                        config={{
-                        circleColor: '#4ea8de',
-                        textColor: '#0077b6',
-                        waveTextColor: '#0096c7',
-                        waveColor: '#48cae4',
-                        circleThickness: 0.2,
-                        textVertPosition: 0.5,
-                        waveAnimateTime: 1000,
-                        }}
-                        value={parseFloat(globalVariable)} 
-                        width={60}
-                        height={60}
-                      />
-                    </View>
-                    <View style= {{width: '50%'}}>
-                      <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                        <View style={styles.LiquidGaugeArea}>
-                          <Text style={styles.TitleChartArea}>Automatic</Text>
-                          <View style={{marginTop: 10}}>
-                            <Switch
-                            trackColor={{ false: "#767577", true: "#81b0ff" }}
-                            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                            ios_backgroundColor="#3e3e3e"
-                            onValueChange={this.autoSwitch}
-                            value={isEnabled}
-                            />
+                  <View style={{justifyContent: 'center', width: '100%'}}>
+                    <View style={styles.ChartPart}>
+                      <View style={styles.LiquidGaugeArea}>
+                        <Text style={styles.TitleChartArea}>Humidity</Text>
+                        <LiquidGauge
+                          config={{
+                          circleColor: '#4ea8de',
+                          textColor: '#0077b6',
+                          waveTextColor: '#0096c7',
+                          waveColor: '#48cae4',
+                          circleThickness: 0.2,
+                          textVertPosition: 0.5,
+                          waveAnimateTime: 1000,
+                          }}
+                          value={parseFloat(globalVariable)} 
+                          width={60}
+                          height={60}
+                        />
+                      </View>
+                      <View style={styles.LiquidGaugeArea}>
+                        <Text style={styles.TitleChartArea}>pH</Text>
+                        <LiquidGauge
+                          config={{
+                          circleColor: '#4ea8de',
+                          textColor: '#0077b6',
+                          waveTextColor: '#0096c7',
+                          waveColor: '#48cae4',
+                          circleThickness: 0.2,
+                          textVertPosition: 0.5,
+                          waveAnimateTime: 1000,
+                          }}
+                          value={parseFloat(globalVariable)} 
+                          width={60}
+                          height={60}
+                        />
+                      </View>
+                      <View style= {{width: '50%'}}>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                          <View style={styles.LiquidGaugeArea}>
+                            <Text style={styles.TitleChartArea}>Automatic</Text>
+                            <View style={{marginTop: 10}}>
+                              <Switch
+                              trackColor={{ false: "#767577", true: "#81b0ff" }}
+                              thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                              ios_backgroundColor="#3e3e3e"
+                              onValueChange={this.autoSwitch}
+                              value={isEnabled}
+                              />
+                            </View>
+                          </View>
+                          <View style={styles.LiquidGaugeArea}>
+                            <Text style={styles.TitleChartArea}>Custom</Text>
+                            <View style={{marginTop: 10}}>
+                              <Switch
+                              trackColor={{ false: "#767577", true: "#81b0ff" }}
+                              thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                              ios_backgroundColor="#3e3e3e"
+                              onValueChange={this.customSwitch}
+                              value={isEnabled}
+                              style={{marginRight: 15}}
+                              />
+                            </View>
+                            
                           </View>
                         </View>
-                        <View style={styles.LiquidGaugeArea}>
-                          <Text style={styles.TitleChartArea}>Custom</Text>
-                          <View style={{marginTop: 10}}>
-                            <Switch
-                            trackColor={{ false: "#767577", true: "#81b0ff" }}
-                            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                            ios_backgroundColor="#3e3e3e"
-                            onValueChange={this.customSwitch}
-                            value={isEnabled}
-                            style={{marginRight: 15}}
-                            />
-                          </View>
-                          
+
+                        <View style={{flexDirection: 'row'}}>
+                          <Slider 
+                            style={{width: 130, height: 40}}
+                            minimumValue={50}
+                            maximumValue={95}
+                            value={sliderValue}
+                            onValueChange={this.handleSliderChange}
+                            onSlidingComplete={this.handleSliderComplete}
+                            minimumTrackTintColor={'#A4AC86'}
+                          />
+                          <Text style={{marginLeft: 10, marginTop: 6, fontSize: 16}}>
+                            {Math.round(sliderValue)}%
+                          </Text>
                         </View>
                       </View>
-
-                      <View style={{flexDirection: 'row'}}>
-                        <Slider 
-                          style={{width: 130, height: 40}}
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+                  
+                  <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-around'}}>
+                    <View style={styles.ShortBoardControl}>
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                          <TouchableOpacity onPress={this.HistoryPage}>
+                            <LiquidGauge
+                                config={{
+                                circleColor: '#4ea8de',
+                                textColor: '#0077b6',
+                                waveTextColor: '#0096c7',
+                                waveColor: '#48cae4',
+                                circleThickness: 0.2,
+                                textVertPosition: 0.5,
+                                waveAnimateTime: 1000,
+                                }}
+                                value={parseFloat(globalVariable)} 
+                                width={130}
+                                height={130}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                    </View>
+                    <View style={[styles.ShortBoardControl, {marginRight: 8}]}>
+                        <Text style={{color: '#80b918', fontSize: 16, fontWeight: 'bold'}}>Custom mode</Text>
+                        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                          <BtnCustomMode  onPress={this.pressmanual} title="On"/>
+                        </View>
+                    </View>
+                  </View>
+                  <View style={styles.LongtBoardControl}>
+                  <Text  style={{
+                      color: '#80b918', 
+                      fontSize: 16, 
+                      fontWeight: 'bold',
+                      marginTop: 10,
+                      marginLeft: 15}}>Auto mode</Text>
+                  <View style={{flexDirection: 'row', marginTop: 10, marginBottom: 10}}>
+                      <View style={{flexDirection: 'row', flex: 1}}>
+                      <Text style={{marginLeft: 15, marginRight: 10, marginTop: 6}}>Active</Text>
+                      <Text style={{marginLeft: 10, marginRight: 10, marginTop: 6}}>
+                      {this.state.isEnabled ? 'ON' : 'OFF'}</Text>
+                      </View>
+                      <Switch
+                      trackColor={{ false: "#767577", true: "#81b0ff" }}
+                      thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                      ios_backgroundColor="#3e3e3e"
+                      onValueChange={this.sendMessage}
+                      value={isEnabled}
+                      style={{marginRight: 15}}
+                      />
+                  </View>
+                  <View style={{flexDirection: 'row', marginBottom: 10}}>
+                      <View style={{flexDirection: 'row', flex: 1}}>
+                      <Text style={{marginLeft: 15, marginRight: 10, marginTop: 6}}>Huminity</Text>
+                      
+                      <Slider 
+                          style={{width: 200, height: 40}}
                           minimumValue={50}
                           maximumValue={95}
                           value={sliderValue}
                           onValueChange={this.handleSliderChange}
                           onSlidingComplete={this.handleSliderComplete}
                           minimumTrackTintColor={'#A4AC86'}
-                        />
-                        <Text style={{marginLeft: 10, marginTop: 6, fontSize: 16}}>
+                      />
+                      </View>
+                      <Text style={{marginRight: 20, marginTop: 6, fontSize: 16}}>
                           {Math.round(sliderValue)}%
-                        </Text>
-                      </View>
-                    </View>
-                    
+                      </Text>
                   </View>
-                </View>
-                
-                
+                  </View>
               </View>
-             </TouchableOpacity>
-                
-                <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-around'}}>
-                  <View style={styles.ShortBoardControl}>
-                      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                        <TouchableOpacity onPress={this.HistoryPage}>
-                          <LiquidGauge
-                              config={{
-                              circleColor: '#4ea8de',
-                              textColor: '#0077b6',
-                              waveTextColor: '#0096c7',
-                              waveColor: '#48cae4',
-                              circleThickness: 0.2,
-                              textVertPosition: 0.5,
-                              waveAnimateTime: 1000,
-                              }}
-                              value={parseFloat(globalVariable)} 
-                              width={130}
-                              height={130}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                  </View>
-                  <View style={[styles.ShortBoardControl, {marginRight: 8}]}>
-                      <Text style={{color: '#80b918', fontSize: 16, fontWeight: 'bold'}}>Custom mode</Text>
-                      <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                        <BtnCustomMode  onPress={this.pressmanual} title="On"/>
-                      </View>
-                  </View>
-                </View>
-                <View style={styles.LongtBoardControl}>
-                <Text  style={{
-                    color: '#80b918', 
-                    fontSize: 16, 
-                    fontWeight: 'bold',
-                    marginTop: 10,
-                    marginLeft: 15}}>Auto mode</Text>
-                <View style={{flexDirection: 'row', marginTop: 10, marginBottom: 10}}>
-                    <View style={{flexDirection: 'row', flex: 1}}>
-                    <Text style={{marginLeft: 15, marginRight: 10, marginTop: 6}}>Active</Text>
-                    <Text style={{marginLeft: 10, marginRight: 10, marginTop: 6}}>
-                    {this.state.isEnabled ? 'ON' : 'OFF'}</Text>
-                    </View>
-                    <Switch
-                    trackColor={{ false: "#767577", true: "#81b0ff" }}
-                    thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                    ios_backgroundColor="#3e3e3e"
-                    onValueChange={this.sendMessage}
-                    value={isEnabled}
-                    style={{marginRight: 15}}
-                    />
-                </View>
-                <View style={{flexDirection: 'row', marginBottom: 10}}>
-                    <View style={{flexDirection: 'row', flex: 1}}>
-                    <Text style={{marginLeft: 15, marginRight: 10, marginTop: 6}}>Huminity</Text>
-                    
-                    <Slider 
-                        style={{width: 200, height: 40}}
-                        minimumValue={50}
-                        maximumValue={95}
-                        value={sliderValue}
-                        onValueChange={this.handleSliderChange}
-                        onSlidingComplete={this.handleSliderComplete}
-                        minimumTrackTintColor={'#A4AC86'}
-                    />
-                    </View>
-                    <Text style={{marginRight: 20, marginTop: 6, fontSize: 16}}>
-                        {Math.round(sliderValue)}%
-                    </Text>
-                </View>
-                </View>
-             </View>
-            
-            
-        </View>
-        <Button title='Schedule test notification' onPress={() => this.schedulePushNotification()}/>
+              
+              
+          </View>
+          <Button title='Schedule test notification' onPress={() => this.schedulePushNotification()}/>
         </ScrollView>
       </View>
     );
