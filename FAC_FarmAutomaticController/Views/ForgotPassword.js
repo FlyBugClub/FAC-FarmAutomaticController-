@@ -7,7 +7,8 @@ import {
     TouchableOpacity, 
     SafeAreaView, 
     TextInput,
-    Image} from 'react-native';
+    Image,
+    Button} from 'react-native';
     import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import App from '../App'
