@@ -9,7 +9,9 @@ import {
     Statusbar, 
     TextInput,
     Image,
-    ScrollView} from 'react-native';
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback,
+    Keyboard} from 'react-native';
 import MyContext from '../DataContext.js';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
@@ -120,6 +122,7 @@ export default class Login extends Component {
 
 const styles = StyleSheet.create({
     container: {
+        width: '100%',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -197,7 +200,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     },
     bntLogin: {
-        width: '75%',
+        width: "75%",
         height: 35,
         marginTop: 15,
         backgroundColor: '#2BA84A',

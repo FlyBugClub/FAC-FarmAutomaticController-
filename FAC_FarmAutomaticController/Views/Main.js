@@ -10,6 +10,8 @@ import HomeScreen from './Home'
 import UserScreen from './User'
 import AddFarm from './AddFarm'
 import ForgotPassword from './ForgotPassword'
+import CameraCreateNewFarmHouse from './Views/CameraCreateNewFarmHouse.js'
+import AddDevice from './Views/AddDevice.js'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,6 +27,8 @@ function HomeScreen() {
         <Stack.Screen name='AddFarm' component={AddFarm}/>
         <Stack.Screen name='User' component={UserScreen}/>
         <Stack.Screen name='ForgotPassword' component={ForgotPassword}/>
+        <Stack.Screen name='CameraCreateNewFarmHouse' component={CameraCreateNewFarmHouse}/>
+      <Stack.Screen name='AddDevice' component={AddDevice}/>
     </Stack.Navigator>
 }
 

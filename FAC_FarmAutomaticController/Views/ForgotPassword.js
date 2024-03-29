@@ -7,7 +7,8 @@ import {
     TouchableOpacity, 
     SafeAreaView, 
     TextInput,
-    Image} from 'react-native';
+    Image,
+    Button} from 'react-native';
     import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import apiUrl from "../apiURL"
 import MyContext from "../DataContext"
@@ -75,7 +76,9 @@ export default class ForgotPassword extends Component {
                 <View style={styles.inputArea}>
                     <MCIcon name="email" size={28} color={'#2BA84A'}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ email: text })} placeholder='Email'/>
+                    <TextInput style={styles.inputAccount} 
+                    placeholder='Email'
+                    keyboardType='email-address'/>
                 </View>
                 <Text>{msg}</Text>
                 <TouchableOpacity onPress={ this.OTPPage } style={styles.bntLogin}>

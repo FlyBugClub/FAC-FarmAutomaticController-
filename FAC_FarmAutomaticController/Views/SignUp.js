@@ -1,6 +1,17 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, statusbar, TextInput, Image} from 'react-native';
+import { 
+    StyleSheet, 
+    Text, 
+    View, 
+    TouchableOpacity, 
+    SafeAreaView, 
+    Statusbar, 
+    TextInput, 
+    Image, 
+    Keyboard,
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback} from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import apiUrl from '../apiURL';
@@ -78,37 +89,46 @@ export default class SignUp extends Component {
         const { msg } = this.state;
         return(
             <SafeAreaView style={styles.container}>
-                <Image source={require('../assets/img/pH.png')} style={styles.img}/>
-                <Text style={styles.textLogin}>SignUp</Text>
-                <View style={styles.inputArea}>
-                    <Image source={require('../assets/img/user01.png')} style={styles.imgInput}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ usernamme: text })} placeholder='Username'/>
-                </View>
-                <View style={styles.inputArea}>
-                    <MCIcon name="email" size={28} color={'#2BA84A'}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ email: text })} placeholder='Email'/>
-                </View>
-                {/* <View style={styles.inputArea}>
-                    <Image source={require('../assets/img/iphone.png')} style={styles.imgInput}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ phone: text })} placeholder='Phone number'/>
-                </View> */}
-                <View style={styles.inputArea}>
-                    <Image source={require('../assets/img/padlock.png')} style={styles.imgInput}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ password: text })} placeholder='Password' secureTextEntry={true}/>
-                </View>
-                <View style={styles.inputArea}>
-                    <Image source={require('../assets/img/password.png')} style={styles.imgInput}/>
-                    <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ verifypassword: text })} placeholder='Verify password' secureTextEntry={true}/>
-                </View>
-                <Text>{msg}</Text>
-                <TouchableOpacity onPress={ this.LoginPage } style={styles.bntLogin}>
-                    <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>SignUp</Text>
-                </TouchableOpacity>
+                <KeyboardAvoidingView behavior='padding' style={styles.container}>
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.container}>
+                        <View style={styles.container}>
+                            <Image source={require('../assets/img/pH.png')} style={styles.img}/>
+                            <Text style={styles.textLogin}>SignUp</Text>
+                            <View style={styles.inputArea}>
+                                <Image source={require('../assets/img/user01.png')} style={styles.imgInput}/>
+                                <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
+                                <TextInput style={styles.inputAccount} placeholder='Username'/>
+                            </View>
+                            <View style={styles.inputArea}>
+                                <MCIcon name="email" size={28} color={'#2BA84A'}/>
+                                <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
+                                <TextInput style={styles.inputAccount} 
+                                placeholder='Email'
+                                keyboardType='email-address'/>
+                            </View>
+                            <View style={styles.inputArea}>
+                                <Image source={require('../assets/img/iphone.png')} style={styles.imgInput}/>
+                                <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
+                                <TextInput style={styles.inputAccount} placeholder='Phone number'/>
+                            </View>
+                            <View style={styles.inputArea}>
+                                <Image source={require('../assets/img/padlock.png')} style={styles.imgInput}/>
+                                <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
+                                <TextInput style={styles.inputAccount} placeholder='Password' secureTextEntry={true}/>
+                            </View>
+                            <View style={styles.inputArea}>
+                                <Image source={require('../assets/img/password.png')} style={styles.imgInput}/>
+                                <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
+                                <TextInput style={styles.inputAccount} placeholder='Verify password' secureTextEntry={true}/>
+                            </View>
+                            <TouchableOpacity onPress={ this.LoginPage } style={styles.bntLogin}>
+                                <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>SignUp</Text>
+                            </TouchableOpacity>
+                        </View>
+                        
+                    </TouchableWithoutFeedback>
+                    
+                </KeyboardAvoidingView>
             </SafeAreaView>
         )
     }
@@ -116,6 +136,7 @@ export default class SignUp extends Component {
 
 const styles = StyleSheet.create({
     container: {
+        width: '100%',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -129,8 +150,7 @@ const styles = StyleSheet.create({
     img: {
         width: 150,
         height: 150,
-        marginBottom: 40,
-        marginTop: -100,
+        marginBottom: 20,
         tintColor: '#2BA84A'
     },
     imgInput: {
