@@ -9,15 +9,65 @@ import {
     TextInput,
     Image} from 'react-native';
     import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import apiUrl from "../apiURL"
+import MyContext from "../DataContext"
 import App from '../App'
 
 export default class ForgotPassword extends Component {
-    LoginPage = () => {
-        console.log("Login Page");
-        this.props.navigation.navigate('Login'); 
+    constructor(props) {
+        super(props);
+        this.state = {
+            email:"",
+            msg:""
+        };
+      }
+    static contextType = MyContext;
+    OTPPage = () => {
+        const { email } = this.state;
+        var erorr = true;
+        if (this.validateEmail(email) && email != "") {
+            var emailsend = email.replace('.',',');
+            this.setState({ msg: ""});
+            const { addDataAtIndex } = this.context;
+            const url = apiUrl+`getuserbyemail/${emailsend}`;
+            fetch(url)
+            .then(res=>{
+                if (!res.ok) {
+                    this.setState({ msg: "error" });
+                    erorr = false;
+                }
+                return res.json();
+              })
+            .then((json)=>{
+               
+                if (json != null && erorr)
+                {
+                    this.setState({ msg: "" });
+                    var otp = this.generateOTP();
+                    json[0]["otp"] = otp;
+                    addDataAtIndex(json[0],0);
+                   this.props.navigation.navigate('OTP'); 
+                }
+                else this.setState({ msg: "email isn't exist" });
+                
+            });
+        } else this.setState({ msg: "invalid email" });
     };
+
+        generateOTP=() =>{
+        let otp = '';
+        for (let i = 0; i < 4; i++) {
+          otp += Math.floor(Math.random() * 9) + 1; // Sinh số ngẫu nhiên từ 1 đến 9 và thêm vào chuỗi OTP
+        }
+        return otp;
+      }
+    validateEmail = (email) => {
+        // Biểu thức chính quy để kiểm tra email
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+      };
     render() {
+        const { msg } = this.state;
         return(
             <SafeAreaView style={styles.container}>
                 <Image source={require('../assets/img/paper-plane.png')} style={styles.img}/>
@@ -25,9 +75,10 @@ export default class ForgotPassword extends Component {
                 <View style={styles.inputArea}>
                     <MCIcon name="email" size={28} color={'#2BA84A'}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Email'/>
+                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ email: text })} placeholder='Email'/>
                 </View>
-                <TouchableOpacity onPress={ this.LoginPage } style={styles.bntLogin}>
+                <Text>{msg}</Text>
+                <TouchableOpacity onPress={ this.OTPPage } style={styles.bntLogin}>
                     <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Send</Text>
                 </TouchableOpacity>
             </SafeAreaView>

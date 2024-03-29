@@ -35,10 +35,8 @@ export default class Login extends Component {
     };
       static contextType = MyContext;
       handleLogin = () => {
-        var data = [];
         var erorr = true;
         const { email, password } = this.state;
-        // Hai chuỗi bạn muốn cộng
         const { addDataAtIndex } = this.context;
         const url = apiUrl+`login/${email}/${password}`;
         fetch(url)
@@ -53,6 +51,7 @@ export default class Login extends Component {
                 if (json != null && erorr)
                 {
                     const combinedJson = Object.assign({}, json[0], json[1]);
+                    
                     addDataAtIndex(combinedJson,0);
                     this.setState({ msg: "" });
                     this.props.navigation.navigate('TabNavigator');
@@ -63,15 +62,15 @@ export default class Login extends Component {
        
       };
     HomePage = () => {
-        console.log("Detail Page");
+        
         this.props.navigation.navigate('Home'); 
     };
     SignUpPage = () => {
-        console.log("SignUp Page");
+        
         this.props.navigation.navigate('SignUp'); 
     };
     ResetPasswordPage = () => {
-        console.log("Reset Password Page");
+       
         this.props.navigation.navigate('ForgotPassword'); 
     };
     render() {
@@ -85,14 +84,14 @@ export default class Login extends Component {
                 <View style={styles.inputArea}>
                     <MCIcon name="email" size={28} color={'#2BA84A'}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Email'/>
+                    <TextInput style={styles.inputAccount} placeholder='Email' onChangeText={text => this.setState({ email: text })}/>
                 </View>
                 <View style={styles.inputArea}>
                     <MIcon name="password" size={28} color={'#2BA84A'}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Password' secureTextEntry={true}/>
+                    <TextInput style={styles.inputAccount} placeholder='Password'onChangeText={text => this.setState({ password: text })} secureTextEntry={true}/>
                 </View>
-
+                <Text>{msg}</Text>
                 <View style={styles.functionArea}>
                     <View>
                         <TouchableOpacity  onPress={this.toggleCheckbox} style={styles.checkboxArea}>
@@ -108,11 +107,11 @@ export default class Login extends Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <TouchableOpacity onPress={ () => this.props.navigation.navigate('TabNavigator') } style={styles.bntLogin}>
+                <TouchableOpacity onPress={this.handleLogin } style={styles.bntLogin}>
                     <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Login</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={this.handleLogin}>
-                    <Text style={{color: '#333', marginTop: 10, fontSize: 12}}>Don't you have account!</Text>
+                <TouchableOpacity onPress={this.SignUpPage}>
+                    <Text style={{color: '#333', marginTop: 10, fontSize: 12}}>Don't have account!</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         )

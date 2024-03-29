@@ -157,8 +157,8 @@ export default RootComponent = function() {
     <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        {/* <Stack.Screen name='OTP' component={OTP}/> */}
         <Stack.Screen name='Login' component={Login}/>
+        <Stack.Screen name='OTP' component={OTP}/>
         <Stack.Screen name='TabNavigator' component={TabNavigator}/>
         <Stack.Screen name='SignUp' component={SignUp}/>
         <Stack.Screen name='ForgotPassword' component={ForgotPassword}/>

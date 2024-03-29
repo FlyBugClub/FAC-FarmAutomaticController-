@@ -3,13 +3,79 @@ import { Component } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, statusbar, TextInput, Image} from 'react-native';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import apiUrl from '../apiURL';
 export default class SignUp extends Component {
-    LoginPage = () => {
-        console.log("Login Page");
-        this.props.navigation.navigate('Login'); 
+    constructor(props) {
+        super(props);
+        this.state = {
+            usernamme:"cuong",
+            email:"",
+            password:"",
+            verifypassword:"",
+            msg:"",
+        };
+      }
+
+
+    LoginPage = async () => {
+        const { usernamme, email,password,verifypassword } = this.state;
+       
+        
+        if (usernamme != "")
+        {
+            this.setState({ msg: "hh" });
+            if (this.validateEmail(email)) {
+                this.setState({ msg: "" });
+                if (password.length >= 6)
+                {
+                    this.setState({ msg: "" });
+                    if ( verifypassword !="" && password == verifypassword )
+                    {
+                        this.setState({ msg: "" });
+                        const url = apiUrl + "user"
+                        let result = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            "id_user":"CT0001",
+                              "gmail": email,
+                              "password": password,
+                              "name": usernamme,
+                              "phone_no": "",
+                              "date_created": "2024-03-25T10:00:00",
+                              "membership": "basic"   
+                        }),
+                        });
+                        result = await result.json();
+                        if (result)
+                        {
+                            if(result == "Added Success")
+                            {
+                                    this.props.navigation.navigate('Login'); 
+                            }
+                            else if (result == "email is already use")
+                            {
+                                this.setState({ msg: "email is already use" });
+                            }
+                            else   this.setState({ msg: "some thing is wrong" });    
+                        }
+                    } else  this.setState({ msg: "Password and  verify password  do not match" });
+                }else  this.setState({ msg: "Password must have at least 6 characters" });
+            } else this.setState({ msg: "invalid email" });
+        } else this.setState({ msg: "invalid username" });
     };
 
+
+    validateEmail = (email) => {
+        // Biểu thức chính quy để kiểm tra email
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+      };
     render() {
+        const { msg } = this.state;
         return(
             <SafeAreaView style={styles.container}>
                 <Image source={require('../assets/img/pH.png')} style={styles.img}/>
@@ -17,28 +83,29 @@ export default class SignUp extends Component {
                 <View style={styles.inputArea}>
                     <Image source={require('../assets/img/user01.png')} style={styles.imgInput}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Username'/>
+                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ usernamme: text })} placeholder='Username'/>
                 </View>
                 <View style={styles.inputArea}>
                     <MCIcon name="email" size={28} color={'#2BA84A'}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Email'/>
+                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ email: text })} placeholder='Email'/>
                 </View>
-                <View style={styles.inputArea}>
+                {/* <View style={styles.inputArea}>
                     <Image source={require('../assets/img/iphone.png')} style={styles.imgInput}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Phone number'/>
-                </View>
+                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ phone: text })} placeholder='Phone number'/>
+                </View> */}
                 <View style={styles.inputArea}>
                     <Image source={require('../assets/img/padlock.png')} style={styles.imgInput}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Password' secureTextEntry={true}/>
+                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ password: text })} placeholder='Password' secureTextEntry={true}/>
                 </View>
                 <View style={styles.inputArea}>
                     <Image source={require('../assets/img/password.png')} style={styles.imgInput}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Verify password' secureTextEntry={true}/>
+                    <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ verifypassword: text })} placeholder='Verify password' secureTextEntry={true}/>
                 </View>
+                <Text>{msg}</Text>
                 <TouchableOpacity onPress={ this.LoginPage } style={styles.bntLogin}>
                     <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>SignUp</Text>
                 </TouchableOpacity>
