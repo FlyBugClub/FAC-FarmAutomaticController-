@@ -19,7 +19,7 @@ export default class SignUp extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            usernamme:"cuong",
+            usernamme:"",
             email:"",
             password:"",
             verifypassword:"",
@@ -30,8 +30,6 @@ export default class SignUp extends Component {
 
     LoginPage = async () => {
         const { usernamme, email,password,verifypassword } = this.state;
-       
-        
         if (usernamme != "")
         {
             this.setState({ msg: "hh" });
@@ -97,30 +95,33 @@ export default class SignUp extends Component {
                             <View style={styles.inputArea}>
                                 <Image source={require('../assets/img/user01.png')} style={styles.imgInput}/>
                                 <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                                <TextInput style={styles.inputAccount} placeholder='Username'/>
+                                <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ usernamme: text })} placeholder='Username'/>
                             </View>
                             <View style={styles.inputArea}>
                                 <MCIcon name="email" size={28} color={'#2BA84A'}/>
                                 <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
                                 <TextInput style={styles.inputAccount} 
                                 placeholder='Email'
-                                keyboardType='email-address'/>
+                                keyboardType='email-address'
+                                onChangeText={text => this.setState({ email: text })}
+                                />
                             </View>
-                            <View style={styles.inputArea}>
+                            {/* <View style={styles.inputArea}>
                                 <Image source={require('../assets/img/iphone.png')} style={styles.imgInput}/>
                                 <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
                                 <TextInput style={styles.inputAccount} placeholder='Phone number'/>
-                            </View>
+                            </View> */}
                             <View style={styles.inputArea}>
                                 <Image source={require('../assets/img/padlock.png')} style={styles.imgInput}/>
                                 <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                                <TextInput style={styles.inputAccount} placeholder='Password' secureTextEntry={true}/>
+                                <TextInput style={styles.inputAccount} placeholder='Password' onChangeText={text => this.setState({ password: text })}  secureTextEntry={true}/>
                             </View>
                             <View style={styles.inputArea}>
                                 <Image source={require('../assets/img/password.png')} style={styles.imgInput}/>
                                 <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                                <TextInput style={styles.inputAccount} placeholder='Verify password' secureTextEntry={true}/>
+                                <TextInput style={styles.inputAccount}  onChangeText={text => this.setState({ verifypassword: text })} placeholder='Verify password' secureTextEntry={true}/>
                             </View>
+                            <Text>{msg}</Text>
                             <TouchableOpacity onPress={ this.LoginPage } style={styles.bntLogin}>
                                 <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>SignUp</Text>
                             </TouchableOpacity>

@@ -136,7 +136,6 @@ export default RootComponent = function() {
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
   }, []);
-  console.log('Token: ', expoPushToken);
 
   // const [contextData, setContextData] = useState([]);
   
@@ -144,9 +143,7 @@ export default RootComponent = function() {
   //   setContextData({ ...contextData, ...newData });
   // };
   // const [dataArray, setDataArray] = useState([{ id_user: 'CT0001' }, {id_esp1: "ESP0001", id_esp2: "ESP002"}]);
-  const [dataArray, setDataArray] = useState([
-    {"0": {"id_esp": "ESP0001", "name_esp": null},"id_user": "CT0001", "gmail": "admin@gmail.com", "membership": "1", "name": "cuong", "phone_no": "0999999"}
-  ]);
+  const [dataArray, setDataArray] = useState([]);
 
   // Hàm để thêm phần tử mới vào mảng
   // const addData = (newItem) => {
@@ -167,11 +164,12 @@ export default RootComponent = function() {
     <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name='OTP' component={OTP}/>
-        {/* <Stack.Screen name='User' component={User}/> */}
-        {/* <Stack.Screen name='Login' component={Login}/> */}
+        
+        <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='TabNavigator' component={TabNavigator}/>
         <Stack.Screen name='SignUp' component={SignUp}/>
+        <Stack.Screen name='OTP' component={OTP}/>
+        <Stack.Screen name='User' component={User}/>
         <Stack.Screen name='ForgotPassword' component={ForgotPassword}/>
       </Stack.Navigator>
     </NavigationContainer>

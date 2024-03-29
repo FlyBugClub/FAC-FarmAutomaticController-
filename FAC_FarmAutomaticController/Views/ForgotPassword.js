@@ -78,9 +78,12 @@ export default class ForgotPassword extends Component {
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
                     <TextInput style={styles.inputAccount} 
                     placeholder='Email'
-                    keyboardType='email-address'/>
+                    keyboardType='email-address'
+                    onChangeText={text => this.setState({ email: text })} />
                 </View>
                 <Text>{msg}</Text>
+              
+
                 <TouchableOpacity onPress={ this.OTPPage } style={styles.bntLogin}>
                     <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Send</Text>
                 </TouchableOpacity>

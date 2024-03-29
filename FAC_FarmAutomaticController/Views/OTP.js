@@ -2,21 +2,24 @@ import * as React from 'react';
 import { Component } from 'react';
 import * as emailjs from "emailjs-com";
 import { 
-    StyleSheet, 
-    Text, 
-    View, 
-    TouchableOpacity, 
-    SafeAreaView, 
-    TextInput,
-    Image} from 'react-native';
+  StyleSheet, 
+  Text, 
+  View, 
+  TouchableOpacity, 
+  SafeAreaView, 
+  TextInput, 
+  Image, 
+  Keyboard, 
+  KeyboardAvoidingView, 
+  TouchableWithoutFeedback, 
+} from "react-native"; 
     // import { send, EmailJSResponseStatus } from '@emailjs/react-native';
     import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
     import apiUrl from "../apiURL"
     import MyContext from "../DataContext"
     import App from '../App'
-import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
-import App from '../App'
+
 
 export default class ForgotPassword extends Component {
   constructor(props) {
@@ -37,8 +40,36 @@ export default class ForgotPassword extends Component {
     console.log("Login Page");
     this.props.navigation.navigate("Login");
   };
+  static contextType = MyContext 
+  LoginPage = () => { 
+       
+      this.props.navigation.navigate('Login');  
+  }; 
+   
+  onSubmit = async () => { 
+
+      console.log() 
+      const { dataArray } = this.context; 
+      var emailsend = dataArray[0]["gmail"] 
+       
+      var otp = dataArray[0]["otp"] 
+      // Thực hiện gửi email 
+      try { 
+          // Thực hiện gửi email 
+          const response = await emailjs.send('service_kxnxuvq', 'template_njqzjob', { 
+            name: 'Cuong', 
+            email: emailsend, 
+            message: otp 
+          }, '_5v3301hRA5j4LmV8'); 
+          console.log('Email sent:', response); 
+           
+        } catch (error) { 
+          console.error('Error sending email:', error); 
+        } 
+      }; 
 
   render() {
+    this.onSubmit()
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView behavior="padding" style={styles.container}>
