@@ -23,6 +23,7 @@ import OTP from './Views/OTP.js'
 import CameraCreateNewFarmHouse from './Views/CameraCreateNewFarmHouse.js'
 import CameraConnectDevice from './Views/CameraConnectDevice.js'
 import AddDevice from './Views/AddDevice.js'
+import PremiumPakage from './Views/PremiumPakage.js'
 
 
 
@@ -45,6 +46,7 @@ function StackNavigator() {
       <Stack.Screen name='CameraCreateNewFarmHouse' component={CameraCreateNewFarmHouse}/>
       <Stack.Screen name='CameraConnectDevice' component={CameraConnectDevice}/>
       <Stack.Screen name='AddDevice' component={AddDevice}/>
+      <Stack.Screen name='PremiumPakage' component={PremiumPakage}/>
     </Stack.Navigator>
   );
 };
@@ -164,7 +166,8 @@ export default RootComponent = function() {
     <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        
+        {/* <Stack.Screen name='User' component={User}/> */}
+        {/* <Stack.Screen name='PremiumPakage' component={PremiumPakage}/> */}
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='TabNavigator' component={TabNavigator}/>
         <Stack.Screen name='SignUp' component={SignUp}/>
