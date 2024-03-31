@@ -24,6 +24,7 @@ import CameraCreateNewFarmHouse from './Views/CameraCreateNewFarmHouse.js'
 import CameraConnectDevice from './Views/CameraConnectDevice.js'
 import AddDevice from './Views/AddDevice.js'
 import PremiumPakage from './Views/PremiumPakage.js'
+import ChangePassword from './Views/ChangePassword.js'
 
 
 
@@ -166,9 +167,9 @@ export default RootComponent = function() {
     <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        {/* <Stack.Screen name='User' component={User}/> */}
+        <Stack.Screen name='ChangePassword' component={ChangePassword}/>
         {/* <Stack.Screen name='PremiumPakage' component={PremiumPakage}/> */}
-        <Stack.Screen name='Login' component={Login}/>
+        {/* <Stack.Screen name='Login' component={Login}/> */}
         <Stack.Screen name='TabNavigator' component={TabNavigator}/>
         <Stack.Screen name='SignUp' component={SignUp}/>
         <Stack.Screen name='OTP' component={OTP}/>
