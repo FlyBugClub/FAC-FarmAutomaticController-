@@ -44,10 +44,8 @@ export default class ForgotPassword extends Component {
                 if (json != null && erorr)
                 {
                     this.setState({ msg: "" });
-                    var otp = this.generateOTP();
-                    json[0]["otp"] = otp;
                     addDataAtIndex(json[0],0);
-                   this.props.navigation.navigate('OTP'); 
+                    this.props.navigation.navigate('OTP'); 
                 }
                 else this.setState({ msg: "email isn't exist" });
                 
@@ -55,13 +53,7 @@ export default class ForgotPassword extends Component {
         } else this.setState({ msg: "invalid email" });
     };
 
-        generateOTP=() =>{
-        let otp = '';
-        for (let i = 0; i < 4; i++) {
-          otp += Math.floor(Math.random() * 9) + 1; // Sinh số ngẫu nhiên từ 1 đến 9 và thêm vào chuỗi OTP
-        }
-        return otp;
-      }
+     
     validateEmail = (email) => {
         // Biểu thức chính quy để kiểm tra email
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

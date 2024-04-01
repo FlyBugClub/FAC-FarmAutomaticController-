@@ -19,11 +19,19 @@ import {
     import MyContext from "../DataContext"
     import App from '../App'
 
-
-
+var otp
+var state = true;
 export default class ForgotPassword extends Component {
   constructor(props) {
+    
     super(props);
+    this.state = {
+      otp1:"",
+      otp2:"",
+      otp3:"",
+      otp4:"",
+      msg:"",
+  };
     this.input1Ref = React.createRef();
     this.input2Ref = React.createRef();
     this.input3Ref = React.createRef();
@@ -36,40 +44,57 @@ export default class ForgotPassword extends Component {
     }
   }
 
+  static contextType = MyContext
   LoginPage = () => {
-    console.log("Login Page");
-    this.props.navigation.navigate("Login");
+    const { otp1,otp2,otp3,otp4 } = this.state; 
+    var otp_confirm =  otp1+otp2+otp3+otp4;
+    if (otp == otp_confirm)
+    {
+      this.setState({ msg: "" });
+      console.log("ok")
+    }
+    else this.setState({ msg: "OTP are incorects" });
+      // this.props.navigation.navigate('Login');  
   };
-  static contextType = MyContext 
-  LoginPage = () => { 
-       
-      this.props.navigation.navigate('Login');  
-  }; 
    
   onSubmit = async () => { 
-
-      console.log() 
       const { dataArray } = this.context; 
       var emailsend = dataArray[0]["gmail"] 
-       
-      var otp = dataArray[0]["otp"] 
-      // Thực hiện gửi email 
-      try { 
+      otp = this.generateOTP();
+      try {
           // Thực hiện gửi email 
           const response = await emailjs.send('service_kxnxuvq', 'template_njqzjob', { 
-            name: 'Cuong', 
-            email: emailsend, 
+            name: 'Cuong',
+            email: emailsend,
             message: otp 
           }, '_5v3301hRA5j4LmV8'); 
-          console.log('Email sent:', response); 
-           
+          
         } catch (error) { 
           console.error('Error sending email:', error); 
         } 
       }; 
+      Resend =() =>{
+        this.onSubmit()
 
+      }
+  generateOTP=() =>{
+        let otp = '';
+        for (let i = 0; i < 4; i++) {
+          otp += Math.floor(Math.random() * 9) + 1; // Sinh số ngẫu nhiên từ 1 đến 9 và thêm vào chuỗi OTP
+        }
+        return otp;
+  }
   render() {
-    this.onSubmit()
+    const { dataArray } = this.context;
+    const { msg } = this.state;
+
+    if(state)
+    {
+      this.onSubmit()
+      state = false;
+    }
+    
+
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView behavior="padding" style={styles.container}>
@@ -86,15 +111,17 @@ export default class ForgotPassword extends Component {
               <Text style={styles.note}>
                 Please Enter The Code 4 Degit Code Sent To
               </Text>
-              <Text style={[styles.note, {marginBottom: 20}]}>heobadai2016@gail.com</Text>
+              <Text style={[styles.note, {marginBottom: 20}]}>{dataArray[0]["gmail"]}</Text>
               <View style={styles.inputArea}>
                 <TextInput
                   style={styles.inputAccount}
                   ref={this.input1Ref}
                   maxLength={1}
                   keyboardType="numeric"
-                  onChangeText={(text) =>
+                  onChangeText={(text) =>{
+                    this.setState({ otp1:text});
                     this.handleTextChange(this.input2Ref, text)
+                  }
                   }
                 />
                 <TextInput
@@ -103,7 +130,11 @@ export default class ForgotPassword extends Component {
                   maxLength={1}
                   keyboardType="numeric"
                   onChangeText={(text) =>
+                    {
+                    this.setState({ otp2: text })
                     this.handleTextChange(this.input3Ref, text)
+                    }
+                    
                   }
                 />
                 <TextInput
@@ -112,7 +143,10 @@ export default class ForgotPassword extends Component {
                   maxLength={1}
                   keyboardType="numeric"
                   onChangeText={(text) =>
+                    {
+                    this.setState({ otp3: text })
                     this.handleTextChange(this.input4Ref, text)
+                    }
                   }
                 />
                 <TextInput
@@ -120,10 +154,15 @@ export default class ForgotPassword extends Component {
                   ref={this.input4Ref}
                   maxLength={1}
                   keyboardType="numeric"
+                  onChangeText={(text) =>
+                    this.setState({ otp4: text })
+                  }
                 />
+                
               </View>
+              <Text>{msg}</Text>
               <TouchableOpacity
-                onPress={this.LoginPage}
+                onPress={this.Resend}
                 style={{}}
               >
                 <Text

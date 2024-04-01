@@ -36,33 +36,68 @@ export default class Login extends Component {
         }));
     };
       static contextType = MyContext;
-      handleLogin = () => {
-        var erorr = true;
+    //   handleLogin = async () => {
+    //     var erorr = true;
+    //     const { email, password } = this.state;
+    //     const { addDataAtIndex } = this.context;
+    //     const url = apiUrl+`login/${email}/${password}`;
+    //     await fetch(url)
+    //         .then(res=>{
+    //             if (!res.ok) {
+    //                 this.setState({ msg: "error" });
+    //                 erorr = false;
+    //             }
+    //             return res.json();
+    //           })
+    //         .then((json)=>{
+    //             if (json != null && erorr)
+    //             {
+    //                 const combinedJson = Object.assign({}, json[0], json[1]);
+                    
+    //                 addDataAtIndex(combinedJson,0);
+    //                 this.setState({ msg: "" });
+    //                 this.props.navigation.navigate('TabNavigator');
+    //             }
+    //             else this.setState({ msg: "email or password are incorect" });
+                
+    //         });
+       
+    //   };
+    handleLogin = async () => {
         const { email, password } = this.state;
         const { addDataAtIndex } = this.context;
-        const url = apiUrl+`login/${email}/${password}`;
-        fetch(url)
-            .then(res=>{
-                if (!res.ok) {
+        const url = apiUrl + `login/${email}/${password}`;
+      
+        try {
+            console.log(url)
+            if (email != "" && password!="")
+            {
+                const response = await fetch(url);
+                if (!response.ok ) {
                     this.setState({ msg: "error" });
-                    erorr = false;
+                    return;
                 }
-                return res.json();
-              })
-            .then((json)=>{
-                if (json != null && erorr)
-                {
+            
+                const json = await response.json();
+                if (json != null) {
                     const combinedJson = Object.assign({}, json[0], json[1]);
-                    
-                    addDataAtIndex(combinedJson,0);
+                    addDataAtIndex(combinedJson, 0);
                     this.setState({ msg: "" });
+                    // this.setState({ email: "" });
+                    // this.setState({ password: "" });
                     this.props.navigation.navigate('TabNavigator');
+                } else {
+                    this.setState({ msg: "email or password are incorrect" });
                 }
-                else this.setState({ msg: "email or password are incorect" });
-                
-            });
-       
+            }
+            else this.setState({ msg: "email or password are incorrect" });
+          
+        } catch (error) {
+          console.error('Error handling login:', error);
+          this.setState({ msg: "An error occurred" });
+        }
       };
+    
     HomePage = () => {
         
         this.props.navigation.navigate('Home'); 
