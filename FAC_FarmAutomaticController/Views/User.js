@@ -2,18 +2,21 @@ import * as React from 'react';
 import { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Image, Dimensions} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import MyContext from "../DataContext"
 const screenWidth = Dimensions.get('window').width;
 const squareWidth = screenWidth * 0.9;
 
 export default class User extends Component {
+    static contextType = MyContext
+    
     render() {
+        const { dataArray } = this.context; 
         
         return(
             <View style={styles.container}>
                 <LinearGradient colors={['#bfd200', '#aacc00', '#80b918']}  style={styles.NavigationTop}>
                     <SafeAreaView style={{alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={styles.title}>Create Farm House</Text>
+                        <Text style={styles.title}>User information</Text>
                     </SafeAreaView>
                 </LinearGradient>
                 <SafeAreaView style={styles.safeContainer}>
@@ -22,9 +25,9 @@ export default class User extends Component {
                             <Image source={require('../assets/img/avatar_user.jpg')} style={styles.avatar}/>
                         </View>
                         <View style={{marginLeft: 10, marginRight: 10}}>
-                            <Text style={styles.textInfo}>Username: Henry Devil</Text>
-                            <Text style={styles.textInfo}>Email: HenryDevil@gmail.com</Text>
-                            <Text style={styles.textInfo}>Phone: +84 5487 5441 875</Text>
+                            <Text style={styles.textInfo}>Username: {dataArray[0]["name"]}</Text>
+                            <Text style={styles.textInfo}>Email: {dataArray[0]["gmail"]}</Text>
+                            <Text style={styles.textInfo}>Phone: {dataArray[0]["phone_no"]}</Text>
                         </View>
                     </View> 
                     <View style={{flexDirection: 'row', width: '90%', justifyContent: 'center', gap: 10}}>

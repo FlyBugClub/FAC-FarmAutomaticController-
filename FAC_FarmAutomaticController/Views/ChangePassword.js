@@ -12,9 +12,63 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     TouchableWithoutFeedback} from 'react-native';
+import apiUrl from "../apiURL"
+import MyContext from "../DataContext"
 
-export default class SignUp extends Component {
+export default class ChangePassword extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+          password:"",
+          confirmpassword:"",
+          msg:""
+      };
+    }
+
+    static contextType = MyContext
+    ChangePassword = async () => {
+        const{password , confirmpassword} = this.state;
+        const { dataArray } = this.context; 
+        var email = dataArray[0]["gmail"]
+        console.log(email)
+        if (password.length >= 6)
+            {
+                    this.setState({ msg: "" });
+                    if ( confirmpassword !="" && password == confirmpassword )
+                    {
+                        this.setState({ msg: "" });
+                        const url = apiUrl + "userchangepassword"
+                        let result = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                              "gmail": email,
+                              "password": password,
+                        }),
+                        });
+                        result = await result.json();
+                        if (result)
+                        {
+                            if(result == "success")
+                            {
+                                    this.props.navigation.navigate('Login'); 
+                            }
+                            else if (result == "error")
+                            {
+                                this.setState({ msg: "Chage password fail" });
+                            }
+                            else   this.setState({ msg: "some thing is wrong" });    
+                        }
+                    } else  this.setState({ msg: "Password and  verify password  do not match" });
+                }else  this.setState({ msg: "Password must have at least 6 characters" });
+      };
+
+
     render() {
+        const {msg} = this.state;
         return(
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView behavior='padding' style={styles.container}>
@@ -25,15 +79,17 @@ export default class SignUp extends Component {
                             <View style={styles.inputArea}>
                                 <Image source={require('../assets/img/padlock.png')} style={styles.imgInput}/>
                                 <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                                <TextInput style={styles.inputAccount} placeholder='New password' secureTextEntry={true}/>
+                                <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ password: text })} placeholder='New password' secureTextEntry={true}/>
                             </View>
                             <View style={styles.inputArea}>
                                 <Image source={require('../assets/img/password.png')} style={styles.imgInput}/>
                                 <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                                <TextInput style={styles.inputAccount} placeholder='Verify password' secureTextEntry={true}/>
+                                <TextInput style={styles.inputAccount} onChangeText={text => this.setState({ confirmpassword: text })} placeholder='Verify password' secureTextEntry={true}/>
                             </View>
-                            <TouchableOpacity onPress={ this.LoginPage } style={styles.bntLogin}>
+                            <Text>{msg}</Text>
+                            <TouchableOpacity onPress={ this.ChangePassword } style={styles.bntLogin}>
                                 <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold'}}>Reset</Text>
+
                             </TouchableOpacity>
                         </View>
                     </TouchableWithoutFeedback>

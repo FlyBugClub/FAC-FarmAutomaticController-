@@ -27,13 +27,28 @@ export default class Login extends Component {
             msg:'',         
             email: 'admin@gmail.com',
             password: '123456',
-            isChecked: false
+            isChecked: false,
+            secureTextEntry: true,
+            status:"show password"
         };
       }
     toggleCheckbox = () => {
+        
         this.setState(prevState => ({
             isChecked: !prevState.isChecked
         }));
+        const {isChecked} = this.state
+        if (isChecked)
+        {
+            this.setState({ status: "show password" })
+            this.setState({ secureTextEntry: true });
+        }
+        else
+        {
+            this.setState({ status: "hide password" })
+            this.setState({ secureTextEntry: false });
+        } 
+    
     };
       static contextType = MyContext;
     //   handleLogin = async () => {
@@ -67,9 +82,7 @@ export default class Login extends Component {
         const { email, password } = this.state;
         const { addDataAtIndex } = this.context;
         const url = apiUrl + `login/${email}/${password}`;
-      
         try {
-            console.log(url)
             if (email != "" && password!="")
             {
                 const response = await fetch(url);
@@ -83,8 +96,6 @@ export default class Login extends Component {
                     const combinedJson = Object.assign({}, json[0], json[1]);
                     addDataAtIndex(combinedJson, 0);
                     this.setState({ msg: "" });
-                    // this.setState({ email: "" });
-                    // this.setState({ password: "" });
                     this.props.navigation.navigate('TabNavigator');
                 } else {
                     this.setState({ msg: "email or password are incorrect" });
@@ -111,7 +122,7 @@ export default class Login extends Component {
         this.props.navigation.navigate('ForgotPassword'); 
     };
     render() {
-        const { msg } = this.state;
+        const { msg,secureTextEntry,status } = this.state;
         const { isChecked } = this.state;
         
         return(
@@ -126,7 +137,7 @@ export default class Login extends Component {
                 <View style={styles.inputArea}>
                     <MIcon name="password" size={28} color={'#2BA84A'}/>
                     <Text style={{color: '#2BA84A', marginLeft:4, marginRight: 2}}>|</Text>
-                    <TextInput style={styles.inputAccount} placeholder='Password'onChangeText={text => this.setState({ password: text })} secureTextEntry={true}/>
+                    <TextInput style={styles.inputAccount} placeholder='Password'onChangeText={text => this.setState({ password: text })} secureTextEntry={secureTextEntry}/>
                 </View>
                 <Text>{msg}</Text>
                 <View style={styles.functionArea}>
@@ -135,7 +146,7 @@ export default class Login extends Component {
                             <View style={[styles.checkbox, isChecked && styles.checked]}>
                                 {isChecked && <Ionicons name="checkmark" size={14} color="white" />}
                             </View>
-                            <Text style={styles.label}>Remember</Text>
+                            <Text style={styles.label}>{status}</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={{marginRight: 15}}>

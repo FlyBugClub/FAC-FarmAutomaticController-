@@ -15,7 +15,6 @@ import {
 } from "react-native"; 
     // import { send, EmailJSResponseStatus } from '@emailjs/react-native';
     import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-    import apiUrl from "../apiURL"
     import MyContext from "../DataContext"
     import App from '../App'
 
@@ -51,10 +50,9 @@ export default class ForgotPassword extends Component {
     if (otp == otp_confirm)
     {
       this.setState({ msg: "" });
-      console.log("ok")
+      this.props.navigation.navigate('ChangePassword');  
     }
     else this.setState({ msg: "OTP are incorects" });
-      // this.props.navigation.navigate('Login');  
   };
    
   onSubmit = async () => { 
