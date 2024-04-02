@@ -167,15 +167,15 @@ export default RootComponent = function() {
     <MyContext.Provider value={{ dataArray, addDataAtIndex  }}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name='Login' component={Login}/>
-        <Stack.Screen name='ChangePassword' component={ChangePassword}/>
-        {/* <Stack.Screen name='PremiumPakage' component={PremiumPakage}/> */}
         
+        {/* <Stack.Screen name='PremiumPakage' component={PremiumPakage}/> */}
+        <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='TabNavigator' component={TabNavigator}/>
         <Stack.Screen name='SignUp' component={SignUp}/>
         <Stack.Screen name='OTP' component={OTP}/>
         <Stack.Screen name='User' component={User}/>
         <Stack.Screen name='ForgotPassword' component={ForgotPassword}/>
+        <Stack.Screen name='ChangePassword' component={ChangePassword}/>
       </Stack.Navigator>
     </NavigationContainer>
   </MyContext.Provider>
