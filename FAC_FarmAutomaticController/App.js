@@ -25,6 +25,8 @@ import CameraConnectDevice from './Views/CameraConnectDevice.js'
 import AddDevice from './Views/AddDevice.js'
 import PremiumPakage from './Views/PremiumPakage.js'
 import ChangePassword from './Views/ChangePassword.js'
+import AddFarmForm from './Views/AddFarmForm.js'
+import DateTime from './Views/DateTime.js'
 
 
 
@@ -48,6 +50,10 @@ function StackNavigator() {
       <Stack.Screen name='CameraConnectDevice' component={CameraConnectDevice}/>
       <Stack.Screen name='AddDevice' component={AddDevice}/>
       <Stack.Screen name='PremiumPakage' component={PremiumPakage}/>
+      <Stack.Screen name='AddFarmForm' component={AddFarmForm}/>
+
+
+      <Stack.Screen name='DateTime' component={DateTime}/>
     </Stack.Navigator>
   );
 };

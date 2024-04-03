@@ -481,6 +481,13 @@ export default class Details extends Component {
             >
               Farm 1
             </Text>
+            <View style={{width: '90%', marginBottom: 12}}>
+              <Text style={{color: 'white', textAlign: 'center'}}>
+              It is a long established fact that a reader will be distracted by
+              the readable
+            </Text>
+            </View>
+            
           </SafeAreaView>
         </LinearGradient>
         <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
@@ -618,7 +625,10 @@ export default class Details extends Component {
                         onChange={this.onChange}
                       />
                     )}
-                    <TouchableOpacity style={styles.btnPlus} onPress={this.toggleDatePicker}>
+                    <TouchableOpacity
+                      style={styles.btnPlus}
+                      onPress={this.toggleDatePicker}
+                    >
                       <Image
                         source={require("../assets/img/plus.png")}
                         style={styles.plusIcon}
@@ -731,7 +741,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   TitleTop: {
-    top: -10,
+    top: -5,
     textAlign: "center",
     fontSize: 28,
     fontWeight: "bold",
