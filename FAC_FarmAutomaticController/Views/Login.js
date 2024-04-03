@@ -92,9 +92,12 @@ export default class Login extends Component {
                 }
             
                 const json = await response.json();
+                // console.log(json)
+                // console.log("hehe")
+                
                 if (json != null) {
-                    const combinedJson = Object.assign({}, json[0], json[1]);
-                    addDataAtIndex(combinedJson, 0);
+                    // const combinedJson = Object.assign({}, json[0], json[1],json[2]);
+                    addDataAtIndex(json[0], 0);
                     this.setState({ msg: "" });
                     this.props.navigation.navigate('TabNavigator');
                 } else {

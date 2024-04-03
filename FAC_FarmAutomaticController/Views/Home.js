@@ -6,23 +6,23 @@ import {
   View,
   TouchableOpacity,
   SafeAreaView,
-  Image,
-  FlatList,
+  // Image,
+  // FlatList,
   ScrollView,
   StatusBar,
 } from "react-native";
-import {
-  LineChart,
-  BarChart,
-  PieChart,
-  ProgressChart,
-  ContributionGraph,
-  StackedBarChart,
-} from "react-native-chart-kit";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { Icon } from "@rneui/base";
+// import {
+//   LineChart,
+//   BarChart,
+//   PieChart,
+//   ProgressChart,
+//   ContributionGraph,
+//   StackedBarChart,
+// } from "react-native-chart-kit";
+// import Ionicons from "react-native-vector-icons/Ionicons";
+// import { Icon } from "@rneui/base";
 import MyContext from "../DataContext.js";
-import { index } from "d3-array";
+// import { index } from "d3-array";
 // import axios from "axios";
 const data = [];
 //
@@ -36,9 +36,10 @@ export default class Home extends Component {
     this.props.navigation.navigate("SignUp");
   };
   DetailPage = (index) => {
-    // console.log(index)
+    console.log(index)
     this.GetEquidmentValues(index);
   };
+  
   static contextType = MyContext;
   GetEquidmentValues = async (index) => {
     const { addDataAtIndex } = this.context;
@@ -48,11 +49,11 @@ export default class Home extends Component {
 
   render() {
     const { dataArray } = this.context;
-    // console.log(dataArray)
+    console.log(dataArray)
     // const jsonObject = JSON.parse(dataArray[1]);
     var keyCount = 0;
     for (const key in dataArray[0]) {
-      if (key === "id_user") {
+      if (key === "user") {
         break;
       }
       keyCount = keyCount + 1;
@@ -67,7 +68,7 @@ export default class Home extends Component {
       data[index] = Object.values(dataArray[0])[index];
       // console.log(data)
       farmHouseList.push(
-        <View>
+        <View key={index}>
           <TouchableOpacity
             style={styles.famrItem}
             onPress={() => handleDetailPress(index)}
@@ -77,7 +78,7 @@ export default class Home extends Component {
             >
               <Text style={styles.titleItem} numberOfLines={1}>
                 {" "}
-                Farm {index}: {data[index]["name_esp"]}
+                Farm {index}: {data[index]["name"]}
               </Text>
               <View style={styles.connectArea}>
                 <View style={styles.dot}></View>
@@ -89,9 +90,9 @@ export default class Home extends Component {
               the readable
             </Text>
             <View style={{flexDirection: 'row', gap: 18, marginTop: 5, marginLeft: 4}}>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Humidiry: 2</Text>
-                <Text style={{ fontSize: 13, color: '#777777' }}>pH: 1</Text>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Water pump: 6</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>Humidiry: {data[index]["dht"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>pH: {data[index]["ph"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>Water pump: {data[index]["bc"]}</Text>
             </View>
           </TouchableOpacity>
         </View>

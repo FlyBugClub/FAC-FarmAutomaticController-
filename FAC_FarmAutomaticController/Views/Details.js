@@ -224,14 +224,28 @@ export default class Details extends Component {
       this.toggleDatePicker();
     }
   };
+  getvalue = async () => {
+    const { dataArray } = this.context;
+    const url = apiUrl + `getvalue/${dataArray[1]["id_esp"]}`;
+    // console.log(url);
+    console.log(dataArray[1])
+    const response = await fetch(url);
+                if (!response.ok ) {
+                    this.setState({ msg: "error" });
+                    return;
+                }
+            
+                const json = await response.json();
+                // console.log(json[0])
+  };
 
-  render() {
+  render()  {
+    const { dataArray } = this.context;
     //Switch
     const { switch1Enabled, switch2Enabled, switch3Enabled } = this.state;
 
     //API
-    const { status, messageList, sliderValue, isEnabled, message_humid } =
-      this.state;
+    const { status, messageList, sliderValue, isEnabled, message_humid } =this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
@@ -239,30 +253,26 @@ export default class Details extends Component {
     //DateTime
     const { dateTime, showPicker } = this.state;
 
-    const { dataArray } = this.context;
-    const url = apiUrl + `getequidmentvalues/${dataArray[1]["id_esp"]}`;
-    fetch(url)
-      .then((res) => {
-        return res.json();
-      })
-      .then((json) => {
-        if (json != null) {
-          if (Object.values(json[0]) == 0) {
-            this.setState({ isEnabled: false });
-          } else this.setState({ isEnabled: true });
+    
 
-          for (const key in json) {
-            // console.log(Object.keys(json[key]));
-            const keys_dht = Object.keys(json[key]);
+    // console.log("+++++++++++++++++++++++++++++")
+    // console.log(dataArray[1])
+    this.getvalue()
+  
+          // if (Object.values(json[0]) == 0) {
+          //   this.setState({ isEnabled: false });
+          // } else this.setState({ isEnabled: true });
 
-            if (keys_dht.includes("id_dht") && flag_humid_respect == 0) {
-              flag_humid_respect = 1;
-              this.setState({ sliderValue: json[key]["respect"] });
-            }
-          }
-        }
-      });
+          // for (const key in json) {
+          //   // console.log(Object.keys(json[key]));
+          //   const keys_dht = Object.keys(json[key]);
 
+          //   if (keys_dht.includes("id_dht") && flag_humid_respect == 0) {
+          //     flag_humid_respect = 1;
+          //     this.setState({ sliderValue: json[key]["respect"] });
+          //   }
+          // }
+      
     // Foreach Timer
     const TimerList = [];
     // Sử dụng forEach để thêm các phần tử vào mảng items
@@ -461,6 +471,7 @@ export default class Details extends Component {
     });
 
     return (
+
       <View style={styles.container}>
         <StatusBar backgroundColor="#bfd200" />
         <LinearGradient
@@ -469,7 +480,8 @@ export default class Details extends Component {
         >
           <SafeAreaView>
             <View style={styles.TitleTopArea}>
-              <Text style={styles.TitleTop}>MUSHROOM FARM</Text>
+            
+              <Text style={styles.TitleTop}>{dataArray[1]["name"]}</Text>
             </View>
             <Text
               style={[
@@ -479,7 +491,6 @@ export default class Details extends Component {
                 { marginTop: 5 },
               ]}
             >
-              Farm 1
             </Text>
             <View style={{width: '90%', marginBottom: 12}}>
               <Text style={{color: 'white', textAlign: 'center'}}>
