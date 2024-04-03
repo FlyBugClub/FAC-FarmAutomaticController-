@@ -1,45 +1,25 @@
-import React, { Component } from "react";
+import * as React from "react";
+import { Component, useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableOpacity,
+  TextInput,
   SafeAreaView,
   StatusBar,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import { LinearGradient } from "expo-linear-gradient";
-import { index } from "d3";
+import { BarCodeScanner } from "expo-barcode-scanner";
 
-export default class AddDevice extends Component {
+export default class AddFarmForm extends Component {
   OpenCamera = () => {
     console.log("Open Camera");
-    this.props.navigation.navigate("CameraConnectDevice");
+    this.props.navigation.navigate("CameraCreateNewFarmHouse");
   };
-
-  state = {
-    selecedCat: "",
-    selectedLanguage: "",
-    category: [
-      {
-        itemName: "Farm 0",
-      },
-      {
-        itemName: "Farm 1",
-      },
-      {
-        itemName: "Farm 2",
-      },
-    ],
-  };
-
-  async onValueChangeCat(value) {
-    this.setState({ selecedCat: value });
-  }
 
   render() {
     return (
@@ -70,37 +50,14 @@ export default class AddDevice extends Component {
                 </TouchableOpacity>
               </View>
               <View style={styles.containerContent}>
-                <TextInput placeholder="ID device" style={styles.input} />
-                <TextInput placeholder="Device name" style={styles.input} />
-                <View style={styles.optionArea}>
-                  <View>
-                    <Text style={{color:''}}>Farm house</Text>
-                  </View>
-                  <View>
-                    <Picker
-                      style={{ width: 210 }}
-                      mode="dropdown"
-                      selectedValue={this.state.selecedCat}
-                      onValueChange={this.onValueChangeCat.bind(this)}
-                    >
-                      {this.state.category.map((item, index) => (
-                        <Picker.Item
-                          color="#333"
-                          label={item.itemName}
-                          value={item.itemName}
-                          index={index}
-                        />
-                      ))}
-                    </Picker>
-                  </View>
-                </View>
-              </View>
-              <View style={{ alignItems: "center", justifyContent: "center" }}>
-                <TouchableOpacity
-                  style={styles.btnAdd}
-                  onPress={this.OpenCamera}
-                >
-                  <Text style={styles.btnText}>Scan QR to connect device</Text>
+                <TextInput placeholder="Farm name" style={styles.input} />
+                <TextInput
+                  placeholder="Description"
+                  style={styles.textArea}
+                  multiline={true}
+                />
+                <TouchableOpacity style={styles.btnAdd}>
+                  <Text style={styles.btnText}>Create</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -122,7 +79,7 @@ const styles = StyleSheet.create({
   },
   NavigationTop: {
     width: "100%",
-    height: 90,
+    height: 80,
     backgroundColor: "#73A942",
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
@@ -136,6 +93,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
+  textLogin: {
+    marginLeft: 20,
+  },
   input: {
     width: "85%",
     height: 40,
@@ -148,19 +108,8 @@ const styles = StyleSheet.create({
     opacity: 0.9,
     backgroundColor: "#edede9",
   },
-  btnQrCode: {
-    paddingTop: 3,
-    paddingBottom: 3,
-    paddingLeft: 10,
-    paddingRight: 10,
-    backgroundColor: "#80b918",
-    borderRadius: 20,
-  },
-  btnQrCodeText: {
-    color: "white",
-  },
   btnAdd: {
-    width: "83%",
+    width: "85%",
     height: 40,
     margin: 10,
     backgroundColor: "#80b918",
@@ -173,18 +122,25 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
   },
-  optionArea: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  textArea: {
+    width: "85%",
+    height: 100,
+    margin: 10,
     backgroundColor: "#edede9",
-    paddingLeft: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    borderRadius: 18,
-    elevation: 1,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    textAlignVertical: "top", // Căn văn bản từ trên xuống
   },
-  
+  btnQrCode: {
+    paddingTop: 3,
+    paddingBottom: 3,
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: "#80b918",
+    borderRadius: 20,
+  },
+  btnQrCodeText: {
+    color: "white",
+  },
 });

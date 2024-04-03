@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Platform,
   TouchableOpacity,
   Image,
   Alert,
@@ -12,10 +13,13 @@ import {
   StatusBar,
   SafeAreaView,
   Dimensions,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
 import { LineChart } from "react-native-chart-kit";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 import * as Notifications from "expo-notifications";
@@ -73,7 +77,16 @@ export default class Details extends Component {
       switch1Enabled: false,
       switch2Enabled: true,
       switch3Enabled: false,
+
+      modalVisible: false,
+      settingTimeModal: false,
+
+      //DateTime
+      dateTime: new Date(),
+      showPicker: false,
     };
+    // this.setDate = this.setDate.bind(this);
+    // this.setShowPicker = this.setShowPicker.bind(this);
   }
   static contextType = MyContext;
   componentDidMount() {
@@ -83,6 +96,11 @@ export default class Details extends Component {
   HistoryPage = () => {
     console.log("HistoryPage");
     this.props.navigation.navigate("History"); // 'History' là tên của màn hình History trong định tuyến của bạn
+  };
+
+  DateTimePage = () => {
+    console.log("DateTime Page");
+    this.props.navigation.navigate("DateTime"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
   handleSliderChange = (value) => {
@@ -181,10 +199,46 @@ export default class Details extends Component {
     });
   };
 
+  //Set Modal View
+  setModalVisible = (visible) => {
+    this.setState({ modalVisible: visible });
+  };
+
+  setSettingTimeModalVisible = (visible) => {
+    this.setState({ settingTimeModal: visible });
+  };
+
+  //DateTime
+  toggleDatePicker = () => {
+    this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
+  };
+
+  onChange = (event, selectedDate) => {
+    if (event.type === "set") {
+      const currentDate = selectedDate || this.state.date;
+      this.setState({ date: currentDate });
+      if (Platform.OS === "android") {
+        this.toggleDatePicker();
+      }
+    } else {
+      this.toggleDatePicker();
+    }
+  };
+
   render() {
+    //Switch
     const { switch1Enabled, switch2Enabled, switch3Enabled } = this.state;
+
+    //API
     const { status, messageList, sliderValue, isEnabled, message_humid } =
       this.state;
+
+    //Modal
+    const { modalVisible, settingTimeModal } = this.state;
+
+    //DateTime
+    const { dateTime, showPicker } = this.state;
+
     const { dataArray } = this.context;
     const url = apiUrl + `getequidmentvalues/${dataArray[1]["id_esp"]}`;
     fetch(url)
@@ -208,6 +262,41 @@ export default class Details extends Component {
           }
         }
       });
+
+    // Foreach Timer
+    const TimerList = [];
+    // Sử dụng forEach để thêm các phần tử vào mảng items
+    [...Array(18)].forEach((_, index) => {
+      TimerList.push(
+        <View>
+          <View style={styles.timeArea}>
+            <Text style={styles.timeText}>{index}:50</Text>
+            <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity>
+                <Image
+                  source={require("../assets/img/settings.png")}
+                  style={styles.imgIcon}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Image
+                  source={require("../assets/img/remove.png")}
+                  style={styles.imgIcon}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View style={styles.line}></View>
+          </View>
+        </View>
+      );
+    });
 
     const deviceList = [];
     // Sử dụng forEach để thêm các phần tử vào mảng items
@@ -263,56 +352,109 @@ export default class Details extends Component {
                   { backgroundColor: switch3Enabled ? "white" : "#D9D9D9" },
                 ]}
               >
-                <Text
-                  style={[
-                    styles.time,
-                    { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                  ]}
+                <TouchableOpacity
+                  style={{ flexDirection: "row" }}
+                  onPress={() => this.setModalVisible(true)}
                 >
-                  09:35
-                </Text>
-                <Text
-                  style={[
-                    styles.time,
-                    { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                  ]}
-                >
-                  09:40
-                </Text>
-                <Text
-                  style={[
-                    styles.time,
-                    { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                  ]}
-                >
-                  09:45
-                </Text>
-                <Text
-                  style={[
-                    styles.time,
-                    { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                  ]}
-                >
-                  09:50
-                </Text>
-                <Text
-                  style={[
-                    styles.time,
-                    { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                  ]}
-                >
-                  09:55
-                </Text>
+                  <Text
+                    style={[
+                      styles.time,
+                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                    ]}
+                  >
+                    09:35
+                  </Text>
+                  <Text
+                    style={[
+                      styles.time,
+                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                    ]}
+                  >
+                    09:40
+                  </Text>
+                  <Text
+                    style={[
+                      styles.time,
+                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                    ]}
+                  >
+                    09:45
+                  </Text>
+                  <Text
+                    style={[
+                      styles.time,
+                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                    ]}
+                  >
+                    09:50
+                  </Text>
+                  <Text
+                    style={[
+                      styles.time,
+                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                    ]}
+                  >
+                    09:55
+                  </Text>
+                </TouchableOpacity>
               </ScrollView>
-              <TouchableOpacity style={styles.btnPlus}>
+              {/* Modal Timer List*/}
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                  this.setModalVisible(!modalVisible);
+                }}
+              >
+                <View style={styles.overlay} />
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <TouchableOpacity
+                      style={{ alignItems: "flex-end", top: 20, right: 20 }}
+                      onPress={() => this.setModalVisible(false)}
+                    >
+                      <Image
+                        source={require("../assets/img/x.png")}
+                        style={{
+                          width: 20,
+                          height: 20,
+                          marginBottom: 20,
+                          tintColor: "#DEDEDE",
+                        }}
+                      />
+                    </TouchableOpacity>
+
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                      {TimerList}
+                    </ScrollView>
+                  </View>
+                </View>
+              </Modal>
+              {/* Modal Setting Time */}
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={settingTimeModal}
+                onRequestClose={() => {
+                  this.setSettingTimeModalVisible(!settingTimeModal);
+                }}
+              >
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}></View>
+                </View>
+              </Modal>
+              <TouchableOpacity
+                style={styles.btnPlus}
+                onPress={this.toggleDatePicker}
+              >
                 <Image
                   source={require("../assets/img/plus.png")}
                   style={styles.plusIcon}
                 />
               </TouchableOpacity>
+              {/* Modal Add Timer */}
             </View>
-
-            <View></View>
           </View>
         </View>
       );
@@ -339,6 +481,13 @@ export default class Details extends Component {
             >
               Farm 1
             </Text>
+            <View style={{width: '90%', marginBottom: 12}}>
+              <Text style={{color: 'white', textAlign: 'center'}}>
+              It is a long established fact that a reader will be distracted by
+              the readable
+            </Text>
+            </View>
+            
           </SafeAreaView>
         </LinearGradient>
         <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
@@ -420,56 +569,72 @@ export default class Details extends Component {
                         },
                       ]}
                     >
-                      <Text
-                        style={[
-                          styles.time,
-                          { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                        ]}
+                      <TouchableOpacity
+                        style={{ flexDirection: "row" }}
+                        onPress={() => this.setModalVisible(true)}
                       >
-                        09:35
-                      </Text>
-                      <Text
-                        style={[
-                          styles.time,
-                          { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                        ]}
-                      >
-                        09:40
-                      </Text>
-                      <Text
-                        style={[
-                          styles.time,
-                          { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                        ]}
-                      >
-                        09:45
-                      </Text>
-                      <Text
-                        style={[
-                          styles.time,
-                          { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                        ]}
-                      >
-                        09:50
-                      </Text>
-                      <Text
-                        style={[
-                          styles.time,
-                          { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                        ]}
-                      >
-                        09:55
-                      </Text>
+                        {/* Data time */}
+                        <Text
+                          style={[
+                            styles.time,
+                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                          ]}
+                        >
+                          09:35
+                        </Text>
+                        <Text
+                          style={[
+                            styles.time,
+                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                          ]}
+                        >
+                          09:40
+                        </Text>
+                        <Text
+                          style={[
+                            styles.time,
+                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                          ]}
+                        >
+                          09:45
+                        </Text>
+                        <Text
+                          style={[
+                            styles.time,
+                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                          ]}
+                        >
+                          09:50
+                        </Text>
+                        <Text
+                          style={[
+                            styles.time,
+                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                          ]}
+                        >
+                          09:55
+                        </Text>
+                      </TouchableOpacity>
                     </ScrollView>
-                    <TouchableOpacity style={styles.btnPlus}>
+                    {/* DateTimePicker */}
+                    {showPicker && (
+                      <DateTimePicker
+                        mode="time"
+                        display="spinner"
+                        value={dateTime}
+                        onChange={this.onChange}
+                      />
+                    )}
+                    <TouchableOpacity
+                      style={styles.btnPlus}
+                      onPress={this.toggleDatePicker}
+                    >
                       <Image
                         source={require("../assets/img/plus.png")}
                         style={styles.plusIcon}
                       />
                     </TouchableOpacity>
                   </View>
-
-                  <View></View>
                 </View>
               </View>
               <Text style={styles.titleNote}>Custom control</Text>
@@ -576,7 +741,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   TitleTop: {
-    top: -10,
+    top: -5,
     textAlign: "center",
     fontSize: 28,
     fontWeight: "bold",
@@ -658,5 +823,53 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     tintColor: "white",
+  },
+
+  // Modal View
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Tối đi màn hình với độ trong suốt 50%
+  },
+  modalContainer: {
+    flex: 1,
+    // width: "100%",
+    // height: '70%',
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    height: "100%",
+    backgroundColor: "white",
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  timeArea: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 10,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  timeText: {
+    fontSize: 26,
+  },
+  imgIcon: {
+    width: 24,
+    height: 24,
+    marginLeft: 9,
+    marginRight: 9,
+    tintColor: "#DEDEDE",
+  },
+  line: {
+    width: "95%",
+    height: 0.5,
+
+    backgroundColor: "#D9D9D9",
   },
 });

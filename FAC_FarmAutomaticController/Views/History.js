@@ -10,6 +10,7 @@ import {
   ScrollView,
   statusbar,
   Image,
+  
 } from "react-native";
 import {
   LineChart,

@@ -15,6 +15,11 @@ export default class AddFarm extends Component {
         this.props.navigation.navigate('AddDevice'); 
     };
 
+    AddFarmFormPage = () => {
+        console.log("Add Farm Form Page");
+        this.props.navigation.navigate('AddFarmForm'); 
+    };
+
     render() {
         return(
             <View style={styles.Container}>
@@ -26,7 +31,7 @@ export default class AddFarm extends Component {
                 </LinearGradient>
                 <SafeAreaView style={styles.safeContainer}>
                     <View style={{width: '90%'}}>    
-                        <TouchableOpacity style={styles.btnAdd} onPress={this.OpenCamera}>
+                        <TouchableOpacity style={styles.btnAdd} onPress={this.AddFarmFormPage}>
                             <Text style={styles.btnText}>Create new farm house</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.btnAdd} onPress={this.AddDevicePage}>
