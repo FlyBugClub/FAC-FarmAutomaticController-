@@ -20,6 +20,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 import * as Notifications from "expo-notifications";
@@ -84,6 +85,18 @@ export default class Details extends Component {
       //DateTime
       dateTime: new Date(),
       showPicker: false,
+
+      //Picker
+      selecedCat: "Independence",
+      selectedLanguage: "",
+      category: [
+        {
+          itemName: "All",
+        },
+        {
+          itemName: "Independence",
+        },
+      ],
     };
     // this.setDate = this.setDate.bind(this);
     // this.setShowPicker = this.setShowPicker.bind(this);
@@ -225,6 +238,11 @@ export default class Details extends Component {
     }
   };
 
+  //Picker
+  async onValueChangeCat(value) {
+    this.setState({ selecedCat: value });
+  }
+
   render() {
     //Switch
     const { switch1Enabled, switch2Enabled, switch3Enabled } = this.state;
@@ -359,7 +377,7 @@ export default class Details extends Component {
                   <Text
                     style={[
                       styles.time,
-                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
                     ]}
                   >
                     09:35
@@ -367,7 +385,7 @@ export default class Details extends Component {
                   <Text
                     style={[
                       styles.time,
-                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
                     ]}
                   >
                     09:40
@@ -375,7 +393,7 @@ export default class Details extends Component {
                   <Text
                     style={[
                       styles.time,
-                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
                     ]}
                   >
                     09:45
@@ -383,7 +401,7 @@ export default class Details extends Component {
                   <Text
                     style={[
                       styles.time,
-                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
                     ]}
                   >
                     09:50
@@ -391,7 +409,7 @@ export default class Details extends Component {
                   <Text
                     style={[
                       styles.time,
-                      { Color: switch3Enabled ? "#333" : "#8A8A8A" },
+                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
                     ]}
                   >
                     09:55
@@ -431,19 +449,6 @@ export default class Details extends Component {
                   </View>
                 </View>
               </Modal>
-              {/* Modal Setting Time */}
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={settingTimeModal}
-                onRequestClose={() => {
-                  this.setSettingTimeModalVisible(!settingTimeModal);
-                }}
-              >
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}></View>
-                </View>
-              </Modal>
               <TouchableOpacity
                 style={styles.btnPlus}
                 onPress={this.toggleDatePicker}
@@ -481,13 +486,12 @@ export default class Details extends Component {
             >
               Farm 1
             </Text>
-            <View style={{width: '90%', marginBottom: 12}}>
-              <Text style={{color: 'white', textAlign: 'center'}}>
-              It is a long established fact that a reader will be distracted by
-              the readable
-            </Text>
+            <View style={{ width: "90%", marginBottom: 12 }}>
+              <Text style={{ color: "white", textAlign: "center" }}>
+                It is a long established fact that a reader will be distracted
+                by the readable
+              </Text>
             </View>
-            
           </SafeAreaView>
         </LinearGradient>
         <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
@@ -516,129 +520,166 @@ export default class Details extends Component {
           </View>
           <View style={styles.midle}>
             <View style={{ width: "95%" }}>
-              <Text style={styles.titleNote}>All control</Text>
-              <View style={styles.optionArea}>
-                <View style={{}}>
-                  <View style={styles.function}>
-                    <Text>Custom</Text>
-                    <Switch
-                      trackColor={{ false: "#767577", true: "#81b0ff" }}
-                      thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                      ios_backgroundColor="#3e3e3e"
-                      onValueChange={this.handleSwitch1Change}
-                      value={switch1Enabled}
-                      style={{}}
-                    />
-                    <Text>Auto</Text>
-                    <Switch
-                      trackColor={{ false: "#767577", true: "#81b0ff" }}
-                      thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                      ios_backgroundColor="#3e3e3e"
-                      onValueChange={this.handleSwitch2Change}
-                      value={switch2Enabled}
-                      style={{}}
-                    />
-                    <Slider
-                      style={{ width: 110, height: 40 }}
-                      minimumValue={50}
-                      maximumValue={95}
-                      value={sliderValue}
-                      onValueChange={this.handleSliderChange}
-                      onSlidingComplete={this.handleSliderComplete}
-                      minimumTrackTintColor={"#81BB4D"}
-                    />
-                    <Text>85%</Text>
-                  </View>
-                  <View style={styles.function}>
-                    <Text>Timer</Text>
-                    <Switch
-                      trackColor={{ false: "#767577", true: "#81b0ff" }}
-                      thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                      ios_backgroundColor="#3e3e3e"
-                      onValueChange={this.handleSwitch3Change}
-                      value={switch3Enabled}
-                      style={{ marginLeft: 11 }}
-                    />
-                    <ScrollView
-                      horizontal={true}
-                      showsHorizontalScrollIndicator={false}
-                      style={[
-                        styles.timer,
-                        {
-                          backgroundColor: switch3Enabled ? "white" : "#D9D9D9",
-                        },
-                      ]}
-                    >
-                      <TouchableOpacity
-                        style={{ flexDirection: "row" }}
-                        onPress={() => this.setModalVisible(true)}
-                      >
-                        {/* Data time */}
-                        <Text
-                          style={[
-                            styles.time,
-                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                          ]}
-                        >
-                          09:35
-                        </Text>
-                        <Text
-                          style={[
-                            styles.time,
-                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                          ]}
-                        >
-                          09:40
-                        </Text>
-                        <Text
-                          style={[
-                            styles.time,
-                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                          ]}
-                        >
-                          09:45
-                        </Text>
-                        <Text
-                          style={[
-                            styles.time,
-                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                          ]}
-                        >
-                          09:50
-                        </Text>
-                        <Text
-                          style={[
-                            styles.time,
-                            { Color: switch3Enabled ? "#333" : "#8A8A8A" },
-                          ]}
-                        >
-                          09:55
-                        </Text>
-                      </TouchableOpacity>
-                    </ScrollView>
-                    {/* DateTimePicker */}
-                    {showPicker && (
-                      <DateTimePicker
-                        mode="time"
-                        display="spinner"
-                        value={dateTime}
-                        onChange={this.onChange}
+              <View style={styles.dropdownOptionArea}>
+                <Text style={styles.dropdownOptionText}>Control</Text>
+                <View>
+                  <Picker
+                    style={{ width: 180 }}
+                    mode="dropdown"
+                    selectedValue={this.state.selecedCat}
+                    onValueChange={this.onValueChangeCat.bind(this)}
+                  >
+                    {this.state.category.map((item, index) => (
+                      <Picker.Item
+                        color="#333"
+                        label={item.itemName}
+                        value={item.itemName}
+                        index={index}
                       />
-                    )}
-                    <TouchableOpacity
-                      style={styles.btnPlus}
-                      onPress={this.toggleDatePicker}
-                    >
-                      <Image
-                        source={require("../assets/img/plus.png")}
-                        style={styles.plusIcon}
-                      />
-                    </TouchableOpacity>
-                  </View>
+                    ))}
+                  </Picker>
                 </View>
               </View>
-              <Text style={styles.titleNote}>Custom control</Text>
-              {deviceList}
+              {this.state.selecedCat === "All" && (
+                <View>
+                  <Text style={styles.titleNote}>All control</Text>
+                  <View style={styles.optionArea}>
+                    <View style={styles.function}>
+                      <Text>Custom</Text>
+                      <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={this.handleSwitch1Change}
+                        value={switch1Enabled}
+                        style={{}}
+                      />
+                      <Text>Auto</Text>
+                      <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={this.handleSwitch2Change}
+                        value={switch2Enabled}
+                        style={{}}
+                      />
+                      <Slider
+                        style={{ width: 110, height: 40 }}
+                        minimumValue={50}
+                        maximumValue={95}
+                        value={sliderValue}
+                        onValueChange={this.handleSliderChange}
+                        onSlidingComplete={this.handleSliderComplete}
+                        minimumTrackTintColor={"#81BB4D"}
+                      />
+                      <Text>85%</Text>
+                    </View>
+                    <View style={styles.function}>
+                      <Text>Timer</Text>
+                      <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={this.handleSwitch3Change}
+                        value={switch3Enabled}
+                        style={{ marginLeft: 11 }}
+                      />
+                      <ScrollView
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        style={[
+                          styles.timer,
+                          {
+                            backgroundColor: switch3Enabled
+                              ? "white"
+                              : "#D9D9D9",
+                          },
+                        ]}
+                      >
+                        <TouchableOpacity
+                          style={{ flexDirection: "row" }}
+                          onPress={() => this.setModalVisible(true)}
+                        >
+                          {/* Data time */}
+                          <Text
+                            style={[
+                              styles.time,
+                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                            ]}
+                          >
+                            09:35
+                          </Text>
+                          <Text
+                            style={[
+                              styles.time,
+                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                            ]}
+                          >
+                            09:40
+                          </Text>
+                          <Text
+                            style={[
+                              styles.time,
+                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                            ]}
+                          >
+                            09:45
+                          </Text>
+                          <Text
+                            style={[
+                              styles.time,
+                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                            ]}
+                          >
+                            09:50
+                          </Text>
+                          <Text
+                            style={[
+                              styles.time,
+                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                            ]}
+                          >
+                            09:55
+                          </Text>
+                        </TouchableOpacity>
+                      </ScrollView>
+                      {/* DateTimePicker */}
+                      {showPicker && (
+                        <DateTimePicker
+                          mode="time"
+                          display="spinner"
+                          value={dateTime}
+                          onChange={this.onChange}
+                        />
+                      )}
+                      <TouchableOpacity
+                        style={styles.btnPlus}
+                        onPress={this.toggleDatePicker}
+                      >
+                        <Image
+                          source={require("../assets/img/plus.png")}
+                          style={styles.plusIcon}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              )}
+              {this.state.selecedCat === "Independence" && (
+                <View>
+                  <Text style={styles.titleNote}>Custom control</Text>
+                  {deviceList}
+                  {/* DateTimePicker */}
+                  {showPicker && (
+                    <DateTimePicker
+                      mode="time"
+                      display="spinner"
+                      value={dateTime}
+                      onChange={this.onChange}
+                    />
+                  )}
+                </View>
+              )}
             </View>
           </View>
         </ScrollView>
@@ -772,6 +813,26 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 5,
   },
+
+  //Drodown Option
+  dropdownOptionArea: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "white",
+    marginTop: 5,
+    marginBottom: 5,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  dropdownOptionText: {
+    marginLeft: 10,
+    fontSize: 16,
+  },
   optionArea: {
     backgroundColor: "white",
     marginTop: 5,
@@ -832,8 +893,6 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    // width: "100%",
-    // height: '70%',
     justifyContent: "flex-end",
   },
   modalContent: {
