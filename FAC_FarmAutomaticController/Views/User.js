@@ -10,6 +10,7 @@ import {
   Dimensions,
   ScrollView,
   NativeModules,
+  I18nManager 
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
@@ -25,13 +26,15 @@ export default class User extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedLanguage: "en",
+      selectedLanguage: "vi",
     };
   }
 
   changeLng = async (lng) => {
     i18next.changeLanguage(lng);
     this.setState({ selectedLanguage: lng });
+    I18nManager.forceRTL(true);
+    I18nManager.allowRTL(true);
 
     // // Lưu ngôn ngữ mới vào AsyncStorage
     // try {
