@@ -21,6 +21,7 @@ import Slider from "@react-native-community/slider";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
+import i18next, { languageResources } from "../services/i18next";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 import * as Notifications from "expo-notifications";
@@ -98,8 +99,6 @@ export default class Details extends Component {
         },
       ],
     };
-    // this.setDate = this.setDate.bind(this);
-    // this.setShowPicker = this.setShowPicker.bind(this);
   }
   static contextType = MyContext;
   componentDidMount() {
@@ -334,7 +333,7 @@ export default class Details extends Component {
           <Text style={styles.titleDevice}>Water pump {index}</Text>
           <View style={{}}>
             <View style={styles.function}>
-              <Text>Custom</Text>
+              <Text>{i18next.t("Custom")}</Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
                 thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -342,7 +341,7 @@ export default class Details extends Component {
                 value={switch1Enabled}
                 style={{}}
               />
-              <Text>Auto</Text>
+              <Text>{i18next.t("Auto")}</Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
                 thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -352,7 +351,7 @@ export default class Details extends Component {
                 style={{}}
               />
               <Slider
-                style={{ width: 110, height: 40 }}
+                style={{ width: 75, height: 40 }}
                 minimumValue={50}
                 maximumValue={95}
                 value={sliderValue}
@@ -363,7 +362,7 @@ export default class Details extends Component {
               <Text>85%</Text>
             </View>
             <View style={styles.function}>
-              <Text>Timer</Text>
+              <Text>{i18next.t("Timer")}</Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
                 thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -488,7 +487,7 @@ export default class Details extends Component {
             
               <Text style={styles.TitleTop}>{dataArray[1]["name"]}</Text>
             </View>
-            <Text
+            {/* <Text
               style={[
                 styles.TitleTop,
                 { fontSize: 20 },
@@ -496,7 +495,7 @@ export default class Details extends Component {
                 { marginTop: 5 },
               ]}
             >
-            </Text>
+            </Text> */}
             <View style={{ width: "90%", marginBottom: 12 }}>
               <Text style={{ color: "white", textAlign: "center" }}>
                 It is a long established fact that a reader will be distracted
@@ -522,9 +521,9 @@ export default class Details extends Component {
             <View style={styles.alarm}>
               <Text style={{ color: "#F12525" }}>
                 <Text style={{ color: "#F12525", fontWeight: "bold" }}>
-                  Note:{" "}
+                {i18next.t("Note")}: 
                 </Text>
-                It is a long established fact that a reader will be distracted
+                 It is a long established fact that a reader will be distracted
                 by the readable content
               </Text>
             </View>
@@ -532,18 +531,18 @@ export default class Details extends Component {
           <View style={styles.midle}>
             <View style={{ width: "95%" }}>
               <View style={styles.dropdownOptionArea}>
-                <Text style={styles.dropdownOptionText}>Control</Text>
+                <Text style={styles.dropdownOptionText}>{i18next.t("Control")}</Text>
                 <View>
                   <Picker
                     style={{ width: 180 }}
                     mode="dropdown"
-                    selectedValue={this.state.selecedCat}
+                    selectedValue={this.state.selecedCat} 
                     onValueChange={this.onValueChangeCat.bind(this)}
                   >
                     {this.state.category.map((item, index) => (
                       <Picker.Item
                         color="#333"
-                        label={item.itemName}
+                        label={i18next.t(item.itemName)}
                         value={item.itemName}
                         index={index}
                       />
@@ -553,10 +552,10 @@ export default class Details extends Component {
               </View>
               {this.state.selecedCat === "All" && (
                 <View>
-                  <Text style={styles.titleNote}>All control</Text>
+                  <Text style={styles.titleNote}>{i18next.t("All control")}</Text>
                   <View style={styles.optionArea}>
                     <View style={styles.function}>
-                      <Text>Custom</Text>
+                      <Text>{i18next.t("Custom")}</Text>
                       <Switch
                         trackColor={{ false: "#767577", true: "#81b0ff" }}
                         thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -565,7 +564,7 @@ export default class Details extends Component {
                         value={switch1Enabled}
                         style={{}}
                       />
-                      <Text>Auto</Text>
+                      <Text>{i18next.t("Auto")}</Text>
                       <Switch
                         trackColor={{ false: "#767577", true: "#81b0ff" }}
                         thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -575,7 +574,7 @@ export default class Details extends Component {
                         style={{}}
                       />
                       <Slider
-                        style={{ width: 110, height: 40 }}
+                        style={{ width: 75, height: 40 }}
                         minimumValue={50}
                         maximumValue={95}
                         value={sliderValue}
@@ -586,7 +585,7 @@ export default class Details extends Component {
                       <Text>85%</Text>
                     </View>
                     <View style={styles.function}>
-                      <Text>Timer</Text>
+                      <Text>{i18next.t("Timer")}</Text>
                       <Switch
                         trackColor={{ false: "#767577", true: "#81b0ff" }}
                         thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -678,7 +677,7 @@ export default class Details extends Component {
               )}
               {this.state.selecedCat === "Independence" && (
                 <View>
-                  <Text style={styles.titleNote}>Custom control</Text>
+                  <Text style={styles.titleNote}>{i18next.t("Custom control")}</Text>
                   {deviceList}
                   {/* DateTimePicker */}
                   {showPicker && (

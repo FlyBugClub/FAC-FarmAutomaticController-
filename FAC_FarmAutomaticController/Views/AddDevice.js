@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { LinearGradient } from "expo-linear-gradient";
+import i18next, { languageResources } from "../services/i18next";
 import { index } from "d3";
 
 export default class AddDevice extends Component {
@@ -58,7 +59,7 @@ export default class AddDevice extends Component {
                 <SafeAreaView
                   style={{ alignItems: "center", justifyContent: "center" }}
                 >
-                  <Text style={styles.title}>Create Farm House</Text>
+                  <Text style={styles.title}>{i18next.t("Add Device")}</Text>
                 </SafeAreaView>
               </LinearGradient>
               <View style={{ alignItems: "flex-end", right: 40 }}>
@@ -66,19 +67,19 @@ export default class AddDevice extends Component {
                   style={styles.btnQrCode}
                   onPress={this.OpenCamera}
                 >
-                  <Text style={styles.btnQrCodeText}>Scan Qr code</Text>
+                  <Text style={styles.btnQrCodeText}>{i18next.t("Scan Qr code")}</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.containerContent}>
-                <TextInput placeholder="ID device" style={styles.input} />
-                <TextInput placeholder="Device name" style={styles.input} />
+                <TextInput placeholder={i18next.t("ID device")} style={styles.input} />
+                <TextInput placeholder={i18next.t("Device name")} style={styles.input} />
                 <View style={styles.optionArea}>
                   <View>
-                    <Text style={{color:''}}>Farm house</Text>
+                    <Text style={{color:''}}>{i18next.t("Farm house")}</Text>
                   </View>
                   <View>
                     <Picker
-                      style={{ width: 210 }}
+                      style={{ width: 220 }}
                       mode="dropdown"
                       selectedValue={this.state.selecedCat}
                       onValueChange={this.onValueChangeCat.bind(this)}
@@ -100,7 +101,7 @@ export default class AddDevice extends Component {
                   style={styles.btnAdd}
                   onPress={this.OpenCamera}
                 >
-                  <Text style={styles.btnText}>Scan QR to connect device</Text>
+                  <Text style={styles.btnText}>{i18next.t("Create")}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -174,6 +175,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   optionArea: {
+    width: '83%',
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -183,7 +185,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    borderRadius: 18,
+    borderRadius: 16,
     elevation: 1,
   },
   

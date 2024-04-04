@@ -10,6 +10,7 @@ import {
   StatusBar,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import i18next, { languageResources } from "../services/i18next";
 import MyContext from "../DataContext.js";
 // import { index } from "d3-array";
 // import axios from "axios";
@@ -74,7 +75,7 @@ export default class Home extends Component {
               </Text>
               <View style={styles.connectArea}>
                 <View style={styles.dot}></View>
-                <Text style={{ fontWeight: "bold", marginLeft: 2, marginRight: 2, fontSize: 13}}>Connected</Text>
+                <Text style={{ fontWeight: "bold", marginLeft: 2, marginRight: 2, fontSize: 13}}>{i18next.t("Connected")}</Text>
               </View>
             </View>
             <Text style={{ fontSize: 13, marginTop: 5, marginLeft: 4 }}>
@@ -82,9 +83,9 @@ export default class Home extends Component {
               the readable
             </Text>
             <View style={{flexDirection: 'row', gap: 18, marginTop: 5, marginLeft: 4}}>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Humidiry: {data[index]["dht"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>{i18next.t("Humidity")}: {data[index]["dht"]}</Text>
                 <Text style={{ fontSize: 13, color: '#777777' }}>pH: {data[index]["ph"]}</Text>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Water pump: {data[index]["bc"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>{i18next.t("Water pump")}: {data[index]["bc"]}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -97,8 +98,8 @@ export default class Home extends Component {
         <View style={styles.container}>
           <LinearGradient colors={["#bfd200", "#aacc00", "#80b918"]} style={styles.header}>
             <SafeAreaView style={styles.header}>
-              <Text style={styles.headerText}>Hello! Have a nice Day</Text>
-              <Text style={styles.headerText}>NQD2308</Text>
+              <Text style={styles.headerText}>{i18next.t("Hello")}! NQD2308</Text>
+              <Text style={styles.headerText}>{i18next.t("Have a nice Day")}</Text>
             </SafeAreaView>
           </LinearGradient>
           <View style={styles.body}>

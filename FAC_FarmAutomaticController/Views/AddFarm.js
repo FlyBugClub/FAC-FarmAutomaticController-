@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Component, useState } from 'react';
 import { StyleSheet, Text, View,TouchableOpacity, SafeAreaView, StatusBar} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import i18next, { languageResources } from "../services/i18next";
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 export default class AddFarm extends Component {
@@ -26,16 +27,16 @@ export default class AddFarm extends Component {
                 <StatusBar backgroundColor="#bfd200"/>
                 <LinearGradient colors={['#bfd200', '#aacc00', '#80b918']}  style={styles.NavigationTop}>
                     <SafeAreaView style={{alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={styles.title}>Create Farm House</Text>
+                        <Text style={styles.title}>{i18next.t("Create Farm House")}</Text>
                     </SafeAreaView>
                 </LinearGradient>
                 <SafeAreaView style={styles.safeContainer}>
                     <View style={{width: '90%'}}>    
                         <TouchableOpacity style={styles.btnAdd} onPress={this.AddFarmFormPage}>
-                            <Text style={styles.btnText}>Create new farm house</Text>
+                            <Text style={styles.btnText}>{i18next.t("Create new farm house")}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.btnAdd} onPress={this.AddDevicePage}>
-                            <Text style={styles.btnText}>Add device</Text>
+                            <Text style={styles.btnText}>{i18next.t("Add device")}</Text>
                         </TouchableOpacity>
                         
                     </View>

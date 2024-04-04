@@ -8,58 +8,55 @@ import {
   SafeAreaView,
   Image,
   Dimensions,
+  ScrollView,
+  NativeModules,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
-import { AsyncStorage } from "react-native";
-import { withTranslation } from "react-i18next";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18next, { languageResources } from "../services/i18next";
+import languagesList from "../services/languagesList.json";
 import MyContext from "../DataContext";
 const screenWidth = Dimensions.get("window").width;
 const squareWidth = screenWidth * 0.9;
 
 export default class User extends Component {
   static contextType = MyContext;
-
-  //Picher Language
-  state = {
-    selecedCat: "Vietnamese",
-    selectedLanguage: "",
-    category: [
-      {
-        itemName: "Vietnamese",
-      },
-      {
-        itemName: "Engish",
-      },
-    ],
-  };
-
-  onValueChangeCat = async (value) => {
-    try {
-      await AsyncStorage.setItem("selectedCategory", value);
-      this.setState({ selecedCat: value });
-    } catch (error) {
-      console.log(error);
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedLanguage: "en",
+    };
   }
 
-  componentDidMount = async () => {
-    try {
-      const value = await AsyncStorage.getItem('selectedCategory');
-      if (value !== null) {
-        this.setState({ selecedCat: value });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  changeLng = async (lng) => {
+    i18next.changeLanguage(lng);
+    this.setState({ selectedLanguage: lng });
+
+    // // Lưu ngôn ngữ mới vào AsyncStorage
+    // try {
+    //   await AsyncStorage.setItem('selectedLanguage', lng);
+    // } catch (error) {
+    //   console.log("Error saving language:", error);
+    // }
   };
+
+  // async componentDidMount() {
+  //   // Kiểm tra ngôn ngữ đã lưu trong AsyncStorage
+  //   try {
+  //     const value = await AsyncStorage.getItem('selectedLanguage');
+  //     if (value !== null) {
+  //       initI18n(value);
+  //       // Cập nhật ngôn ngữ trong state nếu đã có giá trị trong AsyncStorage
+  //       this.setState({ selectedLanguage: value });
+  //     }
+  //   } catch (error) {
+  //     console.log("Error retrieving language:", error);
+  //   }
+  // }
 
   render() {
     const { dataArray } = this.context;
-
-    //Language
-    const { t } = this.props;
 
     return (
       <View style={styles.container}>
@@ -70,7 +67,7 @@ export default class User extends Component {
           <SafeAreaView
             style={{ alignItems: "center", justifyContent: "center" }}
           >
-            <Text style={styles.title}>{t("User information")}</Text>
+            <Text style={styles.title}>{i18next.t("User information")}</Text>
           </SafeAreaView>
         </LinearGradient>
         <SafeAreaView style={styles.safeContainer}>
@@ -83,101 +80,43 @@ export default class User extends Component {
             </View>
             <View style={{ marginLeft: 10, marginRight: 10 }}>
               <Text style={styles.textInfo}>
-                Username: {dataArray[0]["name"]}
+                {i18next.t("Username")}: {dataArray[0]["name"]}
               </Text>
               <Text style={styles.textInfo}>
                 Email: {dataArray[0]["gmail"]}
               </Text>
               <Text style={styles.textInfo}>
-                Phone: {dataArray[0]["phone_no"]}
+                {i18next.t("Phone")}: {dataArray[0]["phone_no"]}
               </Text>
             </View>
           </View>
-          {/* <View
-            style={{
-              flexDirection: "row",
-              width: "90%",
-              justifyContent: "center",
-              gap: 10,
-            }}
-          >
-            <View style={styles.square}>
-              <Text style={styles.titleText}>Farm House</Text>
-              <LinearGradient
-                colors={["#cd9777", "#c38e70", "#9d6b53"]}
-                style={styles.circleOutSide}
-              >
-                <View style={styles.circleInSide}>
-                  <Text style={styles.number}>9</Text>
-                </View>
-              </LinearGradient>
-            </View>
-            <View style={styles.square}>
-              <Text style={styles.titleText}>Water pump</Text>
-              <LinearGradient
-                colors={["#48cae4", "#00b4d8", "#0096c7"]}
-                style={styles.circleOutSide}
-              >
-                <View style={styles.circleInSide}>
-                  <Text style={styles.number}>38</Text>
-                </View>
-              </LinearGradient>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              width: "90%",
-              gap: 10,
-            }}
-          >
-            <View style={styles.square}>
-              <Text style={styles.titleText}>Humid sensor</Text>
-              <LinearGradient
-                colors={["#ff9e00", "#ff9100", "#ff8500"]}
-                style={styles.circleOutSide}
-              >
-                <View style={styles.circleInSide}>
-                  <Text style={styles.number}>18</Text>
-                </View>
-              </LinearGradient>
-            </View>
-            <View style={styles.square}>
-              <Text style={styles.titleText}>pH sensor</Text>
-              <LinearGradient
-                colors={["#bfd200", "#aacc00", "#80b918"]}
-                style={styles.circleOutSide}
-              >
-                <View style={styles.circleInSide}>
-                  <Text style={styles.number}>12</Text>
-                </View>
-              </LinearGradient>
-            </View>
-          </View> */}
-          <View>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text>{t("Language")}</Text>
+          <ScrollView>
+            <View style={styles.settingContent}>
+              <Text style={styles.text}>{i18next.t("Language")}</Text>
               <Picker
-                style={{ width: 210 }}
-                mode="dropdown"
-                selectedValue={this.state.selecedCat}
-                onValueChange={this.onValueChangeCat.bind(this)}
+                selectedValue={this.state.selectedLanguage}
+                style={styles.picker}
+                onValueChange={(itemValue, itemIndex) =>
+                  this.changeLng(itemValue)
+                }
               >
-                {this.state.category.map((item, index) => (
+                {Object.keys(languageResources).map((key, index) => (
                   <Picker.Item
-                    color="#333"
-                    label={t(item.itemName)}
-                    value={item.itemName}
-                    index={index}
-                    // key={index}
+                    key={index}
+                    label={i18next.t(languagesList[key].nativeName)}
+                    value={key}
                   />
                 ))}
               </Picker>
             </View>
-          </View>
+            <View style={styles.line}></View>
+            <View style={styles.settingContent}>
+              <TouchableOpacity style={styles.btn}>
+                <Text style={[styles.text]}>{i18next.t("Sign out")}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.line}></View>
+          </ScrollView>
         </SafeAreaView>
       </View>
     );
@@ -185,6 +124,14 @@ export default class User extends Component {
 }
 
 const styles = StyleSheet.create({
+  //Line
+  line: {
+    borderWidth: 0.5,
+    borderColor: "#DEDEDE",
+  },
+  text: {
+    fontSize: 16,
+  },
   safeContainer: {
     width: "100%",
     flex: 1,
@@ -215,14 +162,13 @@ const styles = StyleSheet.create({
     height: 100,
     marginTop: 15,
     marginBottom: 15,
-    marginLef: 5,
+    marginLeft: 5,
     marginRight: 5,
     borderRadius: 120,
   },
   textInfo: {
     marginTop: 3,
     marginBottom: 3,
-    // fontWeight: 'bold',
     fontSize: 15,
   },
   NavigationTop: {
@@ -251,8 +197,6 @@ const styles = StyleSheet.create({
     height: squareWidth * 0.5,
     marginTop: 6,
     marginBottom: 6,
-    // marginLeft: 6,
-    // marginRight: 6,
     backgroundColor: "white",
     borderRadius: 12,
     justifyContent: "center",
@@ -280,5 +224,20 @@ const styles = StyleSheet.create({
   number: {
     fontSize: 38,
     fontWeight: "bold",
+  },
+  picker: {
+    width: 170,
+    right: -45,
+  },
+  settingContent: {
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 6,
+  },
+  btn: {
+    marginTop: 10,
+    marginBottom: 10,
   },
 });

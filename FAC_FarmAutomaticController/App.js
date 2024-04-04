@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar, Platform } 
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import IconFeather from 'react-native-vector-icons/Feather';
+import i18next, { languageResources } from "./services/i18next";
 import 'react-native-gesture-handler';
 import MyContext from './DataContext.js';
 import * as Device from 'expo-device';
@@ -83,7 +83,7 @@ function TabNavigator() {
               height: 25,
               tintColor: focused ? '#80b918' : '#333'
              }}/>
-            <Text style={{ color: focused ? '#80b918' : '#333', fontSize: 12 }}>Home</Text>
+            <Text style={{ color: focused ? '#80b918' : '#333', fontSize: 12 }}>{i18next.t("Home")}</Text>
           </View>
         ),
       }}/>
@@ -122,7 +122,7 @@ function TabNavigator() {
               height: 25,
               tintColor: focused ? '#80b918' : '#333'
              }}/>
-            <Text style={{ color: focused ? '#80b918' : '#333', fontSize: 12 }}>User</Text>
+            <Text style={{ color: focused ? '#80b918' : '#333', fontSize: 12 }}>{i18next.t("User")}</Text>
           </View>
         ),
       }}/>

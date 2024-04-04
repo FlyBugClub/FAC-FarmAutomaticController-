@@ -12,19 +12,8 @@ import {
   Image,
   
 } from "react-native";
-import {
-  LineChart,
-  BarChart,
-  PieChart,
-  ProgressChart,
-  ContributionGraph,
-  StackedBarChart,
-} from "react-native-chart-kit";
 import { LinearGradient } from "expo-linear-gradient";
-import { Icon } from "@rneui/base";
-import AnDesign from "react-native-vector-icons/MaterialCommunityIcons";
-import { bounds } from "@shopify/react-native-skia";
-import { index } from "d3-array";
+import i18next, { languageResources } from "../services/i18next";
 
 export default class History extends Component {
   render() {
@@ -62,7 +51,7 @@ export default class History extends Component {
           <SafeAreaView
             style={{ alignItems: "center", justifyContent: "center" }}
           >
-            <Text style={styles.title}>History</Text>
+            <Text style={styles.title}>{i18next.t("History")}</Text>
           </SafeAreaView>
         </LinearGradient>
         <View style={styles.body}>
@@ -76,25 +65,26 @@ export default class History extends Component {
             <View
               style={{
                 flexDirection: "row",
-                width: "100%",
+                width: "95%",
                 marginTop: 26,
                 marginBottom: 10,
+                justifyContent: 'space-between'
               }}
             >
               <Text
-                style={{ fontWeight: "bold", fontSize: 14, marginLeft: 70 }}
+                style={{ fontWeight: "bold", fontSize: 14, width: 155, textAlign: 'center'}}
               >
-                Date
+                {i18next.t("Date")}
               </Text>
               <Text
-                style={{ fontWeight: "bold", fontSize: 14, marginLeft: 110 }}
+                style={{ fontWeight: "bold", fontSize: 14, width: 95, textAlign: 'center'}}
               >
-                Device
+                {i18next.t("Device")}
               </Text>
               <Text
-                style={{ fontWeight: "bold", fontSize: 14, marginLeft:55 }}
+                style={{ fontWeight: "bold", fontSize: 14, width: 70, textAlign: 'center' }}
               >
-                Time
+                {i18next.t("Time")}
               </Text>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>

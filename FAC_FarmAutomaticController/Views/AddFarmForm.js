@@ -13,6 +13,7 @@ import {
   Keyboard,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import i18next, { languageResources } from "../services/i18next";
 import { BarCodeScanner } from "expo-barcode-scanner";
 
 export default class AddFarmForm extends Component {
@@ -38,7 +39,7 @@ export default class AddFarmForm extends Component {
                 <SafeAreaView
                   style={{ alignItems: "center", justifyContent: "center" }}
                 >
-                  <Text style={styles.title}>Create Farm House</Text>
+                  <Text style={styles.title}>{i18next.t("Create Farm House")}</Text>
                 </SafeAreaView>
               </LinearGradient>
               <View style={{ alignItems: "flex-end", right: 40 }}>
@@ -46,18 +47,18 @@ export default class AddFarmForm extends Component {
                   style={styles.btnQrCode}
                   onPress={this.OpenCamera}
                 >
-                  <Text style={styles.btnQrCodeText}>Scan Qr code</Text>
+                  <Text style={styles.btnQrCodeText}>{i18next.t("Scan Qr code")}</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.containerContent}>
-                <TextInput placeholder="Farm name" style={styles.input} />
+                <TextInput placeholder={i18next.t("Farm name")} style={styles.input} />
                 <TextInput
-                  placeholder="Description"
+                  placeholder={i18next.t("Description")}
                   style={styles.textArea}
                   multiline={true}
                 />
                 <TouchableOpacity style={styles.btnAdd}>
-                  <Text style={styles.btnText}>Create</Text>
+                  <Text style={styles.btnText}>{i18next.t("Create")}</Text>
                 </TouchableOpacity>
               </View>
             </View>
