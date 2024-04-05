@@ -22,7 +22,7 @@ void setup() {
 
 void loop() {
   // POST to one API
-  // postToAPI("/post_endpoint"); // Thay đổi URL tại đây
+  postToAPI("/api/user"); // Thay đổi URL tại đây
 
   // GET from another API
   const char* payload = getFromAPI("/api/login/admin@gmail.com/123456"); // Thay đổi URL tại đây
@@ -43,8 +43,21 @@ void postToAPI(const char* url) {
   client.setInsecure();
 
   http.addHeader("Content-Type", "application/json");
+  // Tạo một đối tượng JSON Document với kích thước đủ cho payload
+  StaticJsonDocument<256> doc;
 
-  int httpCode = http.POST("{}"); // Dữ liệu JSON bạn muốn POST
+  // Thêm các thành phần vào payload JSON
+  doc["id_user"] = "CT0003";
+  doc["gmail"] = "taduc1130@gmail.com";
+  doc["password"] = "conchongu";
+  doc["name"] = "Duc";
+  doc["phone_no"] = "123456789";
+  doc["date_created"] = "2024-03-25T10:00:00";
+  // doc["id_membership"] = 2;
+  String payload;
+  serializeJson(doc, payload);
+
+  int httpCode = http.POST(payload); // Dữ liệu JSON bạn muốn POST
   Serial.print("POST httpCode: ");
   Serial.println(httpCode);
 
