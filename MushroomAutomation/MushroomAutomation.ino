@@ -25,8 +25,8 @@ void loop() {
   // postToAPI("/post_endpoint"); // Thay đổi URL tại đây
 
   // GET from another API
-  getFromAPI("/api/login/admin@gmail.com/123456"); // Thay đổi URL tại đây
-
+  const char* payload = getFromAPI("/api/login/admin@gmail.com/123456"); // Thay đổi URL tại đây
+  parseJsonPayload(payload);
   // Delay for 1 second
   delay(1000);
 }
@@ -58,7 +58,7 @@ void postToAPI(const char* url) {
   http.end();
 }
 
-String getFromAPI(const char* url) {
+const char* getFromAPI(const char* url) {
   WiFiClientSecure client;
   HTTPClient http;
 
@@ -70,16 +70,22 @@ String getFromAPI(const char* url) {
   int httpCode = http.GET();
   Serial.print("GET httpCode: ");
   Serial.println(httpCode);
-  String payload
+
+  static char payload[256]; // Khai báo một mảng ký tự tĩnh để lưu trữ payload
+
   if (httpCode > 0) {
-    payload = http.getString();
+    // Lấy payload và sao chép nó vào mảng ký tự
+    http.getString().toCharArray(payload, sizeof(payload));
     Serial.print("GET response: ");
     Serial.println(payload);
+    http.end();
+    // Trả về con trỏ đến mảng ký tự chứa payload
+    return payload;
   } else {
     Serial.print("GET request failed with error code: ");
     Serial.println(httpCode);
+    http.end();
+    // Trả về NULL nếu yêu cầu không thành công
+    return NULL;
   }
-
-  http.end();
-  return payload
 }
