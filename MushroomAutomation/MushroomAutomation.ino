@@ -1,37 +1,87 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
+#include "secret_pass.h"
 
-const char* ssid = "Thu Tamm";
-const char* password = "thutam1975";
+#include <Wire.h>
+#include "Adafruit_SHT31.h"
+bool enableHeater = false;
+uint8_t loopCnt = 0;
+Adafruit_SHT31 sht31 = Adafruit_SHT31();
+
+
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+const char *ntpServer = "pool.ntp.org";
+const int ntpPort = 123;
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, ntpServer, ntpPort);
+const long timeZoneOffset = 7 * 3600; 
+
+const int pumpPin = D6;
+bool autoControl = true;
+float desiredTemperature = 25.0;
+float desiredHumidity = 60.0;
+unsigned long lastSprayTime = 0;
+bool wifiConnected = false;
+bool sensorConnected = false;
+
+int pumpActivationCount = 0;
+int previousDay = -1;
+
 const char* server_address = "ngunemay123.bsite.net";
-const int server_port = 443; // Port 443 cho HTTPS
+const int server_port = 443;  // Port 443 cho HTTPS
 
 void setup() {
-  Serial.begin(115200);
+  pinMode(pumpPin, OUTPUT);
+  Serial.begin(9600);
   delay(100);
 
   // Connect to WiFi
-  WiFi.begin(ssid, password);
+  WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.println("Connecting to WiFi...");
   }
   Serial.println("Connected to WiFi");
+  timeClient.begin();
+  timeClient.setTimeOffset(timeZoneOffset);
 }
 
+
 void loop() {
-  // POST to one API
-  postToAPI("/api/user"); // Thay đổi URL tại đây
+
+  if (!wifiConnected) {
+    connectToWiFi();
+  }
+  timeClient.update();
+  String formattedTime = timeClient.getFormattedTime();
+  Serial.println("Formatted Time: " + formattedTime);
+  countPumpActivations(formattedTime);
+  //POST to one API
+  // postToAPI("/api/user");  // Thay đổi URL tại đây
 
   // GET from another API
-  const char* payload = getFromAPI("/api/login/admin@gmail.com/123456"); // Thay đổi URL tại đây
-  Serial.println("hehe");
-  Serial.println(payload);
-  parseJsonPayload(payload);
+  // const char* payload = getFromAPI("/api/login/admin@gmail.com/123456");  // Thay đổi URL tại đây
+  // Serial.println("hehe");
+  // Serial.println(payload);
+  // parseJsonPayload(payload);
   // Delay for 1 second
   delay(1000);
 }
+void reconnectSensor() {
+  Serial.println("Attempting to reconnect sensor...");
+
+  // Thử khởi tạo lại cảm biến
+  if (!sht31.begin(0x44)) {  // Set to 0x45 for alternate i2c addr
+    Serial.println("Couldn't find SHT31. Retrying...");
+    delay(1000);
+    return;  // Thử lại sau một khoảng thời gian
+  }
+
+  Serial.println("Sensor reconnected successfully.");
+}
+
 
 void postToAPI(const char* url) {
   WiFiClientSecure client;
@@ -57,7 +107,7 @@ void postToAPI(const char* url) {
   String payload;
   serializeJson(doc, payload);
 
-  int httpCode = http.POST(payload); // Dữ liệu JSON bạn muốn POST
+  int httpCode = http.POST(payload);  // Dữ liệu JSON bạn muốn POST
   Serial.print("POST httpCode: ");
   Serial.println(httpCode);
 
@@ -73,6 +123,7 @@ void postToAPI(const char* url) {
   http.end();
 }
 
+
 const char* getFromAPI(const char* url) {
   WiFiClientSecure client;
   HTTPClient http;
@@ -86,7 +137,7 @@ const char* getFromAPI(const char* url) {
   Serial.print("GET httpCode: ");
   Serial.println(httpCode);
 
-  static char payload[256]; // Khai báo một mảng ký tự tĩnh để lưu trữ payload
+  static char payload[256];  // Khai báo một mảng ký tự tĩnh để lưu trữ payload
 
   if (httpCode > 0) {
     // Lấy payload và sao chép nó vào mảng ký tự
@@ -104,6 +155,8 @@ const char* getFromAPI(const char* url) {
     return NULL;
   }
 }
+
+
 void parseJsonPayload(const char* payload) {
   // Phân tích payload JSON
   StaticJsonDocument<256> doc;
@@ -122,14 +175,14 @@ void parseJsonPayload(const char* payload) {
   const char* userEmail = user["gmail"];
   const char* userName = user["name"];
   const char* userPhone = user["phone"];
-  int membership = user["membership"].as<int>(); // Chuyển đổi thành kiểu int
+  int membership = user["membership"].as<int>();  // Chuyển đổi thành kiểu int
 
   JsonObject sensor = doc[0]["0"];
   const char* espId = sensor["id_esp"];
   const char* espName = sensor["name"];
-  int bcValue = sensor["bc"].as<int>(); // Chuyển đổi thành kiểu int
-  int dhtValue = sensor["dht"].as<int>(); // Chuyển đổi thành kiểu int
-  int phValue = sensor["ph"].as<int>(); // Chuyển đổi thành kiểu int
+  int bcValue = sensor["bc"].as<int>();    // Chuyển đổi thành kiểu int
+  int dhtValue = sensor["dht"].as<int>();  // Chuyển đổi thành kiểu int
+  int phValue = sensor["ph"].as<int>();    // Chuyển đổi thành kiểu int
 
   // In thông tin đã lấy từ payload JSON
   Serial.println("User Information:");
@@ -156,3 +209,93 @@ void parseJsonPayload(const char* payload) {
   Serial.print("PH Value: ");
   Serial.println(phValue);
 }
+
+
+void connectToWiFi() {
+  WiFi.begin(ssid, pass);
+  unsigned long startTime = millis();  // Thời gian bắt đầu kết nối WiFi
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Đang kết nối WiFi...");
+    // Nếu quá thời gian kết nối (ví dụ: 30 giây), thoát vòng lặp
+    if (millis() - startTime > 30000) {
+      break;
+    }
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    wifiConnected = true;  // Cập nhật trạng thái kết nối WiFi
+    Serial.println("Kết nối WiFi thành công");
+    timeClient.setTimeOffset(timeZoneOffset);
+    //TODO when connect to wifi, autocontrol on
+    autoControl = true;
+  } else {
+    wifiConnected = false;  // Cập nhật trạng thái kết nối WiFi
+    Serial.println("Kết nối WiFi không thành công");
+    // Tắt tất cả các thiết bị khi mất kết nối WiFi
+    digitalWrite(pumpPin, LOW);
+
+    autoControl = false;
+  }
+}
+
+
+void manageAutoControl() {
+  if (autoControl) {
+    autoControlMode(desiredTemperature, desiredHumidity);
+  }
+}
+
+
+void autoControlMode(float& temperature, float& humidity) {
+
+  float currentHumidity = sht31.readHumidity();  // Đọc độ ẩm từ cảm biến SHT
+  unsigned long currentMillis = millis();
+
+  if (currentHumidity < humidity && currentMillis - lastSprayTime >= 10000) {
+    digitalWrite(pumpPin, HIGH);
+    lastSprayTime = currentMillis;
+    delay(2000);
+    digitalWrite(pumpPin, LOW);
+  } else {
+    digitalWrite(pumpPin, LOW);
+
+  }
+}
+
+
+bool isNewDay(String formattedTime) {
+  // Tách lấy giờ, phút và giây từ formattedTime
+  int currentHour = formattedTime.substring(0, 2).toInt();
+  int currentMinute = formattedTime.substring(3, 5).toInt();
+  int currentSecond = formattedTime.substring(6, 8).toInt();
+
+  // In ra giờ, phút và giây hiện tại trên Serial
+  Serial.print("Current Time: ");
+  Serial.print(currentHour);
+  Serial.print(":");
+  Serial.print(currentMinute);
+  Serial.print(":");
+  Serial.println(currentSecond);
+
+  // So sánh với giờ, phút và giây của một ngày mới (00:00:00)
+  if (currentHour == 0 && currentMinute == 0 && currentSecond == 0) {
+    Serial.println("da qua ngay moi");
+    return true;
+  }
+  return false;
+}
+
+
+void countPumpActivations(String formattedTime) {
+  // Kiểm tra xem đã qua ngày mới chưa
+  if (isNewDay(formattedTime)) {
+    // Nếu đã qua ngày mới, đặt lại số lần kích hoạt máy bơm về 0
+    pumpActivationCount = 0;
+  }
+  // Kiểm tra điều kiện kích hoạt máy bơm và tăng biến đếm nếu thỏa mãn
+  if (digitalRead(pumpPin) == HIGH) {
+    pumpActivationCount++;
+  }
+}
+
