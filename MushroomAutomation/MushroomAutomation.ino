@@ -3,7 +3,8 @@
 
 const char* ssid = "Thu Tamm";
 const char* password = "thutam1975";
-const char* api_url = "https://ngunemay123.bsite.net"; // Thêm giao thức HTTPS vào URL
+const char* server_address = "ngunemay123.bsite.net";
+const int server_port = 443; // Port 443 cho HTTPS
 
 void setup() {
   Serial.begin(115200);
@@ -16,34 +17,67 @@ void setup() {
     Serial.println("Connecting to WiFi...");
   }
   Serial.println("Connected to WiFi");
+}
 
-  // Make HTTP request
+void loop() {
+  // POST to one API
+  // postToAPI("/post_endpoint"); // Thay đổi URL tại đây
+
+  // GET from another API
+  getFromAPI("/api/login/admin@gmail.com/123456"); // Thay đổi URL tại đây
+
+  // Delay for 1 second
+  delay(1000);
+}
+
+void postToAPI(const char* url) {
   WiFiClientSecure client;
   HTTPClient http;
-  http.begin(client, api_url); // Bắt đầu yêu cầu HTTP với URL HTTPS
 
-  // Vô hiệu hóa kiểm tra chứng chỉ SSL
+  String api_url = "https://" + String(server_address) + url;
+
+  http.begin(client, api_url);
   client.setInsecure();
 
-  http.setReuse(true); // Sử dụng lại kết nối TCP
   http.addHeader("Content-Type", "application/json");
 
-  int httpCode = http.GET();
-  Serial.println("httpCode");
+  int httpCode = http.POST("{}"); // Dữ liệu JSON bạn muốn POST
+  Serial.print("POST httpCode: ");
   Serial.println(httpCode);
 
   if (httpCode > 0) {
     String payload = http.getString();
-    Serial.println("Received JSON:");
+    Serial.print("POST response: ");
     Serial.println(payload);
   } else {
-    Serial.print("HTTP request failed with error code: ");
+    Serial.print("POST request failed with error code: ");
     Serial.println(httpCode);
   }
 
   http.end();
 }
 
-void loop() {
-  // Your code here
+void getFromAPI(const char* url) {
+  WiFiClientSecure client;
+  HTTPClient http;
+
+  String api_url = "https://" + String(server_address) + url;
+
+  http.begin(client, api_url);
+  client.setInsecure();
+
+  int httpCode = http.GET();
+  Serial.print("GET httpCode: ");
+  Serial.println(httpCode);
+
+  if (httpCode > 0) {
+    String payload = http.getString();
+    Serial.print("GET response: ");
+    Serial.println(payload);
+  } else {
+    Serial.print("GET request failed with error code: ");
+    Serial.println(httpCode);
+  }
+
+  http.end();
 }
