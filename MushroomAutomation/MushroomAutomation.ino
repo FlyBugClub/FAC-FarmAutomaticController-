@@ -26,6 +26,8 @@ void loop() {
 
   // GET from another API
   const char* payload = getFromAPI("/api/login/admin@gmail.com/123456"); // Thay đổi URL tại đây
+  Serial.println("hehe");
+  Serial.println(payload);
   parseJsonPayload(payload);
   // Delay for 1 second
   delay(1000);
@@ -76,8 +78,8 @@ const char* getFromAPI(const char* url) {
   if (httpCode > 0) {
     // Lấy payload và sao chép nó vào mảng ký tự
     http.getString().toCharArray(payload, sizeof(payload));
-    Serial.print("GET response: ");
-    Serial.println(payload);
+    // Serial.print("GET response: ");
+    // Serial.println(payload);
     http.end();
     // Trả về con trỏ đến mảng ký tự chứa payload
     return payload;
@@ -88,4 +90,56 @@ const char* getFromAPI(const char* url) {
     // Trả về NULL nếu yêu cầu không thành công
     return NULL;
   }
+}
+void parseJsonPayload(const char* payload) {
+  // Phân tích payload JSON
+  StaticJsonDocument<256> doc;
+  DeserializationError error = deserializeJson(doc, payload);
+
+  // Kiểm tra nếu có lỗi trong quá trình phân tích
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.c_str());
+    return;
+  }
+
+  // Lấy thông tin từ JSON và gán vào các biến
+  JsonObject user = doc[0]["user"];
+  const char* userId = user["id"];
+  const char* userEmail = user["gmail"];
+  const char* userName = user["name"];
+  const char* userPhone = user["phone"];
+  int membership = user["membership"].as<int>(); // Chuyển đổi thành kiểu int
+
+  JsonObject sensor = doc[0]["0"];
+  const char* espId = sensor["id_esp"];
+  const char* espName = sensor["name"];
+  int bcValue = sensor["bc"].as<int>(); // Chuyển đổi thành kiểu int
+  int dhtValue = sensor["dht"].as<int>(); // Chuyển đổi thành kiểu int
+  int phValue = sensor["ph"].as<int>(); // Chuyển đổi thành kiểu int
+
+  // In thông tin đã lấy từ payload JSON
+  Serial.println("User Information:");
+  Serial.print("User ID: ");
+  Serial.println(userId);
+  Serial.print("User Email: ");
+  Serial.println(userEmail);
+  Serial.print("User Name: ");
+  Serial.println(userName);
+  Serial.print("User Phone: ");
+  Serial.println(userPhone);
+  Serial.print("Membership: ");
+  Serial.println(membership);
+
+  Serial.println("Sensor Information:");
+  Serial.print("ESP ID: ");
+  Serial.println(espId);
+  Serial.print("ESP Name: ");
+  Serial.println(espName);
+  Serial.print("BC Value: ");
+  Serial.println(bcValue);
+  Serial.print("DHT Value: ");
+  Serial.println(dhtValue);
+  Serial.print("PH Value: ");
+  Serial.println(phValue);
 }
