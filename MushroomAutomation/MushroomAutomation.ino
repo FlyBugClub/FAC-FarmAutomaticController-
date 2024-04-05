@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <ArduinoJson.h>
 
 const char* ssid = "Thu Tamm";
 const char* password = "thutam1975";
@@ -57,7 +58,7 @@ void postToAPI(const char* url) {
   http.end();
 }
 
-void getFromAPI(const char* url) {
+String getFromAPI(const char* url) {
   WiFiClientSecure client;
   HTTPClient http;
 
@@ -69,9 +70,9 @@ void getFromAPI(const char* url) {
   int httpCode = http.GET();
   Serial.print("GET httpCode: ");
   Serial.println(httpCode);
-
+  String payload
   if (httpCode > 0) {
-    String payload = http.getString();
+    payload = http.getString();
     Serial.print("GET response: ");
     Serial.println(payload);
   } else {
@@ -80,4 +81,5 @@ void getFromAPI(const char* url) {
   }
 
   http.end();
+  return payload
 }
