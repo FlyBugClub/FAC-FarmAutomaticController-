@@ -101,7 +101,7 @@ void reconnectSensor() {
 }
 
 
-void postToAPI(const char* url) {
+void postHumidityToAPI(const char* url) {
   WiFiClientSecure client;
   HTTPClient http;
 
@@ -115,12 +115,11 @@ void postToAPI(const char* url) {
   StaticJsonDocument<256> doc;
 
   // Thêm các thành phần vào payload JSON
-  doc["id_user"] = "CT0003";
-  doc["gmail"] = "taduc1130@gmail.com";
-  doc["password"] = "conchongu";
-  doc["name"] = "Duc";
-  doc["phone_no"] = "123456789";
-  doc["date_created"] = "2024-03-25T10:00:00";
+  doc["id_sensor"] = "SenSor0001";
+  doc["value"] = "20";
+  doc["expectedvalue"] = "20";
+  doc["min_max_value"] = "40/90";
+  doc["datetime"] = "2024-04-06 10:00:00";
   // doc["id_membership"] = 2;
   String payload;
   serializeJson(doc, payload);
