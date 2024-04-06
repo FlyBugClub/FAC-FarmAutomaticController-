@@ -245,15 +245,15 @@ export default class Details extends Component {
     const { dataArray } = this.context;
     const url = apiUrl + `getvalue/${dataArray[1]["id_esp"]}`;
     // console.log(url);
-    console.log(dataArray[1])
+    console.log(dataArray[1]);
     const response = await fetch(url);
-                if (!response.ok ) {
-                    this.setState({ msg: "error" });
-                    return;
-                }
-            
-                const json = await response.json();
-                // console.log(json[0])
+    if (!response.ok) {
+      this.setState({ msg: "error" });
+      return;
+    }
+
+    const json = await response.json();
+    // console.log(json[0])
   };
 
   //Picker
@@ -267,7 +267,8 @@ export default class Details extends Component {
     const { switch1Enabled, switch2Enabled, switch3Enabled } = this.state;
 
     //API
-    const { status, messageList, sliderValue, isEnabled, message_humid } =this.state;
+    const { status, messageList, sliderValue, isEnabled, message_humid } =
+      this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
@@ -275,26 +276,24 @@ export default class Details extends Component {
     //DateTime
     const { dateTime, showPicker } = this.state;
 
-    
-
     // console.log("+++++++++++++++++++++++++++++")
     // console.log(dataArray[1])
-    this.getvalue()
-  
-          // if (Object.values(json[0]) == 0) {
-          //   this.setState({ isEnabled: false });
-          // } else this.setState({ isEnabled: true });
+    this.getvalue();
 
-          // for (const key in json) {
-          //   // console.log(Object.keys(json[key]));
-          //   const keys_dht = Object.keys(json[key]);
+    // if (Object.values(json[0]) == 0) {
+    //   this.setState({ isEnabled: false });
+    // } else this.setState({ isEnabled: true });
 
-          //   if (keys_dht.includes("id_dht") && flag_humid_respect == 0) {
-          //     flag_humid_respect = 1;
-          //     this.setState({ sliderValue: json[key]["respect"] });
-          //   }
-          // }
-      
+    // for (const key in json) {
+    //   // console.log(Object.keys(json[key]));
+    //   const keys_dht = Object.keys(json[key]);
+
+    //   if (keys_dht.includes("id_dht") && flag_humid_respect == 0) {
+    //     flag_humid_respect = 1;
+    //     this.setState({ sliderValue: json[key]["respect"] });
+    //   }
+    // }
+
     // Foreach Timer
     const TimerList = [];
     // Sử dụng forEach để thêm các phần tử vào mảng items
@@ -338,32 +337,39 @@ export default class Details extends Component {
           <View style={styles.moreSettingArea}>
             <Text style={styles.titleDevice}>Water pump {index}</Text>
             <TouchableOpacity onPress={this.AdvanceSettingDevicePage}>
-              <Image source={require('../assets/img/more.png')} style={styles.imgMoreSetting}></Image>
+              <Image
+                source={require("../assets/img/more.png")}
+                style={styles.imgMoreSetting}
+              ></Image>
             </TouchableOpacity>
-            
           </View>
-          
+
           <View style={{}}>
-            <View style={styles.function}>
-              <Text>{i18next.t("Custom")}</Text>
-              <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                value={switch1Enabled}
-                style={{}}
-              />
-              <Text>{i18next.t("Auto")}</Text>
-              <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={this.handleSwitch2Change}
-                value={switch2Enabled}
-                style={{}}
-              />
+            <View style={[styles.function, {flex: 1, width: '100%'}]}>
+              <View style={styles.function}>
+                <Text>{i18next.t("Custom")}</Text>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  value={switch1Enabled}
+                  style={{}}
+                />
+              </View>
+              <View style={styles.function}>
+                <Text>{i18next.t("Auto")}</Text>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={this.handleSwitch2Change}
+                  value={switch2Enabled}
+                  style={{}}
+                />
+              </View>
+
               <Slider
-                style={{ width: 75, height: 40 }}
+                style={{ flex: 1 }}
                 minimumValue={50}
                 maximumValue={95}
                 value={sliderValue}
@@ -487,7 +493,6 @@ export default class Details extends Component {
     });
 
     return (
-
       <View style={styles.container}>
         <StatusBar backgroundColor="#bfd200" />
         <LinearGradient
@@ -496,7 +501,6 @@ export default class Details extends Component {
         >
           <SafeAreaView>
             <View style={styles.TitleTopArea}>
-            
               <Text style={styles.TitleTop}>{dataArray[1]["name"]}</Text>
             </View>
             {/* <Text
@@ -528,14 +532,13 @@ export default class Details extends Component {
               bezier
             />
           </TouchableOpacity>
-
           <View style={styles.midle}>
             <View style={styles.alarm}>
               <Text style={{ color: "#F12525" }}>
                 <Text style={{ color: "#F12525", fontWeight: "bold" }}>
-                {i18next.t("Note")}: 
+                  {i18next.t("Note")}:
                 </Text>
-                 It is a long established fact that a reader will be distracted
+                It is a long established fact that a reader will be distracted
                 by the readable content
               </Text>
             </View>
@@ -543,12 +546,14 @@ export default class Details extends Component {
           <View style={styles.midle}>
             <View style={{ width: "95%" }}>
               <View style={styles.dropdownOptionArea}>
-                <Text style={styles.dropdownOptionText}>{i18next.t("Control")}</Text>
+                <Text style={styles.dropdownOptionText}>
+                  {i18next.t("Control")}
+                </Text>
                 <View>
                   <Picker
                     style={{ width: 180 }}
                     mode="dropdown"
-                    selectedValue={this.state.selecedCat} 
+                    selectedValue={this.state.selecedCat}
                     onValueChange={this.onValueChangeCat.bind(this)}
                   >
                     {this.state.category.map((item, index) => (
@@ -564,7 +569,9 @@ export default class Details extends Component {
               </View>
               {this.state.selecedCat === "All" && (
                 <View>
-                  <Text style={styles.titleNote}>{i18next.t("All control")}</Text>
+                  <Text style={styles.titleNote}>
+                    {i18next.t("All control")}
+                  </Text>
                   <View style={styles.optionArea}>
                     <View style={styles.function}>
                       <Text>{i18next.t("Custom")}</Text>
@@ -689,7 +696,9 @@ export default class Details extends Component {
               )}
               {this.state.selecedCat === "Independence" && (
                 <View>
-                  <Text style={styles.titleNote}>{i18next.t("Custom control")}</Text>
+                  <Text style={styles.titleNote}>
+                    {i18next.t("Custom control")}
+                  </Text>
                   {deviceList}
                   {/* DateTimePicker */}
                   {showPicker && (
@@ -954,17 +963,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#D9D9D9",
   },
   moreSettingArea: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  btnMoreSetting: {
-
-  },
+  btnMoreSetting: {},
   imgMoreSetting: {
     width: 20,
     height: 20,
     marginRight: 5,
-    tintColor: 'gray'
-  }
+    tintColor: "gray",
+  },
 });
