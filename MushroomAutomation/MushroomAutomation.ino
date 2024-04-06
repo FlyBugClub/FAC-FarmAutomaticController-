@@ -56,7 +56,6 @@ void loop() {
   }
   timeClient.update();
   String formattedTime = timeClient.getFormattedTime();
-  Serial.println("Formatted Time: " + formattedTime);
   countPumpActivations(formattedTime);
  
    // Get current epoch time
