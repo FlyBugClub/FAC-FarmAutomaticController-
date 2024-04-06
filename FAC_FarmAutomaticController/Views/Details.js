@@ -60,6 +60,9 @@ const chartConfig = {
   strokeWidth: 2, // optional, default 3
   barPercentage: 0.5,
   useShadowColorFromDataset: true, // optional
+  decimalPlaces: 0, // Số lượng chữ số thập phân
+  fromZero: true,
+  
 };
 
 const screenWidth = Dimensions.get("window").width;
@@ -345,7 +348,7 @@ export default class Details extends Component {
           </View>
 
           <View style={{}}>
-            <View style={[styles.function, {flex: 1, width: '100%'}]}>
+            <View style={[styles.function, { flex: 1, width: "100%" }]}>
               <View style={styles.function}>
                 <Text>{i18next.t("Custom")}</Text>
                 <Switch
@@ -526,6 +529,7 @@ export default class Details extends Component {
               data={data}
               width={screenWidth}
               height={200}
+              fromZero={true}
               verticalLabelRotation={0}
               chartConfig={chartConfig}
               style={{ marginTop: 20 }}
@@ -573,123 +577,168 @@ export default class Details extends Component {
                     {i18next.t("All control")}
                   </Text>
                   <View style={styles.optionArea}>
-                    <View style={styles.function}>
-                      <Text>{i18next.t("Custom")}</Text>
-                      <Switch
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={this.handleSwitch1Change}
-                        value={switch1Enabled}
-                        style={{}}
-                      />
-                      <Text>{i18next.t("Auto")}</Text>
-                      <Switch
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={this.handleSwitch2Change}
-                        value={switch2Enabled}
-                        style={{}}
-                      />
-                      <Slider
-                        style={{ width: 75, height: 40 }}
-                        minimumValue={50}
-                        maximumValue={95}
-                        value={sliderValue}
-                        onValueChange={this.handleSliderChange}
-                        onSlidingComplete={this.handleSliderComplete}
-                        minimumTrackTintColor={"#81BB4D"}
-                      />
-                      <Text>85%</Text>
-                    </View>
-                    <View style={styles.function}>
-                      <Text>{i18next.t("Timer")}</Text>
-                      <Switch
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={this.handleSwitch3Change}
-                        value={switch3Enabled}
-                        style={{ marginLeft: 11 }}
-                      />
-                      <ScrollView
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        style={[
-                          styles.timer,
-                          {
-                            backgroundColor: switch3Enabled
-                              ? "white"
-                              : "#D9D9D9",
-                          },
-                        ]}
-                      >
-                        <TouchableOpacity
-                          style={{ flexDirection: "row" }}
-                          onPress={() => this.setModalVisible(true)}
-                        >
-                          {/* Data time */}
-                          <Text
-                            style={[
-                              styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                            ]}
-                          >
-                            09:35
-                          </Text>
-                          <Text
-                            style={[
-                              styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                            ]}
-                          >
-                            09:40
-                          </Text>
-                          <Text
-                            style={[
-                              styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                            ]}
-                          >
-                            09:45
-                          </Text>
-                          <Text
-                            style={[
-                              styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                            ]}
-                          >
-                            09:50
-                          </Text>
-                          <Text
-                            style={[
-                              styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                            ]}
-                          >
-                            09:55
-                          </Text>
-                        </TouchableOpacity>
-                      </ScrollView>
-                      {/* DateTimePicker */}
-                      {showPicker && (
-                        <DateTimePicker
-                          mode="time"
-                          display="spinner"
-                          value={dateTime}
-                          onChange={this.onChange}
-                        />
-                      )}
-                      <TouchableOpacity
-                        style={styles.btnPlus}
-                        onPress={this.toggleDatePicker}
-                      >
+                    <View style={styles.moreSettingArea}>
+                      <TouchableOpacity onPress={this.AdvanceSettingDevicePage}>
                         <Image
-                          source={require("../assets/img/plus.png")}
-                          style={styles.plusIcon}
-                        />
+                          source={require("../assets/img/more.png")}
+                          style={styles.imgMoreSetting}
+                        ></Image>
                       </TouchableOpacity>
+                    </View>
+
+                    <View style={{}}>
+                      <View
+                        style={[styles.function, { flex: 1, width: "100%" }]}
+                      >
+                        <View style={styles.function}>
+                          <Text>{i18next.t("Custom")}</Text>
+                          <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            value={switch1Enabled}
+                            style={{}}
+                          />
+                        </View>
+                        <View style={styles.function}>
+                          <Text>{i18next.t("Auto")}</Text>
+                          <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={this.handleSwitch2Change}
+                            value={switch2Enabled}
+                            style={{}}
+                          />
+                        </View>
+
+                        <Slider
+                          style={{ flex: 1 }}
+                          minimumValue={50}
+                          maximumValue={95}
+                          value={sliderValue}
+                          onValueChange={this.handleSliderChange}
+                          onSlidingComplete={this.handleSliderComplete}
+                          minimumTrackTintColor={"#81BB4D"}
+                        />
+                        <Text>84%</Text>
+                      </View>
+                      <View style={styles.function}>
+                        <Text>{i18next.t("Timer")}</Text>
+                        <Switch
+                          trackColor={{ false: "#767577", true: "#81b0ff" }}
+                          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                          ios_backgroundColor="#3e3e3e"
+                          onValueChange={this.handleSwitch3Change}
+                          value={switch3Enabled}
+                          style={{ marginLeft: 11 }}
+                        />
+                        <ScrollView
+                          horizontal={true}
+                          showsHorizontalScrollIndicator={false}
+                          style={[
+                            styles.timer,
+                            {
+                              backgroundColor: switch3Enabled
+                                ? "white"
+                                : "#D9D9D9",
+                            },
+                          ]}
+                        >
+                          <TouchableOpacity
+                            style={{ flexDirection: "row" }}
+                            onPress={() => this.setModalVisible(true)}
+                          >
+                            <Text
+                              style={[
+                                styles.time,
+                                { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              ]}
+                            >
+                              09:35
+                            </Text>
+                            <Text
+                              style={[
+                                styles.time,
+                                { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              ]}
+                            >
+                              09:40
+                            </Text>
+                            <Text
+                              style={[
+                                styles.time,
+                                { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              ]}
+                            >
+                              09:45
+                            </Text>
+                            <Text
+                              style={[
+                                styles.time,
+                                { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              ]}
+                            >
+                              09:50
+                            </Text>
+                            <Text
+                              style={[
+                                styles.time,
+                                { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              ]}
+                            >
+                              09:55
+                            </Text>
+                          </TouchableOpacity>
+                        </ScrollView>
+                        {/* Modal Timer List*/}
+                        <Modal
+                          animationType="slide"
+                          transparent={true}
+                          visible={modalVisible}
+                          onRequestClose={() => {
+                            this.setModalVisible(!modalVisible);
+                          }}
+                        >
+                          <View style={styles.overlay} />
+                          <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                              <TouchableOpacity
+                                style={{
+                                  alignItems: "flex-end",
+                                  top: 20,
+                                  right: 20,
+                                }}
+                                onPress={() => this.setModalVisible(false)}
+                              >
+                                <Image
+                                  source={require("../assets/img/x.png")}
+                                  style={{
+                                    width: 20,
+                                    height: 20,
+                                    marginBottom: 20,
+                                    tintColor: "#DEDEDE",
+                                  }}
+                                />
+                              </TouchableOpacity>
+
+                              <ScrollView showsVerticalScrollIndicator={false}>
+                                {TimerList}
+                              </ScrollView>
+                            </View>
+                          </View>
+                        </Modal>
+                        <TouchableOpacity
+                          style={styles.btnPlus}
+                          onPress={this.toggleDatePicker}
+                        >
+                          <Image
+                            source={require("../assets/img/plus.png")}
+                            style={styles.plusIcon}
+                          />
+                        </TouchableOpacity>
+                        {/* Modal Add Timer */}
+                      </View>
                     </View>
                   </View>
                 </View>

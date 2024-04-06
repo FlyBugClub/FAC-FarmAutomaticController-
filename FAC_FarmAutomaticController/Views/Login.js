@@ -186,7 +186,6 @@ const styles = StyleSheet.create({
         width: 150,
         height: 150,
         marginBottom: 40,
-        marginTop: -100,
         tintColor: '#2BA84A'
     },
     textLogin: {
