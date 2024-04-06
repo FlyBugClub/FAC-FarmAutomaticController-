@@ -110,6 +110,11 @@ export default class Details extends Component {
     this.props.navigation.navigate("History"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
+  AdvanceSettingDevicePage = () => {
+    console.log("Advance Setting Device Page");
+    this.props.navigation.navigate("AdvanceSettingDevice"); // 'History' là tên của màn hình History trong định tuyến của bạn
+  };
+
   DateTimePage = () => {
     console.log("DateTime Page");
     this.props.navigation.navigate("DateTime"); // 'History' là tên của màn hình History trong định tuyến của bạn
@@ -299,7 +304,7 @@ export default class Details extends Component {
           <View style={styles.timeArea}>
             <Text style={styles.timeText}>{index}:50</Text>
             <View style={{ flexDirection: "row" }}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={this.toggleDatePicker}>
                 <Image
                   source={require("../assets/img/settings.png")}
                   style={styles.imgIcon}
@@ -330,7 +335,14 @@ export default class Details extends Component {
     [...Array(2)].forEach((_, index) => {
       deviceList.push(
         <View style={styles.optionArea}>
-          <Text style={styles.titleDevice}>Water pump {index}</Text>
+          <View style={styles.moreSettingArea}>
+            <Text style={styles.titleDevice}>Water pump {index}</Text>
+            <TouchableOpacity onPress={this.AdvanceSettingDevicePage}>
+              <Image source={require('../assets/img/more.png')} style={styles.imgMoreSetting}></Image>
+            </TouchableOpacity>
+            
+          </View>
+          
           <View style={{}}>
             <View style={styles.function}>
               <Text>{i18next.t("Custom")}</Text>
@@ -941,4 +953,18 @@ const styles = StyleSheet.create({
 
     backgroundColor: "#D9D9D9",
   },
+  moreSettingArea: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  btnMoreSetting: {
+
+  },
+  imgMoreSetting: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+    tintColor: 'gray'
+  }
 });
