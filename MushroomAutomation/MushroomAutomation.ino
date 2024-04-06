@@ -58,8 +58,8 @@ void loop() {
   getCurrentDateTime(formattedDateTime);
   Serial.println("Current Date and Time: " + formattedDateTime);
  
-  // postHumidityToAPI("/api/sensorvalues");
-  postCountPumpToAPI("api/equidmentvalues");
+  postHumidityToAPI("/api/sensorvalues");
+  postCountPumpToAPI("/api/equidmentvalues");
   //POST to one API
   // postToAPI("/api/user");  // Thay đổi URL tại đây
 
@@ -114,7 +114,7 @@ void postHumidityToAPI(const char* url) {
 
   if (httpCode > 0) {
     String payload = http.getString();
-    Serial.print("POST response: ");
+    Serial.print("POST Humidity response: ");
     Serial.println(payload);
   } else {
     Serial.print("POST request failed with error code: ");
@@ -138,8 +138,8 @@ void postCountPumpToAPI(const char* url) {
   StaticJsonDocument<256> doc;
 
   // Thêm các thành phần vào payload JSON
-  doc["id_equipment"] = "SenSor0001";
-  doc["value"] = "20";
+  doc["id_equipment"] = "BC0001";
+  doc["values"] = "20";
   doc["status"] = "22222";
   doc["datetime"] = "2024-04-06 10:00:00";
   doc["autoMode"] = "1";
@@ -154,7 +154,7 @@ void postCountPumpToAPI(const char* url) {
 
   if (httpCode > 0) {
     String payload = http.getString();
-    Serial.print("POST response: ");
+    Serial.print("POST CountPump response: ");
     Serial.println(payload);
   } else {
     Serial.print("POST request failed with error code: ");
