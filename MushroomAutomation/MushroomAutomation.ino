@@ -54,27 +54,10 @@ void loop() {
   if (!wifiConnected) {
     connectToWiFi();
   }
-  timeClient.update();
-  String formattedTime = timeClient.getFormattedTime();
-  countPumpActivations(formattedTime);
+  String formattedDateTime;
+  getCurrentDateTime(formattedDateTime);
+  Serial.println("Current Date and Time: " + formattedDateTime);
  
-   // Get current epoch time
-  unsigned long currentEpochTime = timeClient.getEpochTime();
-
-  // Convert unsigned long to time_t
-  time_t epochTime = (time_t)currentEpochTime;
-  
-  // Get current date and time
-  struct tm *currentTimeStruct = localtime(&epochTime);
-  char currentTime[30];
-  strftime(currentTime, sizeof(currentTime), "%Y-%m-%d %H:%M:%S", currentTimeStruct);
-  unsigned long milliseconds = millis() % 1000;
-  char currentTimeWithMilliseconds[35];
-  snprintf(currentTimeWithMilliseconds, sizeof(currentTimeWithMilliseconds), "%s.%03ld", currentTime, milliseconds);
-  
-  // Print current date and time
-  Serial.println("Current Date and Time: " + String(currentTimeWithMilliseconds));
-
 
   //POST to one API
   // postToAPI("/api/user");  // Thay đổi URL tại đây
@@ -301,6 +284,22 @@ bool isNewDay(String formattedTime) {
     return true;
   }
   return false;
+}
+
+
+void getCurrentDateTime(String& formattedDateTime) {
+
+  timeClient.update();
+  unsigned long currentEpochTime = timeClient.getEpochTime();
+  time_t epochTime = (time_t)currentEpochTime;
+  struct tm *currentTimeStruct = localtime(&epochTime);
+  char currentTime[30];
+  strftime(currentTime, sizeof(currentTime), "%Y-%m-%d %H:%M:%S", currentTimeStruct);
+  unsigned long milliseconds = millis() % 1000;
+  char currentTimeWithMilliseconds[35];
+  snprintf(currentTimeWithMilliseconds, sizeof(currentTimeWithMilliseconds), "%s.%03ld", currentTime, milliseconds);
+  
+  formattedDateTime = String(currentTimeWithMilliseconds);
 }
 
 
