@@ -58,7 +58,7 @@ void loop() {
   getCurrentDateTime(formattedDateTime);
   Serial.println("Current Date and Time: " + formattedDateTime);
  
-
+  postHumidityToAPI("/api/sensorvalues");
   //POST to one API
   // postToAPI("/api/user");  // Thay đổi URL tại đây
 
