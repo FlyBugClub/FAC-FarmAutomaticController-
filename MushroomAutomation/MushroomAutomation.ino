@@ -58,7 +58,8 @@ void loop() {
   getCurrentDateTime(formattedDateTime);
   Serial.println("Current Date and Time: " + formattedDateTime);
  
-  postHumidityToAPI("/api/sensorvalues");
+  // postHumidityToAPI("/api/sensorvalues");
+  postCountPumpToAPI("api/equidmentvalues");
   //POST to one API
   // postToAPI("/api/user");  // Thay đổi URL tại đây
 
@@ -103,6 +104,46 @@ void postHumidityToAPI(const char* url) {
   doc["expectedvalue"] = "20";
   doc["min_max_value"] = "40/90";
   doc["datetime"] = "2024-04-06 10:00:00";
+  // doc["id_membership"] = 2;
+  String payload;
+  serializeJson(doc, payload);
+
+  int httpCode = http.POST(payload);  // Dữ liệu JSON bạn muốn POST
+  Serial.print("POST httpCode: ");
+  Serial.println(httpCode);
+
+  if (httpCode > 0) {
+    String payload = http.getString();
+    Serial.print("POST response: ");
+    Serial.println(payload);
+  } else {
+    Serial.print("POST request failed with error code: ");
+    Serial.println(httpCode);
+  }
+
+  http.end();
+}
+
+void postCountPumpToAPI(const char* url) {
+  WiFiClientSecure client;
+  HTTPClient http;
+
+  String api_url = "https://" + String(server_address) + url;
+
+  http.begin(client, api_url);
+  client.setInsecure();
+
+  http.addHeader("Content-Type", "application/json");
+  // Tạo một đối tượng JSON Document với kích thước đủ cho payload
+  StaticJsonDocument<256> doc;
+
+  // Thêm các thành phần vào payload JSON
+  doc["id_equipment"] = "SenSor0001";
+  doc["value"] = "20";
+  doc["status"] = "22222";
+  doc["datetime"] = "2024-04-06 10:00:00";
+  doc["autoMode"] = "1";
+  doc["id_sensor"] = "DHT0001-PH0001";
   // doc["id_membership"] = 2;
   String payload;
   serializeJson(doc, payload);
