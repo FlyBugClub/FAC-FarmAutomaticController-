@@ -533,6 +533,7 @@ export default class Details extends Component {
               verticalLabelRotation={0}
               chartConfig={chartConfig}
               style={{ marginTop: 20 }}
+              yAxisSuffix='%'
               bezier
             />
           </TouchableOpacity>

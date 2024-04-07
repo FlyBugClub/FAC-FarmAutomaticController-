@@ -43,12 +43,12 @@ export default class AddFarmForm extends Component {
                 </SafeAreaView>
               </LinearGradient>
               <View style={{ alignItems: "flex-end", right: 40 }}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={styles.btnQrCode}
                   onPress={this.OpenCamera}
                 >
                   <Text style={styles.btnQrCodeText}>{i18next.t("Scan Qr code")}</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
               <View style={styles.containerContent}>
                 <TextInput placeholder={i18next.t("Farm name")} style={styles.input} />

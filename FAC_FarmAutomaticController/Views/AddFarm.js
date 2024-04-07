@@ -11,6 +11,11 @@ export default class AddFarm extends Component {
         this.props.navigation.navigate('CameraCreateNewFarmHouse'); 
     };
 
+    OpenCameraDevice = () => {
+        console.log("Open Camera");
+        this.props.navigation.navigate("CameraConnectDevice");
+      };
+
     AddDevicePage = () => {
         console.log("Add Device Page");
         this.props.navigation.navigate('AddDevice'); 
@@ -32,13 +37,12 @@ export default class AddFarm extends Component {
                 </LinearGradient>
                 <SafeAreaView style={styles.safeContainer}>
                     <View style={{width: '90%'}}>    
-                        <TouchableOpacity style={styles.btnAdd} onPress={this.AddFarmFormPage}>
+                        <TouchableOpacity style={styles.btnAdd} onPress={this.OpenCamera}>
                             <Text style={styles.btnText}>{i18next.t("Create new farm house")}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.btnAdd} onPress={this.AddDevicePage}>
+                        <TouchableOpacity style={styles.btnAdd} onPress={this.OpenCameraDevice}>
                             <Text style={styles.btnText}>{i18next.t("Add device")}</Text>
                         </TouchableOpacity>
-                        
                     </View>
                 </SafeAreaView>
             </View>

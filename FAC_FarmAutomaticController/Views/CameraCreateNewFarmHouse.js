@@ -29,13 +29,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style={{width: '100%', height: 400}}>
         <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      </View>
-      
       {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
     </View>
   );

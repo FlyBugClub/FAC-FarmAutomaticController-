@@ -63,19 +63,27 @@ export default class AddDevice extends Component {
                 </SafeAreaView>
               </LinearGradient>
               <View style={{ alignItems: "flex-end", right: 40 }}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={styles.btnQrCode}
                   onPress={this.OpenCamera}
                 >
-                  <Text style={styles.btnQrCodeText}>{i18next.t("Scan Qr code")}</Text>
-                </TouchableOpacity>
+                  <Text style={styles.btnQrCodeText}>
+                    {i18next.t("Scan Qr code")}
+                  </Text>
+                </TouchableOpacity> */}
               </View>
               <View style={styles.containerContent}>
-                <TextInput placeholder={i18next.t("ID device")} style={styles.input} />
-                <TextInput placeholder={i18next.t("Device name")} style={styles.input} />
+                <TextInput
+                  placeholder={i18next.t("ID device")}
+                  style={styles.input}
+                />
+                <TextInput
+                  placeholder={i18next.t("Device name")}
+                  style={styles.input}
+                />
                 <View style={styles.optionArea}>
                   <View>
-                    <Text style={{color:''}}>{i18next.t("Farm house")}</Text>
+                    <Text style={{ color: "" }}>{i18next.t("Farm house")}</Text>
                   </View>
                   <View>
                     <Picker
@@ -97,10 +105,7 @@ export default class AddDevice extends Component {
                 </View>
               </View>
               <View style={{ alignItems: "center", justifyContent: "center" }}>
-                <TouchableOpacity
-                  style={styles.btnAdd}
-                  onPress={this.OpenCamera}
-                >
+                <TouchableOpacity style={styles.btnAdd}>
                   <Text style={styles.btnText}>{i18next.t("Create")}</Text>
                 </TouchableOpacity>
               </View>
@@ -175,7 +180,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   optionArea: {
-    width: '83%',
+    width: "83%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -188,5 +193,4 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     elevation: 1,
   },
-  
 });
