@@ -39,7 +39,7 @@
     "expo-status-bar": "~1.11.1",
     "i18next": "^23.10.1",
     "i18next-async-storage-backend": "^1.0.2",
-    "lottie-react-native": "6.5.1",
+    "lottie-react-native": "^6.5.1",
     "msnodesqlv8": "^4.1.2",
     "mssql": "^10.0.2",
     "react": "18.2.0",
