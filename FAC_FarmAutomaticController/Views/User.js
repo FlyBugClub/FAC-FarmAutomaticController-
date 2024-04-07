@@ -14,7 +14,6 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18next, { languageResources } from "../services/i18next";
 import languagesList from "../services/languagesList.json";
 import MyContext from "../DataContext";
@@ -35,28 +34,7 @@ export default class User extends Component {
     this.setState({ selectedLanguage: lng });
     I18nManager.forceRTL(true);
     I18nManager.allowRTL(true);
-
-    // // Lưu ngôn ngữ mới vào AsyncStorage
-    // try {
-    //   await AsyncStorage.setItem('selectedLanguage', lng);
-    // } catch (error) {
-    //   console.log("Error saving language:", error);
-    // }
   };
-
-  // async componentDidMount() {
-  //   // Kiểm tra ngôn ngữ đã lưu trong AsyncStorage
-  //   try {
-  //     const value = await AsyncStorage.getItem('selectedLanguage');
-  //     if (value !== null) {
-  //       initI18n(value);
-  //       // Cập nhật ngôn ngữ trong state nếu đã có giá trị trong AsyncStorage
-  //       this.setState({ selectedLanguage: value });
-  //     }
-  //   } catch (error) {
-  //     console.log("Error retrieving language:", error);
-  //   }
-  // }
 
   render() {
     const { dataArray } = this.context;
