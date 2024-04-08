@@ -1,4 +1,5 @@
 //region Includes
+
   #include <ESP8266WiFi.h>
   #include <ESP8266HTTPClient.h>
   #include <ArduinoJson.h>
@@ -9,11 +10,21 @@
 
   #include <NTPClient.h>
   #include <WiFiUdp.h>
-
+//region Struct
+  struct Equipment {
+    String id_sensor;
+    int mode;
+    float status;
+    // Định nghĩa struct cho lịch trình hoạt động
+    struct Schedule {
+        String *time; // Sử dụng con trỏ để tạo mảng động
+        size_t numTimes; // Số lượng thời gian trong lịch trình
+    } schedule;
+  };
 //region Constants
   const char* ntpServer = "pool.ntp.org";
   const int ntpPort = 123;
-  const char* server_address = "ngunemay123.bsite.net";
+  const char* server_address = "172.16.17.38/Today";
   const int server_port = 443;
   const int pumpPin = D6;
   const long timeZoneOffset = 7 * 3600;
@@ -38,8 +49,8 @@
   void loop();
   void connectToWiFi();
   void getCurrentDateTime(String& formattedDateTime);
-  void postHumidityToAPI(const char* url, String formattedDateTime);
-  void postCountPumpToAPI(const char* url, String formattedDateTime);
+  void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor);
+  void postCountPumpToAPI(const char* url, String formattedDateTime, const char* id_sensor);
   void autoControlMode(float& temperature, float& humidity);
   bool isNewDay(String formattedTime);
 
@@ -66,16 +77,17 @@
     }
     
     String formattedDateTime;
-    getCurrentDateTime(formattedDateTime);
-    countPumpActivations(formattedDateTime);
-    // postHumidityToAPI("/api/sensorvalues", formattedDateTime);
-    getAndParseAPI("/api/login/admin@gmail.com/123456");
+    // getCurrentDateTime(formattedDateTime);
+    // countPumpActivations(formattedDateTime);
+    // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
+    // getAndParseAPI("/api/login/admin@gmail.com/123456");
+    getAndParseAPI("/api/getvalueesp/ESP0001");
 
     // manageAutoControl();
 
-    delay(1000);
+
   }
-//region stuff
+//region stuffgetAndParseAPI1
   bool isNewDay(String formattedTime, String& previousDate) {
     // Lấy ngày từ chuỗi định dạng "%Y-%m-%d"
     String currentDate = formattedTime.substring(0, 10);
@@ -109,32 +121,29 @@
   }
 
   void countPumpActivations(String formattedTime) {
-    // Kiểm tra xem đã qua ngày mới chưa
     if (isNewDay(formattedTime, previousDate)) {
       pumpActivationCount = 0;
     }
     if (digitalRead(pumpPin) == HIGH) {
       pumpActivationCount++;
-      postCountPumpToAPI("/api/equidmentvalues", formattedTime);
+      postCountPumpToAPI("/api/equidmentvalues", formattedTime, id_sensor);
 
     }
   }
 //region POST
-  void postHumidityToAPI(const char* url, String formattedDateTime) {
-    WiFiClientSecure client;
+  void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor ) {
+    WiFiClient client;
     HTTPClient http;
-    String api_url = "https://" + String(server_address) + url;
+    String api_url = "http://" + String(server_address) + url;
 
     http.begin(client, api_url);
-    client.setInsecure();
+    // client.setInsecure();
 
     http.addHeader("Content-Type", "application/json");
 
     StaticJsonDocument<256> doc;
-    doc["id_sensor"] = "SenSor0001";
-    doc["value"] = "20";
-    doc["expectedvalue"] = "20";
-    doc["min_max_value"] = "40/90";
+    doc["id_sensor"] = id_sensor;
+    doc["value"] = "22222";
     doc["datetime"] = formattedDateTime;
     String payload;
     serializeJson(doc, payload);
@@ -155,7 +164,7 @@
     http.end();
   }
 
-  void postCountPumpToAPI(const char* url, String formattedDateTime) {
+  void postCountPumpToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
     WiFiClientSecure client;
     HTTPClient http;
     String api_url = "https://" + String(server_address) + url;
@@ -191,48 +200,63 @@
     http.end();
   }
 //region GET
+#TODO error GET
   void getAndParseAPI(const char* url) {
-    WiFiClientSecure client;
+    WiFiClient client;
     HTTPClient http;
 
-    String api_url = "https://" + String(server_address) + url;
+    String api_url = "http://" + String(server_address) + url;
 
     http.begin(client, api_url);
-    client.setInsecure();
 
     int httpCode = http.GET();
     
-    static char payload[256];
-
     if (httpCode > 0) {
-      http.getString().toCharArray(payload, sizeof(payload));
-      http.end();
-      Serial.println(payload);
-      StaticJsonDocument<256> doc;
-      DeserializationError error = deserializeJson(doc, payload);
+        String payload = http.getString();
+        Serial.println("Received JSON:");
+        Serial.println(payload);
+        StaticJsonDocument<1024> doc;
+        DeserializationError error = deserializeJson(doc, payload);
 
-      if (!error) {
-        JsonObject user = doc[0]["user"];
-        const char* userId = user["id"];
-        const char* userEmail = user["gmail"];
-        const char* userName = user["name"];
-        const char* userPhone = user["phone"];
-        int membership = user["membership"].as<int>();  
+        if (!error) {
+            // Lấy đối tượng JSON cho equipment0
+            JsonObject equipment0 = doc[0]["equipment0"];
 
-        JsonObject sensor = doc[0]["0"];
-        const char* espId = sensor["id_esp"];
-        const char* espName = sensor["name"];
-        int bcValue = sensor["bc"].as<int>();    
-        int dhtValue = sensor["dht"].as<int>();  
-        int phValue = sensor["ph"].as<int>();    
-      }
+            // Lấy các trường dữ liệu từ equipment0
+            String id_sensor = equipment0["id_sensor"].as<String>();
+            int mode = equipment0["Mode"];
+            float status = equipment0["status"];
+
+            // In ra các giá trị lấy được
+            Serial.println("Equipment 0:");
+            Serial.println("ID Sensor: " + id_sensor);
+            Serial.println("Mode: " + String(mode));
+            Serial.println("Status: " + String(status));
+
+            // Kiểm tra xem schedule có tồn tại không
+            if (equipment0.containsKey("schedule")) {
+                JsonObject schedule = equipment0["schedule"];
+
+                // Lặp qua các thời điểm trong schedule và in ra
+                
+            } else {
+                Serial.println("No schedule available for equipment 0.");
+            }
+        } else {
+            Serial.println("Failed to parse JSON.");
+        }
     } else {
-      // Trả về NULL nếu yêu cầu không thành công
-      Serial.print("GET request failed with error code: ");
-      Serial.println(httpCode);
-      http.end();
+        Serial.print("GET request failed with error code: ");
+        Serial.println(httpCode);
     }
-  }
+
+    http.end();
+}
+
+
+
+
+
 //region AUTO CONTROL
   void manageAutoControl() {
     if (autoControl) {
