@@ -45,7 +45,7 @@ export default class AddDevice extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar backgroundColor="#bfd200" />
+        <StatusBar backgroundColor="#2BA84A" />
         <KeyboardAvoidingView behavior="padding" style={styles.container}>
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
@@ -53,7 +53,7 @@ export default class AddDevice extends Component {
           >
             <View>
               <LinearGradient
-                colors={["#bfd200", "#aacc00", "#80b918"]}
+                colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
                 style={styles.NavigationTop}
               >
                 <SafeAreaView
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     paddingBottom: 3,
     paddingLeft: 10,
     paddingRight: 10,
-    backgroundColor: "#80b918",
+    backgroundColor: "#2BA84A",
     borderRadius: 20,
   },
   btnQrCodeText: {
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     width: "83%",
     height: 40,
     margin: 10,
-    backgroundColor: "#80b918",
+    backgroundColor: "#2BA84A",
     justifyContent: "center",
     borderRadius: 20,
   },

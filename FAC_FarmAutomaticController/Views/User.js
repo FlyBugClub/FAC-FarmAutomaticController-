@@ -32,8 +32,14 @@ export default class User extends Component {
   changeLng = async (lng) => {
     i18next.changeLanguage(lng);
     this.setState({ selectedLanguage: lng });
-    I18nManager.forceRTL(true);
-    I18nManager.allowRTL(true);
+    // I18nManager.forceRTL(true);
+    // I18nManager.allowRTL(true);
+  };
+
+  // ========== Change page ========== //
+  PakagePremiumPage = () => {
+    console.log("Pakage Premium Page");
+    this.props.navigation.navigate("PremiumPakage");
   };
 
   render() {
@@ -42,7 +48,7 @@ export default class User extends Component {
     return (
       <View style={styles.container}>
         <LinearGradient
-          colors={["#bfd200", "#aacc00", "#80b918"]}
+          colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
           style={styles.NavigationTop}
         >
           <SafeAreaView
@@ -81,7 +87,7 @@ export default class User extends Component {
                   this.changeLng(itemValue)
                 }
               >
-                {Object.keys(languageResources).map((key, index) => (
+                {Object.keys(languageResources).sort().map((key, index) => (
                   <Picker.Item
                     key={index}
                     label={i18next.t(languagesList[key].nativeName)}
@@ -89,6 +95,12 @@ export default class User extends Component {
                   />
                 ))}
               </Picker>
+            </View>
+            <View style={styles.line}></View>
+            <View style={styles.settingContent}>
+              <TouchableOpacity style={styles.btn} onPress={this.PakagePremiumPage}>
+                <Text style={[styles.text]}>{i18next.t("Update Pakage")}</Text>
+              </TouchableOpacity>
             </View>
             <View style={styles.line}></View>
             <View style={styles.settingContent}>

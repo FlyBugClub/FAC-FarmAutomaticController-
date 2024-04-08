@@ -497,9 +497,9 @@ export default class Details extends Component {
 
     return (
       <View style={styles.container}>
-        <StatusBar backgroundColor="#bfd200" />
+        <StatusBar backgroundColor="#2BA84A" />
         <LinearGradient
-          colors={["#bfd200", "#aacc00", "#80b918"]}
+          colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
           style={styles.BackDropTop}
         >
           <SafeAreaView>
@@ -957,7 +957,7 @@ const styles = StyleSheet.create({
     height: 26,
     marginLeft: 5,
     borderRadius: 3,
-    backgroundColor: "#73A942",
+    backgroundColor: "#2BA84A",
     justifyContent: "center",
     alignItems: "center",
   },

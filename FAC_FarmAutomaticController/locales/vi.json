@@ -53,5 +53,7 @@
     "ID device": "Mã thiết bị",
     "Device name": "Tên thiết bị",
     "Farm house": "Nông trại",
-    "An error occurred": "Đã xảy ra lỗi"
+    "An error occurred": "Đã xảy ra lỗi",
+    "email or password are incorrect": "Mật khẩu hoặc tài khoản không chính xác",
+    "Checkout": "Thanh toán"
   }

@@ -45,7 +45,7 @@ export default class History extends Component {
     return (
       <View style={styles.container}>
         <LinearGradient
-          colors={["#bfd200", "#aacc00", "#80b918"]}
+          colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
           style={styles.NavigationTop}
         >
           <SafeAreaView

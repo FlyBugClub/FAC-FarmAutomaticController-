@@ -29,8 +29,8 @@ export default class AddFarm extends Component {
     render() {
         return(
             <View style={styles.Container}>
-                <StatusBar backgroundColor="#bfd200"/>
-                <LinearGradient colors={['#bfd200', '#aacc00', '#80b918']}  style={styles.NavigationTop}>
+                <StatusBar backgroundColor="#2BA84A"/>
+                <LinearGradient colors={['#2BA84A', '#2BA84A', '#2BA84A']}  style={styles.NavigationTop}>
                     <SafeAreaView style={{alignItems: 'center', justifyContent: 'center'}}>
                         <Text style={styles.title}>{i18next.t("Create Farm House")}</Text>
                     </SafeAreaView>
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     btnAdd: {
         height: 40,
         margin: 10,
-        backgroundColor: '#80b918', 
+        backgroundColor: '#2BA84A', 
         justifyContent: 'center',
         borderRadius: 20,
     },

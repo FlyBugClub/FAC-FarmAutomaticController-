@@ -53,5 +53,7 @@
   "ID device": "ID device",
   "Device name": "Device name",
   "Farm house": "Farm house",
-  "An error occurred": "An error occurred"
+  "An error occurred": "An error occurred",
+  "email or password are incorrect": "email or password are incorrect",
+  "Checkout": "Checkout"
 }

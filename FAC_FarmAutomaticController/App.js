@@ -35,10 +35,14 @@ import PremiumPakage from "./Views/PremiumPakage.js";
 import ChangePassword from "./Views/ChangePassword.js";
 import AddFarmForm from "./Views/AddFarmForm.js";
 import AdvanceSettingDevice from "./Views/AdvanceSettingDevice.js";
+import CheckOut from "./Views/CheckOut.js";
+
 import DateTime from "./Views/DateTime.js";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+//Pakage Navigator
 
 // Tạo Stack Navigator
 function StackNavigator() {
@@ -61,7 +65,6 @@ function StackNavigator() {
         component={CameraConnectDevice}
       />
       <Stack.Screen name="AddDevice" component={AddDevice} />
-      <Stack.Screen name="PremiumPakage" component={PremiumPakage} />
       <Stack.Screen name="AddFarmForm" component={AddFarmForm} />
       <Stack.Screen
         name="AdvanceSettingDevice"
@@ -99,11 +102,11 @@ function TabNavigator() {
                 style={{
                   width: 25,
                   height: 25,
-                  tintColor: focused ? "#80b918" : "#333",
+                  tintColor: focused ? "#2BA84A" : "#333",
                 }}
               />
               <Text
-                style={{ color: focused ? "#80b918" : "#333", fontSize: 12 }}
+                style={{ color: focused ? "#2BA84A" : "#333", fontSize: 12 }}
               >
                 {i18next.t("Home")}
               </Text>
@@ -121,7 +124,7 @@ function TabNavigator() {
                 style={{
                   width: 70,
                   height: 70,
-                  backgroundColor: "#80b918",
+                  backgroundColor: "#2BA84A",
                   borderRadius: 35,
                   justifyContent: "center",
                   alignItems: "center",
@@ -154,11 +157,11 @@ function TabNavigator() {
                 style={{
                   width: 25,
                   height: 25,
-                  tintColor: focused ? "#80b918" : "#333",
+                  tintColor: focused ? "#2BA84A" : "#333",
                 }}
               />
               <Text
-                style={{ color: focused ? "#80b918" : "#333", fontSize: 12 }}
+                style={{ color: focused ? "#2BA84A" : "#333", fontSize: 12 }}
               >
                 {i18next.t("User")}
               </Text>
@@ -214,14 +217,15 @@ export default RootComponent = function () {
     <MyContext.Provider value={{ dataArray, addDataAtIndex }}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {/* <Stack.Screen name='User' component={User}/> */}
+          
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
           <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="OTP" component={OTP} />
-          {/* <Stack.Screen name='User' component={User}/> */}
           <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
           <Stack.Screen name="ChangePassword" component={ChangePassword} />
+          <Stack.Screen name="PremiumPakage" component={PremiumPakage} />
+          <Stack.Screen name="CheckOut" component={CheckOut} />
         </Stack.Navigator>
       </NavigationContainer>
     </MyContext.Provider>

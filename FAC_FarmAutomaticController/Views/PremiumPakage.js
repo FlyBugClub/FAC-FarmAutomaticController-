@@ -8,7 +8,7 @@ import {
     SafeAreaView, 
     TextInput,
     Image} from 'react-native';
-    import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+    import i18next from "../services/i18next";
 
 export default class User extends Component {
     constructor(props) {
@@ -17,9 +17,15 @@ export default class User extends Component {
             membership: '',
         }
     }
+
+    // ========== Change page ========== //
+    CheckOutPage = () => {
+        console.log("CheckOut Page");
+        this.props.navigation.navigate("CheckOut");
+      };
     render() {
         const { membership } = this.state;
-        const packagePrices = [200, 400, 600];
+        const packagePrices = [100, 90, 76];
         return (
             <View style={styles.component}>
                 <SafeAreaView style={styles.safeComponent}>
@@ -37,11 +43,11 @@ export default class User extends Component {
                                     </TouchableOpacity>
                                     <View>
                                         <Text style={styles.headerInner}>{pakage}</Text>
-                                        <Text style={styles.description}>Pay Weekly for updating your experient</Text>
+                                        <Text style={styles.description}>Pay {pakage} for updating your experient</Text>
                                     </View>
                                 </View>
                                 <View style={{flexDirection: 'row'}}>
-                                    <Text style={styles.headerInner}>{packagePrices[index]}đ</Text>
+                                    <Text style={styles.headerInner}>đ{packagePrices[index].toFixed(3)}</Text>
                                     <Text style={{color: '#adb5bd', fontSize: 12, fontWeight: 'bold'}}>/w</Text>
                                 </View>
                             </View>
@@ -49,8 +55,8 @@ export default class User extends Component {
                     </View>
                     <View style={{width: '100%'}}>
                         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                            <TouchableOpacity style={styles.btn}>
-                                <Text style={styles.textBtn}>Continue</Text>
+                            <TouchableOpacity style={styles.btn} onPress={this.CheckOutPage}>
+                                <Text style={styles.textBtn}>{i18next.t("Checkout")}</Text>
                             </TouchableOpacity>
                         </View>
                         
