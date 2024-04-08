@@ -9,12 +9,16 @@ import {
   Image,
   Dimensions,
   ScrollView,
-  NativeModules,
-  I18nManager 
+  Platform,
+  FlatList,
 } from "react-native";
+import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
 import i18next, { languageResources } from "../services/i18next";
+import { userMemo } from "react";
+import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import languagesList from "../services/languagesList.json";
 import MyContext from "../DataContext";
 const screenWidth = Dimensions.get("window").width;
@@ -27,14 +31,30 @@ export default class User extends Component {
     this.state = {
       selectedLanguage: "vi",
     };
+    this.snapPoint = ["25%"];
+    this.bottomSheetRef = React.createRef();
   }
+
+  handleClosePress = () => this.bottomSheetRef.current?.close();
+  handleOpenPress = () => this.bottomSheetRef.current?.expand();
+
+  renderBackdrop = () => (
+    <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} />
+  );
 
   changeLng = async (lng) => {
     i18next.changeLanguage(lng);
     this.setState({ selectedLanguage: lng });
-    // I18nManager.forceRTL(true);
-    // I18nManager.allowRTL(true);
   };
+
+  renderLanguageItem = ({ item }) => (
+    <TouchableOpacity onPress={() => this.changeLng(item.key)}>
+      <Text style={styles.bottomSheetLngText}>
+        {i18next.t(item.nativeName)}
+      </Text>
+      <View style={styles.line}></View>
+    </TouchableOpacity>
+  );
 
   // ========== Change page ========== //
   PakagePremiumPage = () => {
@@ -44,73 +64,132 @@ export default class User extends Component {
 
   render() {
     const { dataArray } = this.context;
-
     return (
       <View style={styles.container}>
-        <LinearGradient
-          colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
-          style={styles.NavigationTop}
-        >
-          <SafeAreaView
-            style={{ alignItems: "center", justifyContent: "center" }}
+        <GestureHandlerRootView style={styles.container}>
+          <LinearGradient
+            colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
+            style={styles.NavigationTop}
           >
-            <Text style={styles.title}>{i18next.t("User information")}</Text>
-          </SafeAreaView>
-        </LinearGradient>
-        <SafeAreaView style={styles.safeContainer}>
-          <View style={styles.userArea}>
-            <View>
-              <Image
-                source={require("../assets/img/avatar_user.jpg")}
-                style={styles.avatar}
-              />
+            <SafeAreaView
+              style={{ alignItems: "center", justifyContent: "center" }}
+            >
+              <Text style={styles.title}>{i18next.t("User information")}</Text>
+            </SafeAreaView>
+          </LinearGradient>
+          <SafeAreaView style={styles.safeContainer}>
+            <View style={[styles.userArea, styles.shadow]}>
+              <View>
+                <Image
+                  source={require("../assets/img/avatar_user.jpg")}
+                  style={styles.avatar}
+                />
+              </View>
+              <View style={{ marginLeft: 10, marginRight: 10 }}>
+                <Text style={styles.textInfo}>
+                  {i18next.t("Username")}: {dataArray[0]["name"]}
+                </Text>
+                <Text style={styles.textInfo}>
+                  Email: {dataArray[0]["gmail"]}
+                </Text>
+                <Text style={styles.textInfo}>
+                  {i18next.t("Phone")}: {dataArray[0]["phone_no"]}
+                </Text>
+              </View>
             </View>
-            <View style={{ marginLeft: 10, marginRight: 10 }}>
-              <Text style={styles.textInfo}>
-                {i18next.t("Username")}: {dataArray[0]["name"]}
-              </Text>
-              <Text style={styles.textInfo}>
-                Email: {dataArray[0]["gmail"]}
-              </Text>
-              <Text style={styles.textInfo}>
-                {i18next.t("Phone")}: {dataArray[0]["phone_no"]}
-              </Text>
-            </View>
-          </View>
-          <ScrollView>
-            <View style={styles.settingContent}>
-              <Text style={styles.text}>{i18next.t("Language")}</Text>
-              <Picker
-                selectedValue={this.state.selectedLanguage}
-                style={styles.picker}
-                onValueChange={(itemValue, itemIndex) =>
-                  this.changeLng(itemValue)
-                }
+            <ScrollView>
+              <Text
+                style={[
+                  styles.text,
+                  { color: "gray", marginTop: 20, marginBottom: 0 },
+                ]}
               >
-                {Object.keys(languageResources).sort().map((key, index) => (
-                  <Picker.Item
-                    key={index}
-                    label={i18next.t(languagesList[key].nativeName)}
-                    value={key}
-                  />
-                ))}
-              </Picker>
-            </View>
-            <View style={styles.line}></View>
-            <View style={styles.settingContent}>
-              <TouchableOpacity style={styles.btn} onPress={this.PakagePremiumPage}>
-                <Text style={[styles.text]}>{i18next.t("Update Pakage")}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.line}></View>
-            <View style={styles.settingContent}>
-              <TouchableOpacity style={styles.btn}>
-                <Text style={[styles.text]}>{i18next.t("Sign out")}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.line}></View>
-          </ScrollView>
-        </SafeAreaView>
+                {i18next.t("Setting")}
+              </Text>
+              {Platform.OS === "android" && (
+                <View style={styles.settingContent}>
+                  <Text style={styles.text}>{i18next.t("Language")}</Text>
+                  <Picker
+                    selectedValue={this.state.selectedLanguage}
+                    style={styles.picker}
+                    onValueChange={(itemValue, itemIndex) =>
+                      this.changeLng(itemValue)
+                    }
+                  >
+                    {Object.keys(languageResources)
+                      .sort()
+                      .map((key, index) => (
+                        <Picker.Item
+                          key={index}
+                          label={i18next.t(languagesList[key].nativeName)}
+                          value={key}
+                        />
+                      ))}
+                  </Picker>
+                </View>
+              )}
+              {Platform.OS === "ios" && (
+                <View style={styles.settingContent}>
+                  <TouchableOpacity
+                    style={styles.languageArea}
+                    onPress={this.handleOpenPress}
+                  >
+                    <Text style={styles.text}>{i18next.t("Language")}</Text>
+                    <Text style={styles.text}>
+                      {i18next.t(
+                        languagesList[this.state.selectedLanguage].nativeName
+                      )}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              <View style={styles.line}></View>
+              <View style={styles.settingContent}>
+                <TouchableOpacity
+                  style={styles.btn}
+                  onPress={this.PakagePremiumPage}
+                >
+                  <Text style={[styles.text]}>
+                    {i18next.t("Update Pakage")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.line}></View>
+              <View style={styles.settingContent}>
+                <TouchableOpacity style={styles.btn}>
+                  <Text style={[styles.text]}>{i18next.t("Sign out")}</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.line}></View>
+            </ScrollView>
+          </SafeAreaView>
+          {Platform.OS === "ios" && (
+            <BottomSheet
+              ref={this.bottomSheetRef}
+              snapPoints={this.snapPoint}
+              enablePanDownToClose={true}
+              initialSnapIndex={-1}
+            >
+              <View>
+                <Text style={[{ color: "gray", fontSize: 20, marginLeft: 10 }]}>
+                  {i18next.t("Languages")}
+                </Text>
+                <FlatList
+                  style={{ marginBottom: 50 }}
+                  data={Object.keys(languageResources)
+                    .sort()
+                    .map((key) => ({
+                      key,
+                      nativeName: languagesList[key].nativeName,
+                    }))}
+                  renderItem={this.renderLanguageItem}
+                  keyExtractor={(item) => item.key}
+                />
+              </View>
+            </BottomSheet>
+          )}
+        </GestureHandlerRootView>
       </View>
     );
   }
@@ -136,6 +215,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fafafa",
     alignItems: "center",
     justifyContent: "center",
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
   userArea: {
     width: "90%",
@@ -232,5 +318,20 @@ const styles = StyleSheet.create({
   btn: {
     marginTop: 10,
     marginBottom: 10,
+  },
+  languageArea: {
+    width: "100%",
+    marginTop: 10,
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  bottomSheetLngText: {
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: 30,
+    marginRight: 30,
+    fontSize: 16,
   },
 });
