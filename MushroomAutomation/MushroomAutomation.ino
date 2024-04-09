@@ -2,6 +2,7 @@
 
   #include <ESP8266WiFi.h>
   #include <ESP8266HTTPClient.h>
+  #include <WiFiManager.h> // Thêm khai báo thư viện WiFiManager
   #include <ArduinoJson.h>
   #include "secret_pass.h"
 
@@ -81,13 +82,13 @@
     // countPumpActivations(formattedDateTime);
     // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
     // getAndParseAPI("/api/login/admin@gmail.com/123456");
-    getAndParseAPI("/api/getvalueesp/ESP0001");
+    // getAndParseAPI("/api/getvalueesp/ESP0001");
 
     // manageAutoControl();
 
 
   }
-//region stuffgetAndParseAPI1
+//region stuff
   bool isNewDay(String formattedTime, String& previousDate) {
     // Lấy ngày từ chuỗi định dạng "%Y-%m-%d"
     String currentDate = formattedTime.substring(0, 10);
@@ -200,7 +201,7 @@
     http.end();
   }
 //region GET
-#TODO error GET
+//TODO error GET
   void getAndParseAPI(const char* url) {
     WiFiClient client;
     HTTPClient http;
@@ -251,12 +252,7 @@
     }
 
     http.end();
-}
-
-
-
-
-
+  }
 //region AUTO CONTROL
   void manageAutoControl() {
     if (autoControl) {
@@ -281,37 +277,26 @@
 
 
 //region connect wifi and sensor
-  void reconnectSensor() {
-    Serial.println("Attempting to reconnect sensor...");
-
-    // Thử khởi tạo lại cảm biến
-    if (!sht31.begin(0x44)) {  // Set to 0x45 for alternate i2c addr
-      Serial.println("Couldn't find SHT31. Retrying...");
-      delay(1000);
-      return;  // Thử lại sau một khoảng thời gian
-    }
-  }
-
   void connectToWiFi() {
-    WiFi.begin(ssid, pass);
-    unsigned long startTime = millis();
-    while (WiFi.status() != WL_CONNECTED) {
-      delay(1000);
-      Serial.println("Connecting to WiFi...");
-      if (millis() - startTime > 30000) {
-        break;
-      }
-    }
+  // Khởi tạo WiFiManager
+  WiFiManager wifiManager;
 
-    if (WiFi.status() == WL_CONNECTED) {
-      wifiConnected = true;
+  // Kiểm tra xem ESP8266 có kết nối WiFi hay không
+  if (!WiFi.isConnected()) {
+    // Thử kết nối WiFi hoặc chuyển sang chế độ điểm truy cập (AP) để cấu hình WiFi mới
+    if (!wifiManager.autoConnect("ESP8266_AP")) {
+      Serial.println("Failed to connect and hit timeout");
+      // Nếu kết nối thất bại sau một khoảng thời gian, reset thiết bị
+      ESP.reset();
+      delay(1000);
+    } else {
+      // In ra thông báo khi kết nối WiFi thành công
       Serial.println("Connected to WiFi");
+      Serial.print("SSID: ");
+      Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
       timeClient.setTimeOffset(timeZoneOffset);
       autoControl = true;
-    } else {
-      wifiConnected = false;
-      Serial.println("Failed to connect to WiFi");
-      digitalWrite(pumpPin, LOW);
-      autoControl = false;
+      wifiConnected = true; // Cập nhật trạng thái kết nối WiFi
     }
+  }
   }
