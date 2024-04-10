@@ -1,10 +1,9 @@
 STATUS|TODO job|Person
-NO | arduinoide post count pum to sql
-NO | arduinoide post humi, temp to MQTT
-| arduinoide get ... from ...
-| app send ... from ... to ...
-|
-|
+NO 	| arduinoide post count pum to sql  						|	DUC
+NO 	| arduinoide post humi, temp, status to MQTT(0, 1, 2 aka auto, mannual,... )	|	DUC
+NO	| button to config new wifi							|	DUC
+NO	| arduinoide get 								|
+NO	| esp get from sql and save variable						|	DUC
 |
 |
 |
