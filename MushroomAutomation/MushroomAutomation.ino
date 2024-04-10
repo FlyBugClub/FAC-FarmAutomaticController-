@@ -12,25 +12,33 @@
   #include <NTPClient.h>
   #include <WiFiUdp.h>
 //region Struct
+  const int INITIAL_CAPACITY = 2;
+  const int SCHEDULE_CAPACITY = 5;
   struct Equipment {
-    String id_sensor;
-    int mode;
-    float status;
-    // Định nghĩa struct cho lịch trình hoạt động
-    struct Schedule {
-        String *time; // Sử dụng con trỏ để tạo mảng động
-        size_t numTimes; // Số lượng thời gian trong lịch trình
-    } schedule;
+  char id_sensor[20];
+  int Mode;
+  float status;
+  char** schedule; // Con trỏ đến mảng lịch trình
+  int schedule_size; // Số lượng phần tử trong mảng lịch trình
   };
+  // Mảng để lưu trữ thông tin của các thiết bị
+  Equipment* equipments; // Con trỏ đến mảng các thiết bị
+  int num_equipments = 0; // Số lượng thiết bị hiện tại
+  int array_capacity = INITIAL_CAPACITY; // Kích thước hiện tại của mảng
 //region Constants
+// Định nghĩa kích thước mảng tùy thuộc vào số lượng phần tử trong JSON
+
   const char* ntpServer = "pool.ntp.org";
   const int ntpPort = 123;
-  const char* server_address = "172.16.17.38/Today";
+  const char* server_address = "ngunemay123.bsite.net";
   const int server_port = 443;
   const int pumpPin = D6;
   const long timeZoneOffset = 7 * 3600;
   const unsigned long sprayInterval = 10000; // 10 seconds
 
+  const char* mqtt_server = "broker.emqx.io";
+  const uint16_t mqtt_port = 1883;
+  const char* mqtt_topic_hello = "hello_topic";
 //region Variables
   bool enableHeater = false;
   uint8_t loopCnt = 0;
@@ -70,6 +78,8 @@
     // Initialize NTPClient
     timeClient.begin();
     timeClient.setTimeOffset(timeZoneOffset);
+    // Khởi tạo mảng các thiết bị
+    equipments = new Equipment[array_capacity];
   }
 //region loop
   void loop() {
@@ -82,8 +92,8 @@
     // countPumpActivations(formattedDateTime);
     // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
     // getAndParseAPI("/api/login/admin@gmail.com/123456");
-    // getAndParseAPI("/api/getvalueesp/ESP0001");
-
+    getAndParseAPI("/api/getvalueesp/ESP0001");
+    
     // manageAutoControl();
 
 
@@ -133,12 +143,12 @@
   }
 //region POST
   void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor ) {
-    WiFiClient client;
+    WiFiClientSecure client;
     HTTPClient http;
     String api_url = "http://" + String(server_address) + url;
 
     http.begin(client, api_url);
-    // client.setInsecure();
+    client.setInsecure();
 
     http.addHeader("Content-Type", "application/json");
 
@@ -203,13 +213,13 @@
 //region GET
 //TODO error GET
   void getAndParseAPI(const char* url) {
-    WiFiClient client;
+    WiFiClientSecure client;
     HTTPClient http;
 
-    String api_url = "http://" + String(server_address) + url;
+    String api_url = "https://" + String(server_address) + url;
 
     http.begin(client, api_url);
-
+    client.setInsecure();
     int httpCode = http.GET();
     
     if (httpCode > 0) {
@@ -218,41 +228,58 @@
         Serial.println(payload);
         StaticJsonDocument<1024> doc;
         DeserializationError error = deserializeJson(doc, payload);
-
+        
         if (!error) {
-            // Lấy đối tượng JSON cho equipment0
-            JsonObject equipment0 = doc[0]["equipment0"];
+            // Iterate through each element of the array
+            for (JsonVariant v : doc.as<JsonArray>()) {
+                JsonObject obj = v.as<JsonObject>();
+                // Iterate through each key-value pair of the object
+                for (JsonPair kvp : obj) {
+                    JsonObject equipment = kvp.value();
+                    if (num_equipments >= array_capacity) {
+                        // Mảng không đủ lớn, thêm một kích thước mới cho nó
+                        array_capacity *= 2;
+                        Equipment* new_equipments = new Equipment[array_capacity];
+                        // Sao chép dữ liệu từ mảng cũ sang mảng mới
+                        memcpy(new_equipments, equipments, num_equipments * sizeof(Equipment));
+                        delete[] equipments;
+                        equipments = new_equipments;
+                    }
 
-            // Lấy các trường dữ liệu từ equipment0
-            String id_sensor = equipment0["id_sensor"].as<String>();
-            int mode = equipment0["Mode"];
-            float status = equipment0["status"];
+                    // Sao chép thông tin từ JSON vào mảng thiết bị
+                    strncpy(equipments[num_equipments].id_sensor, equipment["id_sensor"], sizeof(equipments[num_equipments].id_sensor));
+                    equipments[num_equipments].Mode = equipment["Mode"];
+                    equipments[num_equipments].status = equipment["status"];
 
-            // In ra các giá trị lấy được
-            Serial.println("Equipment 0:");
-            Serial.println("ID Sensor: " + id_sensor);
-            Serial.println("Mode: " + String(mode));
-            Serial.println("Status: " + String(status));
-
-            // Kiểm tra xem schedule có tồn tại không
-            if (equipment0.containsKey("schedule")) {
-                JsonObject schedule = equipment0["schedule"];
-
-                // Lặp qua các thời điểm trong schedule và in ra
-                
-            } else {
-                Serial.println("No schedule available for equipment 0.");
+                    JsonObject schedule = equipment["schedule"];
+                    equipments[num_equipments].schedule_size = std::min(schedule.size(), static_cast<size_t>(SCHEDULE_CAPACITY));
+                    equipments[num_equipments].schedule = new char*[equipments[num_equipments].schedule_size];
+                    int i = 0;
+                    // Iterate through each schedule item
+                    for (JsonPair kvp_schedule : schedule) {
+                        if (i >= equipments[num_equipments].schedule_size) break; // Đảm bảo không vượt quá kích thước tối đa
+                        equipments[num_equipments].schedule[i] = new char[9]; // Đảm bảo đủ kích thước cho chuỗi
+                        strncpy(equipments[num_equipments].schedule[i], kvp_schedule.value(), 9);
+                        i++;
+                    }
+                    num_equipments++;
+                }
             }
+
+            // In thông tin các thiết bị sau khi lưu vào mảng
+            
         } else {
-            Serial.println("Failed to parse JSON.");
+            Serial.println("Failed to parse JSON");
         }
     } else {
         Serial.print("GET request failed with error code: ");
         Serial.println(httpCode);
     }
 
-    http.end();
-  }
+    http.end(); 
+  }   
+
+
 //region AUTO CONTROL
   void manageAutoControl() {
     if (autoControl) {
@@ -297,6 +324,33 @@
       timeClient.setTimeOffset(timeZoneOffset);
       autoControl = true;
       wifiConnected = true; // Cập nhật trạng thái kết nối WiFi
+    }
+  }
+  }
+//region MQTTX POST
+
+//region MQTTX GET
+//region callBack
+  void callback(char* topic, byte* payload, unsigned int length) {
+  DynamicJsonDocument jsonBuffer(256);
+  deserializeJson(jsonBuffer, payload, length);
+  
+  // Xử lý dữ liệu JSON
+  for (JsonObject device : jsonBuffer["devices"].as<JsonArray>()) {
+    const char* device_id = device["id"];
+    const char* status = device["status"];
+    
+    // Điều khiển các chân GPIO tương ứng với thiết bị
+    if (strcmp(device_id, "device1") == 0) {
+      if (strcmp(status, "on") == 0) {
+        digitalWrite(D6, HIGH); // Bật chân D6
+      } else {
+        digitalWrite(D6, LOW); // Tắt chân D6
+      }
+    } else if (strcmp(device_id, "device2") == 0) {
+      // Tương tự với thiết bị khác
+    } else if (strcmp(device_id, "device3") == 0) {
+      // Tương tự với thiết bị khác
     }
   }
   }
