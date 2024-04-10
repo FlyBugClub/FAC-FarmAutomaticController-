@@ -3,15 +3,20 @@ from flask import Flask, jsonify
 import json
 from flask import request
 # Thiết lập các thông số kết nối
-server = 'sql.bsite.net\\MSSQL2016'  # Tên server và instance của SQL Server
+server = 'KHOIN'  # Tên server và instance của SQL Server
 database = 'ngunemay123_SampleDB'     # Tên cơ sở dữ liệu của bạn
-username = 'ngunemay123_SampleDB'                  # Tên người dùng SQL Server
-password = 'conchongu0123'                    # Mật khẩu SQL Server
+username = 'sa'                  # Tên người dùng SQL Server
+password = '1'                    # Mật khẩu SQL Server
 
 # Tạo chuỗi kết nối
 conn_str = f'DRIVER=ODBC Driver 17 for SQL Server;SERVER={server};DATABASE={database};UID={username};PWD={password}'
 # Kết nối đến cơ sở dữ liệu
-conn = pyodbc.connect(conn_str)
+
+try:
+    conn = pyodbc.connect(conn_str)
+except Exception as e:
+    print(f'hehe {e}')
+
 # Tạo một đối tượng cursor để thực thi các truy vấn SQL
 cursor = conn.cursor()
 
@@ -20,125 +25,125 @@ cursor = conn.cursor()
 
 # In dữ liệu
 
-
-app = Flask(__name__)
-
-@app.route('/api/login/<string:email>', methods=['GET'])
-def login(email):
-    # cursor.execute('SELECT * FROM dbo.Users')
-    # Lấy tất cả các dòng dữ liệu
-   
-    cursor.execute('SELECT * FROM dbo.Users WHERE gmail = ?', (email,))
-    row = cursor.fetchone()
-    if row:
-        # Nếu tìm thấy user, trả về thông tin của user
-        user = {
-            'id': row.id_user,  # Giả sử id là cột định danh của người dùng
-            # Các trường khác nếu cần thiết
-        }
-        return jsonify(user)
-    else:
-        # Nếu không tìm thấy user, trả về thông báo lỗi
-        return jsonify({'error': 'User not found'}), 404
-    
-
-@app.route('/api/get_esp/<string:id_user>', methods=['GET'])
-def get_esp(id_user):
-    # cursor.execute('SELECT * FROM dbo.Users')
-    # Lấy tất cả các dòng dữ liệu
-   
-    cursor.execute('SELECT * FROM dbo.Esp WHERE id_user = ?', (id_user,))
-    rows = cursor.fetchall()
-    esp = []
-    if rows:
-        for row in rows:
-            result = {}
-            result['id_equipment'] = row[2]
-            esp.append(result)
-            # Nếu tìm thấy user, trả về thông tin của user
-        return jsonify(esp)
-    else:
-        # Nếu không tìm thấy user, trả về thông báo lỗi
-        return jsonify({'error': 'esp not found'}), 404
-    
-    
-@app.route('/api/get_infoesp/<string:id_esp>', methods=['GET'])
-def get_infoesp(id_esp):
-    cursor.execute('''
-        SELECT TOP 1 * 
-        FROM dbo.Humid 
-        WHERE id_esp = ? 
-        ORDER BY id_esp DESC
-    ''', (id_esp,))
-
-    cursor.execute('''
-        SELECT * 
-        FROM dbo.Pump 
-        WHERE id_esp = ?
-       
-    ''', (id_esp,))
-    last_pump_row = cursor.fetchone()
-    last_humid_row = cursor.fetchone()
-   
-    esp = []
-    if last_pump_row:
-        print("________________________-")
-        print(last_pump_row)
-        print("________________________-")
-        print(last_humid_row)
-        return jsonify(last_pump_row)
-    else:
-        # Nếu không tìm thấy user, trả về thông báo lỗi
-        return jsonify({'error': 'esp not found'}), 404
-
-@app.route('/api/get_equipmentlastinfo/<string:id_esp>',methods=['GET'])
-def get_infodevive(id_esp):
-    cursor.execute(f'''
-    SELECT ev.id_equipment, ev.[values], ev.[status], ev.[datetime]
-    FROM EquipmentValues ev
-    INNER JOIN (
-        SELECT id_equipment, MAX(id) AS max_id
-        FROM EquipmentValues
-        WHERE id_equipment IN (
-            SELECT id_equipment
-            FROM EquipmentManagement
-            WHERE id_esp = '{id_esp}'
-        )
-        GROUP BY id_equipment
-    ) AS max_id ON ev.id_equipment = max_id.id_equipment AND ev.id = max_id.max_id
-                   ''')
-    devive_list_last_status =  cursor.fetchall()
-    json_data = [dict(zip(('id_equipment', 'values', 'status'), item)) for item in devive_list_last_status]
-    print(json_data)
-    return jsonify(json_data)
-@app.route('/api/get_historydevice',methods=['GET'])
-
-# format of date time 'yyyy-mm-dd hh:mm:ss.sss' 
-#                 exp:'2024-03-21 08:12:38.927'
-def get_history_device():
-    id_equipment = request.args.get('id_equipment')
-    date_start = request.args.get('date_start')
-    date_end = request.args.get('date_end')
-    if id_equipment is None or date_start is None or date_end is None:
-        return jsonify({'error':'Missing parameter'}),400
-    cursor.execute(f'''
-    select * from EquipmentValues
-    where id_equipment ={id_equipment}
-    and [datetime] between {date_start} and {date_end}
-    ''')
-    equipment_data = cursor.fetchall()
-    # if equipment_data:
-    #     for i in equipment_data:
-    #         i[4] 
-    json_data = [dict(zip(('id_equipment', 'values', 'status','id','datetime'), item)) for item in equipment_data]
-    if json_data:
-        for i in json_data:
-            temp = i['datetime']
-            temp = temp.strftime('%Y-%m-%d %H:%M:%S.%f')
-            i['datetime'] = temp
-    return jsonify(json_data)
-if __name__ == '__main__':
-    app.run(debug=True)
-    conn.close()
-# Đóng kết nối
+#
+# app = Flask(__name__)
+#
+# @app.route('/api/login/<string:email>', methods=['GET'])
+# def login(email):
+#     # cursor.execute('SELECT * FROM dbo.Users')
+#     # Lấy tất cả các dòng dữ liệu
+#
+#     cursor.execute('SELECT * FROM dbo.Users WHERE gmail = ?', (email,))
+#     row = cursor.fetchone()
+#     if row:
+#         # Nếu tìm thấy user, trả về thông tin của user
+#         user = {
+#             'id': row.id_user,  # Giả sử id là cột định danh của người dùng
+#             # Các trường khác nếu cần thiết
+#         }
+#         return jsonify(user)
+#     else:
+#         # Nếu không tìm thấy user, trả về thông báo lỗi
+#         return jsonify({'error': 'User not found'}), 404
+#
+#
+# @app.route('/api/get_esp/<string:id_user>', methods=['GET'])
+# def get_esp(id_user):
+#     # cursor.execute('SELECT * FROM dbo.Users')
+#     # Lấy tất cả các dòng dữ liệu
+#
+#     cursor.execute('SELECT * FROM dbo.Esp WHERE id_user = ?', (id_user,))
+#     rows = cursor.fetchall()
+#     esp = []
+#     if rows:
+#         for row in rows:
+#             result = {}
+#             result['id_equipment'] = row[2]
+#             esp.append(result)
+#             # Nếu tìm thấy user, trả về thông tin của user
+#         return jsonify(esp)
+#     else:
+#         # Nếu không tìm thấy user, trả về thông báo lỗi
+#         return jsonify({'error': 'esp not found'}), 404
+#
+#
+# @app.route('/api/get_infoesp/<string:id_esp>', methods=['GET'])
+# def get_infoesp(id_esp):
+#     cursor.execute('''
+#         SELECT TOP 1 *
+#         FROM dbo.Humid
+#         WHERE id_esp = ?
+#         ORDER BY id_esp DESC
+#     ''', (id_esp,))
+#
+#     cursor.execute('''
+#         SELECT *
+#         FROM dbo.Pump
+#         WHERE id_esp = ?
+#
+#     ''', (id_esp,))
+#     last_pump_row = cursor.fetchone()
+#     last_humid_row = cursor.fetchone()
+#
+#     esp = []
+#     if last_pump_row:
+#         print("________________________-")
+#         print(last_pump_row)
+#         print("________________________-")
+#         print(last_humid_row)
+#         return jsonify(last_pump_row)
+#     else:
+#         # Nếu không tìm thấy user, trả về thông báo lỗi
+#         return jsonify({'error': 'esp not found'}), 404
+#
+# @app.route('/api/get_equipmentlastinfo/<string:id_esp>',methods=['GET'])
+# def get_infodevive(id_esp):
+#     cursor.execute(f'''
+#     SELECT ev.id_equipment, ev.[values], ev.[status], ev.[datetime]
+#     FROM EquipmentValues ev
+#     INNER JOIN (
+#         SELECT id_equipment, MAX(id) AS max_id
+#         FROM EquipmentValues
+#         WHERE id_equipment IN (
+#             SELECT id_equipment
+#             FROM EquipmentManagement
+#             WHERE id_esp = '{id_esp}'
+#         )
+#         GROUP BY id_equipment
+#     ) AS max_id ON ev.id_equipment = max_id.id_equipment AND ev.id = max_id.max_id
+#                    ''')
+#     devive_list_last_status =  cursor.fetchall()
+#     json_data = [dict(zip(('id_equipment', 'values', 'status'), item)) for item in devive_list_last_status]
+#     print(json_data)
+#     return jsonify(json_data)
+# @app.route('/api/get_historydevice',methods=['GET'])
+#
+# # format of date time 'yyyy-mm-dd hh:mm:ss.sss'
+# #                 exp:'2024-03-21 08:12:38.927'
+# def get_history_device():
+#     id_equipment = request.args.get('id_equipment')
+#     date_start = request.args.get('date_start')
+#     date_end = request.args.get('date_end')
+#     if id_equipment is None or date_start is None or date_end is None:
+#         return jsonify({'error':'Missing parameter'}),400
+#     cursor.execute(f'''
+#     select * from EquipmentValues
+#     where id_equipment ={id_equipment}
+#     and [datetime] between {date_start} and {date_end}
+#     ''')
+#     equipment_data = cursor.fetchall()
+#     # if equipment_data:
+#     #     for i in equipment_data:
+#     #         i[4]
+#     json_data = [dict(zip(('id_equipment', 'values', 'status','id','datetime'), item)) for item in equipment_data]
+#     if json_data:
+#         for i in json_data:
+#             temp = i['datetime']
+#             temp = temp.strftime('%Y-%m-%d %H:%M:%S.%f')
+#             i['datetime'] = temp
+#     return jsonify(json_data)
+# if __name__ == '__main__':
+#     app.run(debug=True)
+#     conn.close()
+# # Đóng kết nối
 
