@@ -41,7 +41,9 @@ export default class Home extends Component {
 
   render() {
     const { dataArray } = this.context;
-    console.log(dataArray)
+    
+   
+
     // const jsonObject = JSON.parse(dataArray[1]);
     var keyCount = 0;
     for (const key in dataArray[0]) {
@@ -82,9 +84,9 @@ export default class Home extends Component {
               the readable
             </Text>
             <View style={{flexDirection: 'row', gap: 18, marginTop: 5, marginLeft: 4}}>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Humidiry: {data[index]["dht"]}</Text>
-                <Text style={{ fontSize: 13, color: '#777777' }}>pH: {data[index]["ph"]}</Text>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Water pump: {data[index]["bc"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>Humidiry: {data[index]["sensor"]["sl_dht"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>pH: {data[index]["sensor"]["sl_ph"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>Water pump: {data[index]["bc"]["sl"]}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -98,16 +100,10 @@ export default class Home extends Component {
           <LinearGradient colors={["#bfd200", "#aacc00", "#80b918"]} style={styles.header}>
             <SafeAreaView style={styles.header}>
               <Text style={styles.headerText}>Hello! Have a nice Day</Text>
-              <Text style={styles.headerText}>NQD2308</Text>
+              <Text style={styles.headerText}>{dataArray[0]["user"]["name"]}</Text>
             </SafeAreaView>
           </LinearGradient>
           <View style={styles.body}>
-            {/* <MyContext.Consumer>
-                    {contextData => {
-                    const  message  = contextData;
-                    console.log(message)
-                    }}
-                    </MyContext.Consumer> */}
             <ScrollView
               style={{ height: "73%" }}
               showsVerticalScrollIndicator={false}

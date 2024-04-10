@@ -24,30 +24,9 @@ import { Picker } from "@react-native-picker/picker";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 import * as Notifications from "expo-notifications";
-let globalVariable = "50.0";
-var flag_humid_respect = 0;
-
-const data = {
-  labels: ["12h30", "12h35", "12h40", "12h45", "12h50", "12h55"],
-  datasets: [
-    {
-      data: [80, 84, 75, 87, 77, 79, 89],
-      color: (opacity = 1) => `rgba(0, 119, 182, ${opacity})`, // optional
-      strokeWidth: 2, // optional
-    },
-    {
-      data: [67, 86, 72, 79, 86, 89, 68],
-      color: (opacity = 1) => `rgba(165, 99, 54, ${opacity})`, // optional
-      strokeWidth: 2, // optional
-    },
-    {
-      data: [7, 12, 15, 17, 17, 14, 18],
-      color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-      strokeWidth: 2, // optional
-    },
-  ],
-  legend: ["Humidity 1", "Humidity 2", "pH"], // optional
-};
+import { thresholdFreedmanDiaconis } from "d3";
+let isFunctionRunning = false;
+var flag = false;
 
 // Cấu hình cho biểu đồ
 const chartConfig = {
@@ -67,18 +46,31 @@ export default class Details extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      sliderValue: 50,
+      
       statusManual: false,
       statusAuto: false,
       isEnabled: false,
       message_humid: "0.0",
       showArcRanges: false,
-
-      //test swith
-      switch1Enabled: false,
-      switch2Enabled: true,
-      switch3Enabled: false,
-
+      
+      datachart:{
+        labels: [""],
+        datasets: [
+          {
+            data: [0],
+          }
+        ],
+        legend: ["loading"], // optional
+      },
+   
+      switchStates: [],
+      slidebar: [],
+      sliderValue: [],
+      name_bc:[],
+      timelist: [],
+      buttonaddtime: [],
+      switchAll: [false,false,false],
+      
       modalVisible: false,
       settingTimeModal: false,
 
@@ -101,31 +93,24 @@ export default class Details extends Component {
     // this.setDate = this.setDate.bind(this);
     // this.setShowPicker = this.setShowPicker.bind(this);
   }
+
+
   static contextType = MyContext;
-  componentDidMount() {
-    // Dispatch một action để lấy dữ liệu từ Redux store (nếu cần)
-    this.props.fetchData();
-  }
   HistoryPage = () => {
-    console.log("HistoryPage");
+    // console.log("HistoryPage");
     this.props.navigation.navigate("History"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
+  
   DateTimePage = () => {
     console.log("DateTime Page");
+    flag = true;
     this.props.navigation.navigate("DateTime"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
-  handleSliderChange = (value) => {
-    this.setState({ sliderValue: value });
-  };
 
-  handleSliderComplete = (value) => {
-    // Khi người dùng kết thúc việc điều chỉnh slider, bạn có thể lấy giá trị ở đây
-    this.setState({ sliderValue: value });
-    this.sendMessage();
-  };
   sendMessage = () => {};
+
 
   autoSwitch = () => {
     this.setState((prevState) => ({
@@ -139,6 +124,7 @@ export default class Details extends Component {
     this.sendMessage();
   };
 
+
   customSwitch = () => {
     this.setState((prevState) => ({
       isEnabled: !prevState.isEnabled,
@@ -150,6 +136,7 @@ export default class Details extends Component {
     }
     this.sendMessage();
   };
+
 
   pressmanual = () => {
     if (this.state.statusManual == false) {
@@ -164,16 +151,22 @@ export default class Details extends Component {
   };
 
   componentDidMount() {
-    // Thay đổi tin nhắn mỗi 2 giây (điều chỉnh khoảng thời gian tùy vào nhu cầu)
-    this.interval = setInterval(() => {
-      this.setState({ message_humid: globalVariable });
-    }, 2000);
+    flag = false;
+    this.getnumberswitch(); 
+     // Gọi hàm push vào mảng khi component được mount
   }
+  // componentDidMount() {
+  //   const{loop} = this.state;
+  //   this.intervalId = setInterval(() => {
+  //     // Thực hiện các hành động bạn muốn lặp lại sau mỗi 5 giây ở đây
+      
 
-  componentWillUnmount() {
-    // Xóa interval để tránh rò rỉ bộ nhớ
-    clearInterval(this.interval);
-  }
+  //     this.getvalue()
+  //   }, 3000);
+   
+  
+  // }
+
 
   async schedulePushNotification() {
     await Notifications.scheduleNotificationAsync({
@@ -188,41 +181,75 @@ export default class Details extends Component {
   }
 
   //test toggle
-  handleSwitch1Change = () => {
-    this.setState({
-      switch1Enabled: true,
-      switch2Enabled: false,
-      switch3Enabled: false,
+  
+  toogle1in3 = (setIndex, buttonIndex) => {
+    
+    this.setState(prevState => {
+      const updatedButtonSets = prevState.switchStates.map((set, i) => {
+        if (i === setIndex) {
+          return set.map((btn, j) => (j === buttonIndex ? !btn : false));
+        } else {
+          return set;
+        }
+      });
+
+      
+      flag = true;
+
+      return { switchStates: updatedButtonSets };
     });
   };
 
-  handleSwitch2Change = () => {
-    this.setState({
-      switch1Enabled: false,
-      switch2Enabled: true,
-      switch3Enabled: false,
+  toogleall = (index) => {
+    
+    this.setState(prevState => {
+      const updatedButtons = prevState.switchAll.map((_, i) => (i === index ? true : false));
+      return { switchAll: updatedButtons };
     });
   };
 
-  handleSwitch3Change = () => {
-    this.setState({
-      switch1Enabled: false,
-      switch2Enabled: false,
-      switch3Enabled: true,
+
+   handleSliderChange = (index,value) => {
+    flag = true
+    this.setState(prevState => {
+      const newValues = [...prevState.sliderValue];
+      newValues[index] = parseInt(value) ;
+      return { sliderValue: newValues };
     });
   };
+
+
+  handleSliderComplete = (value) => {
+    // Khi người dùng kết thúc việc điều chỉnh slider, bạn có thể lấy giá trị ở đây
+    flag = true;
+  };
+
+
+  setbarvalue = (index) => {
+    
+    this.setState(prevState => {
+      const updatedButtons = prevState.switchAll.map((_, i) => (i === index ? true : false));
+      return { switchAll: updatedButtons };
+    });
+  };
+
 
   //Set Modal View
   setModalVisible = (visible) => {
+    flag = true;
+    console.log("heheh")
+    
     this.setState({ modalVisible: visible });
   };
 
   setSettingTimeModalVisible = (visible) => {
+    flag = true;
     this.setState({ settingTimeModal: visible });
   };
 
   //DateTime
   toggleDatePicker = () => {
+    flag = true;
     this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
   };
 
@@ -237,11 +264,154 @@ export default class Details extends Component {
       this.toggleDatePicker();
     }
   };
+
+
   getvalue = async () => {
+    if (!isFunctionRunning) {
+      isFunctionRunning = true;
     const { dataArray } = this.context;
-    const url = apiUrl + `getvalue/${dataArray[1]["id_esp"]}`;
+    const { datachart } = this.state;  
+    const url = apiUrl + `getsensorvalue/${dataArray[1]["id_esp"]}`;
+    var newlegend = [];
+    var newlabels = [];
+    var id_check = [];
+    var newdatasets = [];
     // console.log(url);
-    console.log(dataArray[1])
+    // console.log(dataArray[1])
+    const response = await fetch(url);
+    if (!response.ok ) {
+      this.setState({ msg: "error" });
+      return;
+    }
+    const json = await response.json()
+    // console.log(json[0])
+    // console.log("______________________________")
+    for (let i = 0;i<dataArray[1]["bc"]["sl"];i++)
+    {
+      id_check.push(json[0]["combo"+i.toString()]["DHT"]["id"])
+      id_check.push(json[0]["combo"+i.toString()]["PH"]["id"])
+    }
+    let sum_sensor =  dataArray[1]["sensor"]["sl_dht"] + dataArray[1]["sensor"]["sl_ph"]
+    let jsonObject = {}
+    for (let i = 0; i < sum_sensor; i++ )
+    {
+      if(dataArray[1]["sensor"][i].hasOwnProperty("name_dht"))
+      {
+        let  value = dataArray[1]["sensor"][i]["name_dht"];
+        let key = dataArray[1]["sensor"][i]["id_dht"];
+        jsonObject[key] = value;
+      }
+      else if (dataArray[1]["sensor"][i].hasOwnProperty("name_ph"))
+      {
+        let  value = dataArray[1]["sensor"][i]["name_ph"];
+        let key  = dataArray[1]["sensor"][i]["id_ph"];
+        jsonObject[key] = value;
+      }
+    }
+    newlegend = id_check.filter((item, index) => id_check.indexOf(item) === index);
+
+
+    for (let i = 0; i < newlegend.length; i++) {
+      if (jsonObject.hasOwnProperty(newlegend[i])) {
+        newlegend[i] = jsonObject[newlegend[i]];
+      }
+
+    }
+    // console.log(json[0]);
+
+    var datelist = [];
+    for (let i = 0;i<dataArray[1]["bc"]["sl"]; i++ )
+    {
+      for(let j = 0;j<6; j++ )
+      {
+        datelist.push(json[0]["combo"+i.toString()]["DHT"][j.toString()]["datetime"])
+        datelist.push(json[0]["combo"+i.toString()]["PH"][j.toString()]["datetime"])
+      } 
+    }
+    // console.log("SAD")
+    // console.log("______________________________")
+    // console.log(datelist)
+    datelist.sort((a, b) => new Date(b) - new Date(a));
+    let dateTimebegin  = new Date(datelist[0]);
+    let dateTimeend   = new Date(datelist[datelist.length - 1]);
+    
+    // console.log(dateTimeend)
+
+    // Lấy thời gian từ đối tượng Date
+    let hoursbe = dateTimebegin.getHours();
+    let minutesbe = dateTimebegin.getMinutes(); 
+    let secondsbe = dateTimebegin.getSeconds();
+
+    let hoursen = dateTimeend.getHours();
+    let minutesen = dateTimeend.getMinutes(); 
+    let secondsen = dateTimeend.getSeconds();
+    // console.log(`Thời gian: ${hours}:${minutes}:${seconds}`);
+    
+    newlabels.push(`${hoursbe}:${minutesbe}:${secondsbe}`)
+    newlabels.push("")
+    newlabels.push("")
+    newlabels.push("")
+    newlabels.push(`${hoursen}:${minutesen}:${secondsen}`)
+      
+    
+    // console.log(newlabels)
+    const colors = [
+      ["0, 119, 182",   // Màu cho dataset 0
+      "165, 99, 54"],   // Màu cho dataset 1
+      ["134, 65, 244",  // Màu cho dataset 2
+      "134, 0, 244"],   // Màu cho dataset 3
+      ["255, 0, 0",     // Màu cho dataset 4 (màu đỏ)
+      "0, 255, 0"]     // Màu cho dataset 6 (màu xanh dương)
+    ];
+   
+    for (let i = 0; i < (sum_sensor/2); i++) {
+      let valuedht = [];
+      let valueph = [];
+      // console.log()
+      // Sinh dữ liệu ngẫu nhiên cho mỗi dataset
+      for (let j = 0; j < 6; j++) {
+        // console.log(json[0]["combo"+i.toString()]["sensor"]["dht"+j.toString()])
+        valuedht.push(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"]);
+        valueph.push(json[0]["combo"+i.toString()]["PH"][j.toString()]["value"]);
+      }
+      // Chọn màu sắc từ mảng colors
+      let colordht = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
+      let colorph = colors[i][1] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
+      
+      // Thêm đối tượng dataset vào mảng
+      newdatasets.push({
+        data: valuedht,
+        color: (opacity = 1) => `rgba(${colordht}, ${opacity})`,
+        strokeWidth: 2, // optional
+      });
+      newdatasets.push({
+        data: valueph,
+        color: (opacity = 1) => `rgba(${colorph}, ${opacity})`,
+        strokeWidth: 2, // optional
+      });
+ 
+    }
+    
+    const reversedArray = newlabels.reverse();
+    const newData = {
+      labels: reversedArray,
+      datasets: newdatasets,
+      legend: newlegend, // optional
+    };
+
+    this.setState({ datachart: newData });
+    // console.log(datachart)
+    isFunctionRunning = false;
+    }
+  };
+
+
+  getnumberswitch = async () => {
+    
+    const { dataArray } = this.context;
+    
+    const url = apiUrl + `getvalueequipment/${dataArray[1]["id_esp"]}`;
+    
     const response = await fetch(url);
                 if (!response.ok ) {
                     this.setState({ msg: "error" });
@@ -249,234 +419,254 @@ export default class Details extends Component {
                 }
             
                 const json = await response.json();
-                // console.log(json[0])
+      
+
+    const value = [];
+    const newSwitchStates = [];
+    const gettimelist = [];
+    const name_bc = [];
+    const slidebarvalue = [];
+    for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
+      const newSwitchStates2 = [];
+      const time = [];
+      // Thêm giá trị false vào mảng newSwitchStates
+      newSwitchStates2.push(false);
+      newSwitchStates2.push(false);
+      newSwitchStates2.push(false);
+      newSwitchStates.push(newSwitchStates2)
+   
+      if (Object.keys(json[0][i]["schedule"]).length === 0) {
+        gettimelist.push([])
+      } else {
+        Object.values(json[0][i]["schedule"]).forEach((obj, index) => {
+          time.push(obj["time"])
+      
+      });
+
+
+      time.sort((a, b) => {
+        // Chuyển đổi chuỗi thời gian thành giờ số để so sánh
+        const timeA = new Date(`1970-01-01T${a}`);
+        const timeB = new Date(`1970-01-01T${b}`);
+        
+        // So sánh thời gian
+        return timeA - timeB;
+      });
+      gettimelist.push(time)
+      } 
+      slidebarvalue.push(50)
+      value.push(50)
+      name_bc.push(json[0][i]["name"])
+    }
+
+    this.setState({ name_bc: name_bc });
+    this.setState({ timelist: gettimelist });
+    this.setState({ sliderValue: value });
+    this.setState({ slidebar: slidebarvalue });
+    flag = true;
+    this.setState({ switchStates: newSwitchStates });
+
+
   };
+
 
   //Picker
   async onValueChangeCat(value) {
+    flag = true;
     this.setState({ selecedCat: value });
   }
+  
 
   render() {
     const { dataArray } = this.context;
     //Switch
-    const { switch1Enabled, switch2Enabled, switch3Enabled } = this.state;
+    const {switchStates ,switchAll} = this.state;
+    const { datachart } = this.state;
 
     //API
-    const { status, messageList, sliderValue, isEnabled, message_humid } =this.state;
+    const { name_bc,timelist,sliderValue, isEnabled } =this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
-
     //DateTime
     const { dateTime, showPicker } = this.state;
-
-    
-
-    // console.log("+++++++++++++++++++++++++++++")
-    // console.log(dataArray[1])
-    this.getvalue()
-  
-          // if (Object.values(json[0]) == 0) {
-          //   this.setState({ isEnabled: false });
-          // } else this.setState({ isEnabled: true });
-
-          // for (const key in json) {
-          //   // console.log(Object.keys(json[key]));
-          //   const keys_dht = Object.keys(json[key]);
-
-          //   if (keys_dht.includes("id_dht") && flag_humid_respect == 0) {
-          //     flag_humid_respect = 1;
-          //     this.setState({ sliderValue: json[key]["respect"] });
-          //   }
-          // }
-      
-    // Foreach Timer
-    const TimerList = [];
-    // Sử dụng forEach để thêm các phần tử vào mảng items
-    [...Array(18)].forEach((_, index) => {
-      TimerList.push(
-        <View>
-          <View style={styles.timeArea}>
-            <Text style={styles.timeText}>{index}:50</Text>
-            <View style={{ flexDirection: "row" }}>
-              <TouchableOpacity>
-                <Image
-                  source={require("../assets/img/settings.png")}
-                  style={styles.imgIcon}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Image
-                  source={require("../assets/img/remove.png")}
-                  style={styles.imgIcon}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View style={styles.line}></View>
-          </View>
-        </View>
-      );
-    });
-
+ 
     const deviceList = [];
     // Sử dụng forEach để thêm các phần tử vào mảng items
-    [...Array(2)].forEach((_, index) => {
-      deviceList.push(
-        <View style={styles.optionArea}>
-          <Text style={styles.titleDevice}>Water pump {index}</Text>
-          <View style={{}}>
-            <View style={styles.function}>
-              <Text>Custom</Text>
-              <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                value={switch1Enabled}
-                style={{}}
-              />
-              <Text>Auto</Text>
-              <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={this.handleSwitch2Change}
-                value={switch2Enabled}
-                style={{}}
-              />
-              <Slider
-                style={{ width: 110, height: 40 }}
-                minimumValue={50}
-                maximumValue={95}
-                value={sliderValue}
-                onValueChange={this.handleSliderChange}
-                onSlidingComplete={this.handleSliderComplete}
-                minimumTrackTintColor={"#81BB4D"}
-              />
-              <Text>85%</Text>
-            </View>
-            <View style={styles.function}>
-              <Text>Timer</Text>
-              <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={this.handleSwitch3Change}
-                value={switch3Enabled}
-                style={{ marginLeft: 11 }}
-              />
-              <ScrollView
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                style={[
-                  styles.timer,
-                  { backgroundColor: switch3Enabled ? "white" : "#D9D9D9" },
-                ]}
-              >
-                <TouchableOpacity
-                  style={{ flexDirection: "row" }}
-                  onPress={() => this.setModalVisible(true)}
-                >
-                  <Text
-                    style={[
-                      styles.time,
-                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                    ]}
-                  >
-                    09:35
-                  </Text>
-                  <Text
-                    style={[
-                      styles.time,
-                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                    ]}
-                  >
-                    09:40
-                  </Text>
-                  <Text
-                    style={[
-                      styles.time,
-                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                    ]}
-                  >
-                    09:45
-                  </Text>
-                  <Text
-                    style={[
-                      styles.time,
-                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                    ]}
-                  >
-                    09:50
-                  </Text>
-                  <Text
-                    style={[
-                      styles.time,
-                      { color: switch3Enabled ? "#333" : "#8A8A8A" },
-                    ]}
-                  >
-                    09:55
-                  </Text>
-                </TouchableOpacity>
-              </ScrollView>
-              {/* Modal Timer List*/}
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                  this.setModalVisible(!modalVisible);
+    if (flag)
+    {
+      flag = false;
+
+    
+      [...Array(dataArray[1]["bc"]["sl"])].forEach((_, index) => {
+
+        const timeComponents = [];
+        const TimerList = [];
+      
+        for (let i = 0; i < timelist[index].length; i++) {
+          const time = timelist[index][i];
+     
+          timeComponents.push(
+            <Text
+              key={i}
+              style={[
+                styles.time,
+                { color: switchStates[index][2] ? "#333" : "#8A8A8A" },
+              ]}
+            >
+              {time}
+            </Text>
+          );
+        }
+
+        [...Array(timelist[index].length)].forEach((_, indextime) => {
+          TimerList.push(
+            <View key={indextime}>
+              <View style={styles.timeArea}>
+                <Text style={styles.timeText}>{timelist[index][indextime]}</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity>
+                    <Image
+                      source={require("../assets/img/settings.png")}
+                      style={styles.imgIcon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <Image
+                      source={require("../assets/img/remove.png")}
+                      style={styles.imgIcon}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                <View style={styles.overlay} />
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
-                    <TouchableOpacity
-                      style={{ alignItems: "flex-end", top: 20, right: 20 }}
-                      onPress={() => this.setModalVisible(false)}
-                    >
-                      <Image
-                        source={require("../assets/img/x.png")}
-                        style={{
-                          width: 20,
-                          height: 20,
-                          marginBottom: 20,
-                          tintColor: "#DEDEDE",
-                        }}
-                      />
-                    </TouchableOpacity>
+                <View style={styles.line}></View>
+              </View>
+            </View>
+          );
+        });
 
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                      {TimerList}
-                    </ScrollView>
-                  </View>
-                </View>
-              </Modal>
-              <TouchableOpacity
-                style={styles.btnPlus}
-                onPress={this.toggleDatePicker}
-              >
-                <Image
-                  source={require("../assets/img/plus.png")}
-                  style={styles.plusIcon}
+
+        deviceList.push(
+          <View style={styles.optionArea} key={index}>
+            <Text style={styles.titleDevice}>{name_bc[index]}</Text>
+            <View style={{}}>
+              <View style={styles.function}>
+                <Text>Custom</Text>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={() => this.toogle1in3(index,0)}
+                  value={switchStates[index][0]}
+                  style={{}}
                 />
-              </TouchableOpacity>
-              {/* Modal Add Timer */}
+                
+                <Text>Auto</Text>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={() => this.toogle1in3(index,1)}
+                  value={switchStates[index][1]}
+                  style={{}}
+                />
+                <Slider
+                  style={{ width: 110, height: 40 }}
+                  minimumValue={50}
+                  maximumValue={95}
+                  value={sliderValue[index]}
+                  onValueChange={(value) => this.handleSliderChange(index, value)}
+                  onSlidingComplete={this.handleSliderComplete}
+                  minimumTrackTintColor={"#81BB4D"}
+                />
+                <Text>{sliderValue[index]}%</Text>
+              </View>
+              <View style={styles.function}>
+                <Text>Timer</Text>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={() => this.toogle1in3(index,2)}
+                  value={switchStates[index][2]}
+                  style={{ marginLeft: 11 }}
+                />
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  style={[
+                    styles.timer,
+                    { backgroundColor: switchStates[index][2] ? "white" : "#D9D9D9" },
+                  ]}
+                >
+                  <TouchableOpacity
+                    style={{ flexDirection: "row" }}
+                    onPress={() => this.setModalVisible(true)}
+                  >
+                    {timeComponents}
+                  </TouchableOpacity>
+                </ScrollView>
+                {/* Modal Timer List*/}
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={modalVisible}
+                  onRequestClose={() => {
+                    this.setModalVisible(!modalVisible);
+                  }}
+                >
+                  <View style={styles.overlay} />
+                  <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                      <TouchableOpacity
+                        style={{ alignItems: "flex-end", top: 20, right: 20 }}
+                        onPress={() => this.setModalVisible(false)}
+                      >
+                        <Image
+                          source={require("../assets/img/x.png")}
+                          style={{
+                            width: 20,
+                            height: 20,
+                            marginBottom: 20,
+                            tintColor: "#DEDEDE",
+                          }}
+                        />
+                      </TouchableOpacity>
+  
+                      <ScrollView showsVerticalScrollIndicator={false}>
+                        {TimerList}
+                      </ScrollView>
+                    </View>
+                  </View>
+                </Modal>
+                <TouchableOpacity
+                  style={styles.btnPlus}
+                  onPress={this.toggleDatePicker}
+                >
+                  <Image
+                    source={require("../assets/img/plus.png")}
+                    style={styles.plusIcon}
+                  />
+                </TouchableOpacity>
+                {/* Modal Add Timer */}
+              </View>
             </View>
           </View>
-        </View>
-      );
-    });
+        );
+      });
+      
+
+    }
+   
 
     return (
-
+      
       <View style={styles.container}>
         <StatusBar backgroundColor="#bfd200" />
         <LinearGradient
@@ -497,18 +687,18 @@ export default class Details extends Component {
               ]}
             >
             </Text>
-            <View style={{ width: "90%", marginBottom: 12 }}>
+            {/* <View style={{ width: "90%", marginBottom: 12 }}>
               <Text style={{ color: "white", textAlign: "center" }}>
                 It is a long established fact that a reader will be distracted
                 by the readable
               </Text>
-            </View>
+            </View> */}
           </SafeAreaView>
         </LinearGradient>
         <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
           <TouchableOpacity onPress={this.HistoryPage}>
             <LineChart
-              data={data}
+              data={datachart}
               width={screenWidth}
               height={200}
               verticalLabelRotation={0}
@@ -518,7 +708,7 @@ export default class Details extends Component {
             />
           </TouchableOpacity>
 
-          <View style={styles.midle}>
+          {/* <View style={styles.midle}>
             <View style={styles.alarm}>
               <Text style={{ color: "#F12525" }}>
                 <Text style={{ color: "#F12525", fontWeight: "bold" }}>
@@ -528,7 +718,7 @@ export default class Details extends Component {
                 by the readable content
               </Text>
             </View>
-          </View>
+          </View> */}
           <View style={styles.midle}>
             <View style={{ width: "95%" }}>
               <View style={styles.dropdownOptionArea}>
@@ -561,8 +751,8 @@ export default class Details extends Component {
                         trackColor={{ false: "#767577", true: "#81b0ff" }}
                         thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                         ios_backgroundColor="#3e3e3e"
-                        onValueChange={this.handleSwitch1Change}
-                        value={switch1Enabled}
+                        onValueChange={() => this.toogleall(0)}
+                        value={switchAll[0]}
                         style={{}}
                       />
                       <Text>Auto</Text>
@@ -570,8 +760,8 @@ export default class Details extends Component {
                         trackColor={{ false: "#767577", true: "#81b0ff" }}
                         thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                         ios_backgroundColor="#3e3e3e"
-                        onValueChange={this.handleSwitch2Change}
-                        value={switch2Enabled}
+                        onValueChange={() => this.toogleall(1)}
+                        value={switchAll[1]}
                         style={{}}
                       />
                       <Slider
@@ -591,8 +781,8 @@ export default class Details extends Component {
                         trackColor={{ false: "#767577", true: "#81b0ff" }}
                         thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                         ios_backgroundColor="#3e3e3e"
-                        onValueChange={this.handleSwitch3Change}
-                        value={switch3Enabled}
+                        onValueChange={() => this.toogleall(2)}
+                        value={switchAll[2]}
                         style={{ marginLeft: 11 }}
                       />
                       <ScrollView
@@ -601,7 +791,7 @@ export default class Details extends Component {
                         style={[
                           styles.timer,
                           {
-                            backgroundColor: switch3Enabled
+                            backgroundColor: switchAll[2]
                               ? "white"
                               : "#D9D9D9",
                           },
@@ -615,7 +805,7 @@ export default class Details extends Component {
                           <Text
                             style={[
                               styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              { color: switchAll[2] ? "#333" : "#8A8A8A" },
                             ]}
                           >
                             09:35
@@ -623,7 +813,7 @@ export default class Details extends Component {
                           <Text
                             style={[
                               styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              { color: switchAll[2] ? "#333" : "#8A8A8A" },
                             ]}
                           >
                             09:40
@@ -631,7 +821,7 @@ export default class Details extends Component {
                           <Text
                             style={[
                               styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              { color: switchAll[2] ? "#333" : "#8A8A8A" },
                             ]}
                           >
                             09:45
@@ -639,7 +829,7 @@ export default class Details extends Component {
                           <Text
                             style={[
                               styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              { color: switchAll[2] ? "#333" : "#8A8A8A" },
                             ]}
                           >
                             09:50
@@ -647,13 +837,14 @@ export default class Details extends Component {
                           <Text
                             style={[
                               styles.time,
-                              { color: switch3Enabled ? "#333" : "#8A8A8A" },
+                              { color: switchAll[2] ? "#333" : "#8A8A8A" },
                             ]}
                           >
                             09:55
                           </Text>
                         </TouchableOpacity>
                       </ScrollView>
+
                       {/* DateTimePicker */}
                       {showPicker && (
                         <DateTimePicker
