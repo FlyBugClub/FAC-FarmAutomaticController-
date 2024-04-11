@@ -69,7 +69,7 @@ const chartConfig = {
 
 const screenWidth = Dimensions.get("window").width;
 
-export default class Details extends Component {
+export default class Details extends Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -87,9 +87,8 @@ export default class Details extends Component {
             data: [0],
           }
         ],
-        legend: ["loading"], // optional
+        legend: ["Loading"], // optional
       },
-   
       switchStates: [],
       slidebar: [],
       sliderValue: [],
