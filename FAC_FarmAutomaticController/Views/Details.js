@@ -21,6 +21,7 @@ import Slider from "@react-native-community/slider";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
+import i18next, { languageResources } from "../services/i18next";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 import * as Notifications from "expo-notifications";
@@ -61,6 +62,9 @@ const chartConfig = {
   strokeWidth: 2, // optional, default 3
   barPercentage: 0.5,
   useShadowColorFromDataset: true, // optional
+  decimalPlaces: 0, // Số lượng chữ số thập phân
+  fromZero: true,
+  
 };
 
 const screenWidth = Dimensions.get("window").width;
@@ -131,7 +135,11 @@ export default class Details extends Component {
     this.props.navigation.navigate("History"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
-  
+  AdvanceSettingDevicePage = () => {
+    console.log("Advance Setting Device Page");
+    this.props.navigation.navigate("AdvanceSettingDevice"); // 'History' là tên của màn hình History trong định tuyến của bạn
+  };
+
   DateTimePage = () => {
     console.log("DateTime Page");
     flag = true;
@@ -898,17 +906,16 @@ export default class Details extends Component {
     return (
       
       <View style={styles.container}>
-        <StatusBar backgroundColor="#bfd200" />
+        <StatusBar backgroundColor="#2BA84A" />
         <LinearGradient
-          colors={["#bfd200", "#aacc00", "#80b918"]}
+          colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
           style={styles.BackDropTop}
         >
           <SafeAreaView>
             <View style={styles.TitleTopArea}>
-            
               <Text style={styles.TitleTop}>{dataArray[1]["name"]}</Text>
             </View>
-            <Text
+            {/* <Text
               style={[
                 styles.TitleTop,
                 { fontSize: 20 },
@@ -931,9 +938,11 @@ export default class Details extends Component {
               data={datachart}
               width={screenWidth}
               height={200}
+              fromZero={true}
               verticalLabelRotation={0}
               chartConfig={chartConfig}
               style={{ marginTop: 20 }}
+              yAxisSuffix='%'
               bezier
             />
           </TouchableOpacity>
@@ -942,7 +951,7 @@ export default class Details extends Component {
             <View style={styles.alarm}>
               <Text style={{ color: "#F12525" }}>
                 <Text style={{ color: "#F12525", fontWeight: "bold" }}>
-                  Note:{" "}
+                  {i18next.t("Note")}:
                 </Text>
                 It is a long established fact that a reader will be distracted
                 by the readable content
@@ -963,7 +972,7 @@ export default class Details extends Component {
                     {this.state.category.map((item, index) => (
                       <Picker.Item
                         color="#333"
-                        label={item.itemName}
+                        label={i18next.t(item.itemName)}
                         value={item.itemName}
                         index={index}
                       />
@@ -973,7 +982,9 @@ export default class Details extends Component {
               </View> */}
               {this.state.selecedCat === "All" && (
                 <View>
-                  <Text style={styles.titleNote}>All control</Text>
+                  <Text style={styles.titleNote}>
+                    {i18next.t("All control")}
+                  </Text>
                   <View style={styles.optionArea}>
                   
                   </View>
@@ -981,7 +992,9 @@ export default class Details extends Component {
               )}
               {this.state.selecedCat === "Independence" && (
                 <View>
-                  <Text style={styles.titleNote}>Custom control</Text>
+                  <Text style={styles.titleNote}>
+                    {i18next.t("Custom control")}
+                  </Text>
                   {deviceList}
                   {/* DateTimePicker */}
                   {showPicker && (
@@ -1190,7 +1203,7 @@ const styles = StyleSheet.create({
     height: 26,
     marginLeft: 5,
     borderRadius: 3,
-    backgroundColor: "#73A942",
+    backgroundColor: "#2BA84A",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -1244,5 +1257,17 @@ const styles = StyleSheet.create({
     height: 0.5,
 
     backgroundColor: "#D9D9D9",
+  },
+  moreSettingArea: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  btnMoreSetting: {},
+  imgMoreSetting: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+    tintColor: "gray",
   },
 });

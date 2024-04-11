@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Component, useState } from 'react';
 import { StyleSheet, Text, View,TouchableOpacity, SafeAreaView, StatusBar} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import i18next, { languageResources } from "../services/i18next";
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 export default class AddFarm extends Component {
@@ -9,6 +10,11 @@ export default class AddFarm extends Component {
         console.log("Open Camera");
         this.props.navigation.navigate('CameraCreateNewFarmHouse'); 
     };
+
+    OpenCameraDevice = () => {
+        console.log("Open Camera");
+        this.props.navigation.navigate("CameraConnectDevice");
+      };
 
     AddDevicePage = () => {
         console.log("Add Device Page");
@@ -23,21 +29,20 @@ export default class AddFarm extends Component {
     render() {
         return(
             <View style={styles.Container}>
-                <StatusBar backgroundColor="#bfd200"/>
-                <LinearGradient colors={['#bfd200', '#aacc00', '#80b918']}  style={styles.NavigationTop}>
+                <StatusBar backgroundColor="#2BA84A"/>
+                <LinearGradient colors={['#2BA84A', '#2BA84A', '#2BA84A']}  style={styles.NavigationTop}>
                     <SafeAreaView style={{alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={styles.title}>Create Farm House</Text>
+                        <Text style={styles.title}>{i18next.t("Create Farm House")}</Text>
                     </SafeAreaView>
                 </LinearGradient>
                 <SafeAreaView style={styles.safeContainer}>
                     <View style={{width: '90%'}}>    
-                        <TouchableOpacity style={styles.btnAdd} onPress={this.AddFarmFormPage}>
-                            <Text style={styles.btnText}>Create new farm house</Text>
+                        <TouchableOpacity style={styles.btnAdd} onPress={this.OpenCamera}>
+                            <Text style={styles.btnText}>{i18next.t("Create new farm house")}</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.btnAdd} onPress={this.AddDevicePage}>
-                            <Text style={styles.btnText}>Add device</Text>
+                        <TouchableOpacity style={styles.btnAdd} onPress={this.OpenCameraDevice}>
+                            <Text style={styles.btnText}>{i18next.t("Add device")}</Text>
                         </TouchableOpacity>
-                        
                     </View>
                 </SafeAreaView>
             </View>
@@ -90,7 +95,7 @@ const styles = StyleSheet.create({
     btnAdd: {
         height: 40,
         margin: 10,
-        backgroundColor: '#80b918', 
+        backgroundColor: '#2BA84A', 
         justifyContent: 'center',
         borderRadius: 20,
     },

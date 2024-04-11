@@ -14,9 +14,8 @@ import {
   TouchableWithoutFeedback, 
 } from "react-native"; 
     // import { send, EmailJSResponseStatus } from '@emailjs/react-native';
-    import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+    import i18next, { languageResources } from "../services/i18next";
     import MyContext from "../DataContext"
-    import App from '../App'
 
 var otp
 var state = true;
@@ -105,9 +104,9 @@ export default class ForgotPassword extends Component {
                 source={require("../assets/img/otp.png")}
                 style={styles.img}
               />
-              <Text style={styles.textLogin}>Verify OTP!</Text>
+              <Text style={styles.textLogin}>{i18next.t("Verify OTP!")}</Text>
               <Text style={styles.note}>
-                Please Enter The Code 4 Degit Code Sent To
+              {i18next.t("Please Enter The Code 4 Degit Code Sent To")}
               </Text>
               <Text style={[styles.note, {marginBottom: 20}]}>{dataArray[0]["gmail"]}</Text>
               <View style={styles.inputArea}>
@@ -175,7 +174,7 @@ export default class ForgotPassword extends Component {
                     marginBottom: 20
                   }}
                 >
-                  Resent Code
+                  {i18next.t("Resent Code")}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -190,7 +189,7 @@ export default class ForgotPassword extends Component {
                     fontSize: 20
                   }}
                 >
-                  Verify
+                  {i18next.t("Verify")}
                 </Text>
               </TouchableOpacity>
             </View>

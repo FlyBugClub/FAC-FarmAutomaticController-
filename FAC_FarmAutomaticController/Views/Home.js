@@ -10,6 +10,7 @@ import {
   StatusBar,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import i18next, { languageResources } from "../services/i18next";
 import MyContext from "../DataContext.js";
 // import { index } from "d3-array";
 // import axios from "axios";
@@ -17,11 +18,6 @@ const data = [];
 
 
 export default class Home extends Component {
-  LoginPage = () => {
-    console.log("Login Page");
-    this.props.navigation.navigate("Login");
-  };
-
   SignUpPage = () => {
     console.log("SignUp Page");
     this.props.navigation.navigate("SignUp");
@@ -76,7 +72,7 @@ export default class Home extends Component {
               </Text>
               <View style={styles.connectArea}>
                 <View style={styles.dot}></View>
-                <Text style={{ fontWeight: "bold", marginLeft: 2, marginRight: 2, fontSize: 13}}>Connected</Text>
+                <Text style={{ fontWeight: "bold", marginLeft: 2, marginRight: 2, fontSize: 13}}>{i18next.t("Connected")}</Text>
               </View>
             </View>
             <Text style={{ fontSize: 13, marginTop: 5, marginLeft: 4 }}>
@@ -95,9 +91,9 @@ export default class Home extends Component {
 
     return (
       <View style={styles.safeContainer}>
-        <StatusBar backgroundColor="#ebf2f2" barStyle={"dark-content"} />
+        <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
         <View style={styles.container}>
-          <LinearGradient colors={["#bfd200", "#aacc00", "#80b918"]} style={styles.header}>
+          <LinearGradient colors={["#2BA84A", "#2BA84A", "#2BA84A"]} style={styles.header}>
             <SafeAreaView style={styles.header}>
               <Text style={styles.headerText}>Hello! Have a nice Day</Text>
               <Text style={styles.headerText}>{dataArray[0]["user"]["name"]}</Text>

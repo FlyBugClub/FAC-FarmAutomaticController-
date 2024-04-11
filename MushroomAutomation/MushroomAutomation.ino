@@ -1,127 +1,302 @@
+//region Includes
 
-#include <Arduino.h>
-#include <Wire.h>
-#include "Adafruit_SHT31.h"
+  #include <ESP8266WiFi.h>
+  #include <ESP8266HTTPClient.h>
+  #include <WiFiManager.h> // Thêm khai báo thư viện WiFiManager
+  #include <ArduinoJson.h>
+  #include "secret_pass.h"
 
-Adafruit_SHT31 sht31 = Adafruit_SHT31();
+  #include <Wire.h>
+  #include "Adafruit_SHT31.h"
 
-#include "secret_pass.h"
+  #include <NTPClient.h>
+  #include <WiFiUdp.h>
+//region Struct
+  struct Equipment {
+    String id_sensor;
+    int mode;
+    float status;
+    // Định nghĩa struct cho lịch trình hoạt động
+    struct Schedule {
+        String *time; // Sử dụng con trỏ để tạo mảng động
+        size_t numTimes; // Số lượng thời gian trong lịch trình
+    } schedule;
+  };
+//region Constants
+  const char* ntpServer = "pool.ntp.org";
+  const int ntpPort = 123;
+  const char* server_address = "172.16.17.38/Today";
+  const int server_port = 443;
+  const int pumpPin = D6;
+  const long timeZoneOffset = 7 * 3600;
+  const unsigned long sprayInterval = 10000; // 10 seconds
 
-#define BLYNK_PRINT Serial
+//region Variables
+  bool enableHeater = false;
+  uint8_t loopCnt = 0;
+  Adafruit_SHT31 sht31;
+  WiFiUDP ntpUDP;
+  NTPClient timeClient(ntpUDP, ntpServer, ntpPort);
+  bool autoControl = true;
+  float desiredTemperature = 25.0;
+  float desiredHumidity = 60.0;
+  unsigned long lastSprayTime = 0;
+  bool wifiConnected = false;
+  int pumpActivationCount = 0;
+  String previousDate = "";
 
-#include <ESP8266WiFi.h>
-#include <BlynkSimpleEsp8266.h>
+//region Function prototypes
+  void setup();
+  void loop();
+  void connectToWiFi();
+  void getCurrentDateTime(String& formattedDateTime);
+  void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor);
+  void postCountPumpToAPI(const char* url, String formattedDateTime, const char* id_sensor);
+  void autoControlMode(float& temperature, float& humidity);
+  bool isNewDay(String formattedTime);
 
-const int pumpPin = D6; // Chân kết nối của máy bơm với ESP8266
+//region setup
+  void setup() {
+    pinMode(pumpPin, OUTPUT);
+    Serial.begin(9600);
+    delay(100);
 
-bool autoControl = true;
-float desiredTemperature = 25.0;
-float desiredHumidity = 60.0;
+    // Connect to WiFi
+    connectToWiFi();
 
-unsigned long lastSprayTime = 0;
-unsigned long lastCheckTime = 0;
+    // Initialize SHT31 sensor
+    sht31.begin(0x44);
 
-void setup() {
-  pinMode(pumpPin, OUTPUT);
-  Serial.begin(9600);
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-   while (!Serial)
-    delay(10);     // will pause Zero, Leonardo, etc until serial console opens
+    // Initialize NTPClient
+    timeClient.begin();
+    timeClient.setTimeOffset(timeZoneOffset);
+  }
+//region loop
+  void loop() {
+    if (!wifiConnected) {
+      connectToWiFi();
+    }
+    
+    String formattedDateTime;
+    // getCurrentDateTime(formattedDateTime);
+    // countPumpActivations(formattedDateTime);
+    // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
+    // getAndParseAPI("/api/login/admin@gmail.com/123456");
+    // getAndParseAPI("/api/getvalueesp/ESP0001");
 
-  Serial.println("SHT31 test");
-  if (! sht31.begin(0x44)) {   // Set to 0x45 for alternate i2c addr
-    Serial.println("Couldn't find SHT31");
-    while (1) delay(1);
+    // manageAutoControl();
+
+
+  }
+//region stuff
+  bool isNewDay(String formattedTime, String& previousDate) {
+    // Lấy ngày từ chuỗi định dạng "%Y-%m-%d"
+    String currentDate = formattedTime.substring(0, 10);
+    Serial.println("currentDate");
+    Serial.println(currentDate);
+    Serial.println("previousDate");
+    Serial.println(previousDate);
+    // Kiểm tra xem ngày hiện tại có khác ngày trước đó không
+    if (currentDate != previousDate) {
+        Serial.println("New day has begun");
+        previousDate = currentDate; // Cập nhật ngày trước đó thành ngày hiện tại
+        return true;
+    }
+    else {
+        Serial.println("Hope u have a happy day");
+        return false;
+    }
   }
 
-  Serial.print("Heater Enabled State: ");
-  if (sht31.isHeaterEnabled())
-    Serial.println("ENABLED");
-  else
-    Serial.println("DISABLED");
-    // Đọc giá trị từ chân V6 khi chương trình chạy lần đầu
-  Blynk.syncVirtual(V6);
-}
+  void getCurrentDateTime(String& formattedDateTime) {
+    timeClient.update();
+    unsigned long currentEpochTime = timeClient.getEpochTime();
+    time_t epochTime = (time_t)currentEpochTime;
+    struct tm *currentTimeStruct = localtime(&epochTime);
+    char currentTime[30];
+    strftime(currentTime, sizeof(currentTime), "%Y-%m-%d %H:%M:%S", currentTimeStruct);
+    unsigned long milliseconds = millis() % 1000;
+    char currentTimeWithMilliseconds[35];
+    snprintf(currentTimeWithMilliseconds, sizeof(currentTimeWithMilliseconds), "%s.%03ld", currentTime, milliseconds);
+    formattedDateTime = String(currentTimeWithMilliseconds);
+  }
 
-void autoControlMode(float& temperature, float& humidity) {
-  float t = sht31.readTemperature();
-  float currentHumidity = sht31.readHumidity();
+  void countPumpActivations(String formattedTime) {
+    if (isNewDay(formattedTime, previousDate)) {
+      pumpActivationCount = 0;
+    }
+    if (digitalRead(pumpPin) == HIGH) {
+      pumpActivationCount++;
+      postCountPumpToAPI("/api/equidmentvalues", formattedTime, id_sensor);
 
-  unsigned long currentMillis = millis();
-  
-  if ( currentHumidity < humidity) {
-    if (currentMillis - lastSprayTime >= 10000) {
+    }
+  }
+//region POST
+  void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor ) {
+    WiFiClient client;
+    HTTPClient http;
+    String api_url = "http://" + String(server_address) + url;
+
+    http.begin(client, api_url);
+    // client.setInsecure();
+
+    http.addHeader("Content-Type", "application/json");
+
+    StaticJsonDocument<256> doc;
+    doc["id_sensor"] = id_sensor;
+    doc["value"] = "22222";
+    doc["datetime"] = formattedDateTime;
+    String payload;
+    serializeJson(doc, payload);
+
+    int httpCode = http.POST(payload);
+    Serial.print("POST httpCode: ");
+    Serial.println(httpCode);
+
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.print("POST Humidity response: ");
+      Serial.println(payload);
+    } else {
+      Serial.print("POST request failed with error code: ");
+      Serial.println(httpCode);
+    }
+
+    http.end();
+  }
+
+  void postCountPumpToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
+    WiFiClientSecure client;
+    HTTPClient http;
+    String api_url = "https://" + String(server_address) + url;
+
+    http.begin(client, api_url);
+    client.setInsecure();
+
+    http.addHeader("Content-Type", "application/json");
+
+    StaticJsonDocument<256> doc;
+    doc["id_equipment"] = "BC0001";
+    doc["values"] = "20";
+    doc["status"] = "22222";
+    doc["datetime"] = formattedDateTime;
+    doc["autoMode"] = "1";
+    doc["id_sensor"] = "DHT0001-PH0001";
+    String payload;
+    serializeJson(doc, payload);
+
+    int httpCode = http.POST(payload);
+    Serial.print("POST httpCode: ");
+    Serial.println(httpCode);
+
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.print("POST CountPump response: ");
+      Serial.println(payload);
+    } else {
+      Serial.print("POST request failed with error code: ");
+      Serial.println(httpCode);
+    }
+
+    http.end();
+  }
+//region GET
+//TODO error GET
+  void getAndParseAPI(const char* url) {
+    WiFiClient client;
+    HTTPClient http;
+
+    String api_url = "http://" + String(server_address) + url;
+
+    http.begin(client, api_url);
+
+    int httpCode = http.GET();
+    
+    if (httpCode > 0) {
+        String payload = http.getString();
+        Serial.println("Received JSON:");
+        Serial.println(payload);
+        StaticJsonDocument<1024> doc;
+        DeserializationError error = deserializeJson(doc, payload);
+
+        if (!error) {
+            // Lấy đối tượng JSON cho equipment0
+            JsonObject equipment0 = doc[0]["equipment0"];
+
+            // Lấy các trường dữ liệu từ equipment0
+            String id_sensor = equipment0["id_sensor"].as<String>();
+            int mode = equipment0["Mode"];
+            float status = equipment0["status"];
+
+            // In ra các giá trị lấy được
+            Serial.println("Equipment 0:");
+            Serial.println("ID Sensor: " + id_sensor);
+            Serial.println("Mode: " + String(mode));
+            Serial.println("Status: " + String(status));
+
+            // Kiểm tra xem schedule có tồn tại không
+            if (equipment0.containsKey("schedule")) {
+                JsonObject schedule = equipment0["schedule"];
+
+                // Lặp qua các thời điểm trong schedule và in ra
+                
+            } else {
+                Serial.println("No schedule available for equipment 0.");
+            }
+        } else {
+            Serial.println("Failed to parse JSON.");
+        }
+    } else {
+        Serial.print("GET request failed with error code: ");
+        Serial.println(httpCode);
+    }
+
+    http.end();
+  }
+//region AUTO CONTROL
+  void manageAutoControl() {
+    if (autoControl) {
+      autoControlMode(desiredTemperature, desiredHumidity);
+    }
+  }
+
+  void autoControlMode(float& temperature, float& humidity) {
+    float currentHumidity = sht31.readHumidity();
+    unsigned long currentMillis = millis();
+
+    if (currentHumidity < humidity && currentMillis - lastSprayTime >= sprayInterval) {
       digitalWrite(pumpPin, HIGH);
-      Blynk.setProperty(V3, "color", "#2EA5D8");
-      Blynk.virtualWrite(V3, 1); 
-      lastSprayTime = currentMillis; 
+      lastSprayTime = currentMillis;
       delay(2000);
       digitalWrite(pumpPin, LOW);
-      Blynk.setProperty(V3, "color", "#FF0000" );
-      Blynk.virtualWrite(V3, 0); 
+    } else {
+      digitalWrite(pumpPin, LOW);
     }
-  } else {
-    digitalWrite(pumpPin, LOW);
-    Blynk.setProperty(V3, "color", "#FF0000" );
-    Blynk.virtualWrite(V3, 0); 
-  }
-}
-
-void loop() {
-  Blynk.run();
-  Blynk.setProperty(V3, "label", "Máy bơm");
-  Blynk.setProperty(V1, "color", autoControl ? "#2EA5D8" : "#FF0000");
-  Blynk.setProperty(V2, "color", autoControl ? "#2EA5D8" : "#FF0000");
-  Blynk.setProperty(V4, "color", autoControl ? "#2EA5D8" : "#FF0000");
-  Blynk.setProperty(V5, "color", autoControl ? "#2EA5D8" : "#FF0000");
-  Blynk.setProperty(V6, "color", autoControl ? "#2EA5D8" : "#FF0000");
-  Serial.println("desiredhumidity");
-  Serial.println(desiredHumidity);
-  if (!autoControl) {
-    BLYNK_WRITE(V3);
   }
 
-  if (autoControl) {
-    autoControlMode(desiredTemperature, desiredHumidity);
+
+
+//region connect wifi and sensor
+  void connectToWiFi() {
+  // Khởi tạo WiFiManager
+  WiFiManager wifiManager;
+
+  // Kiểm tra xem ESP8266 có kết nối WiFi hay không
+  if (!WiFi.isConnected()) {
+    // Thử kết nối WiFi hoặc chuyển sang chế độ điểm truy cập (AP) để cấu hình WiFi mới
+    if (!wifiManager.autoConnect("ESP8266_AP")) {
+      Serial.println("Failed to connect and hit timeout");
+      // Nếu kết nối thất bại sau một khoảng thời gian, reset thiết bị
+      ESP.reset();
+      delay(1000);
+    } else {
+      // In ra thông báo khi kết nối WiFi thành công
+      Serial.println("Connected to WiFi");
+      Serial.print("SSID: ");
+      Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
+      timeClient.setTimeOffset(timeZoneOffset);
+      autoControl = true;
+      wifiConnected = true; // Cập nhật trạng thái kết nối WiFi
+    }
   }
-
-  float temperature = sht31.readTemperature();
-  float humidity = sht31.readHumidity();
-
-
-  Serial.print("Humidity: ");
-  Serial.print(humidity);
-  Serial.print("% - Temperature: ");
-  Serial.print(temperature);
-  Serial.println("°C");
-
-  Blynk.virtualWrite(V1, temperature); // Gửi dữ liệu nhiệt độ đến ứng dụng Blynk
-  Blynk.virtualWrite(V2, humidity); // Gửi dữ liệu độ ẩm đến ứng dụng Blynk
-
-  delay(2000); // Đợi 2 giây trước khi đọc lại dữ liệu từ cảm biến
-}
-
-BLYNK_WRITE(V4) {
-  autoControl = param.asInt();
-}
-
-BLYNK_WRITE(V3) {
-  if (!autoControl) {
-    int pumpState = param.asInt();
-    digitalWrite(pumpPin, pumpState);
-    Blynk.setProperty(V3, "color", pumpState == 1 ? "#00FF00" : "#FF0000");
-    float temperature = sht31.readTemperature();
-    float humidity = sht31.readHumidity();
-    Blynk.virtualWrite(V1, temperature);
-    Blynk.virtualWrite(V2, humidity);
-    
   }
-}
-
-BLYNK_WRITE(V5) {
-  desiredTemperature = param.asFloat();
-}
-
-BLYNK_WRITE(V6) {
-  desiredHumidity = param.asFloat();
-}
