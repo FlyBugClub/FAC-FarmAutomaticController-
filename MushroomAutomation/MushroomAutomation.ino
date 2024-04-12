@@ -125,7 +125,7 @@
     
     
     // manageAutoControl();
-    // sendHelloMessage();
+    sendHelloMessage();
     client.loop();
     sendMQTTMessage();
     delay(1000);
@@ -460,7 +460,8 @@
       currentEquipment["id_bc"] = equipments[i].id_bc;
 
       // Sử dụng mảng autoControl để thiết lập automode
-      currentEquipment["automode"] = String(autoControl[i]);  
+      int autoControl = (i == 0) ? autoControl0 : ((i == 1) ? autoControl1 : autoControl2);
+      currentEquipment["automode"] = autoControl;  
 
       // Sử dụng một câu lệnh switch-case để xác định thiết bị và thiết lập giá trị mong muốn và trạng thái
       switch (i) {
@@ -554,7 +555,7 @@
       Serial.println(count);
       Serial.println("--------------------");
 
-     processAutoMode(automode, expect_value,status, count);
+     processAutoMode(automode, expect_value, status, count);
     }
   }
   }
