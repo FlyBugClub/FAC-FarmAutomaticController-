@@ -1,11 +1,10 @@
-STATUS|TODO job|Person
-NO 	| arduinoide post count pum to sql  							|	DUC
-NO 	| arduinoide post humi, temp, status to MQTT(0, 1, 2 aka auto, mannual,... )		|	DUC
-NO	| button to config new wifi								|	DUC
-YES	| arduinoide  				get	equiment|id_sensor, id_bc, schedule|	|
-YES	| arduinoide  				get	MQTT					|
-NO	| arduinoide  				count	equiment0|id_sensor, id_bc, schedule|	|
-NO	| esp get from sql and save variable							|	DUC
+STATUS|TODO job|Person								
+NO 	| arduinoide				post	http						|	DUC
+NO	| button to config new wifi									|	DUC
+YES	| arduinoide  				get	http		
+YES	| arduinoide  				get	MQTT						|		
+YES	| arduinoide  				post    MQTT	
+NO	| esp get from sql and save variable								|	DUC
 |
 |
 |
