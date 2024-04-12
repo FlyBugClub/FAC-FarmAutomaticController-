@@ -12,7 +12,7 @@
   #include <NTPClient.h>
   #include <WiFiUdp.h>
 //region Struct
-  #define MAX_EQUIPMENTS 10
+  #define MAX_EQUIPMENTS 2
   #define SCHEDULE_CAPACITY 6
 
   struct Equipment {
@@ -522,7 +522,8 @@
   void sendHelloMessage() {
     if (client.connected()) {
       // Tạo một bộ nhớ đệm để lưu trữ dữ liệu JSON
-      StaticJsonDocument<256> doc;
+      StaticJsonDocument<1000> doc;
+
 
       // Thiết lập các giá trị trong JSON
       doc["id_esp"] = "ESP0001";
@@ -538,15 +539,23 @@
       doc["equiment"]["equiment1"]["automode"] = "2";
       doc["equiment"]["equiment1"]["expect_value"] = 85;
       doc["equiment"]["equiment1"]["status"] = 1;
+      
 
       // Chuyển đổi JSON thành chuỗi
-      char jsonBuffer[256];
+      char jsonBuffer[1000];
       serializeJson(doc, jsonBuffer);
 
       // Gửi chuỗi JSON lên MQTT
       client.publish(mqtt_topic_hello, jsonBuffer);
       client.flush();
-      // Serial.println("send succeed");Serial.flush();
+      // Gửi thông báo đã được ký tự hóa JSON đến chủ đề MQTT
+        bool messageSent = client.publish(mqtt_topic_hello, jsonBuffer);
+        client.flush();
+        if (messageSent) {
+          Serial.println("Thành công khi gửi tin nhắn MQTT!");Serial.flush();
+        } else {
+          Serial.println("Không thể gửi tin nhắn MQTT!");Serial.flush();
+        }
     }
   }
 
