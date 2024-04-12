@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   StatusBar,
+  Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import i18next, { languageResources } from "../services/i18next";
@@ -116,7 +117,7 @@ export default class Home extends Component {
         <View style={styles.container}>
           <LinearGradient colors={["#2BA84A", "#2BA84A", "#2BA84A"]} style={styles.header}>
             <SafeAreaView style={styles.header}>
-              <Text style={styles.headerText}>Hello! Have a nice Day</Text>
+              <Text style={styles.headerText}>{i18next.t('Hello')}! {i18next.t('Have a nice Day')}</Text>
               <Text style={styles.headerText}>{dataArray[0]["user"]["name"]}</Text>
             </SafeAreaView>
           </LinearGradient>
@@ -157,9 +158,19 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
   },
   headerText: {
-    fontSize: 26,
+    ...Platform.select({
+      ios:{
+        fontSize: 20,
     fontWeight: 'bold',
     color: 'white'
+      },
+      android:{
+        fontSize: 23,
+        fontWeight: 'bold',
+        color: 'white'
+      }
+    })
+    
   },
   body: {
     width: "90%",

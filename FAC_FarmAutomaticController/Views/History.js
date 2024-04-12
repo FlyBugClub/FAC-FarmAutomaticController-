@@ -10,6 +10,7 @@ import {
   ScrollView,
   statusbar,
   Image,
+  Platform,
   
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -151,7 +152,8 @@ export default class History extends Component {
                 width: "95%",
                 marginTop: 26,
                 marginBottom: 10,
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                alignItems: 'center'
               }}
             >
               <Text
@@ -160,15 +162,25 @@ export default class History extends Component {
                 {i18next.t("Date")}
               </Text>
               <Text
-                style={{ fontWeight: "bold", fontSize: 14, width: 95, textAlign: 'center'}}
+                style={{ fontWeight: "bold", fontSize: 14, width: 150, textAlign: 'center'}}
               >
                 {i18next.t("Device")}
               </Text>
-              <Text
+              {Platform.OS ==='android' && (
+                <Text
                 style={{ fontWeight: "bold", fontSize: 14, width: 70, textAlign: 'center' }}
               >
                 {i18next.t("Time")}
               </Text>
+              )}
+              {Platform.OS ==='ios' && (
+                <Text
+                style={{ fontWeight: "bold", fontSize: 14, width: 65, textAlign: 'center' }}
+              >
+                {i18next.t("Time")}
+              </Text>
+              )}
+              
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
                 {history}
