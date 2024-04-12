@@ -123,7 +123,7 @@
     sendHelloMessage();
     client.loop();
     sendMQTTMessage();
-    delay(1000);
+
   }
 //region stuff
   bool isNewDay(String formattedTime, String& previousDate) {
@@ -387,7 +387,7 @@
             int wateringTotalSeconds = hour * 3600 + minute * 60 + second;
             
             // Nếu đã đến thời điểm tưới cây
-            if (totalSeconds >= wateringTotalSeconds && totalSeconds <= wateringTotalSeconds + 5) { // Chấp nhận một khoảng thời gian 5 giây cho phép trễ
+            if (totalSeconds >= wateringTotalSeconds && totalSeconds <= wateringTotalSeconds + 60) { // Chấp nhận một khoảng thời gian 60 giây cho phép trễ
                 controlPump(count, HIGH); // Kích hoạt bơm tưới cây cho thiết bị tại chỉ số count
                 lastWateringTime = totalSeconds; // Lưu thời điểm tưới cây cuối cùng
                 isPumpActive = true; // Đánh dấu rằng bơm đã được kích hoạt
