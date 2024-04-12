@@ -39,7 +39,7 @@
   const char* mqtt_server = "broker.emqx.io";
   const uint16_t mqtt_port = 1883;
   const char* mqtt_topic_hello = "hello_topic";
-  const char* mqtt_topic_send = "send_mqtt";
+  const char* mqtt_topic_send = "hihihihihehe";
   WiFiClient espClient;
   PubSubClient client(espClient); 
 //region Variables
@@ -106,14 +106,28 @@
     String formattedDateTime;
     getCurrentDateTime(formattedDateTime);
     getAndParseAPI("/api/getvalueesp/ESP0001");
-            
-    countPumpActivations(formattedDateTime);
-    postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
+
+    Serial.println("num_equipments:");
+    Serial.println(num_equipments);
+    for (int i = 0; i < num_equipments; i++) {
+                Serial.print("ID Sensor: ");
+                Serial.println(equipments[i].id_sensor);
+                Serial.print("ID BC: ");
+                Serial.println(equipments[i].id_bc);
+                Serial.print("Mode: ");
+              
+                Serial.println("Schedule:");
+                for (int j = 0; j < equipments[i].schedule_size; j++) {
+                    Serial.println(equipments[i].schedule[j]);
+                }
+            }            
+    // countPumpActivations(formattedDateTime);
+    // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
     
     
     // manageAutoControl();
-    sendHelloMessage();
-    client.loop();
+    // sendHelloMessage();
+    // client.loop();
     sendMQTTMessage();
 
   }
@@ -211,7 +225,7 @@
   void postCountPumpToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
     WiFiClientSecure client;
     HTTPClient http;
-    String api_url = "https://" + String(server_address) + url;
+    String api_url = "https://" + String(server_address) + url  ;
 
     http.begin(client, api_url);
     client.setInsecure();
@@ -257,6 +271,7 @@
     
     if (httpCode > 0) {
         String payload = http.getString();
+        Serial.println(payload);
         StaticJsonDocument<1024> doc;
         DeserializationError error = deserializeJson(doc, payload);
         
@@ -533,6 +548,7 @@
       // Serial.println("send succeed");
     }
   }
+
   void sendMQTTMessage() {
   if (client.connected()) {
     // Tạo một tài liệu JSON với phân bổ bộ nhớ đủ
@@ -545,37 +561,42 @@
     JsonObject equipmentObject = doc.createNestedObject("equipment");
 
     // Lặp qua mảng equipments và thêm từng thiết bị vào như một đối tượng lồng nhau
-    for (size_t i = 0; i < num_equipments; ++i) {
+    // for (size_t i = 0; i < num_equipments; ++i) {
       // Tạo một đối tượng lồng nhau mới cho thiết bị hiện tại
-      String equipmentName = "equipment" + String(i);
+      String equipmentName = "equipment0" ;
       JsonObject currentEquipment = equipmentObject.createNestedObject(equipmentName);
 
       // Thêm dữ liệu từ equipments[i] vào đối tượng thiết bị hiện tại
-      currentEquipment["id_bc"] = equipments[i].id_bc;
+      currentEquipment["id_bc"] = equipments[0].id_bc;
       const char* autoMode;
       // Sử dụng mảng autoMode để thiết lập automode
-      autoMode = (i == 0) ? autoMode0 : ((i == 1) ? autoMode1 : autoMode2);
+      autoMode = autoMode0;
+      // Serial.print("autoMode ");
+      // Serial.print(i);
+      // Serial.print(": ");
+      // Serial.println(autoMode);
       currentEquipment["automode"] = autoMode;  
-
+      currentEquipment["expect_value"] = desiredHumidity0;
+      currentEquipment["status"] = digitalRead(pumpPin0);
       // Sử dụng một câu lệnh switch-case để xác định thiết bị và thiết lập giá trị mong muốn và trạng thái
-      switch (i) {
-        case 0:
-          currentEquipment["expect_value"] = desiredHumidity0;
-          currentEquipment["status"] = digitalRead(pumpPin0);
-          break;
-        case 1:
-          currentEquipment["expect_value"] = desiredHumidity1;
-          currentEquipment["status"] = digitalRead(pumpPin1);
-          break;
-        case 2:
-          currentEquipment["expect_value"] = desiredHumidity2;
-          currentEquipment["status"] = digitalRead(pumpPin2);
-          break;
-        default:
-          // Xử lý trường hợp index có thể vượt quá giới hạn (tùy chọn)
-          break;
-      }
-    }
+      // switch (i) {
+      //   case 0:
+      //     currentEquipment["expect_value"] = desiredHumidity0;
+      //     currentEquipment["status"] = digitalRead(pumpPin0);
+      //     break;
+      //   case 1:
+      //     currentEquipment["expect_value"] = desiredHumidity1;
+      //     currentEquipment["status"] = digitalRead(pumpPin1);
+      //     break;
+      //   case 2:
+      //     currentEquipment["expect_value"] = desiredHumidity2;
+      //     currentEquipment["status"] = digitalRead(pumpPin2);
+      //     break;
+      //   default:
+      //     // Xử lý trường hợp index có thể vượt quá giới hạn (tùy chọn)
+      //     break;
+      // }
+    // }
 
     // Chuyển đổi tài liệu JSON thành một bộ đệm ký tự
     char jsonBuffer[512];
@@ -584,14 +605,14 @@
     // Gửi thông báo đã được ký tự hóa JSON đến chủ đề MQTT
     bool messageSent = client.publish(mqtt_topic_send, jsonBuffer);
     if (messageSent) {
-      // Serial.println("Thành công khi gửi tin nhắn MQTT!");
+      Serial.println("Thành công khi gửi tin nhắn MQTT!");
     } else {
-      // Serial.println("Không thể gửi tin nhắn MQTT!");
+      Serial.println("Không thể gửi tin nhắn MQTT!");
     }
   } else {
-    // Serial.println("Không kết nối được với máy chủ MQTT!");
+    Serial.println("Không kết nối được với máy chủ MQTT!");
   }
-  }
+}
 
 //region MQTTX GET
   void callback(char* topic, byte* payload, unsigned int length) {
