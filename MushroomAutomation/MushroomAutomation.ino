@@ -5,7 +5,7 @@
   #include <WiFiManager.h> // Thêm khai báo thư viện WiFiManager
   #include <ArduinoJson.h>
   #include "secret_pass.h"
-
+  #include <PubSubClient.h>
   #include <Wire.h>
   #include "Adafruit_SHT31.h"
 
@@ -25,7 +25,6 @@
   Equipment equipments[MAX_EQUIPMENTS];
   size_t num_equipments = 0;
 //region Constants
-// Định nghĩa kích thước mảng tùy thuộc vào số lượng phần tử trong JSON
 
   const char* ntpServer = "pool.ntp.org";
   const int ntpPort = 123;
@@ -38,6 +37,8 @@
   const char* mqtt_server = "broker.emqx.io";
   const uint16_t mqtt_port = 1883;
   const char* mqtt_topic_hello = "hello_topic";
+  WiFiClient espClient;
+  PubSubClient client(espClient); 
 //region Variables
   bool enableHeater = false;
   uint8_t loopCnt = 0;
@@ -73,7 +74,7 @@
 
     // Initialize SHT31 sensor
     sht31.begin(0x44);
-
+    client.setServer(mqtt_server, mqtt_port);
     // Initialize NTPClient
     timeClient.begin();
     timeClient.setTimeOffset(timeZoneOffset);
@@ -85,29 +86,31 @@
     if (!wifiConnected) {
       connectToWiFi();
     }
+    if (!client.connected()) {
+    reconnect();
+    }
     
     String formattedDateTime;
     // getCurrentDateTime(formattedDateTime);
     // countPumpActivations(formattedDateTime);
     // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
     // getAndParseAPI("/api/login/admin@gmail.com/123456");
-    getAndParseAPI("/api/getvalueesp/ESP0001");
-    for (int i = 0; i < num_equipments; i++) {
-                Serial.print("ID Sensor: ");
-                Serial.println(equipments[i].id_sensor);
-                Serial.print("ID BC: ");
-                Serial.println(equipments[i].id_bc);
-                Serial.print("Mode: ");
+    // getAndParseAPI("/api/getvalueesp/ESP0001");
+    // for (int i = 0; i < num_equipments; i++) {
+    //             Serial.print("ID Sensor: ");
+    //             Serial.println(equipments[i].id_sensor);
+    //             Serial.print("ID BC: ");
+    //             Serial.println(equipments[i].id_bc);
+    //             Serial.print("Mode: ");
               
-                Serial.println("Schedule:");
-                for (int j = 0; j < equipments[i].schedule_size; j++) {
-                    Serial.println(equipments[i].schedule[j]);
-                }
-            }
+    //             Serial.println("Schedule:");
+    //             for (int j = 0; j < equipments[i].schedule_size; j++) {
+    //                 Serial.println(equipments[i].schedule[j]);
+    //             }
+    //         }
     // manageAutoControl();
-
+  sendHelloMessage();
   delay(1000);
-  Serial.print("xinchao");
   }
 //region stuff
   bool isNewDay(String formattedTime, String& previousDate) {
@@ -340,9 +343,27 @@
   }
   }
 //region MQTTX POST
-
+  void sendHelloMessage() {
+  if (client.connected()) {
+    client.publish(mqtt_topic_hello, "hello");
+  }
+  }
 //region MQTTX GET
 //region callBack
+
+  void reconnect() {
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    if (client.connect("helloem")) {
+      Serial.println("connected");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      delay(5000);
+    }
+  }
+  }
   // void callback(char* topic, byte* payload, unsigned int length) {
   // StaticJsonDocument<1024> doc;
   // DeserializationError error = deserializeJson(doc, payload);
