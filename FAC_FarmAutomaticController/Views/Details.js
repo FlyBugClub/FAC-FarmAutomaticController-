@@ -502,12 +502,18 @@ export default class Details extends Component{
     }
     const json = await response.json()
     // console.log(json[0])
-    // console.log("______________________________")
+   
+    // console.log(json[0])
     for (let i = 0;i<dataArray[1]["bc"]["sl"];i++)
     {
-      id_check.push(json[0]["combo"+i.toString()]["DHT"]["id"])
-      id_check.push(json[0]["combo"+i.toString()]["PH"]["id"])
+      if (json[0]["combo"+i.toString()]["DHT"].hasOwnProperty("id"))
+      {
+        id_check.push(json[0]["combo"+i.toString()]["DHT"]["id"])
+        id_check.push(json[0]["combo"+i.toString()]["PH"]["id"])
+      }
     }
+
+
     let sum_sensor =  dataArray[1]["sensor"]["sl_dht"] + dataArray[1]["sensor"]["sl_ph"]
     let jsonObject = {}
     for (let i = 0; i < sum_sensor; i++ )
@@ -525,9 +531,9 @@ export default class Details extends Component{
         jsonObject[key] = value;
       }
     }
+
+
     newlegend = id_check.filter((item, index) => id_check.indexOf(item) === index);
-
-
     for (let i = 0; i < newlegend.length; i++) {
       if (jsonObject.hasOwnProperty(newlegend[i])) {
         newlegend[i] = jsonObject[newlegend[i]];
@@ -536,23 +542,27 @@ export default class Details extends Component{
     }
     // console.log(json[0]);
 
+
     var datelist = [];
     for (let i = 0;i<dataArray[1]["bc"]["sl"]; i++ )
     {
       for(let j = 0;j<6; j++ )
       {
-        datelist.push(json[0]["combo"+i.toString()]["DHT"][j.toString()]["datetime"])
-        datelist.push(json[0]["combo"+i.toString()]["PH"][j.toString()]["datetime"])
+        if (json[0]["combo"+i.toString()]["DHT"].hasOwnProperty(j.toString()))
+
+        {
+          datelist.push(json[0]["combo"+i.toString()]["DHT"][j.toString()]["datetime"])
+          datelist.push(json[0]["combo"+i.toString()]["PH"][j.toString()]["datetime"])
+        }
       } 
     }
-    // console.log("SAD")
-    // console.log("______________________________")
+
+
     // console.log(datelist)
     datelist.sort((a, b) => new Date(b) - new Date(a));
     let dateTimebegin  = new Date(datelist[0]);
     let dateTimeend   = new Date(datelist[datelist.length - 1]);
     
-    // console.log(dateTimeend)
 
     // Lấy thời gian từ đối tượng Date
     let hoursbe = dateTimebegin.getHours();
@@ -569,8 +579,8 @@ export default class Details extends Component{
     newlabels.push("")
     newlabels.push("")
     newlabels.push(`${hoursen}:${minutesen}:${secondsen}`)
+
       
-    
     // console.log(newlabels)
     const colors = [
       ["0, 119, 182",   // Màu cho dataset 0
@@ -580,7 +590,9 @@ export default class Details extends Component{
       ["255, 0, 0",     // Màu cho dataset 4 (màu đỏ)
       "0, 255, 0"]     // Màu cho dataset 6 (màu xanh dương)
     ];
-   
+
+
+    // console.log(sum_sensor/2)
     for (let i = 0; i < (sum_sensor/2); i++) {
       let valuedht = [];
       let valueph = [];
@@ -588,13 +600,23 @@ export default class Details extends Component{
       // Sinh dữ liệu ngẫu nhiên cho mỗi dataset
       for (let j = 0; j < 6; j++) {
         // console.log(json[0]["combo"+i.toString()]["sensor"]["dht"+j.toString()])
-        valuedht.push(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"]);
-        valueph.push(json[0]["combo"+i.toString()]["PH"][j.toString()]["value"]);
+        
+        if(json[0]["combo"+i.toString()]["DHT"].hasOwnProperty(j.toString()))
+        {
+          // console.log(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"])
+          valuedht.push(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"]);
+          valueph.push(json[0]["combo"+i.toString()]["PH"][j.toString()]["value"]);
+        }else 
+        {
+          valuedht.push(0);
+          valueph.push(0);
+        }
+        
       }
       // Chọn màu sắc từ mảng colors
       let colordht = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
       let colorph = colors[i][1] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
-      
+       
       // Thêm đối tượng dataset vào mảng
       newdatasets.push({
         data: valuedht,
@@ -608,6 +630,7 @@ export default class Details extends Component{
       });
  
     }
+
     
     const reversedArray = newlabels.reverse();
     const newData = { 
