@@ -106,20 +106,15 @@
     String formattedDateTime;
     getCurrentDateTime(formattedDateTime);
     getAndParseAPI("/api/getvalueesp/ESP0001");
-    // Serial.println("num_equipments:");
-    // Serial.println(num_equipments);
-    // for (int i = 0; i < num_equipments; i++) {
-    //             Serial.print("ID Sensor: ");
-    //             Serial.println(equipments[i].id_sensor);
-    //             Serial.print("ID BC: ");
-    //             Serial.println(equipments[i].id_bc);
-    //             Serial.print("Mode: ");
-              
-    //             Serial.println("Schedule:");
-    //             for (int j = 0; j < equipments[i].schedule_size; j++) {
-    //                 Serial.println(equipments[i].schedule[j]);
-    //             }
-    //         }
+ 
+    Serial.println("num_equipments:");
+    Serial.println(num_equipments);
+    for (int i = 0; i < num_equipments; i++) {
+        for (int j = 0; j < equipments[i].schedule_size; j++) {
+            Serial.println(equipments[i].schedule[j]);
+        }
+    }
+            
     // countPumpActivations(formattedDateTime);
     // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
     
@@ -127,10 +122,6 @@
     // manageAutoControl();
     sendHelloMessage();
     client.loop();
-    Serial.print("autoMode 0: ");
-    Serial.println(autoMode0);
-    Serial.print("autoMode 1: ");
-    Serial.println(autoMode1);
     sendMQTTMessage();
     delay(1000);
   }
@@ -343,7 +334,7 @@
         digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), LOW);
     }
   }
-
+//region Mannual
   void controlPump(int pumpIndex, int status) {
     if (status == 0) {
         digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), LOW);
@@ -355,6 +346,53 @@
         Serial.println("Invalid status");
     }
   }
+
+//region Schedule
+  bool isPumpActive = false; // Biến kiểm tra xem bơm đã được kích hoạt để tưới cây hay chưa
+
+  void waterPlants(int count) {
+      static unsigned long lastWateringTime = 0; // Biến lưu thời điểm tưới cây cuối cùng
+
+      // Kiểm tra xem đã đến lúc tưới cây chưa và bơm chưa được kích hoạt
+      if (millis() - lastWateringTime >= 5000 && !isPumpActive) { // Chờ 5 giây giữa mỗi lần tưới
+      timeClient.update();
+      unsigned long currentEpochTime = timeClient.getEpochTime();
+      time_t epochTime = (time_t)currentEpochTime;
+      struct tm *currentTimeStruct = localtime(&epochTime);
+      char currentTime[9]; // HH:MM:SS\0
+      strftime(currentTime, sizeof(currentTime), "%H:%M:%S", currentTimeStruct);
+      
+      // Convert milliseconds to string
+      unsigned long milliseconds = millis() % 1000;
+      char millisecondsStr[4]; // .000\0
+      snprintf(millisecondsStr, sizeof(millisecondsStr), ".%03ld", milliseconds);
+      
+        Serial.print("currentHour");
+        Serial.println(currentTime);
+        // Tính toán thời gian còn lại đến lần tưới cây tiếp theo
+        // unsigned long remainingTime = (hour * 3600 + minute * 60 + second) - (currentHour * 3600);
+        // Serial.print("remainingTime");
+        // Serial.println(remainingTime);
+        // Nếu đã đến thời gian tưới cây
+    //     if (remainingTime <= 0) {
+    //         // Thực hiện hành động tưới cây cho thiết bị count
+    //         controlPump(count, HIGH);
+    //         isPumpActive = true; // Đánh dấu rằng bơm đã được kích hoạt để tưới cây
+    //         lastWateringTime = millis(); // Cập nhật thời điểm tưới cây cuối cùng
+    //     }
+    // } else {
+    //     // Nếu chưa đến lúc tưới cây hoặc bơm đang được kích hoạt, không làm gì cả
+    // }
+
+    // Kiểm tra xem đã đủ thời gian để tắt bơm chưa
+    if (isPumpActive && millis() - lastWateringTime >= 5000) {
+        controlPump(count, LOW); // Tắt bơm
+        isPumpActive = false; // Đánh dấu rằng bơm đã được tắt
+    }
+  }
+  }
+
+
 //region process
   void processAutoMode(const char* automode, int expect_value, int status, int count) {
     if (strcmp(automode, "0") == 0) { // Chế độ tự động
@@ -402,8 +440,26 @@
                 break;
         }
     } else if (strcmp(automode, "2") == 0) { // Chế độ hẹn giờ
-        // Serial.println("Chế độ hẹn giờ");
-        // Bỏ qua vì không có yêu cầu về chế độ hẹn giờ
+        switch (count) {
+            case 0:
+                autoMode0 = "2";
+                desiredHumidity0 = expect_value;
+                waterPlants(0);
+                break;
+            case 1:
+                autoMode1 = "2";
+                desiredHumidity1 = expect_value;
+                waterPlants(1);
+                break;
+            case 2:
+                autoMode2 = "2";
+                desiredHumidity2 = expect_value;
+                waterPlants(2);
+                break;
+            default:
+                // Serial.println("Số lượng không hợp lệ");
+                break;
+        }
     } else {
         // Serial.println("Chế độ không hợp lệ");
     }
@@ -450,7 +506,7 @@
 
       doc["equiment"]["equiment1"];
       doc["equiment"]["equiment1"]["id_bc"] = "BC0002";
-      doc["equiment"]["equiment1"]["automode"] = "1";
+      doc["equiment"]["equiment1"]["automode"] = "2";
       doc["equiment"]["equiment1"]["expect_value"] = 85;
       doc["equiment"]["equiment1"]["status"] = 1;
 
@@ -485,10 +541,6 @@
       const char* autoMode;
       // Sử dụng mảng autoMode để thiết lập automode
       autoMode = (i == 0) ? autoMode0 : ((i == 1) ? autoMode1 : autoMode2);
-      Serial.print("autoMode ");
-      Serial.print(i);
-      Serial.print(": ");
-      Serial.println(autoMode);
       currentEquipment["automode"] = autoMode;  
 
       // Sử dụng một câu lệnh switch-case để xác định thiết bị và thiết lập giá trị mong muốn và trạng thái
@@ -525,15 +577,9 @@
   } else {
     // Serial.println("Không kết nối được với máy chủ MQTT!");
   }
-}
-
-
-
-
-
+  }
 
 //region MQTTX GET
-//region callBack
   void callback(char* topic, byte* payload, unsigned int length) {
   // Serial.print("Message arrived [");
   // Serial.print(topic);
@@ -575,7 +621,7 @@
       Serial.println(count);
       Serial.println("get ve la: ");
       Serial.println(automode);
-     processAutoMode(automode, expect_value, status, count);
+      processAutoMode(automode, expect_value, status, count);
      count++;
     }
   }
