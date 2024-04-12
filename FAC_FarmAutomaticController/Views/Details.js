@@ -8,13 +8,11 @@ import {
   Image,
   Alert,
   Switch,
-  Button,
   ScrollView,
   StatusBar,
   SafeAreaView,
   Dimensions,
   Modal,
-  TouchableWithoutFeedback,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";

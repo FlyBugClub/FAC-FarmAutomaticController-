@@ -17,7 +17,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
 import i18next, { languageResources } from "../services/i18next";
-import { userMemo } from "react";
 import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import languagesList from "../services/languagesList.json";
 import MyContext from "../DataContext";
@@ -29,6 +28,7 @@ export default class User extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isBottomSheetOpen: false,
       selectedLanguage: "vi",
     };
     this.snapPoint = ["25%"];
@@ -37,6 +37,20 @@ export default class User extends Component {
 
   handleClosePress = () => this.bottomSheetRef.current?.close();
   handleOpenPress = () => this.bottomSheetRef.current?.expand();
+
+  // Phương thức mở hoặc đóng BottomSheet
+  toggleBottomSheet = () => {
+    this.setState(
+      (prevState) => ({ isBottomSheetOpen: !prevState.isBottomSheetOpen }),
+      () => {
+        if (this.state.isBottomSheetOpen) {
+          this.bottomSheetRef.current.expand();
+        } else {
+          this.bottomSheetRef.current.close();
+        }
+      }
+    );
+  };
 
   renderBackdrop = () => (
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} />
@@ -72,7 +86,7 @@ export default class User extends Component {
             style={styles.NavigationTop}
           >
             <SafeAreaView
-              style={{ alignItems: "center", justifyContent: "center" }}
+              // style={{ alignItems: "center", justifyContent: "center" }}
             >
               <Text style={styles.title}>{i18next.t("User information")}</Text>
             </SafeAreaView>
@@ -132,7 +146,8 @@ export default class User extends Component {
                 <View style={styles.settingContent}>
                   <TouchableOpacity
                     style={styles.languageArea}
-                    onPress={this.handleOpenPress}
+                    // onPress={this.handleOpenPress}
+                    onPress={this.toggleBottomSheet}
                   >
                     <Text style={styles.text}>{i18next.t("Language")}</Text>
                     <Text style={styles.text}>
@@ -169,7 +184,9 @@ export default class User extends Component {
               ref={this.bottomSheetRef}
               snapPoints={this.snapPoint}
               enablePanDownToClose={true}
-              initialSnapIndex={-1}
+              // initialSnapIndex={-1}
+              index={this.state.isBottomSheetOpen ? 0 : -1}
+              inin
             >
               <View>
                 <Text style={[{ color: "gray", fontSize: 20, marginLeft: 10 }]}>
@@ -251,20 +268,34 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   NavigationTop: {
-    width: "100%",
-    height: 80,
-    backgroundColor: "#73A942",
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    marginBottom: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    ...Platform.select({
+      ios: {
+        width: "100%",
+        height: '12%',
+        backgroundColor: "#73A942",
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
+        marginBottom: 10,
+        // alignItems: "center",
+        // justifyContent: "center",
+      },
+      android: {
+        width: "100%",
+        height: 80,
+        backgroundColor: "#73A942",
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
+        marginBottom: 10,
+        alignItems: "center",
+        justifyContent: "center",
+      },
+    }),
   },
   title: {
     textAlign: "center",
     fontSize: 23,
     color: "#fff",
-    fontWeight: "bold",
+    textAlignVertical: 'center'
   },
   titleText: {
     fontWeight: "bold",
