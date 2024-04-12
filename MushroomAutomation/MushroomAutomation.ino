@@ -54,7 +54,7 @@
   float desiredHumidity0 = 60.0;
   float desiredHumidity1 = 60.0;
   float desiredHumidity2 = 60.0;
-  unsigned long lastSprayTime = 0;
+  unsigned long lastSprayTime[MAX_EQUIPMENTS] = {0};
   bool wifiConnected = false;
   int pumpActivationCount = 0;
   String previousDate = "";
@@ -328,43 +328,58 @@
     unsigned long currentMillis = millis();
 
     if (currentHumidity < humidity && currentMillis - lastSprayTime[pumpIndex] >= sprayInterval) {
-      digitalWrite(pumpPin[pumpIndex], HIGH);
-      lastSprayTime[pumpIndex] = currentMillis;
-      delay(2000);
-      digitalWrite(pumpPin[pumpIndex], LOW);
+        digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), HIGH);
+        lastSprayTime[pumpIndex] = currentMillis;
+        delay(5000);
+        digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), LOW);
     } else {
-      digitalWrite(pumpPin[pumpIndex], LOW);
+        digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), LOW);
     }
   }
 
-//region mannualControl
   void controlPump(int pumpIndex, int status) {
-  if (status == 0) {
-    digitalWrite(pumpPin[pumpIndex], LOW);
-    Serial.println("Pump is OFF");
-  } else if (status == 1) {
-    digitalWrite(pumpPin[pumpIndex], HIGH);
-    Serial.println("Pump is ON");
-  } else {
-    Serial.println("Invalid status");
+    if (status == 0) {
+        digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), LOW);
+        Serial.println("Pump is OFF");
+    } else if (status == 1) {
+        digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), HIGH);
+        Serial.println("Pump is ON");
+    } else {
+        Serial.println("Invalid status");
+    }
   }
-}
 //region process
   void processAutoMode(const char* automode, int expect_value, int status, int count) {
     if (strcmp(automode, "0") == 0) { // Chế độ tự động
-      Serial.println("Auto mode");
-      desiredHumidity[count] = expect_value;
-      autoControlMode(count, desiredHumidity[count]);
-
-    } else if (strcmp(automode, "1") == 0) { // Chế độ manual
-      Serial.println("Manual mode");
-      controlPump(count, status)
-
+      Serial.println("Chế độ tự động");
+      if (count == 0) {
+          desiredHumidity0 = expect_value;
+          autoControlMode(0, desiredHumidity0);
+      } else if (count == 1) {
+          desiredHumidity1 = expect_value;
+          autoControlMode(1, desiredHumidity1);
+      } else if (count == 2) {
+          desiredHumidity2 = expect_value;
+          autoControlMode(2, desiredHumidity2);
+      } else {
+          Serial.println("Số lượng không hợp lệ");
+      }
+    } else if (strcmp(automode, "1") == 0) { // Chế độ thủ công
+      Serial.println("Chế độ thủ công");
+      if (count == 0) {
+          controlPump(0, status);
+      } else if (count == 1) {
+          controlPump(1, status);
+      } else if (count == 2) {
+          controlPump(2, status);
+      } else {
+          Serial.println("Số lượng không hợp lệ");
+      }
     } else if (strcmp(automode, "2") == 0) { // Chế độ hẹn giờ
-      Serial.println("Timer mode");
+      Serial.println("Chế độ hẹn giờ");
       // Bỏ qua vì không có yêu cầu về chế độ hẹn giờ
     } else {
-      Serial.println("Invalid mode");
+      Serial.println("Chế độ không hợp lệ");
     }
   }
 
@@ -387,7 +402,6 @@
       Serial.print("SSID: ");
       Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
       timeClient.setTimeOffset(timeZoneOffset);
-      autoControl = true;
       wifiConnected = true; // Cập nhật trạng thái kết nối WiFi
     }
   }
@@ -403,15 +417,15 @@
 
       doc["equiment"]["equiment0"];
       doc["equiment"]["equiment0"]["id_bc"] = "BC0001";
-      doc["equiment"]["equiment0"]["automode"] = "1";
+      doc["equiment"]["equiment0"]["automode"] = "0";
       doc["equiment"]["equiment0"]["expect_value"] = 65;
-      doc["equiment"]["equiment0"]["status"] = 0;
+      doc["equiment"]["equiment0"]["status"] = pumpin0;
 
       doc["equiment"]["equiment1"];
       doc["equiment"]["equiment1"]["id_bc"] = "BC0001";
       doc["equiment"]["equiment1"]["automode"] = "1";
       doc["equiment"]["equiment1"]["expect_value"] = 65;
-      doc["equiment"]["equiment1"]["status"] = 0;
+      doc["equiment"]["equiment1"]["status"] = pumpin1;
 
       // Chuyển đổi JSON thành chuỗi
       char jsonBuffer[256];
@@ -448,7 +462,7 @@
     
     // Duyệt qua từng thiết bị
     for (JsonPair equiment : equiments) {
-      int count = 0
+      int count = 0;
       const char* equimentId = equiment.key().c_str();
       Serial.print("Equiment ID: ");
       Serial.println(equimentId);
@@ -473,7 +487,7 @@
       Serial.println(count);
       Serial.println("--------------------");
 
-     processAutoMode(automode, expect_value,status, count)
+     processAutoMode(automode, expect_value,status, count);
     }
   }
   }
