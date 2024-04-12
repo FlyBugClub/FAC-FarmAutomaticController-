@@ -30,7 +30,9 @@
   const int ntpPort = 123;
   const char* server_address = "ngunemay123.bsite.net";
   const int server_port = 443;
-  const int pumpPin = D6;
+  const int pumpPin0 = D6;
+  const int pumpPin1 = D7;
+  const int pumpPin2 = D8;
   const long timeZoneOffset = 7 * 3600;
   const unsigned long sprayInterval = 10000; // 10 seconds
 
@@ -65,7 +67,9 @@
 
 //region setup
   void setup() {
-    pinMode(pumpPin, OUTPUT);
+    pinMode(pumpPin0, OUTPUT);
+    pinMode(pumpPin1, OUTPUT);
+    pinMode(pumpPin2, OUTPUT);
     Serial.begin(9600);
     delay(100);
 
@@ -228,7 +232,6 @@
     http.end();
   }
 //region GET
-//TODO error GET
   void getAndParseAPI(const char* url) {
     num_equipments = 0;
     WiFiClientSecure client;
@@ -297,8 +300,6 @@
     http.end(); 
   }
 
-
-
 //region AUTO CONTROL
   void manageAutoControl() {
     if (autoControl) {
@@ -319,9 +320,12 @@
       digitalWrite(pumpPin, LOW);
     }
   }
-
-
-
+//region mannualControl
+  void controlPump(int pumpPin, bool status) {
+    digitalWrite(pumpPin, status ? HIGH : LOW);
+    Serial.print("Pump is ");
+    Serial.println(status ? "ON" : "OFF");
+  }
 //region connect wifi and sensor
   void connectToWiFi() {
   // Khởi tạo WiFiManager
