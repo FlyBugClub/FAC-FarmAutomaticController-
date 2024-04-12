@@ -12,19 +12,18 @@
   #include <NTPClient.h>
   #include <WiFiUdp.h>
 //region Struct
-  const int INITIAL_CAPACITY = 2;
-  const int SCHEDULE_CAPACITY = 5;
+  #define MAX_EQUIPMENTS 10
+  #define SCHEDULE_CAPACITY 6
+
   struct Equipment {
-  char id_sensor[20];
-  int Mode;
-  float status;
-  char** schedule; // Con trỏ đến mảng lịch trình
-  int schedule_size; // Số lượng phần tử trong mảng lịch trình
+      char id_sensor[20];
+      char id_bc[20];
+      char** schedule;
+      size_t schedule_size;
   };
-  // Mảng để lưu trữ thông tin của các thiết bị
-  Equipment* equipments; // Con trỏ đến mảng các thiết bị
-  int num_equipments = 0; // Số lượng thiết bị hiện tại
-  int array_capacity = INITIAL_CAPACITY; // Kích thước hiện tại của mảng
+
+  Equipment equipments[MAX_EQUIPMENTS];
+  size_t num_equipments = 0;
 //region Constants
 // Định nghĩa kích thước mảng tùy thuộc vào số lượng phần tử trong JSON
 
@@ -79,7 +78,7 @@
     timeClient.begin();
     timeClient.setTimeOffset(timeZoneOffset);
     // Khởi tạo mảng các thiết bị
-    equipments = new Equipment[array_capacity];
+
   }
 //region loop
   void loop() {
@@ -93,10 +92,22 @@
     // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
     // getAndParseAPI("/api/login/admin@gmail.com/123456");
     getAndParseAPI("/api/getvalueesp/ESP0001");
-    
+    for (int i = 0; i < num_equipments; i++) {
+                Serial.print("ID Sensor: ");
+                Serial.println(equipments[i].id_sensor);
+                Serial.print("ID BC: ");
+                Serial.println(equipments[i].id_bc);
+                Serial.print("Mode: ");
+              
+                Serial.println("Schedule:");
+                for (int j = 0; j < equipments[i].schedule_size; j++) {
+                    Serial.println(equipments[i].schedule[j]);
+                }
+            }
     // manageAutoControl();
 
-
+  delay(1000);
+  Serial.print("xinchao");
   }
 //region stuff
   bool isNewDay(String formattedTime, String& previousDate) {
@@ -224,50 +235,50 @@
     
     if (httpCode > 0) {
         String payload = http.getString();
-        Serial.println("Received JSON:");
-        Serial.println(payload);
         StaticJsonDocument<1024> doc;
         DeserializationError error = deserializeJson(doc, payload);
         
         if (!error) {
-            // Iterate through each element of the array
             for (JsonVariant v : doc.as<JsonArray>()) {
-                JsonObject obj = v.as<JsonObject>();
-                // Iterate through each key-value pair of the object
-                for (JsonPair kvp : obj) {
-                    JsonObject equipment = kvp.value();
-                    if (num_equipments >= array_capacity) {
-                        // Mảng không đủ lớn, thêm một kích thước mới cho nó
-                        array_capacity *= 2;
-                        Equipment* new_equipments = new Equipment[array_capacity];
-                        // Sao chép dữ liệu từ mảng cũ sang mảng mới
-                        memcpy(new_equipments, equipments, num_equipments * sizeof(Equipment));
-                        delete[] equipments;
-                        equipments = new_equipments;
-                    }
+                JsonObject equipmentData = v.as<JsonObject>();
+                
+                // Extract information for each equipment
+                for (int i = 0; i < MAX_EQUIPMENTS; i++) {
+                    String equipmentKey = "equiment" + String(i);
+                    if (equipmentData.containsKey(equipmentKey)) {
+                        JsonObject equipment = equipmentData[equipmentKey];
+                        
+                        // Extract id_sensor and id_bc
+                        const char* id_sensor = equipment["id_sensor"];
+                        const char* id_bc = equipment["id_bc"];
 
-                    // Sao chép thông tin từ JSON vào mảng thiết bị
-                    strncpy(equipments[num_equipments].id_sensor, equipment["id_sensor"], sizeof(equipments[num_equipments].id_sensor));
-                    equipments[num_equipments].Mode = equipment["Mode"];
-                    equipments[num_equipments].status = equipment["status"];
+                        // Extract schedule
+                        JsonObject schedule = equipment["schedule"];
+                        size_t scheduleSize = min(schedule.size(), static_cast<size_t>(SCHEDULE_CAPACITY));
 
-                    JsonObject schedule = equipment["schedule"];
-                    equipments[num_equipments].schedule_size = std::min(schedule.size(), static_cast<size_t>(SCHEDULE_CAPACITY));
-                    equipments[num_equipments].schedule = new char*[equipments[num_equipments].schedule_size];
-                    int i = 0;
-                    // Iterate through each schedule item
-                    for (JsonPair kvp_schedule : schedule) {
-                        if (i >= equipments[num_equipments].schedule_size) break; // Đảm bảo không vượt quá kích thước tối đa
-                        equipments[num_equipments].schedule[i] = new char[9]; // Đảm bảo đủ kích thước cho chuỗi
-                        strncpy(equipments[num_equipments].schedule[i], kvp_schedule.value(), 9);
-                        i++;
+                        // Check if equipments array needs resizing
+                        if (num_equipments >= MAX_EQUIPMENTS) {
+                            Serial.println("Maximum number of equipments reached!");
+                            break;
+                        }
+
+                        // Store information in the equipments array
+                        equipments[num_equipments].schedule_size = scheduleSize;
+                        strncpy(equipments[num_equipments].id_sensor, id_sensor, sizeof(equipments[num_equipments].id_sensor));
+                        strncpy(equipments[num_equipments].id_bc, id_bc, sizeof(equipments[num_equipments].id_bc));
+                        equipments[num_equipments].schedule = new char*[scheduleSize];
+                        
+                        int j = 0;
+                        for (JsonPair kvp : schedule) {
+                            if (j >= scheduleSize) break;
+                            equipments[num_equipments].schedule[j] = new char[9];
+                            strncpy(equipments[num_equipments].schedule[j], kvp.value(), 9);
+                            j++;
+                        }
+                        num_equipments++;
                     }
-                    num_equipments++;
                 }
             }
-
-            // In thông tin các thiết bị sau khi lưu vào mảng
-            
         } else {
             Serial.println("Failed to parse JSON");
         }
@@ -277,7 +288,8 @@
     }
 
     http.end(); 
-  }   
+  }
+
 
 
 //region AUTO CONTROL
@@ -331,26 +343,41 @@
 
 //region MQTTX GET
 //region callBack
-  void callback(char* topic, byte* payload, unsigned int length) {
-  DynamicJsonDocument jsonBuffer(256);
-  deserializeJson(jsonBuffer, payload, length);
-  
-  // Xử lý dữ liệu JSON
-  for (JsonObject device : jsonBuffer["devices"].as<JsonArray>()) {
-    const char* device_id = device["id"];
-    const char* status = device["status"];
-    
-    // Điều khiển các chân GPIO tương ứng với thiết bị
-    if (strcmp(device_id, "device1") == 0) {
-      if (strcmp(status, "on") == 0) {
-        digitalWrite(D6, HIGH); // Bật chân D6
-      } else {
-        digitalWrite(D6, LOW); // Tắt chân D6
-      }
-    } else if (strcmp(device_id, "device2") == 0) {
-      // Tương tự với thiết bị khác
-    } else if (strcmp(device_id, "device3") == 0) {
-      // Tương tự với thiết bị khác
-    }
-  }
-  }
+  // void callback(char* topic, byte* payload, unsigned int length) {
+  // StaticJsonDocument<1024> doc;
+  // DeserializationError error = deserializeJson(doc, payload);
+  // for (JsonVariant v : doc.as<JsonArray>()) {
+  //     JsonObject obj = v.as<JsonObject>();
+  //     // Iterate through each key-value pair of the object
+  //     for (JsonPair kvp : obj) {
+  //         JsonObject equipment = kvp.value();
+  //         if (num_equipments >= array_capacity) {
+  //             // Mảng không đủ lớn, thêm một kích thước mới cho nó
+  //             array_capacity *= 2;
+  //             Equipment* new_equipments = new Equipment[array_capacity];
+  //             // Sao chép dữ liệu từ mảng cũ sang mảng mới
+  //             memcpy(new_equipments, equipments, num_equipments * sizeof(Equipment));
+  //             delete[] equipments;
+  //             equipments = new_equipments;
+  //         }
+
+  //         // Sao chép thông tin từ JSON vào mảng thiết bị
+  //         strncpy(equipments[num_equipments].id_sensor, equipment["id_sensor"], sizeof(equipments[num_equipments].id_sensor));
+  //         equipments[num_equipments].Mode = equipment["Mode"];
+  //         equipments[num_equipments].status = equipment["status"];
+
+  //         JsonObject schedule = equipment["schedule"];
+  //         equipments[num_equipments].schedule_size = std::min(schedule.size(), static_cast<size_t>(SCHEDULE_CAPACITY));
+  //         equipments[num_equipments].schedule = new char*[equipments[num_equipments].schedule_size];
+  //         int i = 0;
+  //         // Iterate through each schedule item
+  //         for (JsonPair kvp_schedule : schedule) {
+  //             if (i >= equipments[num_equipments].schedule_size) break; // Đảm bảo không vượt quá kích thước tối đa
+  //             equipments[num_equipments].schedule[i] = new char[9]; // Đảm bảo đủ kích thước cho chuỗi
+  //             strncpy(equipments[num_equipments].schedule[i], kvp_schedule.value(), 9);
+  //             i++;
+  //         }
+  //         num_equipments++; 
+  //     }
+  //   }
+  // }
