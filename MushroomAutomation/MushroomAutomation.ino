@@ -48,9 +48,9 @@
   Adafruit_SHT31 sht31;
   WiFiUDP ntpUDP;
   NTPClient timeClient(ntpUDP, ntpServer, ntpPort);
-  int autoControl0 = 0;
-  int autoControl1 = 0;
-  int autoControl2 = 0;
+  const char* autoMode0 = "0";
+  const char* autoMode1 = "0";
+  const char* autoMode2 = "0";
   float desiredTemperature = 25.0;
   float desiredHumidity0 = 60.0;
   float desiredHumidity1 = 60.0;
@@ -127,6 +127,10 @@
     // manageAutoControl();
     sendHelloMessage();
     client.loop();
+    Serial.print("autoMode 0: ");
+    Serial.println(autoMode0);
+    Serial.print("autoMode 1: ");
+    Serial.println(autoMode1);
     sendMQTTMessage();
     delay(1000);
   }
@@ -343,10 +347,10 @@
   void controlPump(int pumpIndex, int status) {
     if (status == 0) {
         digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), LOW);
-        Serial.println("Pump is OFF");
+        // Serial.println("Pump is OFF");
     } else if (status == 1) {
         digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), HIGH);
-        Serial.println("Pump is ON");
+        // Serial.println("Pump is ON");
     } else {
         Serial.println("Invalid status");
     }
@@ -354,37 +358,57 @@
 //region process
   void processAutoMode(const char* automode, int expect_value, int status, int count) {
     if (strcmp(automode, "0") == 0) { // Chế độ tự động
-      Serial.println("Chế độ tự động");
-      if (count == 0) {
-          desiredHumidity0 = expect_value;
-          autoControlMode(0, desiredHumidity0);
-      } else if (count == 1) {
-          desiredHumidity1 = expect_value;
-          autoControlMode(1, desiredHumidity1);
-      } else if (count == 2) {
-          desiredHumidity2 = expect_value;
-          autoControlMode(2, desiredHumidity2);
-      } else {
-          Serial.println("Số lượng không hợp lệ");
-      }
+        // Serial.println("Chế độ tự động");
+        switch (count) {
+            case 0:
+                autoMode0 = "0";
+                desiredHumidity0 = expect_value;
+                autoControlMode(0, desiredHumidity0);
+                break;
+            case 1:
+                autoMode1 = "0";
+                desiredHumidity1 = expect_value;
+                autoControlMode(1, desiredHumidity1);
+                break;
+            case 2:
+                autoMode2 = "0";
+                desiredHumidity2 = expect_value;
+                autoControlMode(2, desiredHumidity2);
+                break;
+            default:
+                // Serial.println("Số lượng không hợp lệ");
+                break;
+        }
     } else if (strcmp(automode, "1") == 0) { // Chế độ thủ công
-      Serial.println("Chế độ thủ công");
-      if (count == 0) {
-          controlPump(0, status);
-      } else if (count == 1) {
-          controlPump(1, status);
-      } else if (count == 2) {
-          controlPump(2, status);
-      } else {
-          Serial.println("Số lượng không hợp lệ");
-      }
+        // Serial.println("Chế độ thủ công");
+        switch (count) {
+            case 0:
+                controlPump(0, status);
+                desiredHumidity0 = expect_value;
+                autoMode0 = "1";
+                break;
+            case 1:
+                controlPump(1, status);
+                desiredHumidity0 = expect_value;
+                autoMode1 = "1";
+                break;
+            case 2:
+                controlPump(2, status);
+                desiredHumidity0 = expect_value;
+                autoMode2 = "1";
+                break;
+            default:
+                // Serial.println("Số lượng không hợp lệ");
+                break;
+        }
     } else if (strcmp(automode, "2") == 0) { // Chế độ hẹn giờ
-      Serial.println("Chế độ hẹn giờ");
-      // Bỏ qua vì không có yêu cầu về chế độ hẹn giờ
+        // Serial.println("Chế độ hẹn giờ");
+        // Bỏ qua vì không có yêu cầu về chế độ hẹn giờ
     } else {
-      Serial.println("Chế độ không hợp lệ");
+        // Serial.println("Chế độ không hợp lệ");
     }
-  }
+}
+
 
 //region connect wifi and sensor
   void connectToWiFi() {
@@ -421,13 +445,13 @@
       doc["equiment"]["equiment0"];
       doc["equiment"]["equiment0"]["id_bc"] = "BC0001";
       doc["equiment"]["equiment0"]["automode"] = "0";
-      doc["equiment"]["equiment0"]["expect_value"] = 65;
+      doc["equiment"]["equiment0"]["expect_value"] = 85;
       doc["equiment"]["equiment0"]["status"] = 0;
 
       doc["equiment"]["equiment1"];
-      doc["equiment"]["equiment1"]["id_bc"] = "BC0001";
+      doc["equiment"]["equiment1"]["id_bc"] = "BC0002";
       doc["equiment"]["equiment1"]["automode"] = "1";
-      doc["equiment"]["equiment1"]["expect_value"] = 65;
+      doc["equiment"]["equiment1"]["expect_value"] = 85;
       doc["equiment"]["equiment1"]["status"] = 1;
 
       // Chuyển đổi JSON thành chuỗi
@@ -436,7 +460,7 @@
 
       // Gửi chuỗi JSON lên MQTT
       client.publish(mqtt_topic_hello, jsonBuffer);
-      Serial.println("send succeed");
+      // Serial.println("send succeed");
     }
   }
   void sendMQTTMessage() {
@@ -458,10 +482,14 @@
 
       // Thêm dữ liệu từ equipments[i] vào đối tượng thiết bị hiện tại
       currentEquipment["id_bc"] = equipments[i].id_bc;
-
-      // Sử dụng mảng autoControl để thiết lập automode
-      int autoControl = (i == 0) ? autoControl0 : ((i == 1) ? autoControl1 : autoControl2);
-      currentEquipment["automode"] = autoControl;  
+      const char* autoMode;
+      // Sử dụng mảng autoMode để thiết lập automode
+      autoMode = (i == 0) ? autoMode0 : ((i == 1) ? autoMode1 : autoMode2);
+      Serial.print("autoMode ");
+      Serial.print(i);
+      Serial.print(": ");
+      Serial.println(autoMode);
+      currentEquipment["automode"] = autoMode;  
 
       // Sử dụng một câu lệnh switch-case để xác định thiết bị và thiết lập giá trị mong muốn và trạng thái
       switch (i) {
@@ -490,12 +518,12 @@
     // Gửi thông báo đã được ký tự hóa JSON đến chủ đề MQTT
     bool messageSent = client.publish(mqtt_topic_send, jsonBuffer);
     if (messageSent) {
-      Serial.println("Thành công khi gửi tin nhắn MQTT!");
+      // Serial.println("Thành công khi gửi tin nhắn MQTT!");
     } else {
-      Serial.println("Không thể gửi tin nhắn MQTT!");
+      // Serial.println("Không thể gửi tin nhắn MQTT!");
     }
   } else {
-    Serial.println("Không kết nối được với máy chủ MQTT!");
+    // Serial.println("Không kết nối được với máy chủ MQTT!");
   }
 }
 
@@ -507,9 +535,9 @@
 //region MQTTX GET
 //region callBack
   void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
+  // Serial.print("Message arrived [");
+  // Serial.print(topic);
+  // Serial.print("] ");
 
   // Parse JSON
   StaticJsonDocument<200> doc;
@@ -527,13 +555,13 @@
     Serial.println("correct id");
     // Lấy dữ liệu về thiết bị
     JsonObject equiments = doc["equiment"];
-    
+    int count = 0;
     // Duyệt qua từng thiết bị
     for (JsonPair equiment : equiments) {
-      int count = 0;
+     
       const char* equimentId = equiment.key().c_str();
-      Serial.print("Equiment ID: ");
-      Serial.println(equimentId);
+      // Serial.print("Equiment ID: ");
+      // Serial.println(equimentId);
       
       // Truy cập thông tin của từng thiết bị
       JsonObject equimentData = equiment.value();
@@ -543,19 +571,12 @@
       int status = equimentData["status"];
 
       // Xử lý dữ liệu của thiết bị
-      Serial.print("ID_BC: ");
-      Serial.println(id_bc);
-      Serial.print("Automode: ");
-      Serial.println(automode);
-      Serial.print("Expect Value: ");
-      Serial.println(expect_value);
-      Serial.print("Status: ");
-      Serial.println(status);
-       Serial.print("count: ");
+      Serial.println("automode ");
       Serial.println(count);
-      Serial.println("--------------------");
-
+      Serial.println("get ve la: ");
+      Serial.println(automode);
      processAutoMode(automode, expect_value, status, count);
+     count++;
     }
   }
   }
