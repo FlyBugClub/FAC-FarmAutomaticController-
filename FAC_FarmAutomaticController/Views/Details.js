@@ -8,11 +8,13 @@ import {
   Image,
   Alert,
   Switch,
+  Button,
   ScrollView,
   StatusBar,
   SafeAreaView,
   Dimensions,
   Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
@@ -24,15 +26,15 @@ import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 import * as Notifications from "expo-notifications";
 import { thresholdFreedmanDiaconis } from "d3";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import init from "react_native_mqtt";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import init from 'react_native_mqtt';
 
 init({
   size: 10000,
   storageBackend: AsyncStorage,
   defaultExpires: 1000 * 3600 * 24,
   enableCache: true,
-  sync: {},
+  sync : {}
 });
 // const options = {
 //   host: 'broker.emqx.io',
@@ -41,15 +43,12 @@ init({
 //   id: 'id_' + parseInt(Math.random()*100000)
 // };
 const options = {
-  host: "d77ae1842ab3462d947a50556d8d9ed7.s1.eu.hivemq.cloud",
+  host: 'd77ae1842ab3462d947a50556d8d9ed7.s1.eu.hivemq.cloud',
   port: 8884,
-  path: "/mqtts",
-  id: "id_" + parseInt(Math.random() * 100000),
+  path: '/mqtts',
+  id: 'id_' + parseInt(Math.random()*100000)
 };
-client = new Paho.MQTT.Client(
-  "wss://d77ae1842ab3462d947a50556d8d9ed7.s1.eu.hivemq.cloud:8884/mqtt",
-  "i"
-);
+client = new Paho.MQTT.Client("wss://d77ae1842ab3462d947a50556d8d9ed7.s1.eu.hivemq.cloud:8884/mqtt","i");
 let isFunctionRunning = false;
 var flag = false;
 var flag_mqtt = true;
@@ -65,15 +64,16 @@ const chartConfig = {
   useShadowColorFromDataset: true, // optional
   decimalPlaces: 0, // Số lượng chữ số thập phân
   fromZero: true,
+  
 };
 
 const screenWidth = Dimensions.get("window").width;
 
-export default class Details extends Component {
+export default class Details extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      status_mqtt: "disconnected",
+      status_mqtt: 'disconnected',
       statusManual: false,
       statusAuto: false,
       isEnabled: false,
@@ -85,24 +85,24 @@ export default class Details extends Component {
         datasets: [
           {
             data: [0],
-          },
+          }
         ],
         legend: ["Loading"], // optional
       },
       switchStates: [],
       slidebar: [],
       sliderValue: [],
-      name_bc: [],
+      name_bc:[],
       timelist: [],
       buttonTime: [],
       buttonaddtime: [],
       TimerList: [],
-      switchAll: [false, false, false],
-      index_time: 0,
+      switchAll: [false,false,false],
+      index_time : 0,
       topic: "tr6r/cuong",
       modalVisible: [],
       settingTimeModal: false,
-      subscribedTopic: "tr6r/cuong",
+      subscribedTopic:"tr6r/cuong",
       //DateTime
       dateTime: new Date(),
       showPicker: false,
@@ -126,10 +126,11 @@ export default class Details extends Component {
     client.onMessageArrived = this.onMessageArrived;
   }
 
+
   static contextType = MyContext;
   HistoryPage = () => {
     // console.log("HistoryPage");
-
+    
     this.props.navigation.navigate("History"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
@@ -144,12 +145,14 @@ export default class Details extends Component {
     this.props.navigation.navigate("DateTime"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
-  sendMessage = () => {
-    const { sliderValue, switchStates } = this.state;
+
+  sendMessage = () =>{
+    const {sliderValue,switchStates} = this.state
     const { dataArray } = this.context;
     // console.log(switchStates)
     var Data = {};
-
+    
+    
     // Data["id_esp"] = dataArray[1]["id_esp"];
     for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++)
     {
@@ -178,35 +181,18 @@ export default class Details extends Component {
       }
       Data["equipment"+i.toString()] = equipment;
 
-      if (switchStates[i][0] === true) {
-        equipment["status"] = 1;
-        equipment["automode"] = 0;
-      } else if (switchStates[i][1] === true) {
-        equipment["status"] = 0;
-        equipment["automode"] = 1;
-      } else if (switchStates[i][2] === true) {
-        equipment["status"] = 0;
-        equipment["automode"] = 2;
-      } else if (
-        switchStates[i][0] === false &&
-        switchStates[i][0] === false &&
-        switchStates[i][0] === false
-      ) {
-        equipment["status"] = 0;
-        equipment["automode"] = 0;
-      }
-      Data["equipment" + i.toString()] = equipment;
     }
     // console.log(Data)
-    if (this.state.status_mqtt === "connected") {
+    if (this.state.status_mqtt === "connected") 
+    {
       // console.log(JSON.stringify(Data))
-      const jsonString = JSON.stringify(Data);
-      var message = new Paho.MQTT.Message(jsonString);
-      message.destinationName = this.state.subscribedTopic;
+      const jsonString = JSON.stringify(Data); 
+      var message = new Paho.MQTT.Message(jsonString); 
+      message.destinationName = this.state.subscribedTopic; 
       client.send(message);
       // console.log("oks")
     }
-  };
+  }
 
   componentDidMount() {
     flag = false;
@@ -216,10 +202,11 @@ export default class Details extends Component {
      this.intervalId = setInterval(() => {
       // Thực hiện các hành động bạn muốn lặp lại sau mỗi 3 giây ở đây
       // Ví dụ: Gọi hàm kiểm tra trạng thái
-
+      
       this.getvalue();
   }, 3000);
   }
+
 
   async schedulePushNotification() {
     await Notifications.scheduleNotificationAsync({
@@ -232,6 +219,7 @@ export default class Details extends Component {
     });
     console.log("hello email");
   }
+
 
   // connect = () => {
   //   if (this.state.status_mqtt !== "isFetching")
@@ -251,166 +239,182 @@ export default class Details extends Component {
   // }
 
   onConnect = () => {
-    console.log("onConnect");
+    console.log('onConnect');
     this.subscribeTopic();
     flag = true;
-    this.setState({ status_mqtt: "connected" });
-  };
+    this.setState({ status_mqtt: 'connected' });
+  }
 
   connect = () => {
-    if (this.state.status_mqtt !== "connected") {
-      this.setState({ status_mqtt: "isFetching" }, () => {
+    if (this.state.status_mqtt !== "connected")
+    {
+    this.setState(
+      { status_mqtt: 'isFetching' },
+      () => {
         client.connect({
           userName: "cuong",
           password: "11111111",
           useSSL: false,
           onSuccess: this.onConnect,
           timeout: 3,
-          onFailure: this.onFailure,
+          onFailure: this.onFailure
         });
-      });
-    }
-  };
-
+      }
+    );
+  }
+    
+  }
+  
   onFailure = (err) => {
-    console.log("Connect failed!");
+    console.log('Connect failed!');
     console.log(err);
     flag = true;
-    this.setState({ status_mqtt: "fail" }, () => {
-      this.connect();
-    });
-
+    this.setState(
+      { status_mqtt: 'fail' },
+      () => {
+        this.connect();
+      }
+    );
+    
     // this.setState({ status: '', subscribedTopic: '' });
-  };
-
+    
+  }
+ 
   subscribeTopic = () => {
-    client.subscribe(this.state.topic, { qos: 0 });
-    console.log("ok");
-  };
+        client.subscribe(this.state.topic, { qos: 0 });
+        console.log("ok")
+  }
 
-  onConnectionLost = (responseObject) => {
+
+  onConnectionLost=(responseObject)=>{
     if (responseObject.errorCode !== 0 && responseObject !== null) {
-      console.log("onConnectionLost:" + responseObject.errorMessage);
+      console.log('onConnectionLost:' + responseObject.errorMessage);
     }
     flag = true;
     flag_mqtt = true;
     // console.log("lalalala")
-    this.setState({ status_mqtt: "disconnected" }, () => {
-      console.log("reconnect");
-      this.onConnect();
-    });
-  };
+    this.setState({ status_mqtt: 'disconnected' },()=>{ console.log("reconnect");this.onConnect();});
+   
+  }
 
+ 
   toogle1in3 = (setIndex, buttonIndex) => {
-    const { sliderValue } = this.state;
-    this.setState(
-      (prevState) => {
-        const updatedButtonSets = prevState.switchStates.map((set, i) => {
-          if (i === setIndex) {
-            return set.map((btn, j) => (j === buttonIndex ? !btn : false));
-          } else {
-            return set;
-          }
-        });
+    const {sliderValue} = this.state;
+    this.setState(prevState => {
+      const updatedButtonSets = prevState.switchStates.map((set, i) => {
+        if (i === setIndex) {
+          return set.map((btn, j) => (j === buttonIndex ? !btn : false));
+        } else {
+          return set;
+        }
+      });
 
-        flag = true;
-        return { switchStates: updatedButtonSets };
-      },
-      () => {
+      
+      flag = true;
+      return { switchStates: updatedButtonSets };
+    }, () => {
         // Hàm callback này sẽ được gọi sau khi state đã được cập nhật.
         this.sendMessage();
-      }
-    );
-  };
+    });
+  }
+
+
 
   toogleall = (index) => {
-    this.setState((prevState) => {
-      const updatedButtons = prevState.switchAll.map((_, i) =>
-        i === index ? true : false
-      );
+    
+    this.setState(prevState => {
+      const updatedButtons = prevState.switchAll.map((_, i) => (i === index ? true : false));
       return { switchAll: updatedButtons };
     });
   };
 
-  handleSliderChange = (index, value) => {
-    flag = true;
-    this.setState((prevState) => {
+
+   handleSliderChange = (index,value) => {
+    flag = true
+    this.setState(prevState => {
       const newValues = [...prevState.sliderValue];
-      newValues[index] = parseInt(value);
+      newValues[index] = parseInt(value) ;
       return { sliderValue: newValues };
     });
   };
 
-  handleSliderComplete = (index, value) => {
+
+  handleSliderComplete = (index,value) => {
     // Khi người dùng kết thúc việc điều chỉnh slider, bạn có thể lấy giá trị ở đây
-    flag = true;
-    this.setState(
-      (prevState) => {
-        const newValues = [...prevState.sliderValue];
-        newValues[index] = parseInt(value);
-        return { sliderValue: newValues };
-      },
-      () => {
-        // Hàm callback này sẽ được gọi sau khi state đã được cập nhật.
-        this.sendMessage();
-      }
-    );
+    flag = true
+    this.setState(prevState => {
+      const newValues = [...prevState.sliderValue];
+      newValues[index] = parseInt(value) ;
+      return { sliderValue: newValues };
+    }, () => {
+      // Hàm callback này sẽ được gọi sau khi state đã được cập nhật.
+      this.sendMessage();
+  }
+  );
   };
 
+
   setbarvalue = (index) => {
-    this.setState((prevState) => {
-      const updatedButtons = prevState.switchAll.map((_, i) =>
-        i === index ? true : false
-      );
+    
+    this.setState(prevState => {
+      const updatedButtons = prevState.switchAll.map((_, i) => (i === index ? true : false));
       return { switchAll: updatedButtons };
     });
   };
 
+
   //Set Modal View
   setModalVisible = (index) => {
     flag = true;
-    // Tạo một bản sao của mảng switchStates để tránh thay đổi trực tiếp vào state
-    const updatedSwitchStates = [...this.state.modalVisible];
-
-    // Đảo ngược giá trị của phần tử tại chỉ số index
-    updatedSwitchStates[index] = !updatedSwitchStates[index];
-
-    // Cập nhật state với mảng đã được thay đổi
-    this.setState({ modalVisible: updatedSwitchStates });
+      // Tạo một bản sao của mảng switchStates để tránh thay đổi trực tiếp vào state
+      const updatedSwitchStates = [...this.state.modalVisible];
+  
+      // Đảo ngược giá trị của phần tử tại chỉ số index
+      updatedSwitchStates[index] = !updatedSwitchStates[index];
+  
+      // Cập nhật state với mảng đã được thay đổi
+      this.setState({ modalVisible: updatedSwitchStates });
   };
 
-  RemoveTime = async (index, indextime) => {
-    const { timelist } = this.state;
-    const { dataArray } = this.context;
+
+  RemoveTime = async (index,indextime) => {
+    const {timelist} = this.state;
+    const {dataArray}= this.context;
 
     flag = true;
-    // Tạo một bản sao của mảng switchStates để tránh thay đổi trực tiếp vào state
+      // Tạo một bản sao của mảng switchStates để tránh thay đổi trực tiếp vào state
     // console.log(timelist[index][indextime])
-    const url = apiUrl + "equipment";
-    let result = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id_equipment: dataArray[1]["bc"][index]["id_bc"],
-        times_offset: 5,
-        times: timelist[index][indextime],
-      }),
-    });
-    result = await result.json();
-    if (result) {
-      if (result == "Delete success") {
-        console.log("ok");
-        timelist[index].splice(1, indextime);
-        this.getvalueequipment();
-      } else {
-        console.log("not ok");
-        this.getvalueequipment();
-      }
-    }
+    const url = apiUrl + "equipment"
+        let result = await fetch(url, {
+          method: 'DELETE',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                              "id_equipment" : dataArray[1]["bc"][index]["id_bc"],
+                              "times_offset" : 5,
+                              "times":timelist[index][indextime]
+                        }),
+                  });
+                        result = await result.json();
+                        if (result)
+                        {
+                            if(result == "Delete success")
+                            {
+                              console.log("ok")
+                              timelist[index].splice(1,indextime);
+                              this.getvalueequipment()
+                            }
+                            else 
+                           {
+                            console.log("not ok")
+                            this.getvalueequipment()
+                            }    
+                        }
   };
+
+
 
   setSettingTimeModalVisible = (visible) => {
     flag = true;
@@ -425,55 +429,59 @@ export default class Details extends Component {
     this.setState({ index_time: index });
     this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
   };
-
-  onChange = async (event) => {
-    const { index_time } = this.state;
-    const { dataArray } = this.context;
-
+  
+  onChange = async(event) => {
+    const {index_time} = this.state;
+    const {dataArray}= this.context;
+    
     if (event.type === "set") {
       if (Platform.OS === "android") {
+        
         const selectedTime = new Date(event["nativeEvent"]["timestamp"]);
-
-        console.log(dataArray[1]["bc"][index_time]["id_bc"]);
-        const formattedTime = `${selectedTime.getHours()}:${selectedTime.getMinutes()}:${selectedTime.getSeconds()}.000`;
-        const url = apiUrl + "schedules";
+        
+        console.log(dataArray[1]["bc"][index_time]["id_bc"])
+        const formattedTime = `${selectedTime.getHours()}:${selectedTime.getMinutes()}:${selectedTime.getSeconds()}.000`;   
+        const url = apiUrl + "schedules"
         let result = await fetch(url, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id_equipment: dataArray[1]["bc"][index_time]["id_bc"],
-            times_offset: 5,
-            times: formattedTime,
-          }),
-        });
-        result = await result.json();
-        if (result) {
-          flag = true;
-          if (result == "add time success") {
-            console.info("add time success");
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                              "id_equipment" : dataArray[1]["bc"][index_time]["id_bc"],
+                              "times_offset" : 5,
+                              "times":formattedTime
+                        }),
+                  });
+                        result = await result.json();
+                        if (result)
+                        {
+                          flag = true;
+                            if(result == "add time success")
+                            {
+                              console.info("add time success")
 
-            this.getvalueequipment();
-            this.setState((prevState) => ({
-              showPicker: !prevState.showPicker,
-            }));
-          } else if (result == "this time is already add") {
-            console.warn("this time is already add");
-            this.setState((prevState) => ({
-              showPicker: !prevState.showPicker,
-            }));
-          } else {
-            console.warn("cuong");
-            this.setState({ msg: "some thing is wrong" });
-          }
-        }
+                              this.getvalueequipment()
+                              this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
+                            }
+                            else if (result == "this time is already add")
+                            {
+                                console.warn("this time is already add")
+                                this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
+                            }
+                            else  {
+                              console.warn("cuong");
+                              this.setState({ msg: "some thing is wrong" }); 
+                            }    
+                        }
       }
     } else {
       this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
+
     }
   };
+
 
   getvalue = async () => {
     if (!isFunctionRunning) {
@@ -516,35 +524,23 @@ export default class Details extends Component {
         let key = dataArray[1]["sensor"][i]["id_dht"];
         jsonObject[key] = value;
       }
-      const json = await response.json();
-      // console.log(json[0])
-      // console.log("______________________________")
-      for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
-        id_check.push(json[0]["combo" + i.toString()]["DHT"]["id"]);
-        id_check.push(json[0]["combo" + i.toString()]["PH"]["id"]);
+      else if (dataArray[1]["sensor"][i].hasOwnProperty("name_ph"))
+      {
+        let  value = dataArray[1]["sensor"][i]["name_ph"];
+        let key  = dataArray[1]["sensor"][i]["id_ph"];
+        jsonObject[key] = value;
       }
     }
 
-      for (let i = 0; i < newlegend.length; i++) {
-        if (jsonObject.hasOwnProperty(newlegend[i])) {
-          newlegend[i] = jsonObject[newlegend[i]];
-        }
-      }
-      // console.log(json[0]);
 
     newlegend = id_check.filter((item, index) => id_check.indexOf(item) === index);
     for (let i = 0; i < newlegend.length; i++) {
       if (jsonObject.hasOwnProperty(newlegend[i])) {
         newlegend[i] = jsonObject[newlegend[i]];
       }
-      // console.log("SAD")
-      // console.log("______________________________")
-      // console.log(datelist)
-      datelist.sort((a, b) => new Date(b) - new Date(a));
-      let dateTimebegin = new Date(datelist[0]);
-      let dateTimeend = new Date(datelist[datelist.length - 1]);
 
-      // console.log(dateTimeend)
+    }
+    // console.log(json[0]);
 
 
     var datelist = [];
@@ -568,10 +564,10 @@ export default class Details extends Component {
     let dateTimeend   = new Date(datelist[datelist.length - 1]);
     
 
-      let hoursen = dateTimeend.getHours();
-      let minutesen = dateTimeend.getMinutes();
-      let secondsen = dateTimeend.getSeconds();
-      // console.log(`Thời gian: ${hours}:${minutes}:${seconds}`);
+    // Lấy thời gian từ đối tượng Date
+    let hoursbe = dateTimebegin.getHours();
+    let minutesbe = dateTimebegin.getMinutes(); 
+    let secondsbe = dateTimebegin.getSeconds();
 
     let hoursen = dateTimeend.getHours();
     let minutesen = dateTimeend.getMinutes(); 
@@ -594,8 +590,7 @@ export default class Details extends Component {
       ["255, 0, 0",     // Màu cho dataset 4 (màu đỏ)
       "0, 255, 0"]     // Màu cho dataset 6 (màu xanh dương)
     ];
-
-
+    
     // console.log(sum_sensor/2)
     for (let i = 0; i < (sum_sensor/2); i++) {
       let valuedht = [];
@@ -649,8 +644,12 @@ export default class Details extends Component {
     }
   };
 
-  onMessageArrived = (message) => {
-    console.log(message.payloadString);
+
+  onMessageArrived = (message )=> {
+    
+      console.log(message.payloadString);
+
+    
 
     // var jsonString = message.payloadString;
     // const keyValuePairs = jsonString.slice(1, -1).split(',');
@@ -662,15 +661,17 @@ export default class Details extends Component {
     //   globalVariable = value;
     //  }
     // });
-  };
+  }
+
 
   getvalueequipment = async () => {
+  
     const { dataArray } = this.context;
-
+    
     const url = apiUrl + `getvalueequipment/${dataArray[1]["id_esp"]}`;
-
+    
     const response = await fetch(url);
-    if (!response.ok) {
+    if (!response.ok ) {
       this.setState({ msg: "error" });
       return;
     }
@@ -690,12 +691,12 @@ export default class Details extends Component {
       newSwitchStates2.push(false);
       newSwitchStates2.push(false);
       newSwitchStates2.push(false);
-      newSwitchStates.push(newSwitchStates2);
+      newSwitchStates.push(newSwitchStates2)
       if (Object.keys(json[0][i]["schedule"]).length === 0) {
-        gettimelist.push([]);
+        gettimelist.push([])
       } else {
         Object.values(json[0][i]["schedule"]).forEach((obj, index) => {
-          time.push(obj["time"]);
+          time.push(obj["time"])
         });
         time.sort((a, b) => {
           // Chuyển đổi chuỗi thời gian thành giờ số để so sánh
@@ -703,18 +704,19 @@ export default class Details extends Component {
           const timeB = new Date(`1970-01-01T${b}`);
           return timeA - timeB;
         });
-        gettimelist.push(time);
-      }
-      buttonTime.push(false);
-      modalVisible.push(false);
-      TimerList.push([]);
-      slidebarvalue.push(50);
-      value.push(50);
-      name_bc.push(json[0][i]["name"]);
+        gettimelist.push(time)
+        
+      } 
+      buttonTime.push(false)
+      modalVisible.push(false)
+      TimerList.push([])
+      slidebarvalue.push(50)
+      value.push(50)
+      name_bc.push(json[0][i]["name"])
     }
-    this.setState({ TimerList: [] });
-    this.setState({ modalVisible: modalVisible });
-    this.setState({ buttonTime: buttonTime });
+    this.setState({ TimerList: [] })
+    this.setState({ modalVisible: modalVisible })
+    this.setState({ buttonTime: buttonTime })
     this.setState({ name_bc: name_bc });
     this.setState({ timelist: gettimelist });
     this.setState({ sliderValue: value });
@@ -723,22 +725,23 @@ export default class Details extends Component {
     this.setState({ switchStates: newSwitchStates });
   };
 
+
   //Picker
   async onValueChangeCat(value) {
     flag = true;
     // console.log(value)
     this.setState({ selecedCat: value });
   }
+  
 
   render() {
     const { dataArray } = this.context;
     //Switch
-    const { switchStates, switchAll } = this.state;
-    const { datachart, status_mqtt } = this.state;
+    const {switchStates ,switchAll} = this.state;
+    const { datachart,status_mqtt } = this.state;
 
     //API
-    const { TimerList, name_bc, timelist, sliderValue, isEnabled, buttonTime } =
-      this.state;
+    const { TimerList,name_bc,timelist,sliderValue, isEnabled,buttonTime } =this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
@@ -752,17 +755,18 @@ export default class Details extends Component {
       console.log("heheacuong")
       
     }
-
+    
     const deviceList = [];
-    if (flag) {
+    if (flag)
+    {
       flag = false;
       [...Array(dataArray[1]["bc"]["sl"])].forEach((_, index) => {
         // console.log(showPicker)
         var timeComponents = [];
-
+      
         for (let i = 0; i < timelist[index].length; i++) {
           const time = timelist[index][i];
-
+     
           timeComponents.push(
             <Text
               key={i}
@@ -776,17 +780,16 @@ export default class Details extends Component {
           );
         }
         var time = [];
-
+       
         [...Array(timelist[index].length)].forEach((_, indextime) => {
+          
           time.push(
-            <View key={indextime.toString() + index.toString()}>
+            <View key={indextime.toString()+index.toString()}>
               <View style={styles.timeArea}>
-                <Text style={styles.timeText}>
-                  {timelist[index][indextime]}
-                </Text>
+                <Text style={styles.timeText}>{timelist[index][indextime]}</Text>
                 <View style={{ flexDirection: "row" }}>
-                  <TouchableOpacity
-                    onPress={() => this.RemoveTime(index, indextime)}
+                  <TouchableOpacity 
+                  onPress={() => this.RemoveTime(index,indextime)}
                   >
                     <Image
                       source={require("../assets/img/remove.png")}
@@ -806,29 +809,29 @@ export default class Details extends Component {
             </View>
           );
         });
-        TimerList.push(time);
-
+        TimerList.push(time)
+        
         deviceList.push(
           <View style={styles.optionArea} key={index}>
             <Text style={styles.titleDevice}>{name_bc[index]}</Text>
             <View style={{}}>
               <View style={styles.function}>
-                <Text>{i18next.t("Custom")}</Text>
+                <Text>Custom</Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
-                  onValueChange={() => this.toogle1in3(index, 0)}
+                  onValueChange={() => this.toogle1in3(index,0)}
                   value={switchStates[index][0]}
                   style={{}}
                 />
-
-                <Text>{i18next.t("Auto")}</Text>
+                
+                <Text>Auto</Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
-                  onValueChange={() => this.toogle1in3(index, 1)}
+                  onValueChange={() => this.toogle1in3(index,1)}
                   value={switchStates[index][1]}
                   style={{}}
                 />
@@ -837,23 +840,19 @@ export default class Details extends Component {
                   minimumValue={50}
                   maximumValue={95}
                   value={sliderValue[index]}
-                  onValueChange={(value) =>
-                    this.handleSliderChange(index, value)
-                  }
-                  onSlidingComplete={(value) =>
-                    this.handleSliderComplete(index, value)
-                  }
+                  onValueChange={(value) => this.handleSliderChange(index, value)}
+                  onSlidingComplete={(value) => this.handleSliderComplete(index, value)}
                   minimumTrackTintColor={"#81BB4D"}
                 />
                 <Text>{sliderValue[index]}%</Text>
               </View>
               <View style={styles.function}>
-                <Text>{i18next.t("Timer")}</Text>
+                <Text>Timer</Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
-                  onValueChange={() => this.toogle1in3(index, 2)}
+                  onValueChange={() => this.toogle1in3(index,2)}
                   value={switchStates[index][2]}
                   style={{ marginLeft: 11 }}
                 />
@@ -862,11 +861,7 @@ export default class Details extends Component {
                   showsHorizontalScrollIndicator={false}
                   style={[
                     styles.timer,
-                    {
-                      backgroundColor: switchStates[index][2]
-                        ? "white"
-                        : "#D9D9D9",
-                    },
+                    { backgroundColor: switchStates[index][2] ? "white" : "#D9D9D9" },
                   ]}
                 >
                   <TouchableOpacity
@@ -902,17 +897,17 @@ export default class Details extends Component {
                           }}
                         />
                       </TouchableOpacity>
-
+  
                       <ScrollView showsVerticalScrollIndicator={false}>
                         {TimerList[index]}
                       </ScrollView>
                     </View>
                   </View>
                 </Modal>
-                <TouchableOpacity
-                  style={styles.btnPlus}
-                  onPress={() => this.toggleDatePicker(index)}
-                >
+                  <TouchableOpacity
+                    style={styles.btnPlus}
+                    onPress={() => this.toggleDatePicker(index)}
+                  >
                   <Image
                     source={require("../assets/img/plus.png")}
                     style={styles.plusIcon}
@@ -924,9 +919,13 @@ export default class Details extends Component {
           </View>
         );
       });
+      
+
     }
+   
 
     return (
+      
       <View style={styles.container}>
         <StatusBar backgroundColor="#2BA84A" />
         <LinearGradient
@@ -964,7 +963,7 @@ export default class Details extends Component {
               verticalLabelRotation={0}
               chartConfig={chartConfig}
               style={{ marginTop: 20 }}
-              yAxisSuffix="%"
+              yAxisSuffix='%'
               bezier
             />
           </TouchableOpacity>
@@ -1007,7 +1006,9 @@ export default class Details extends Component {
                   <Text style={styles.titleNote}>
                     {i18next.t("All control")}
                   </Text>
-                  <View style={styles.optionArea}></View>
+                  <View style={styles.optionArea}>
+                  
+                  </View>
                 </View>
               )}
               {this.state.selecedCat === "Independence" && (
