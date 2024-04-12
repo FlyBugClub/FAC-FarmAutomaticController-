@@ -47,9 +47,13 @@
   Adafruit_SHT31 sht31;
   WiFiUDP ntpUDP;
   NTPClient timeClient(ntpUDP, ntpServer, ntpPort);
-  bool autoControl = true;
+  int autoControl0 = 0;
+  int autoControl1 = 0;
+  int autoControl2 = 0;
   float desiredTemperature = 25.0;
-  float desiredHumidity = 60.0;
+  float desiredHumidity0 = 60.0;
+  float desiredHumidity1 = 60.0;
+  float desiredHumidity2 = 60.0;
   unsigned long lastSprayTime = 0;
   bool wifiConnected = false;
   int pumpActivationCount = 0;
@@ -319,31 +323,51 @@
   }
 
 //region AUTO CONTROL
-  void manageAutoControl() {
-    if (autoControl) {
-      autoControlMode(desiredTemperature, desiredHumidity);
+  void autoControlMode(int pumpIndex, float humidity) {
+    float currentHumidity = sht31.readHumidity();
+    unsigned long currentMillis = millis();
+
+    if (currentHumidity < humidity && currentMillis - lastSprayTime[pumpIndex] >= sprayInterval) {
+      digitalWrite(pumpPin[pumpIndex], HIGH);
+      lastSprayTime[pumpIndex] = currentMillis;
+      delay(2000);
+      digitalWrite(pumpPin[pumpIndex], LOW);
+    } else {
+      digitalWrite(pumpPin[pumpIndex], LOW);
     }
   }
 
-  // void autoControlMode(float& temperature, float& humidity) {
-  //   float currentHumidity = sht31.readHumidity();
-  //   unsigned long currentMillis = millis();
-
-  //   if (currentHumidity < humidity && currentMillis - lastSprayTime >= sprayInterval) {
-  //     digitalWrite(pumpPin, HIGH);
-  //     lastSprayTime = currentMillis;
-  //     delay(2000);
-  //     digitalWrite(pumpPin, LOW);
-  //   } else {
-  //     digitalWrite(pumpPin, LOW);
-  //   }
-  // }
 //region mannualControl
-  void controlPump(int pumpPin, bool status) {
-    digitalWrite(pumpPin, status ? HIGH : LOW);
-    Serial.print("Pump is ");
-    Serial.println(status ? "ON" : "OFF");
+  void controlPump(int pumpIndex, int status) {
+  if (status == 0) {
+    digitalWrite(pumpPin[pumpIndex], LOW);
+    Serial.println("Pump is OFF");
+  } else if (status == 1) {
+    digitalWrite(pumpPin[pumpIndex], HIGH);
+    Serial.println("Pump is ON");
+  } else {
+    Serial.println("Invalid status");
   }
+}
+//region process
+  void processAutoMode(const char* automode, int expect_value, int status, int count) {
+    if (strcmp(automode, "0") == 0) { // Chế độ tự động
+      Serial.println("Auto mode");
+      desiredHumidity[count] = expect_value;
+      autoControlMode(count, desiredHumidity[count]);
+
+    } else if (strcmp(automode, "1") == 0) { // Chế độ manual
+      Serial.println("Manual mode");
+      controlPump(count, status)
+
+    } else if (strcmp(automode, "2") == 0) { // Chế độ hẹn giờ
+      Serial.println("Timer mode");
+      // Bỏ qua vì không có yêu cầu về chế độ hẹn giờ
+    } else {
+      Serial.println("Invalid mode");
+    }
+  }
+
 //region connect wifi and sensor
   void connectToWiFi() {
   // Khởi tạo WiFiManager
@@ -418,12 +442,13 @@
   // Kiểm tra id_esp
   const char* id_esp = doc["id_esp"];
   if (strcmp(id_esp, id_sensor) == 0) {
+    Serial.println("correct id");
     // Lấy dữ liệu về thiết bị
-    Serial.println("corret id");
     JsonObject equiments = doc["equiment"];
     
     // Duyệt qua từng thiết bị
     for (JsonPair equiment : equiments) {
+      int count = 0
       const char* equimentId = equiment.key().c_str();
       Serial.print("Equiment ID: ");
       Serial.println(equimentId);
@@ -435,7 +460,7 @@
       int expect_value = equimentData["expect_value"];
       int status = equimentData["status"];
 
-      // Xử lý dữ liệu của thiết bị tại đây
+      // Xử lý dữ liệu của thiết bị
       Serial.print("ID_BC: ");
       Serial.println(id_bc);
       Serial.print("Automode: ");
@@ -444,7 +469,11 @@
       Serial.println(expect_value);
       Serial.print("Status: ");
       Serial.println(status);
+       Serial.print("count: ");
+      Serial.println(count);
       Serial.println("--------------------");
+
+     processAutoMode(automode, expect_value,status, count)
     }
   }
   }
