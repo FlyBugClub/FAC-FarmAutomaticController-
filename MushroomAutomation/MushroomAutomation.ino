@@ -106,17 +106,9 @@
     String formattedDateTime;
     getCurrentDateTime(formattedDateTime);
     getAndParseAPI("/api/getvalueesp/ESP0001");
- 
-    Serial.println("num_equipments:");
-    Serial.println(num_equipments);
-    for (int i = 0; i < num_equipments; i++) {
-        for (int j = 0; j < equipments[i].schedule_size; j++) {
-            Serial.println(equipments[i].schedule[j]);
-        }
-    }
             
-    // countPumpActivations(formattedDateTime);
-    // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
+    countPumpActivations(formattedDateTime);
+    postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
     
     
     // manageAutoControl();
@@ -412,8 +404,7 @@
         controlPump(count, LOW); // Tắt bơm
         isPumpActive = false; // Đánh dấu rằng bơm đã được tắt
     }
-}
-
+  }
 
 
 //region process
