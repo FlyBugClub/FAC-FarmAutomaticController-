@@ -15,14 +15,76 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import i18next, { languageResources } from "../services/i18next";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import apiUrl from "../apiURL";
+import MyContext from "../DataContext.js";
+
 
 export default class AddFarmForm extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      id_esp: "",
+      name_esp:"",
+      descript:"",
+      msg:""
+    };
+  }
+  static contextType = MyContext;
+
   OpenCamera = () => {
     console.log("Open Camera");
     this.props.navigation.navigate("CameraCreateNewFarmHouse");
   };
 
+
+  componentDidMount() {
+    const { route } = this.props;
+    const { id_esp } = route.params || {};
+    this.setState({ id_esp: id_esp });
+  }
+  createFarm = async () => {
+    const {descript,name_esp,id_esp} = this.state
+    const {dataArray} = this.context
+    console.log()
+    if (id_esp !== "")
+    {
+      this.setState({ msg: ""})
+      
+      if (name_esp !== "")
+      {
+        this.setState({ msg: ""})
+        console.log("hâhaaa");
+        const url = apiUrl + "esps";
+        let result = await fetch(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id_user: dataArray[0]["user"]["id"],
+            id_esp: id_esp,
+            name_esp: name_esp,
+            decription: descript,
+          }),
+        });
+        result = await result.json();
+        console.log(result)
+        if (result) {
+          if (result == "Success") {
+            
+            this.props.navigation.navigate("Home");
+            
+          } else if (result["Message"] == "esp is already use") {
+            this.setState({ msg: "this device is already use" });
+          } else this.setState({ msg: "some thing is wrong" });
+        }
+      } else this.setState({ msg: "Name farm is null" });
+    } else this.setState({ msg: "Scan QR Code again" });
+  }
   render() {
+    const{msg}= this.state;
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#2BA84A" />
@@ -43,22 +105,25 @@ export default class AddFarmForm extends Component {
                 </SafeAreaView>
               </LinearGradient>
               <View style={{ alignItems: "flex-end", right: 40 }}>
-                {/* <TouchableOpacity
+                <TouchableOpacity
                   style={styles.btnQrCode}
                   onPress={this.OpenCamera}
                 >
                   <Text style={styles.btnQrCodeText}>{i18next.t("Scan Qr code")}</Text>
-                </TouchableOpacity> */}
+                </TouchableOpacity>
               </View>
               <View style={styles.containerContent}>
-                <TextInput placeholder={i18next.t("Farm name")} style={styles.input} />
+                <TextInput placeholder={i18next.t("Farm name")} style={styles.input}  onChangeText={(text) => this.setState({ name_esp: text })} />
                 <TextInput
-                  placeholder={i18next.t("Description")}
+                  placeholder={i18next.t("Description your farm")}
                   style={styles.textArea}
+                  onChangeText={(text) => this.setState({ descript: text })}
                   multiline={true}
                 />
-                <TouchableOpacity style={styles.btnAdd}>
+                <Text>{msg}</Text>
+                <TouchableOpacity style={styles.btnAdd} onPress={this.createFarm}>
                   <Text style={styles.btnText}>{i18next.t("Create")}</Text>
+                  
                 </TouchableOpacity>
               </View>
             </View>

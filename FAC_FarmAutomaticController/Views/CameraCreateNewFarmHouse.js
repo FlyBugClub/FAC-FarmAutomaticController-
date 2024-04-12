@@ -1,23 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback  } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { useNavigation,useFocusEffect  } from '@react-navigation/native';
 
 export default function App() {
+  const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
+    console.log("Trang được truy cập");
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
     };
-
+   
     getBarCodeScannerPermissions();
   }, []);
-
+ 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    
+    // console.log(typeof data)
+    const parts = data.split(':');
+  // Phần thứ nhất là "id_esp"
+  const part1 = parts[0].replace(/\n/g, '');
+
+  const part2 = parts[1];
+    console.log(part1)
+    if (part1 == "id_esp")
+    {
+      setScanned(false);
+      navigation.navigate('AddFarmForm',{ id_esp: part2 });
+    }
+    else
+     {
+      alert(`Invalide QR code`);
+    }
   };
 
   if (hasPermission === null) {

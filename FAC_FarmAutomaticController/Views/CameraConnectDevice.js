@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import { useNavigation,useFocusEffect  } from '@react-navigation/native';
 
 export default function CameraConnectDevice() {
+  const navigation = useNavigation();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
@@ -16,8 +18,25 @@ export default function CameraConnectDevice() {
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    // setScanned(true);
+    const parts = data.split(',');
+  // const part1 = parts[0].replace(/\n/g, '');
+  const partbc = parts[0].split(':')
+  const partdht = parts[1].split(':')
+  const partph = parts[2].split(':')
+
+    if (partbc[0] == "id_bc")
+    {
+  
+      setScanned(false);
+      navigation.navigate('AddDevice',{ id_bc: partbc[1] , id_dht:partdht[1],id_ph:partph[1]});
+      
+    }
+    else
+     {
+      alert(`Invalide QR code`);
+    }
+    // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
 
   if (hasPermission === null) {

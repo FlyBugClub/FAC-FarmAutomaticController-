@@ -36,12 +36,10 @@ import ChangePassword from "./Views/ChangePassword.js";
 import AddFarmForm from "./Views/AddFarmForm.js";
 import AdvanceSettingDevice from "./Views/AdvanceSettingDevice.js";
 import CheckOut from "./Views/CheckOut.js";
-
 import DateTime from "./Views/DateTime.js";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
 //Pakage Navigator
 
 // Tạo Stack Navigator

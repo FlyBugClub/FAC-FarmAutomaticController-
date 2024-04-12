@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import i18next, { languageResources } from "../services/i18next";
+import apiUrl from "../apiURL.js";
 import MyContext from "../DataContext.js";
 // import { index } from "d3-array";
 // import axios from "axios";
@@ -18,10 +19,30 @@ const data = [];
 
 
 export default class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      listfarm : []
+    };
+  }
   SignUpPage = () => {
     console.log("SignUp Page");
     this.props.navigation.navigate("SignUp");
   };
+
+  componentDidMount = async () => {
+    const { dataArray } = this.context;
+    const url = apiUrl + `login/${dataArray[0]["user"]["gmail"]}/${dataArray[0]["user"]["password"]}`;
+    const response = await fetch(url);
+        if (!response.ok) {
+          this.setState({ msg: "error" });
+          return;
+        }
+        const json = await response.json();
+        // console.log(json[0])
+        console.log("heheaaa")
+        this.setState({listfarm : json[0]})
+  }
 
   DetailPage = (index) => {
     console.log(index)
@@ -35,60 +56,60 @@ export default class Home extends Component {
     this.props.navigation.navigate("Details");
   };
 
+
   render() {
     const { dataArray } = this.context;
-    
-   
-
+    const { listfarm } = this.state;
+    const farmHouseList = [];
     // const jsonObject = JSON.parse(dataArray[1]);
     var keyCount = 0;
-    for (const key in dataArray[0]) {
-      if (key === "user") {
-        break;
+    if (listfarm.length !== 0)
+    {
+      // console.log("jaajaj")
+      // console.log(listfarm)
+      for (const key in listfarm["equipment"]) {
+        keyCount = keyCount + 1;
+
       }
-      keyCount = keyCount + 1;
-    }
-
-    const handleDetailPress = (index) => {
-      this.DetailPage(index);
-    };
-    const farmHouseList = [];
-    // Sử dụng forEach để thêm các phần tử vào mảng items
-    [...Array(keyCount)].forEach((_, index) => {
-      data[index] = Object.values(dataArray[0])[index];
-      // console.log(data)
-      farmHouseList.push(
-        <View key={index}>
-          <TouchableOpacity
-            style={styles.famrItem}
-            onPress={() => handleDetailPress(index)}
-          >
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
+      const handleDetailPress = (index) => {
+        this.DetailPage(index);
+      };
+      // const farmHouseList = [];
+      // Sử dụng forEach để thêm các phần tử vào mảng items
+      [...Array(keyCount)].forEach((_, index) => {
+        data[index] = Object.values(listfarm["equipment"])[index];
+        // console.log(data)
+        farmHouseList.push(
+          <View key={index}>
+            <TouchableOpacity
+              style={styles.famrItem}
+              onPress={() => handleDetailPress(index)}
             >
-              <Text style={styles.titleItem} numberOfLines={1}>
-                {" "}
-                Farm {index}: {data[index]["name"]}
-              </Text>
-              <View style={styles.connectArea}>
-                <View style={styles.dot}></View>
-                <Text style={{ fontWeight: "bold", marginLeft: 2, marginRight: 2, fontSize: 13}}>{i18next.t("Connected")}</Text>
+              <View
+                style={{ flexDirection: "row", justifyContent: "space-between" }}
+              >
+                <Text style={styles.titleItem} numberOfLines={1}>
+                  {" "}
+                  Farm {index}: {data[index]["name"]}
+                </Text>
+                <View style={styles.connectArea}>
+                  <View style={styles.dot}></View>
+                  <Text style={{ fontWeight: "bold", marginLeft: 2, marginRight: 2, fontSize: 13}}>{i18next.t("Connected")}</Text>
+                </View>
               </View>
-            </View>
-            <Text style={{ fontSize: 13, marginTop: 5, marginLeft: 4 }}>
-              It is a long established fact that a reader will be distracted by
-              the readable
-            </Text>
-            <View style={{flexDirection: 'row', gap: 18, marginTop: 5, marginLeft: 4}}>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Humidiry: {data[index]["sensor"]["sl_dht"]}</Text>
-                <Text style={{ fontSize: 13, color: '#777777' }}>pH: {data[index]["sensor"]["sl_ph"]}</Text>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Water pump: {data[index]["bc"]["sl"]}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      );
-    });
-
+              <Text style={{ fontSize: 13, marginTop: 5, marginLeft: 4 }}>
+                {data[index]["decription"]}
+              </Text>
+              <View style={{flexDirection: 'row', gap: 18, marginTop: 5, marginLeft: 4}}>
+                  <Text style={{ fontSize: 13, color: '#777777' }}>Humidiry: {data[index]["sensor"]["sl_dht"]}</Text>
+                  <Text style={{ fontSize: 13, color: '#777777' }}>pH: {data[index]["sensor"]["sl_ph"]}</Text>
+                  <Text style={{ fontSize: 13, color: '#777777' }}>Water pump: {data[index]["bc"]["sl"]}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        );
+      });
+    }
     return (
       <View style={styles.safeContainer}>
         <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />

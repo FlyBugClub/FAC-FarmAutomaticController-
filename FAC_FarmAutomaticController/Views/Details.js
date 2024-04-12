@@ -79,7 +79,7 @@ export default class Details extends Component{
       isEnabled: false,
       message_humid: "0.0",
       showArcRanges: false,
-      
+      msg : "gg",
       datachart:{
         labels: [""],
         datasets: [
@@ -154,7 +154,7 @@ export default class Details extends Component{
     
     
     // Data["id_esp"] = dataArray[1]["id_esp"];
-    for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) 
+    for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++)
     {
       var equipment  = {};
       equipment["humid_expect"] = sliderValue[i]
@@ -197,14 +197,14 @@ export default class Details extends Component{
   componentDidMount() {
     flag = false;
     this.getvalueequipment(); 
-    
+    this.connect()
      // Gọi hàm push vào mảng khi component được mount
      this.intervalId = setInterval(() => {
       // Thực hiện các hành động bạn muốn lặp lại sau mỗi 3 giây ở đây
       // Ví dụ: Gọi hàm kiểm tra trạng thái
       
       this.getvalue();
-  }, 2000);
+  }, 3000);
   }
 
 
@@ -731,7 +731,7 @@ export default class Details extends Component{
     {
       flag_mqtt= false;
       console.log("heheacuong")
-      this.connect()
+      
     }
     
     const deviceList = [];

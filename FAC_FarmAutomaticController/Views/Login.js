@@ -87,15 +87,11 @@ export default class Login extends Component {
     try {
       if (email != "" && password != "") {
         const response = await fetch(url);
-        if (!response.ok) {
+        if (!response.ok) {1
           this.setState({ msg: "error" });
           return;
         }
-
         const json = await response.json();
-        // console.log(json)
-        // console.log("hehe")
-
         if (json != null) {
           // const combinedJson = Object.assign({}, json[0], json[1],json[2]);
           addDataAtIndex(json[0], 0);
