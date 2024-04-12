@@ -107,18 +107,18 @@
     getCurrentDateTime(formattedDateTime);
     getAndParseAPI("/api/getvalueesp/ESP0001");
 
-    Serial.println("num_equipments:");
-    Serial.println(num_equipments);
+    Serial.println("num_equipments:");Serial.flush();
+    Serial.println(num_equipments);Serial.flush();
     for (int i = 0; i < num_equipments; i++) {
-                Serial.print("ID Sensor: ");
-                Serial.println(equipments[i].id_sensor);
-                Serial.print("ID BC: ");
-                Serial.println(equipments[i].id_bc);
-                Serial.print("Mode: ");
+                Serial.print("ID Sensor: ");Serial.flush();
+                Serial.println(equipments[i].id_sensor);Serial.flush();
+                Serial.print("ID BC: ");Serial.flush();
+                Serial.println(equipments[i].id_bc);Serial.flush();
+                Serial.print("Mode: ");Serial.flush();
               
-                Serial.println("Schedule:");
+                Serial.println("Schedule:");Serial.flush();
                 for (int j = 0; j < equipments[i].schedule_size; j++) {
-                    Serial.println(equipments[i].schedule[j]);
+                    Serial.println(equipments[i].schedule[j]);Serial.flush();
                 }
             }            
     // countPumpActivations(formattedDateTime);
@@ -135,18 +135,18 @@
   bool isNewDay(String formattedTime, String& previousDate) {
     // Lấy ngày từ chuỗi định dạng "%Y-%m-%d"
     String currentDate = formattedTime.substring(0, 10);
-    Serial.println("currentDate");
-    Serial.println(currentDate);
-    Serial.println("previousDate");
-    Serial.println(previousDate);
+    Serial.println("currentDate");Serial.flush();
+    Serial.println(currentDate);Serial.flush();
+    Serial.println("previousDate");Serial.flush();
+    Serial.println(previousDate);Serial.flush();
     // Kiểm tra xem ngày hiện tại có khác ngày trước đó không
     if (currentDate != previousDate) {
-        Serial.println("New day has begun");
+        Serial.println("New day has begun");Serial.flush();
         previousDate = currentDate; // Cập nhật ngày trước đó thành ngày hiện tại
         return true;
     }
     else {
-        Serial.println("Hope u have a happy day");
+        Serial.println("Hope u have a happy day");Serial.flush();
         return false;
     }
   }
@@ -176,14 +176,14 @@
   // }
   void reconnect() {
     while (!client.connected()) {
-      Serial.print("Attempting MQTT connection...");
+      Serial.print("Attempting MQTT connection...");Serial.flush();
       if (client.connect("helloem")) {
-        Serial.println("connected");
+        Serial.println("connected");Serial.flush();
         client.subscribe("hello_topic");
       } else {
-        Serial.print("failed, rc=");
-        Serial.print(client.state());
-        Serial.println(" try again in 5 seconds");
+        Serial.print("failed, rc=");Serial.flush();
+        Serial.print(client.state());Serial.flush();
+        Serial.println(" try again in 5 seconds");Serial.flush();
         delay(5000);
       }
     }
@@ -207,16 +207,16 @@
     serializeJson(doc, payload);
 
     int httpCode = http.POST(payload);
-    Serial.print("POST httpCode: ");
-    Serial.println(httpCode);
+    Serial.print("POST httpCode: ");Serial.flush();
+    Serial.println(httpCode);Serial.flush();
 
     if (httpCode > 0) {
       String payload = http.getString();
-      Serial.print("POST Humidity response: ");
-      Serial.println(payload);
+      Serial.print("POST Humidity response: ");Serial.flush();
+      Serial.println(payload);Serial.flush();
     } else {
-      Serial.print("POST request failed with error code: ");
-      Serial.println(httpCode);
+      Serial.print("POST request failed with error code: ");Serial.flush();
+      Serial.println(httpCode);Serial.flush();
     }
 
     http.end();
@@ -243,16 +243,16 @@
     serializeJson(doc, payload);
 
     int httpCode = http.POST(payload);
-    Serial.print("POST httpCode: ");
-    Serial.println(httpCode);
+    Serial.print("POST httpCode: ");Serial.flush();
+    Serial.println(httpCode);Serial.flush();
 
     if (httpCode > 0) {
       String payload = http.getString();
-      Serial.print("POST CountPump response: ");
-      Serial.println(payload);
+      Serial.print("POST CountPump response: ");Serial.flush();
+      Serial.println(payload);Serial.flush();
     } else {
-      Serial.print("POST request failed with error code: ");
-      Serial.println(httpCode);
+      Serial.print("POST request failed with error code: ");Serial.flush();
+      Serial.println(httpCode);Serial.flush();
     }
 
     http.end();
@@ -271,7 +271,7 @@
     
     if (httpCode > 0) {
         String payload = http.getString();
-        Serial.println(payload);
+        Serial.println(payload);Serial.flush();
         StaticJsonDocument<1024> doc;
         DeserializationError error = deserializeJson(doc, payload);
         
@@ -295,7 +295,7 @@
 
                         // Check if equipments array needs resizing
                         if (num_equipments >= MAX_EQUIPMENTS) {
-                            Serial.println("Maximum number of equipments reached!");
+                            Serial.println("Maximum number of equipments reached!");Serial.flush();
                             break;
                         }
 
@@ -317,11 +317,11 @@
                 }
             }
         } else {
-            Serial.println("Failed to parse JSON");
+            Serial.println("Failed to parse JSON");Serial.flush();
         }
     } else {
-        Serial.print("GET request failed with error code: ");
-        Serial.println(httpCode);
+        Serial.print("GET request failed with error code: ");Serial.flush();
+        Serial.println(httpCode);Serial.flush();
     }
 
     http.end(); 
@@ -350,7 +350,7 @@
         digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), HIGH);
         // Serial.println("Pump is ON");
     } else {
-        Serial.println("Invalid status");
+        Serial.println("Invalid status");Serial.flush();
     }
   }
 
@@ -370,12 +370,12 @@
     int totalSeconds = hour * 3600 + minute * 60 + second;
     
     // In ra giờ, phút và giây
-    Serial.print("Giờ: ");
-    Serial.println(hour);
-    Serial.print("Phút: ");
-    Serial.println(minute);
-    Serial.print("Giây: ");
-    Serial.println(second);
+    Serial.print("Giờ: ");Serial.flush();
+    Serial.println(hour);Serial.flush();
+    Serial.print("Phút: ");Serial.flush();
+    Serial.println(minute);Serial.flush();
+    Serial.print("Giây: ");Serial.flush();
+    Serial.println(second);Serial.flush();
 
     // Kiểm tra xem đã đến lúc tưới cây chưa và bơm chưa được kích hoạt
     if (!isPumpActive && (totalSeconds - lastWateringTime >= 5000)) { // Chờ 5 giây giữa mỗi lần tưới
@@ -406,11 +406,11 @@
             int remainingHours = remainingTimeInSeconds / 3600; // Tính số giờ còn lại
             int remainingMinutes = (remainingTimeInSeconds % 3600) / 60; // Tính số phút còn lại
 
-            Serial.print("Còn ");
-            Serial.print(remainingHours);
-            Serial.print(" giờ ");
-            Serial.print(remainingMinutes);
-            Serial.println(" phút nữa sẽ tưới cây");
+            Serial.print("Còn ");Serial.flush();
+            Serial.print(remainingHours);Serial.flush();
+            Serial.print(" giờ ");Serial.flush();
+            Serial.print(remainingMinutes);Serial.flush();
+            Serial.println(" phút nữa sẽ tưới cây");Serial.flush();
         }
     }
 
@@ -504,15 +504,15 @@
   if (!WiFi.isConnected()) {
     // Thử kết nối WiFi hoặc chuyển sang chế độ điểm truy cập (AP) để cấu hình WiFi mới
     if (!wifiManager.autoConnect("ESP8266_AP")) {
-      Serial.println("Failed to connect and hit timeout");
+      Serial.println("Failed to connect and hit timeout");Serial.flush();
       // Nếu kết nối thất bại sau một khoảng thời gian, reset thiết bị
       ESP.reset();
       delay(1000);
     } else {
       // In ra thông báo khi kết nối WiFi thành công
-      Serial.println("Connected to WiFi");
-      Serial.print("SSID: ");
-      Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
+      Serial.println("Connected to WiFi");Serial.flush();
+      Serial.print("SSID: ");Serial.flush();
+      Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nốiSerial.flush();
       timeClient.setTimeOffset(timeZoneOffset);
       wifiConnected = true; // Cập nhật trạng thái kết nối WiFi
     }
@@ -545,7 +545,8 @@
 
       // Gửi chuỗi JSON lên MQTT
       client.publish(mqtt_topic_hello, jsonBuffer);
-      // Serial.println("send succeed");
+      client.flush();
+      // Serial.println("send succeed");Serial.flush();
     }
   }
 
@@ -561,56 +562,56 @@
     JsonObject equipmentObject = doc.createNestedObject("equipment");
 
     // Lặp qua mảng equipments và thêm từng thiết bị vào như một đối tượng lồng nhau
-    // for (size_t i = 0; i < num_equipments; ++i) {
+    for (size_t i = 0; i < num_equipments; ++i) {
       // Tạo một đối tượng lồng nhau mới cho thiết bị hiện tại
-      String equipmentName = "equipment0" ;
+      String equipmentName = "equipment" + String(i);
       JsonObject currentEquipment = equipmentObject.createNestedObject(equipmentName);
 
       // Thêm dữ liệu từ equipments[i] vào đối tượng thiết bị hiện tại
-      currentEquipment["id_bc"] = equipments[0].id_bc;
+      currentEquipment["id_bc"] = equipments[i].id_bc;
       const char* autoMode;
       // Sử dụng mảng autoMode để thiết lập automode
-      autoMode = autoMode0;
-      // Serial.print("autoMode ");
-      // Serial.print(i);
-      // Serial.print(": ");
-      // Serial.println(autoMode);
+      autoMode = (i == 0) ? autoMode0 : ((i == 1) ? autoMode1 : autoMode2);
+      Serial.print("autoMode ");Serial.flush();
+      Serial.print(i);Serial.flush();
+      Serial.print(": ");Serial.flush();
+      Serial.println(autoMode);Serial.flush();
       currentEquipment["automode"] = autoMode;  
-      currentEquipment["expect_value"] = desiredHumidity0;
-      currentEquipment["status"] = digitalRead(pumpPin0);
+
       // Sử dụng một câu lệnh switch-case để xác định thiết bị và thiết lập giá trị mong muốn và trạng thái
-      // switch (i) {
-      //   case 0:
-      //     currentEquipment["expect_value"] = desiredHumidity0;
-      //     currentEquipment["status"] = digitalRead(pumpPin0);
-      //     break;
-      //   case 1:
-      //     currentEquipment["expect_value"] = desiredHumidity1;
-      //     currentEquipment["status"] = digitalRead(pumpPin1);
-      //     break;
-      //   case 2:
-      //     currentEquipment["expect_value"] = desiredHumidity2;
-      //     currentEquipment["status"] = digitalRead(pumpPin2);
-      //     break;
-      //   default:
-      //     // Xử lý trường hợp index có thể vượt quá giới hạn (tùy chọn)
-      //     break;
-      // }
-    // }
+      switch (i) {
+        case 0:
+          currentEquipment["expect_value"] = desiredHumidity0;
+          currentEquipment["status"] = digitalRead(pumpPin0);
+          break;
+        case 1:
+          currentEquipment["expect_value"] = desiredHumidity1;
+          currentEquipment["status"] = digitalRead(pumpPin1);
+          break;
+        case 2:
+          currentEquipment["expect_value"] = desiredHumidity2;
+          currentEquipment["status"] = digitalRead(pumpPin2);
+          break;
+        default:
+          // Xử lý trường hợp index có thể vượt quá giới hạn (tùy chọn)
+          break;
+      }
+    }
 
     // Chuyển đổi tài liệu JSON thành một bộ đệm ký tự
     char jsonBuffer[512];
     serializeJson(doc, jsonBuffer);
-
+    Serial.println(jsonBuffer);Serial.flush();
     // Gửi thông báo đã được ký tự hóa JSON đến chủ đề MQTT
     bool messageSent = client.publish(mqtt_topic_send, jsonBuffer);
+    client.flush();
     if (messageSent) {
       Serial.println("Thành công khi gửi tin nhắn MQTT!");
     } else {
-      Serial.println("Không thể gửi tin nhắn MQTT!");
+      Serial.println("Không thể gửi tin nhắn MQTT!");Serial.flush();
     }
   } else {
-    Serial.println("Không kết nối được với máy chủ MQTT!");
+    Serial.println("Không kết nối được với máy chủ MQTT!");Serial.flush();
   }
 }
 
@@ -633,7 +634,7 @@
   // Kiểm tra id_esp
   const char* id_esp = doc["id_esp"];
   if (strcmp(id_esp, id_sensor) == 0) {
-    Serial.println("correct id");
+    Serial.println("correct id");Serial.flush();
     // Lấy dữ liệu về thiết bị
     JsonObject equiments = doc["equiment"];
     int count = 0;
@@ -652,10 +653,12 @@
       int status = equimentData["status"];
 
       // Xử lý dữ liệu của thiết bị
-      Serial.println("automode ");
-      Serial.println(count);
+      Serial.println("automode ");Serial.flush();
+      Serial.println(count);Serial.flush();
       Serial.println("get ve la: ");
+      Serial.flush();
       Serial.println(automode);
+      Serial.flush();
       processAutoMode(automode, expect_value, status, count);
      count++;
     }
