@@ -78,13 +78,16 @@
 
     // Initialize SHT31 sensor
     sht31.begin(0x44);
-    client.setServer(mqtt_server, mqtt_port);
+    
     // Initialize NTPClient
     timeClient.begin();
     timeClient.setTimeOffset(timeZoneOffset);
     // Khởi tạo mảng các thiết bị
-
+    client.setServer(mqtt_server, mqtt_port);
+    
+    client.setCallback(callback);
   }
+  
 //region loop
   void loop() {
     if (!wifiConnected) {
@@ -93,30 +96,31 @@
     if (!client.connected()) {
     reconnect();
     }
+    client.loop();
     
     String formattedDateTime;
     getCurrentDateTime(formattedDateTime);
-    getAndParseAPI("/api/getvalueesp/ESP0001");
-    Serial.println("num_equipments:");
-    Serial.println(num_equipments);
-    for (int i = 0; i < num_equipments; i++) {
-                Serial.print("ID Sensor: ");
-                Serial.println(equipments[i].id_sensor);
-                Serial.print("ID BC: ");
-                Serial.println(equipments[i].id_bc);
-                Serial.print("Mode: ");
+    // getAndParseAPI("/api/getvalueesp/ESP0001");
+    // Serial.println("num_equipments:");
+    // Serial.println(num_equipments);
+    // for (int i = 0; i < num_equipments; i++) {
+    //             Serial.print("ID Sensor: ");
+    //             Serial.println(equipments[i].id_sensor);
+    //             Serial.print("ID BC: ");
+    //             Serial.println(equipments[i].id_bc);
+    //             Serial.print("Mode: ");
               
-                Serial.println("Schedule:");
-                for (int j = 0; j < equipments[i].schedule_size; j++) {
-                    Serial.println(equipments[i].schedule[j]);
-                }
-            }
+    //             Serial.println("Schedule:");
+    //             for (int j = 0; j < equipments[i].schedule_size; j++) {
+    //                 Serial.println(equipments[i].schedule[j]);
+    //             }
+    //         }
     // countPumpActivations(formattedDateTime);
     // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
     
     
     // manageAutoControl();
-    // sendHelloMessage();
+    sendHelloMessage();
     delay(1000);
   }
 //region stuff
@@ -152,14 +156,28 @@
     formattedDateTime = String(currentTimeWithMilliseconds);
   }
 
-  void countPumpActivations(String formattedTime) {
-    if (isNewDay(formattedTime, previousDate)) {
-      pumpActivationCount = 0;
-    }
-    if (digitalRead(pumpPin) == HIGH) {
-      pumpActivationCount++;
-      postCountPumpToAPI("/api/equidmentvalues", formattedTime, id_sensor);
+  // void countPumpActivations(String formattedTime) {
+  //   if (isNewDay(formattedTime, previousDate)) {
+  //     pumpActivationCount = 0;
+  //   }
+  //   if (digitalRead(pumpPin) == HIGH) {
+  //     pumpActivationCount++;
+  //     postCountPumpToAPI("/api/equidmentvalues", formattedTime, id_sensor);
 
+  //   }
+  // }
+  void reconnect() {
+    while (!client.connected()) {
+      Serial.print("Attempting MQTT connection...");
+      if (client.connect("helloem")) {
+        Serial.println("connected");
+        client.subscribe("hello_topic");
+      } else {
+        Serial.print("failed, rc=");
+        Serial.print(client.state());
+        Serial.println(" try again in 5 seconds");
+        delay(5000);
+      }
     }
   }
 //region POST
@@ -307,19 +325,19 @@
     }
   }
 
-  void autoControlMode(float& temperature, float& humidity) {
-    float currentHumidity = sht31.readHumidity();
-    unsigned long currentMillis = millis();
+  // void autoControlMode(float& temperature, float& humidity) {
+  //   float currentHumidity = sht31.readHumidity();
+  //   unsigned long currentMillis = millis();
 
-    if (currentHumidity < humidity && currentMillis - lastSprayTime >= sprayInterval) {
-      digitalWrite(pumpPin, HIGH);
-      lastSprayTime = currentMillis;
-      delay(2000);
-      digitalWrite(pumpPin, LOW);
-    } else {
-      digitalWrite(pumpPin, LOW);
-    }
-  }
+  //   if (currentHumidity < humidity && currentMillis - lastSprayTime >= sprayInterval) {
+  //     digitalWrite(pumpPin, HIGH);
+  //     lastSprayTime = currentMillis;
+  //     delay(2000);
+  //     digitalWrite(pumpPin, LOW);
+  //   } else {
+  //     digitalWrite(pumpPin, LOW);
+  //   }
+  // }
 //region mannualControl
   void controlPump(int pumpPin, bool status) {
     digitalWrite(pumpPin, status ? HIGH : LOW);
@@ -352,61 +370,79 @@
   }
 //region MQTTX POST
   void sendHelloMessage() {
-  if (client.connected()) {
-    client.publish(mqtt_topic_hello, "hello");
-  }
+    if (client.connected()) {
+      // Tạo một bộ nhớ đệm để lưu trữ dữ liệu JSON
+      StaticJsonDocument<200> doc;
+
+      // Thiết lập các giá trị trong JSON
+      doc["id_esp"] = "ESP0001";
+      JsonObject equiment0 = doc["equiment"]["equiment0"];
+      equiment0["id_bc"] = "BC0001";
+      equiment0["automode"] = "1";
+      equiment0["expect_value"] = 65;
+      equiment0["status"] = 0;
+
+      JsonObject equiment1 = doc["equiment"]["equiment1"];
+      equiment1["id_bc"] = "BC0001";
+      equiment1["automode"] = "1";
+      equiment1["expect_value"] = 65;
+      equiment1["status"] = 0;
+
+      // Chuyển đổi JSON thành chuỗi
+      char jsonBuffer[256];
+      serializeJson(doc, jsonBuffer);
+
+      // Gửi chuỗi JSON lên MQTT
+      client.publish(mqtt_topic_hello, jsonBuffer);
+      Serial.println("send succeed");
+    }
   }
 //region MQTTX GET
 //region callBack
+  void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
 
-  void reconnect() {
-  while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    if (client.connect("helloem")) {
-      Serial.println("connected");
-    } else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      delay(5000);
+  // Parse JSON
+  StaticJsonDocument<200> doc;
+  DeserializationError error = deserializeJson(doc, payload, length);
+
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.c_str());
+    return;
+  }
+
+  // Kiểm tra id_esp
+  const char* id_esp = doc["id_esp"];
+  if (strcmp(id_esp, id_sensor) == 0) {
+    // Lấy dữ liệu về thiết bị
+    JsonObject equiments = doc["equiment"];
+    
+    // Duyệt qua từng thiết bị
+    for (JsonPair equiment : equiments) {
+      const char* equimentId = equiment.key().c_str();
+      Serial.print("Equiment ID: ");
+      Serial.println(equimentId);
+      
+      // Truy cập thông tin của từng thiết bị
+      JsonObject equimentData = equiment.value();
+      const char* id_bc = equimentData["id_bc"];
+      const char* automode = equimentData["automode"];
+      int expect_value = equimentData["expect_value"];
+      int status = equimentData["status"];
+
+      // Xử lý dữ liệu của thiết bị tại đây
+      Serial.print("ID_BC: ");
+      Serial.println(id_bc);
+      Serial.print("Automode: ");
+      Serial.println(automode);
+      Serial.print("Expect Value: ");
+      Serial.println(expect_value);
+      Serial.print("Status: ");
+      Serial.println(status);
+      Serial.println("--------------------");
     }
   }
   }
-  // void callback(char* topic, byte* payload, unsigned int length) {
-  // StaticJsonDocument<1024> doc;
-  // DeserializationError error = deserializeJson(doc, payload);
-  // for (JsonVariant v : doc.as<JsonArray>()) {
-  //     JsonObject obj = v.as<JsonObject>();
-  //     // Iterate through each key-value pair of the object
-  //     for (JsonPair kvp : obj) {
-  //         JsonObject equipment = kvp.value();
-  //         if (num_equipments >= array_capacity) {
-  //             // Mảng không đủ lớn, thêm một kích thước mới cho nó
-  //             array_capacity *= 2;
-  //             Equipment* new_equipments = new Equipment[array_capacity];
-  //             // Sao chép dữ liệu từ mảng cũ sang mảng mới
-  //             memcpy(new_equipments, equipments, num_equipments * sizeof(Equipment));
-  //             delete[] equipments;
-  //             equipments = new_equipments;
-  //         }
-
-  //         // Sao chép thông tin từ JSON vào mảng thiết bị
-  //         strncpy(equipments[num_equipments].id_sensor, equipment["id_sensor"], sizeof(equipments[num_equipments].id_sensor));
-  //         equipments[num_equipments].Mode = equipment["Mode"];
-  //         equipments[num_equipments].status = equipment["status"];
-
-  //         JsonObject schedule = equipment["schedule"];
-  //         equipments[num_equipments].schedule_size = std::min(schedule.size(), static_cast<size_t>(SCHEDULE_CAPACITY));
-  //         equipments[num_equipments].schedule = new char*[equipments[num_equipments].schedule_size];
-  //         int i = 0;
-  //         // Iterate through each schedule item
-  //         for (JsonPair kvp_schedule : schedule) {
-  //             if (i >= equipments[num_equipments].schedule_size) break; // Đảm bảo không vượt quá kích thước tối đa
-  //             equipments[num_equipments].schedule[i] = new char[9]; // Đảm bảo đủ kích thước cho chuỗi
-  //             strncpy(equipments[num_equipments].schedule[i], kvp_schedule.value(), 9);
-  //             i++;
-  //         }
-  //         num_equipments++; 
-  //     }
-  //   }
-  // }
