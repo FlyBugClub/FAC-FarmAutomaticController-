@@ -372,21 +372,22 @@
   void sendHelloMessage() {
     if (client.connected()) {
       // Tạo một bộ nhớ đệm để lưu trữ dữ liệu JSON
-      StaticJsonDocument<200> doc;
+      StaticJsonDocument<256> doc;
 
       // Thiết lập các giá trị trong JSON
       doc["id_esp"] = "ESP0001";
-      JsonObject equiment0 = doc["equiment"]["equiment0"];
-      equiment0["id_bc"] = "BC0001";
-      equiment0["automode"] = "1";
-      equiment0["expect_value"] = 65;
-      equiment0["status"] = 0;
 
-      JsonObject equiment1 = doc["equiment"]["equiment1"];
-      equiment1["id_bc"] = "BC0001";
-      equiment1["automode"] = "1";
-      equiment1["expect_value"] = 65;
-      equiment1["status"] = 0;
+      doc["equiment"]["equiment0"];
+      doc["equiment"]["equiment0"]["id_bc"] = "BC0001";
+      doc["equiment"]["equiment0"]["automode"] = "1";
+      doc["equiment"]["equiment0"]["expect_value"] = 65;
+      doc["equiment"]["equiment0"]["status"] = 0;
+
+      doc["equiment"]["equiment1"];
+      doc["equiment"]["equiment1"]["id_bc"] = "BC0001";
+      doc["equiment"]["equiment1"]["automode"] = "1";
+      doc["equiment"]["equiment1"]["expect_value"] = 65;
+      doc["equiment"]["equiment1"]["status"] = 0;
 
       // Chuyển đổi JSON thành chuỗi
       char jsonBuffer[256];
@@ -418,6 +419,7 @@
   const char* id_esp = doc["id_esp"];
   if (strcmp(id_esp, id_sensor) == 0) {
     // Lấy dữ liệu về thiết bị
+    Serial.println("corret id");
     JsonObject equiments = doc["equiment"];
     
     // Duyệt qua từng thiết bị
