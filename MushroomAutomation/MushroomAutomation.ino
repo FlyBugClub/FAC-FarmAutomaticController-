@@ -351,46 +351,69 @@
   bool isPumpActive = false; // Biến kiểm tra xem bơm đã được kích hoạt để tưới cây hay chưa
 
   void waterPlants(int count) {
-      static unsigned long lastWateringTime = 0; // Biến lưu thời điểm tưới cây cuối cùng
+    static unsigned long lastWateringTime = 0; // Biến lưu thời điểm tưới cây cuối cùng
+    unsigned long currentEpochTime = timeClient.getEpochTime(); // Lấy thời gian Epoch
+    time_t epochTime = (time_t)currentEpochTime; // Chuyển đổi sang dạng time_t
+    struct tm *currentTimeStruct = localtime(&epochTime); // Chuyển đổi sang cấu trúc tm
 
-      // Kiểm tra xem đã đến lúc tưới cây chưa và bơm chưa được kích hoạt
-      if (millis() - lastWateringTime >= 5000 && !isPumpActive) { // Chờ 5 giây giữa mỗi lần tưới
-      timeClient.update();
-      unsigned long currentEpochTime = timeClient.getEpochTime();
-      time_t epochTime = (time_t)currentEpochTime;
-      struct tm *currentTimeStruct = localtime(&epochTime);
-      char currentTime[9]; // HH:MM:SS\0
-      strftime(currentTime, sizeof(currentTime), "%H:%M:%S", currentTimeStruct);
-      
-      // Convert milliseconds to string
-      unsigned long milliseconds = millis() % 1000;
-      char millisecondsStr[4]; // .000\0
-      snprintf(millisecondsStr, sizeof(millisecondsStr), ".%03ld", milliseconds);
-      
-        Serial.print("currentHour");
-        Serial.println(currentTime);
-        // Tính toán thời gian còn lại đến lần tưới cây tiếp theo
-        // unsigned long remainingTime = (hour * 3600 + minute * 60 + second) - (currentHour * 3600);
-        // Serial.print("remainingTime");
-        // Serial.println(remainingTime);
-        // Nếu đã đến thời gian tưới cây
-    //     if (remainingTime <= 0) {
-    //         // Thực hiện hành động tưới cây cho thiết bị count
-    //         controlPump(count, HIGH);
-    //         isPumpActive = true; // Đánh dấu rằng bơm đã được kích hoạt để tưới cây
-    //         lastWateringTime = millis(); // Cập nhật thời điểm tưới cây cuối cùng
-    //     }
-    // } else {
-    //     // Nếu chưa đến lúc tưới cây hoặc bơm đang được kích hoạt, không làm gì cả
-    // }
+    // Lấy giờ, phút và giây từ cấu trúc tm
+    int hour = currentTimeStruct->tm_hour;
+    int minute = currentTimeStruct->tm_min;
+    int second = currentTimeStruct->tm_sec;
+    int totalSeconds = hour * 3600 + minute * 60 + second;
+    
+    // In ra giờ, phút và giây
+    Serial.print("Giờ: ");
+    Serial.println(hour);
+    Serial.print("Phút: ");
+    Serial.println(minute);
+    Serial.print("Giây: ");
+    Serial.println(second);
+
+    // Kiểm tra xem đã đến lúc tưới cây chưa và bơm chưa được kích hoạt
+    if (!isPumpActive && (totalSeconds - lastWateringTime >= 5000)) { // Chờ 5 giây giữa mỗi lần tưới
+        // Lấy lịch trình tưới cây cho thiết bị có chỉ số count
+        Equipment equipment = equipments[count];
+        char** schedule = equipment.schedule;
+        size_t schedule_size = equipment.schedule_size;
+
+        // Lặp qua lịch trình để kiểm tra thời điểm tưới cây
+        for (int j = 0; j < schedule_size; j++) {
+            char* wateringTime = schedule[j]; // Lấy thời điểm tưới cây tại chỉ số j trong mảng
+
+            // Tính toán thời gian còn lại đến thời điểm tưới cây
+            int hour, minute, second;
+            sscanf(wateringTime, "%d:%d:%d", &hour, &minute, &second);
+            int wateringTotalSeconds = hour * 3600 + minute * 60 + second;
+            
+            // Nếu đã đến thời điểm tưới cây
+            if (totalSeconds >= wateringTotalSeconds && totalSeconds <= wateringTotalSeconds + 5) { // Chấp nhận một khoảng thời gian 5 giây cho phép trễ
+                controlPump(count, HIGH); // Kích hoạt bơm tưới cây cho thiết bị tại chỉ số count
+                lastWateringTime = totalSeconds; // Lưu thời điểm tưới cây cuối cùng
+                isPumpActive = true; // Đánh dấu rằng bơm đã được kích hoạt
+                break; // Thoát khỏi vòng lặp khi đã tìm thấy thời điểm tưới cây
+            }
+
+            // Tính toán thời gian còn lại đến thời điểm tưới cây
+            int remainingTimeInSeconds = wateringTotalSeconds - totalSeconds; // Chuyển đổi thời gian còn lại sang giây
+            int remainingHours = remainingTimeInSeconds / 3600; // Tính số giờ còn lại
+            int remainingMinutes = (remainingTimeInSeconds % 3600) / 60; // Tính số phút còn lại
+
+            Serial.print("Còn ");
+            Serial.print(remainingHours);
+            Serial.print(" giờ ");
+            Serial.print(remainingMinutes);
+            Serial.println(" phút nữa sẽ tưới cây");
+        }
+    }
 
     // Kiểm tra xem đã đủ thời gian để tắt bơm chưa
-    if (isPumpActive && millis() - lastWateringTime >= 5000) {
+    if (isPumpActive && (totalSeconds - lastWateringTime >= 5000)) {
         controlPump(count, LOW); // Tắt bơm
         isPumpActive = false; // Đánh dấu rằng bơm đã được tắt
     }
-  }
-  }
+}
+
 
 
 //region process
@@ -463,7 +486,7 @@
     } else {
         // Serial.println("Chế độ không hợp lệ");
     }
-}
+  }
 
 
 //region connect wifi and sensor
