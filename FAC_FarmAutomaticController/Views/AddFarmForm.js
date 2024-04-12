@@ -73,12 +73,13 @@ export default class AddFarmForm extends Component {
         console.log(result)
         if (result) {
           if (result == "Success") {
-            
             this.props.navigation.navigate("Home");
             
-          } else if (result["Message"] == "esp is already use") {
+          } else if (result["Message"] == "esp is already use")
+           {
             this.setState({ msg: "this device is already use" });
-          } else this.setState({ msg: "some thing is wrong" });
+          }
+           else this.setState({ msg: "some thing is wrong" });
         }
       } else this.setState({ msg: "Name farm is null" });
     } else this.setState({ msg: "Scan QR Code again" });

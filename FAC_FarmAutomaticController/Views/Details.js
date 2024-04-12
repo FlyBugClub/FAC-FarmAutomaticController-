@@ -36,19 +36,14 @@ init({
   enableCache: true,
   sync : {}
 });
-// const options = {
-//   host: 'broker.emqx.io',
-//   port: 8083,
-//   path: '/mqtt',
-//   id: 'id_' + parseInt(Math.random()*100000)
-// };
 const options = {
-  host: 'd77ae1842ab3462d947a50556d8d9ed7.s1.eu.hivemq.cloud',
-  port: 8884,
-  path: '/mqtts',
+  host: 'broker.emqx.io',
+  port: 8083,
+  path: '/testTopic',
   id: 'id_' + parseInt(Math.random()*100000)
 };
-client = new Paho.MQTT.Client("wss://d77ae1842ab3462d947a50556d8d9ed7.s1.eu.hivemq.cloud:8884/mqtt","i");
+
+client = new Paho.MQTT.Client(options.host, options.port, options.id);
 let isFunctionRunning = false;
 var flag = false;
 var flag_mqtt = true;
@@ -70,7 +65,9 @@ const chartConfig = {
 const screenWidth = Dimensions.get("window").width;
 
 export default class Details extends Component{
+  
   constructor(props) {
+    console.log("checkstate")
     super(props);
     this.state = {
       status_mqtt: 'disconnected',
@@ -124,6 +121,8 @@ export default class Details extends Component{
     // this.setShowPicker = this.setShowPicker.bind(this);
     client.onConnectionLost = this.onConnectionLost;
     client.onMessageArrived = this.onMessageArrived;
+    console.log("checkstateend")
+
   }
 
 
@@ -139,11 +138,13 @@ export default class Details extends Component{
     this.props.navigation.navigate("AdvanceSettingDevice"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
+
   DateTimePage = () => {
     console.log("DateTime Page");
     flag = true;
     this.props.navigation.navigate("DateTime"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
+
 
 
   sendMessage = () =>{
@@ -198,6 +199,7 @@ export default class Details extends Component{
     flag = false;
     this.getvalueequipment(); 
     this.connect()
+    console.log("Didmount: OK")
      // Gọi hàm push vào mảng khi component được mount
      this.intervalId = setInterval(() => {
       // Thực hiện các hành động bạn muốn lặp lại sau mỗi 3 giây ở đây
@@ -220,61 +222,72 @@ export default class Details extends Component{
     console.log("hello email");
   }
 
-
-  // connect = () => {
-  //   if (this.state.status_mqtt !== "isFetching")
-  //   {
-  //     this.setState(
-  //       { status_mqtt: 'isFetching' },
-  //       () => {
-  //         client.connect({
-  //           onSuccess: this.onConnect,
-  //           useSSL: false,
-  //           timeout: 3,
-  //           onFailure: this.onFailure
-  //         });
-  //       }
-  //     );
-  //   }
-  // }
-
-  onConnect = () => {
-    console.log('onConnect');
-    this.subscribeTopic();
-    flag = true;
-    this.setState({ status_mqtt: 'connected' });
-  }
+  componentWillUnmount() {
+    // Ngắt kết nối MQTT tại đây
+    
+    client.disconnect();
+    console.log("ngatketnoi")
+}
 
   connect = () => {
-    if (this.state.status_mqtt !== "connected")
+    if (this.state.status_mqtt !== "isFetching" && this.state.status_mqtt !== "connected")
     {
-    this.setState(
-      { status_mqtt: 'isFetching' },
-      () => {
-        client.connect({
-          userName: "cuong",
-          password: "11111111",
-          useSSL: false,
-          onSuccess: this.onConnect,
-          timeout: 3,
-          onFailure: this.onFailure
-        });
-      }
-    );
+      
+      this.setState(
+        { status_mqtt: 'isFetching' },
+        () => {
+          client.connect({
+            onSuccess: this.onConnect,
+            useSSL: false,
+            timeout: 3,
+            onFailure: this.onFailure
+          });
+        }
+      );
+    console.log("conncet: OK")
+
+    }
   }
+
+  onConnect = () => {
     
+    this.subscribeTopic();
+    
+    this.setState({ status_mqtt: 'connected' });
+    console.log('onConnect: OK');
   }
+
+  // connect = () => {
+  //   if (this.state.status_mqtt !== "connected")
+  //   {
+  //   this.setState(
+  //     { status_mqtt: 'isFetching' },
+  //     () => {
+  //       client.connect({
+  //         userName: "cuong",
+  //         password: "11111111",
+  //         useSSL: false,
+  //         onSuccess: this.onConnect,
+  //         timeout: 3,
+  //         onFailure: this.onFailure
+  //       });
+  //     }
+  //   );
+  // }
+    
+  // }
   
   onFailure = (err) => {
     console.log('Connect failed!');
     console.log(err);
-    flag = true;
     this.setState(
       { status_mqtt: 'fail' },
       () => {
         this.connect();
       }
+      
     );
+    console.log('Connect failed : OK');
     
     // this.setState({ status: '', subscribedTopic: '' });
     
@@ -631,14 +644,34 @@ export default class Details extends Component{
     }
 
     
-    const reversedArray = newlabels.reverse();
-    const newData = { 
-      labels: reversedArray,
-      datasets: newdatasets,
-      legend: newlegend, // optional
-    };
-    flag = true;
-    this.setState({ datachart: newData });
+    var reversedArray = newlabels.reverse();
+    
+    if (reversedArray[0] === "NaN:NaN:NaN" && newdatasets.length === 0 && newlegend.length ===0)
+    {
+      
+      const newData = {
+        labels: [""],
+        datasets: [
+          {
+            data: [0],
+          }
+        ],
+        legend: ["0"], // optional
+      }
+      this.setState({ datachart: newData });
+
+    }
+    else 
+    {
+      const newData = { 
+        labels: reversedArray,
+        datasets: newdatasets,
+        legend: newlegend, // optional
+      };
+      this.setState({ datachart: newData });
+    }
+    
+    
     // console.log(datachart)
     isFunctionRunning = false;
     }
@@ -646,10 +679,73 @@ export default class Details extends Component{
 
 
   onMessageArrived = (message )=> {
-    
-      console.log(message.payloadString);
+    const slidebarvalue = [];
+    const value = [];
+    const newSwitchStates = [];
+      // console.log(typeof message)
+      // console.log(message.payloadString);
+      const jsonData = JSON.parse(message.payloadString);
+      // console.log(jsonData["equipment0"])
+      let count = 0;
+      for (const key in jsonData) {
+        const SwitchStates = [];
+        if (key.startsWith("equipment")) {
+          const data = jsonData[key];
+          slidebarvalue.push(data["humid_expect"])
+          value.push(data["humid_expect"])
+          
+           if (data["automode"] === 0 && data["status"] === 1)
+          {
+            SwitchStates.push(true)
+            SwitchStates.push(false)
+            SwitchStates.push(false)
+          }
+          else if (data["automode"] === 1 && data["status"] === 1 )
+          {
+            SwitchStates.push(true)
+            SwitchStates.push(true)
+            SwitchStates.push(false)
+          }
+          else if (data["automode"] === 2 && data["status"] === 1 )
+          {
+            SwitchStates.push(true)
+            SwitchStates.push(false)
+            SwitchStates.push(true)
+          }
+          else if (data["automode"] === 0)
+          {
+            SwitchStates.push(false)
+            SwitchStates.push(false)
+            SwitchStates.push(false)
+          }
+          else if (data["automode"] === 1)
+          {
+            SwitchStates.push(false)
+            SwitchStates.push(true)
+            SwitchStates.push(false)
+          }
+          else if (data["automode"] === 2)
+          {
+            SwitchStates.push(false)
+            SwitchStates.push(false)
+            SwitchStates.push(true)
+          }
+          
 
-    
+          newSwitchStates.push(SwitchStates)
+
+
+          count++;
+        }
+    }
+    console.log("______________")
+
+    console.log(value)
+    console.log(slidebarvalue)
+
+    this.setState({ sliderValue: value });
+    this.setState({ slidebar: slidebarvalue });
+    this.setState({ switchStates: newSwitchStates });
 
     // var jsonString = message.payloadString;
     // const keyValuePairs = jsonString.slice(1, -1).split(',');
@@ -665,7 +761,7 @@ export default class Details extends Component{
 
 
   getvalueequipment = async () => {
-  
+  console.log("check")
     const { dataArray } = this.context;
     
     const url = apiUrl + `getvalueequipment/${dataArray[1]["id_esp"]}`;
@@ -681,7 +777,7 @@ export default class Details extends Component{
     const gettimelist = [];
     const name_bc = [];
     const slidebarvalue = [];
-    const TimerList = [];
+   
     const buttonTime = [];
     const modalVisible = [];
     for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -709,19 +805,19 @@ export default class Details extends Component{
       } 
       buttonTime.push(false)
       modalVisible.push(false)
-      TimerList.push([])
+      
       slidebarvalue.push(50)
       value.push(50)
       name_bc.push(json[0][i]["name"])
     }
-    this.setState({ TimerList: [] })
+    
     this.setState({ modalVisible: modalVisible })
     this.setState({ buttonTime: buttonTime })
     this.setState({ name_bc: name_bc });
     this.setState({ timelist: gettimelist });
     this.setState({ sliderValue: value });
     this.setState({ slidebar: slidebarvalue });
-    flag = true;
+    // flag = true;
     this.setState({ switchStates: newSwitchStates });
   };
 
@@ -737,11 +833,11 @@ export default class Details extends Component{
   render() {
     const { dataArray } = this.context;
     //Switch
-    const {switchStates ,switchAll} = this.state;
-    const { datachart,status_mqtt } = this.state;
+    const {switchStates } = this.state;
+    const { datachart } = this.state;
 
     //API
-    const { TimerList,name_bc,timelist,sliderValue, isEnabled,buttonTime } =this.state;
+    const { name_bc,timelist,sliderValue, isEnabled } =this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
@@ -749,17 +845,17 @@ export default class Details extends Component{
     const { dateTime, showPicker } = this.state;
  
     
-    if (flag_mqtt)
-    {
-      flag_mqtt= false;
-      console.log("heheacuong")
-      
-    }
-    
     const deviceList = [];
-    if (flag)
+    
+    console.log("name_bc"+name_bc.length)
+    console.log("timelist"+timelist.length)
+    console.log("sliderValue"+sliderValue.length)
+    console.log("switchStates"+switchStates.length)
+
+
+    if ( name_bc !== 0 &&timelist.length !== 0 && sliderValue.length !== 0  && switchStates.length !== 0 )
     {
-      flag = false;
+    //   flag = false;
       [...Array(dataArray[1]["bc"]["sl"])].forEach((_, index) => {
         // console.log(showPicker)
         var timeComponents = [];
@@ -809,7 +905,7 @@ export default class Details extends Component{
             </View>
           );
         });
-        TimerList.push(time)
+       
         
         deviceList.push(
           <View style={styles.optionArea} key={index}>
@@ -899,7 +995,7 @@ export default class Details extends Component{
                       </TouchableOpacity>
   
                       <ScrollView showsVerticalScrollIndicator={false}>
-                        {TimerList[index]}
+                        {time[index]}
                       </ScrollView>
                     </View>
                   </View>

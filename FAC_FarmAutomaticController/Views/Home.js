@@ -41,12 +41,12 @@ export default class Home extends Component {
         }
         const json = await response.json();
         // console.log(json[0])
-        console.log("heheaaa")
+        
         this.setState({listfarm : json[0]})
   }
 
   DetailPage = (index) => {
-    console.log(index)
+    // console.log(index)
     this.GetEquidmentValues(index);
   };
 
