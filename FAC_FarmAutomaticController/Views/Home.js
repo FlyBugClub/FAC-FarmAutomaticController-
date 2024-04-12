@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   StatusBar,
+  Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import i18next, { languageResources } from "../services/i18next";
@@ -80,9 +81,9 @@ export default class Home extends Component {
               the readable
             </Text>
             <View style={{flexDirection: 'row', gap: 18, marginTop: 5, marginLeft: 4}}>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Humidiry: {data[index]["sensor"]["sl_dht"]}</Text>
-                <Text style={{ fontSize: 13, color: '#777777' }}>pH: {data[index]["sensor"]["sl_ph"]}</Text>
-                <Text style={{ fontSize: 13, color: '#777777' }}>Water pump: {data[index]["bc"]["sl"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>{i18next.t('Humidity')}: {data[index]["sensor"]["sl_dht"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>{i18next.t('pH')}: {data[index]["sensor"]["sl_ph"]}</Text>
+                <Text style={{ fontSize: 13, color: '#777777' }}>{i18next.t('Water pump')}: {data[index]["bc"]["sl"]}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -95,7 +96,7 @@ export default class Home extends Component {
         <View style={styles.container}>
           <LinearGradient colors={["#2BA84A", "#2BA84A", "#2BA84A"]} style={styles.header}>
             <SafeAreaView style={styles.header}>
-              <Text style={styles.headerText}>Hello! Have a nice Day</Text>
+              <Text style={styles.headerText}>{i18next.t('Hello')}! {i18next.t('Have a nice Day')}</Text>
               <Text style={styles.headerText}>{dataArray[0]["user"]["name"]}</Text>
             </SafeAreaView>
           </LinearGradient>
@@ -136,9 +137,19 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
   },
   headerText: {
-    fontSize: 26,
+    ...Platform.select({
+      ios:{
+        fontSize: 20,
     fontWeight: 'bold',
     color: 'white'
+      },
+      android:{
+        fontSize: 23,
+        fontWeight: 'bold',
+        color: 'white'
+      }
+    })
+    
   },
   body: {
     width: "90%",

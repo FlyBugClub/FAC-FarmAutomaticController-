@@ -86,7 +86,7 @@ export default class User extends Component {
             style={styles.NavigationTop}
           >
             <SafeAreaView
-              // style={{ alignItems: "center", justifyContent: "center" }}
+              style={{ alignItems: "center", justifyContent: "center",height: 100 }}
             >
               <Text style={styles.title}>{i18next.t("User information")}</Text>
             </SafeAreaView>
@@ -111,7 +111,7 @@ export default class User extends Component {
                 </Text>
               </View>
             </View>
-            <ScrollView>
+            <View>
               <Text
                 style={[
                   styles.text,
@@ -177,7 +177,7 @@ export default class User extends Component {
                 </TouchableOpacity>
               </View>
               <View style={styles.line}></View>
-            </ScrollView>
+            </View>
           </SafeAreaView>
           {Platform.OS === "ios" && (
             <BottomSheet
@@ -220,6 +220,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+    marginRight: 10
   },
   safeContainer: {
     width: "100%",
@@ -271,10 +272,10 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         width: "100%",
-        height: '12%',
+        height: '14%',
         backgroundColor: "#73A942",
-        borderBottomLeftRadius: 30,
-        borderBottomRightRadius: 30,
+        borderBottomLeftRadius: 25,
+        borderBottomRightRadius: 25,
         marginBottom: 10,
         // alignItems: "center",
         // justifyContent: "center",
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: 170,
-    right: -45,
+    right: -10,
   },
   settingContent: {
     width: "90%",

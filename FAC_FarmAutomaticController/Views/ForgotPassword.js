@@ -8,7 +8,9 @@ import {
   SafeAreaView,
   TextInput,
   Image,
-  Button,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import apiUrl from "../apiURL";
@@ -60,32 +62,49 @@ export default class ForgotPassword extends Component {
     const { msg } = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        <Image
-          source={require("../assets/img/paper-plane.png")}
-          style={styles.img}
-        />
-        <Text style={styles.textLogin}>{i18next.t("Forgot password")}</Text>
-        <View style={styles.inputArea}>
-          <MCIcon name="email" size={28} color={"#2BA84A"} />
-          <Text style={{ color: "#2BA84A", marginLeft: 4, marginRight: 2 }}>
-            |
-          </Text>
-          <TextInput
-            style={styles.inputAccount}
-            placeholder="Email"
-            keyboardType="email-address"
-            onChangeText={(text) => this.setState({ email: text })}
-          />
-        </View>
-        <Text>{msg}</Text>
-
-        <TouchableOpacity onPress={this.OTPPage} style={styles.bntLogin}>
-          <Text
-            style={{ textAlign: "center", color: "white", fontWeight: "bold" }}
+        <KeyboardAvoidingView behavior="padding" style={styles.container}>
+          <TouchableWithoutFeedback
+            onPress={Keyboard.dismiss}
+            style={styles.container}
           >
-            {i18next.t("Send")}
-          </Text>
-        </TouchableOpacity>
+            <View style={styles.container}>
+              <Image
+                source={require("../assets/img/paper-plane.png")}
+                style={styles.img}
+              />
+              <Text style={styles.textLogin}>
+                {i18next.t("Forgot password")}
+              </Text>
+              <View style={styles.inputArea}>
+                <MCIcon name="email" size={28} color={"#2BA84A"} />
+                <Text
+                  style={{ color: "#2BA84A", marginLeft: 4, marginRight: 2 }}
+                >
+                  |
+                </Text>
+                <TextInput
+                  style={styles.inputAccount}
+                  placeholder="Email"
+                  keyboardType="email-address"
+                  onChangeText={(text) => this.setState({ email: text })}
+                />
+              </View>
+              <Text>{msg}</Text>
+
+              <TouchableOpacity onPress={this.OTPPage} style={styles.bntLogin}>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {i18next.t("Send")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }
@@ -93,6 +112,7 @@ export default class ForgotPassword extends Component {
 
 const styles = StyleSheet.create({
   container: {
+    width: "100%",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

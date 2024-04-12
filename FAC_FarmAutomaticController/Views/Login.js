@@ -32,7 +32,6 @@ export default class Login extends Component {
       isChecked: false,
       secureTextEntry: true,
       status: "Show password",
-      
     };
   }
   toggleCheckbox = () => {
@@ -82,7 +81,7 @@ export default class Login extends Component {
     const url = apiUrl + `login/${email}/${password}`;
 
     // Hiển thị loading
-  this.setState({ isLoading: true });
+    this.setState({ isLoading: true });
 
     try {
       if (email != "" && password != "") {
@@ -102,18 +101,17 @@ export default class Login extends Component {
           this.setState({ msg: "" });
           this.props.navigation.navigate("TabNavigator");
         } else {
-          this.setState({ msg: i18next.t("email or password are incorrect")});
+          this.setState({ msg: i18next.t("email or password are incorrect") });
         }
-      } else this.setState({ msg: i18next.t("email or password are incorrect") });
+      } else
+        this.setState({ msg: i18next.t("email or password are incorrect") });
     } catch (error) {
       console.error("Error handling login:", error);
       this.setState({ msg: i18next.t("An error occurred") });
     }
-    
+
     this.setState({ isLoading: false });
   };
-
-
 
   HomePage = () => {
     this.props.navigation.navigate("Home");
@@ -135,76 +133,93 @@ export default class Login extends Component {
     return (
       <>
         <SafeAreaView style={styles.container}>
-          <Image
-            source={require("../assets/img/user-login.png")}
-            style={styles.img}
-          />
-          <Text style={styles.textLogin}>{i18next.t("Login")}</Text>
-          <View style={styles.inputArea}>
-            <MCIcon name="email" size={28} color={"#2BA84A"} />
-            <Text style={{ color: "#2BA84A", marginLeft: 4, marginRight: 2 }}>
-              |
-            </Text>
-            <TextInput
-              style={styles.inputAccount}
-              placeholder="Email"
-              onChangeText={(text) => this.setState({ email: text })}
-            />
-          </View>
-          <View style={styles.inputArea}>
-            <MIcon name="password" size={28} color={"#2BA84A"} />
-            <Text style={{ color: "#2BA84A", marginLeft: 4, marginRight: 2 }}>
-              |
-            </Text>
-            <TextInput
-              style={styles.inputAccount}
-              placeholder={i18next.t("Password")}
-              onChangeText={(text) => this.setState({ password: text })}
-              secureTextEntry={secureTextEntry}
-            />
-          </View>
-          <Text>{msg}</Text>
-          <View style={styles.functionArea}>
-            <View>
-              <TouchableOpacity
-                onPress={this.toggleCheckbox}
-                style={styles.checkboxArea}
-              >
-                <View style={[styles.checkbox, isChecked && styles.checked]}>
-                  {isChecked && (
-                    <Ionicons name="checkmark" size={14} color="white" />
-                  )}
-                </View>
-                <Text style={styles.label}>{i18next.t(status)}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ marginRight: 15 }}>
-              <TouchableOpacity onPress={this.ResetPasswordPage}>
-                <Text style={{ color: "#0077b6" }}>
-                  {i18next.t("Forgot password")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          {isLoading && <AppLoader />}
-          <TouchableOpacity onPress={this.handleLogin} style={styles.bntLogin}>
-            <Text
-              style={{
-                textAlign: "center",
-                color: "white",
-                fontWeight: "bold",
-              }}
+          <KeyboardAvoidingView behavior="padding" style={styles.container}>
+            <TouchableWithoutFeedback
+              onPress={Keyboard.dismiss}
+              style={styles.container}
             >
-              {i18next.t("Login")}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this.SignUpPage}>
-            <Text style={{ color: "#333", marginTop: 10, fontSize: 12 }}>
-              {i18next.t("Don't have account!")}
-            </Text>
-          </TouchableOpacity>
+              <View style={styles.container}>
+                <Image
+                  source={require("../assets/img/user-login.png")}
+                  style={styles.img}
+                />
+                <Text style={styles.textLogin}>{i18next.t("Login")}</Text>
+                <View style={styles.inputArea}>
+                  <MCIcon name="email" size={28} color={"#2BA84A"} />
+                  <Text
+                    style={{ color: "#2BA84A", marginLeft: 4, marginRight: 2 }}
+                  >
+                    |
+                  </Text>
+                  <TextInput
+                    style={styles.inputAccount}
+                    placeholder="Email"
+                    onChangeText={(text) => this.setState({ email: text })}
+                  />
+                </View>
+                <View style={styles.inputArea}>
+                  <MIcon name="password" size={28} color={"#2BA84A"} />
+                  <Text
+                    style={{ color: "#2BA84A", marginLeft: 4, marginRight: 2 }}
+                  >
+                    |
+                  </Text>
+                  <TextInput
+                    style={styles.inputAccount}
+                    placeholder={i18next.t("Password")}
+                    onChangeText={(text) => this.setState({ password: text })}
+                    secureTextEntry={secureTextEntry}
+                  />
+                </View>
+                <Text>{msg}</Text>
+                <View style={styles.functionArea}>
+                  <View>
+                    <TouchableOpacity
+                      onPress={this.toggleCheckbox}
+                      style={styles.checkboxArea}
+                    >
+                      <View
+                        style={[styles.checkbox, isChecked && styles.checked]}
+                      >
+                        {isChecked && (
+                          <Ionicons name="checkmark" size={14} color="white" />
+                        )}
+                      </View>
+                      <Text style={styles.label}>{i18next.t(status)}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{ marginRight: 15 }}>
+                    <TouchableOpacity onPress={this.ResetPasswordPage}>
+                      <Text style={{ color: "#0077b6" }}>
+                        {i18next.t("Forgot password")}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                {isLoading && <AppLoader />}
+                <TouchableOpacity
+                  onPress={this.handleLogin}
+                  style={styles.bntLogin}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {i18next.t("Login")}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={this.SignUpPage}>
+                  <Text style={{ color: "#333", marginTop: 10, fontSize: 12 }}>
+                    {i18next.t("Don't have account!")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </KeyboardAvoidingView>
         </SafeAreaView>
-        
       </>
     );
   }
