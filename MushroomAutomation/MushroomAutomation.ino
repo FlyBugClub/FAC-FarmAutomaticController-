@@ -91,26 +91,29 @@
     }
     
     String formattedDateTime;
-    // getCurrentDateTime(formattedDateTime);
+    getCurrentDateTime(formattedDateTime);
+    getAndParseAPI("/api/getvalueesp/ESP0001");
+    Serial.println("num_equipments:");
+    Serial.println(num_equipments);
+    for (int i = 0; i < num_equipments; i++) {
+                Serial.print("ID Sensor: ");
+                Serial.println(equipments[i].id_sensor);
+                Serial.print("ID BC: ");
+                Serial.println(equipments[i].id_bc);
+                Serial.print("Mode: ");
+              
+                Serial.println("Schedule:");
+                for (int j = 0; j < equipments[i].schedule_size; j++) {
+                    Serial.println(equipments[i].schedule[j]);
+                }
+            }
     // countPumpActivations(formattedDateTime);
     // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
-    // getAndParseAPI("/api/login/admin@gmail.com/123456");
-    // getAndParseAPI("/api/getvalueesp/ESP0001");
-    // for (int i = 0; i < num_equipments; i++) {
-    //             Serial.print("ID Sensor: ");
-    //             Serial.println(equipments[i].id_sensor);
-    //             Serial.print("ID BC: ");
-    //             Serial.println(equipments[i].id_bc);
-    //             Serial.print("Mode: ");
-              
-    //             Serial.println("Schedule:");
-    //             for (int j = 0; j < equipments[i].schedule_size; j++) {
-    //                 Serial.println(equipments[i].schedule[j]);
-    //             }
-    //         }
+    
+    
     // manageAutoControl();
-  sendHelloMessage();
-  delay(1000);
+    // sendHelloMessage();
+    delay(1000);
   }
 //region stuff
   bool isNewDay(String formattedTime, String& previousDate) {
@@ -227,6 +230,7 @@
 //region GET
 //TODO error GET
   void getAndParseAPI(const char* url) {
+    num_equipments = 0;
     WiFiClientSecure client;
     HTTPClient http;
 
