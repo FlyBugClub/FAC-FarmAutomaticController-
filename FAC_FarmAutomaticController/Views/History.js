@@ -102,16 +102,39 @@ export default class History extends Component {
       flag = false;
       // Sử dụng forEach để thêm các phần tử vào mảng items
       [...Array(historyList.length)].forEach((_, index) => {
-        const timeParts = historyList[index][2].split('.');
+        const timeParts = historyList[index][2].split(".");
         const timeString = timeParts[0];
 
         history.push(
           <View key={index}>
             <View style={{ alignItems: "center", justifyContent: "center" }}>
               <View style={styles.lineHistoy}>
-                <Text>{historyList[index][1]}</Text>
-                <Text>{historyList[index][0]}</Text>
-                <Text>{timeString}</Text>
+                {Platform.OS === "ios" && (
+                  <>
+                    <Text style={{ borderWidth: 1, width: 170 }}>
+                      {historyList[index][1]}
+                    </Text>
+                    <Text style={{ borderWidth: 1, width: 65 }}>
+                      {historyList[index][0]}
+                    </Text>
+                    <Text style={{ borderWidth: 1, width: 72 }}>
+                      {timeString}
+                    </Text>
+                  </>
+                )}
+                {Platform.OS === "android" && (
+                  <>
+                    <Text style={{ borderWidth: 1, width: 150 }}>
+                      {historyList[index][1]}
+                    </Text>
+                    <Text style={{ borderWidth: 1, width: 55 }}>
+                      {historyList[index][0]}
+                    </Text>
+                    <Text style={{ borderWidth: 1, width: 60,  }}>
+                      {timeString}
+                    </Text>
+                  </>
+                )}
               </View>
               <View
                 style={{
@@ -131,10 +154,13 @@ export default class History extends Component {
       <View style={styles.container}>
         <LinearGradient
           colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
-          style={styles.NavigationTop}
+          style={[styles.NavigationTop]}
         >
           <SafeAreaView
-            style={{ alignItems: "center", justifyContent: "center" }}
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
             <Text style={styles.title}>{i18next.t("History")}</Text>
           </SafeAreaView>
@@ -150,10 +176,10 @@ export default class History extends Component {
             <View
               style={{
                 flexDirection: "row",
-                width: "95%",
+                width: "100%",
                 marginTop: 26,
                 marginBottom: 10,
-                justifyContent: "space-between",
+                justifyContent: "space-around",
                 alignItems: "center",
               }}
             >
@@ -177,18 +203,40 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   NavigationTop: {
-    width: "100%",
-    height: 100,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#73A942",
+    ...Platform.select({
+      ios: {
+        width: "100%",
+        height: "18%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#73A942",
+      },
+      android: {
+        width: "100%",
+        height: "14%",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#73A942",
+      },
+    }),
   },
   title: {
-    marginTop: -25,
-    textAlign: "center",
-    fontSize: 23,
-    color: "#fff",
-    fontWeight: "bold",
+    ...Platform.select({
+      ios: {
+        textAlign: "center",
+        fontSize: 23,
+        color: "#fff",
+        fontWeight: "bold",
+        marginTop: 5,
+      },
+      android: {
+        textAlign: "center",
+        marginTop: -25,
+        fontSize: 23,
+        color: "#fff",
+        fontWeight: "bold",
+      },
+    }),
   },
   body: {
     flex: 1,
@@ -210,14 +258,16 @@ const styles = StyleSheet.create({
       ios: {
         fontWeight: "bold",
         fontSize: 14,
-        width: 155,
+        width: 170,
         textAlign: "center",
+        borderWidth: 1,
       },
       android: {
         fontWeight: "bold",
         fontSize: 14,
-        width: 155,
+        width: 150,
         textAlign: "center",
+        borderWidth: 1,
       },
     }),
   },
@@ -227,8 +277,9 @@ const styles = StyleSheet.create({
       android: {
         fontWeight: "bold",
         fontSize: 14,
-        width: 70,
+        width: 60,
         textAlign: "center",
+        textAlignVertical: "center",
       },
     }),
   },
@@ -237,14 +288,15 @@ const styles = StyleSheet.create({
       ios: {
         fontWeight: "bold",
         fontSize: 14,
+        width: 65,
         textAlign: "center",
-        marginLeft: 10,
       },
       android: {
         fontWeight: "bold",
         fontSize: 14,
-        width: 150,
+        width: 55,
         textAlign: "center",
+        borderWidth: 1,
       },
     }),
   },

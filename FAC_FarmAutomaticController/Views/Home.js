@@ -172,10 +172,10 @@ export default class Home extends Component {
           >
             <SafeAreaView style={styles.header}>
               <Text style={styles.headerText}>
-                {i18next.t("Hello")}! {i18next.t("Have a nice Day")}
+                {i18next.t("Hello")}! {dataArray[0]["user"]["name"]}
               </Text>
               <Text style={styles.headerText}>
-                {dataArray[0]["user"]["name"]}
+                {i18next.t("Have a nice Day")}
               </Text>
             </SafeAreaView>
           </LinearGradient>
