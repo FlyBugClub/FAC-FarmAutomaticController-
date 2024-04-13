@@ -58,5 +58,10 @@
     "Checkout": "Thanh toán",
     "Setting": "Cài đặt",
     "Update Pakage": "Nâng cấp",
-    "Languages": "Ngôn ngữ"
+    "Languages": "Ngôn ngữ",
+    "pump name": "Tên máy bơm",
+    "humid sensor name": "Tên cảm biến độ ẩm",
+    "ph sensor name": "Tên cảm biến pH",
+    "Invalide QR code": "Mã QR không khả dụng",
+    "Tap to Scan Again": "Nhấn để quét lại"
   }

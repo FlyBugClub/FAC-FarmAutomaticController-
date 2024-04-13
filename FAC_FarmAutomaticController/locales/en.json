@@ -58,5 +58,10 @@
   "Checkout": "Checkout",
   "Setting": "Setting",
   "Update Pakage": "Update Pakage",
-  "Languages": "Languages"
+  "Languages": "Languages",
+  "pump name": "pump name",
+  "humid sensor name": "humid sensor name",
+  "ph sensor name": "ph sensor name",
+  "Invalide QR code": "Invalide QR code",
+  "Tap to Scan Again": "Tap to Scan Again"
 }

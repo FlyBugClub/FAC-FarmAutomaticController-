@@ -1361,6 +1361,7 @@ const styles = StyleSheet.create({
   },
   timer: {
     width: "51%",
+    height: 27,
     padding: 4,
     flexDirection: "row",
     backgroundColor: "white",
@@ -1439,6 +1440,12 @@ const styles = StyleSheet.create({
         marginTop: 35,
         tintColor: "#DEDEDE",
       },
+      android: {
+        width: 20,
+        height: 20,
+        marginBottom: 20,
+        tintColor: "#DEDEDE",
+      }
     }),
   },
   line: {

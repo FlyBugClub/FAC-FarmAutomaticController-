@@ -174,6 +174,8 @@ export default class AddDevice extends Component {
   };
 
   render() {
+    const { isLoading } = this.state;
+    
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#2BA84A" />

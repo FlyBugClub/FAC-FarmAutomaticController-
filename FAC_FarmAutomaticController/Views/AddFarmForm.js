@@ -116,7 +116,7 @@ export default class AddFarmForm extends Component {
               <View style={styles.containerContent}>
                 <TextInput placeholder={i18next.t("Farm name")} style={styles.input}  onChangeText={(text) => this.setState({ name_esp: text })} />
                 <TextInput
-                  placeholder={i18next.t("Description your farm")}
+                  placeholder={i18next.t("Description")}
                   style={styles.textArea}
                   onChangeText={(text) => this.setState({ descript: text })}
                   multiline={true}

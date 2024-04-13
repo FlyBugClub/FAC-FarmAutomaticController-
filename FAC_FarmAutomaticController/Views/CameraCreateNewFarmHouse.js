@@ -1,6 +1,7 @@
 import React, { useState, useEffect,useCallback  } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import i18next from "../services/i18next";
 import { useNavigation,useFocusEffect  } from '@react-navigation/native';
 
 export default function App() {
@@ -35,7 +36,7 @@ export default function App() {
     }
     else
      {
-      alert(`Invalide QR code`);
+      alert(i18next.t(`Invalide QR code`));
     }
   };
 
@@ -52,7 +53,7 @@ export default function App() {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+      {scanned && <Button title={i18next.t('Tap to Scan Again')} onPress={() => setScanned(false)} />}
     </View>
   );
 }

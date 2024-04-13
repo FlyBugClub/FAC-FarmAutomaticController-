@@ -10,7 +10,7 @@ export default class AppLoader2 extends Component {
           source={require("../assets/img/loader2.json")}
           autoPlay
           loop
-          style={{ width: "100%", height: "100 %"}}
+          style={{ width: "20%", height: "20 %"}}
         />
       </View>
     );

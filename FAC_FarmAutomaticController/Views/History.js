@@ -111,26 +111,26 @@ export default class History extends Component {
               <View style={styles.lineHistoy}>
                 {Platform.OS === "ios" && (
                   <>
-                    <Text style={{ borderWidth: 1, width: 170 }}>
+                    <Text style={{ width: 170 }}>
                       {historyList[index][1]}
                     </Text>
-                    <Text style={{ borderWidth: 1, width: 65 }}>
+                    <Text style={{ width: 65 }}>
                       {historyList[index][0]}
                     </Text>
-                    <Text style={{ borderWidth: 1, width: 72 }}>
+                    <Text style={{ width: 72 }}>
                       {timeString}
                     </Text>
                   </>
                 )}
                 {Platform.OS === "android" && (
                   <>
-                    <Text style={{ borderWidth: 1, width: 150 }}>
+                    <Text style={{ width: 150 }}>
                       {historyList[index][1]}
                     </Text>
-                    <Text style={{ borderWidth: 1, width: 55 }}>
+                    <Text style={{ width: 55 }}>
                       {historyList[index][0]}
                     </Text>
-                    <Text style={{ borderWidth: 1, width: 60,  }}>
+                    <Text style={{ width: 60,  }}>
                       {timeString}
                     </Text>
                   </>
@@ -267,7 +267,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         width: 150,
         textAlign: "center",
-        borderWidth: 1,
       },
     }),
   },
@@ -296,7 +295,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         width: 55,
         textAlign: "center",
-        borderWidth: 1,
       },
     }),
   },
