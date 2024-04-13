@@ -9,6 +9,7 @@ import {
   ScrollView,
   StatusBar,
   Platform,
+  RefreshControl,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import i18next, { languageResources } from "../services/i18next";
@@ -18,12 +19,12 @@ import MyContext from "../DataContext.js";
 // import axios from "axios";
 const data = [];
 
-
 export default class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      listfarm : []
+      refresh: false,
+      listfarm: [],
     };
   }
   SignUpPage = () => {
@@ -31,9 +32,26 @@ export default class Home extends Component {
     this.props.navigation.navigate("SignUp");
   };
 
+  fetchData = async () => {
+    const { dataArray } = this.context;
+    const url =
+      apiUrl +
+      `login/${dataArray[0]["user"]["gmail"]}/${dataArray[0]["user"]["password"]}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      this.setState({ msg: "error" });
+      return;
+    }
+    const json = await response.json();
+    console.log("heheaaa");
+    this.setState({ listfarm: json[0] });
+  };
+
   componentDidMount = async () => {
     const { dataArray } = this.context;
-    const url = apiUrl + `login/${dataArray[0]["user"]["gmail"]}/${dataArray[0]["user"]["password"]}`;
+    const url =
+      apiUrl +
+      `login/${dataArray[0]["user"]["gmail"]}/${dataArray[0]["user"]["password"]}`;
     const response = await fetch(url);
         if (!response.ok) {
           this.setState({ msg: "error" });
@@ -57,20 +75,28 @@ export default class Home extends Component {
     this.props.navigation.navigate("Details");
   };
 
+  pullMe = () => {
+    this.setState({ refresh: true });
+
+    setTimeout(() => {
+      this.setState({ refresh: false });
+      this.fetchData();
+    }, 2000);
+  };
 
   render() {
+    const { refresh } = this.state;
+
     const { dataArray } = this.context;
     const { listfarm } = this.state;
     const farmHouseList = [];
     // const jsonObject = JSON.parse(dataArray[1]);
     var keyCount = 0;
-    if (listfarm.length !== 0)
-    {
+    if (listfarm.length !== 0) {
       // console.log("jaajaj")
       // console.log(listfarm)
       for (const key in listfarm["equipment"]) {
         keyCount = keyCount + 1;
-
       }
       const handleDetailPress = (index) => {
         this.DetailPage(index);
@@ -87,7 +113,10 @@ export default class Home extends Component {
               onPress={() => handleDetailPress(index)}
             >
               <View
-                style={{ flexDirection: "row", justifyContent: "space-between" }}
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
               >
                 <Text style={styles.titleItem} numberOfLines={1}>
                   {" "}
@@ -95,16 +124,38 @@ export default class Home extends Component {
                 </Text>
                 <View style={styles.connectArea}>
                   <View style={styles.dot}></View>
-                  <Text style={{ fontWeight: "bold", marginLeft: 2, marginRight: 2, fontSize: 13}}>{i18next.t("Connected")}</Text>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      marginLeft: 2,
+                      marginRight: 2,
+                      fontSize: 13,
+                    }}
+                  >
+                    {i18next.t("Connected")}
+                  </Text>
                 </View>
               </View>
               <Text style={{ fontSize: 13, marginTop: 5, marginLeft: 4 }}>
                 {data[index]["decription"]}
               </Text>
-              <View style={{flexDirection: 'row', gap: 18, marginTop: 5, marginLeft: 4}}>
-                  <Text style={{ fontSize: 13, color: '#777777' }}>Humidiry: {data[index]["sensor"]["sl_dht"]}</Text>
-                  <Text style={{ fontSize: 13, color: '#777777' }}>pH: {data[index]["sensor"]["sl_ph"]}</Text>
-                  <Text style={{ fontSize: 13, color: '#777777' }}>Water pump: {data[index]["bc"]["sl"]}</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 18,
+                  marginTop: 5,
+                  marginLeft: 4,
+                }}
+              >
+                <Text style={{ fontSize: 13, color: "#777777" }}>
+                  {i18next.t('Humidity')}: {data[index]["sensor"]["sl_dht"]}
+                </Text>
+                <Text style={{ fontSize: 13, color: "#777777" }}>
+                {i18next.t('pH')}: {data[index]["sensor"]["sl_ph"]}
+                </Text>
+                <Text style={{ fontSize: 13, color: "#777777" }}>
+                {i18next.t('Water pump')}: {data[index]["bc"]["sl"]}
+                </Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -115,20 +166,28 @@ export default class Home extends Component {
       <View style={styles.safeContainer}>
         <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
         <View style={styles.container}>
-          <LinearGradient colors={["#2BA84A", "#2BA84A", "#2BA84A"]} style={styles.header}>
+          <LinearGradient
+            colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
+            style={styles.header}
+          >
             <SafeAreaView style={styles.header}>
-              <Text style={styles.headerText}>{i18next.t('Hello')}! {i18next.t('Have a nice Day')}</Text>
-              <Text style={styles.headerText}>{dataArray[0]["user"]["name"]}</Text>
+              <Text style={styles.headerText}>
+                {i18next.t("Hello")}! {dataArray[0]["user"]["name"]}
+              </Text>
+              <Text style={styles.headerText}>
+                {i18next.t("Have a nice Day")}
+              </Text>
             </SafeAreaView>
           </LinearGradient>
           <View style={styles.body}>
             <ScrollView
               style={{ height: "73%" }}
               showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl refreshing={refresh} onRefresh={this.pullMe} />
+              }
             >
-              <View style={{ marginTop: 8 }}>
-                {farmHouseList}
-              </View>
+              <View style={{ marginTop: 8 }}>{farmHouseList}</View>
             </ScrollView>
           </View>
         </View>
@@ -151,26 +210,25 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 150,
     marginBottom: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     // backgroundColor: "#80b918",
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
   },
   headerText: {
     ...Platform.select({
-      ios:{
+      ios: {
         fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white'
+        fontWeight: "bold",
+        color: "white",
       },
-      android:{
+      android: {
         fontSize: 23,
-        fontWeight: 'bold',
-        color: 'white'
-      }
-    })
-    
+        fontWeight: "bold",
+        color: "white",
+      },
+    }),
   },
   body: {
     width: "90%",
@@ -184,7 +242,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     // backgroundColor: "#ebf2f2",
     backgroundColor: "#fff",
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,

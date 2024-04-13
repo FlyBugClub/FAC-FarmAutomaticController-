@@ -184,9 +184,7 @@ export default class User extends Component {
               ref={this.bottomSheetRef}
               snapPoints={this.snapPoint}
               enablePanDownToClose={true}
-              // initialSnapIndex={-1}
               index={this.state.isBottomSheetOpen ? 0 : -1}
-              inin
             >
               <View>
                 <Text style={[{ color: "gray", fontSize: 20, marginLeft: 10 }]}>

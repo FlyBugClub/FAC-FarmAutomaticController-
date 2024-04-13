@@ -40,7 +40,7 @@ export default class Login extends Component {
     }));
     const { isChecked } = this.state;
     if (isChecked) {
-      this.setState({ status: "Show password" });
+      this.setState({ status:  "Show password" });
       this.setState({ secureTextEntry: true });
     } else {
       this.setState({ status: "Hide password" });
