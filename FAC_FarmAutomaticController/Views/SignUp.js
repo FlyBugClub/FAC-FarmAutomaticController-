@@ -59,9 +59,9 @@ export default class SignUp extends Component {
             if (result) {
               if (result == "Added Success") {
                 this.props.navigation.navigate("Login");
-              } else if (result == "email is already use") {
-                this.setState({ msg: "email is already use" });
-              } else this.setState({ msg: "some thing is wrong" });
+              } else if (result["Message"] == "email is already use") {
+                this.setState({ msg: "Email is already use" });
+              } else this.setState({ msg: "Network connect fail"});
             }
           } else
             this.setState({
@@ -69,8 +69,8 @@ export default class SignUp extends Component {
             });
         } else
           this.setState({ msg: "Password must have at least 6 characters" });
-      } else this.setState({ msg: "invalid email" });
-    } else this.setState({ msg: "invalid username" });
+      } else this.setState({ msg: "Invalid email" });
+    } else this.setState({ msg: "Invalid username" });
   };
 
   validateEmail = (email) => {
@@ -164,7 +164,7 @@ export default class SignUp extends Component {
                   secureTextEntry={true}
                 />
               </View>
-              <Text>{msg}</Text>
+              <Text>{i18next.t(msg)}</Text>
               <TouchableOpacity
                 onPress={this.LoginPage}
                 style={styles.bntLogin}

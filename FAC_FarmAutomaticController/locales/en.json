@@ -63,5 +63,14 @@
   "humid sensor name": "humid sensor name",
   "ph sensor name": "ph sensor name",
   "Invalide QR code": "Invalide QR code",
-  "Tap to Scan Again": "Tap to Scan Again"
+  "Tap to Scan Again": "Tap to Scan Again",
+  "Email is already use": "Email is already use",
+  "Some thing is wrong": "Some thing is wrong",
+  "Invalid email": "Invalid email",
+  "Invalid username": "Invalid username",
+  "Password must have at least 6 characters": "Password must have at least 6 characters",
+  "Network connect fail": "Network connect fail",
+  "This device is already use": "This device is already use",
+  "Name farm is null": "Name farm is null",
+  "Scan QR Code again": "Scan QR Code again"
 }

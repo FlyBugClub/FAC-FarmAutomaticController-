@@ -77,9 +77,9 @@ export default class AddFarmForm extends Component {
             
           } else if (result["Message"] == "esp is already use")
            {
-            this.setState({ msg: "this device is already use" });
+            this.setState({ msg: "This device is already use" });
           }
-           else this.setState({ msg: "some thing is wrong" });
+           else this.setState({ msg: "Network connect fail" });
         }
       } else this.setState({ msg: "Name farm is null" });
     } else this.setState({ msg: "Scan QR Code again" });

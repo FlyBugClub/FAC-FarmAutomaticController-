@@ -97,10 +97,10 @@ export default class Login extends Component {
           this.setState({ msg: "" });
           this.props.navigation.navigate("TabNavigator");
         } else {
-          this.setState({ msg: i18next.t("email or password are incorrect") });
+          this.setState({ msg: i18next.t("Email or password are incorrect") });
         }
       } else
-        this.setState({ msg: i18next.t("email or password are incorrect") });
+        this.setState({ msg: i18next.t("Email or password are incorrect") });
     } catch (error) {
       console.error("Error handling login:", error);
       this.setState({ msg: i18next.t("An error occurred") });
@@ -167,7 +167,7 @@ export default class Login extends Component {
                     secureTextEntry={secureTextEntry}
                   />
                 </View>
-                <Text>{msg}</Text>
+                <Text>{i18next.t(msg)}</Text>
                 <View style={styles.functionArea}>
                   <View>
                     <TouchableOpacity

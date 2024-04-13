@@ -54,7 +54,7 @@
     "Device name": "Tên thiết bị",
     "Farm house": "Nông trại",
     "An error occurred": "Đã xảy ra lỗi",
-    "email or password are incorrect": "Mật khẩu hoặc tài khoản không chính xác",
+    "Email or password are incorrect": "Mật khẩu hoặc tài khoản không chính xác",
     "Checkout": "Thanh toán",
     "Setting": "Cài đặt",
     "Update Pakage": "Nâng cấp",
@@ -63,5 +63,14 @@
     "humid sensor name": "Tên cảm biến độ ẩm",
     "ph sensor name": "Tên cảm biến pH",
     "Invalide QR code": "Mã QR không khả dụng",
-    "Tap to Scan Again": "Nhấn để quét lại"
+    "Tap to Scan Again": "Nhấn để quét lại",
+    "Email is already use": "Email đã được sử dụng",
+    "Some thing is wrong": "Hệ thống có vấn đề",
+    "Invalid email": "Email không khả dụng",
+    "Invalid username": "Tên người dùng không khả dụng",
+    "Password must have at least 6 characters": "Mật khẩu phải it nhất 6 ký tự",
+    "Network connect fail": "Lỗi kết nối mạng",
+    "This device is already use": "Thiệt bị đã được sử dụng",
+    "Name farm is null": "Tên nông trại rỗng",
+    "Scan QR Code again": "Quét lại mã QR"
   }
