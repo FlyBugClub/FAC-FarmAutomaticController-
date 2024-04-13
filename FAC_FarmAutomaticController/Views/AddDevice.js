@@ -12,150 +12,147 @@ import {
   Keyboard,
 } from "react-native";
 
-
 import { Picker } from "@react-native-picker/picker";
 import { LinearGradient } from "expo-linear-gradient";
 import i18next, { languageResources } from "../services/i18next";
 import { index } from "d3";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
+import AppLoader2 from "./AppLoader2.js";
 
 export default class AddDevice extends Component {
-
-  
   OpenCamera = () => {
     console.log("Open Camera");
     this.props.navigation.navigate("CameraConnectDevice");
   };
 
   state = {
-    msg : "",
+    msg: "",
     selecedCat: "",
-    dht_name:"",
-    ph_name:"",
-    bc_name:"",
+    dht_name: "",
+    ph_name: "",
+    bc_name: "",
     selectedLanguage: "",
-    category :[],
-    dht_id:"",
-    ph_id:"",
-    bc_id:"",
+    category: [],
+    dht_id: "",
+    ph_id: "",
+    bc_id: "",
   };
-  
+
   async onValueChangeCat(value) {
     this.setState({ selecedCat: value });
   }
+
   static contextType = MyContext;
+
   componentDidMount() {
     const { route } = this.props;
-    const {id_bc,id_dht, id_ph } = route.params || {};
-    
+    const { id_bc, id_dht, id_ph } = route.params || {};
+
     this.setState({ bc_id: id_bc });
     this.setState({ dht_id: id_dht });
     this.setState({ ph_id: id_ph });
-    this.getFarm()
- }
- getFarm = () => {
-  const {dataArray} = this.context
-  const Farmlist = [];
-  Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
-    const farm = {};
-    // console.log(obj["name_esp"])
-    farm["itemName"] = obj["name"]
-    Farmlist.push(farm)
-    // console.log(obj["name"])
-  });
-  this.setState({category : Farmlist})
-}
+    this.getFarm();
+  }
+  getFarm = () => {
+    const { dataArray } = this.context;
+    const Farmlist = [];
+    Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
+      const farm = {};
+      // console.log(obj["name_esp"])
+      farm["itemName"] = obj["name"];
+      Farmlist.push(farm);
+      // console.log(obj["name"])
+    });
+    this.setState({ category: Farmlist });
+  };
   // console.log(dataArray[0])
   createEquip = async () => {
-  const {dataArray} = this.context
-    const {dht_name,ph_name,bc_name,selecedCat,ph_id,dht_id,bc_id} = this.state
+    // Hiển thị loading
+    this.setState({ isLoading: true });
+
+    const { dataArray } = this.context;
+    const { dht_name, ph_name, bc_name, selecedCat, ph_id, dht_id, bc_id } =
+      this.state;
     // console.log(selecedCat)
-    if(dht_id !== ""){
-      if(selecedCat !== "")
-      {
-        this.setState({msg:""})
-        if(bc_name !== "")
-        {
-          this.setState({msg:""})
-          if(dht_name !== "")
-          {
-            this.setState({msg:""})
-            if(ph_name !== "")
-            {
-              this.setState({msg:""})
+    if (dht_id !== "") {
+      if (selecedCat !== "") {
+        this.setState({ msg: "" });
+        if (bc_name !== "") {
+          this.setState({ msg: "" });
+          if (dht_name !== "") {
+            this.setState({ msg: "" });
+            if (ph_name !== "") {
+              this.setState({ msg: "" });
               var id_esp = "";
               Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
                 const farm = {};
-                if(obj["name"] === selecedCat)
-                {
-                  id_esp = obj["id_esp"]
+                if (obj["name"] === selecedCat) {
+                  id_esp = obj["id_esp"];
                 }
               });
               const body = {
                 id_esp: id_esp,
-                id_sensor : dht_id,
+                id_sensor: dht_id,
                 name_sensor: dht_name,
                 expectedValues: 50.0,
-                min_max_values: "60/90"
-              }
-              var result_dht = await  this.postfunction("sensormanager",body)
+                min_max_values: "60/90",
+              };
+              var result_dht = await this.postfunction("sensormanager", body);
               // console.log(result_dht)
-              if (result_dht === "success")
-              {
+              if (result_dht === "success") {
                 const body_ph = {
                   id_esp: id_esp,
-                  id_sensor : ph_id,
+                  id_sensor: ph_id,
                   name_sensor: ph_name,
                   expectedValues: 50.0,
-                  min_max_values: "5/10"
-                }
-                var result_ph = await  this.postfunction("sensormanager",body_ph)
-                console.log(result_ph)
-                if (result_ph === "success")
-                {
+                  min_max_values: "5/10",
+                };
+                var result_ph = await this.postfunction(
+                  "sensormanager",
+                  body_ph
+                );
+                console.log(result_ph);
+                if (result_ph === "success") {
                   const body_bc = {
-                  id_esp: id_esp,
-                  id_equipment : bc_id,
-                  name_equipment: bc_name,
-                  automode: 0,
-                  id_sensor: dht_id+"/"+ph_id
-                }
-                var result_bc = await  this.postfunction("equidmentmanager",body_bc)
-                console.log(result_bc)
-                if(result_bc === "success")
-                {
-                  this.props.navigation.navigate("Home");
-                }
+                    id_esp: id_esp,
+                    id_equipment: bc_id,
+                    name_equipment: bc_name,
+                    automode: 0,
+                    id_sensor: dht_id + "/" + ph_id,
+                  };
+                  var result_bc = await this.postfunction(
+                    "equidmentmanager",
+                    body_bc
+                  );
+                  console.log(result_bc);
+                  if (result_bc === "success") {
+                    this.props.navigation.navigate("Home");
+                  }
                 }
               }
               // if (result) {
               //   if (result == "Success") {
               //     console.log("ok")
-              //     
-                  
+              //
+
               //   } else if (result["Message"] == "sensor is already usee") {
               //     this.setState({ msg: "this equipment is already use" });
               //   } else this.setState({ msg: "some thing is wrong" });
               // }
-  
-  
-  
-            }
-          else this.setState({msg:"The ph sensor has not yet been named"})
-          }
-          else this.setState({msg:"The dht sensor has not yet been named"})
-        }
-        else this.setState({msg:"The pump has not yet been named"})
-      }
-      else this.setState({msg:"choose farm"})
-    }
-    else this.setState({msg:"scan qr code again"})
+
+              this.setState({ isLoading: false });
+            } else
+              this.setState({ msg:  "The ph sensor has not yet been named" });
+          } else
+            this.setState({ msg: "The dht sensor has not yet been named" });
+        } else this.setState({ msg: "The pump has not yet been named" });
+      } else this.setState({ msg: "choose farm" });
+    } else this.setState({ msg: "scan qr code again" });
   };
 
-
-  postfunction = async (route,body) => {
-    const url = apiUrl + route ;
+  postfunction = async (route, body) => {
+    const url = apiUrl + route;
     let result = await fetch(url, {
       method: "POST",
       headers: {
@@ -172,13 +169,11 @@ export default class AddDevice extends Component {
       // }),
     });
     result = await result.json();
-    
-    return result;
-  }
 
+    return result;
+  };
 
   render() {
-    
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#2BA84A" />
@@ -214,16 +209,15 @@ export default class AddDevice extends Component {
                   style={styles.input}
                   onChangeText={(text) => this.setState({ bc_name: text })}
                 />
-                 <TextInput
+                <TextInput
                   placeholder={i18next.t("humid sensor name")}
                   style={styles.input}
                   onChangeText={(text) => this.setState({ dht_name: text })}
                 />
-                 <TextInput
+                <TextInput
                   placeholder={i18next.t("ph sensor name")}
                   style={styles.input}
                   onChangeText={(text) => this.setState({ ph_name: text })}
-
                 />
                 <View style={styles.optionArea}>
                   <View>
@@ -247,11 +241,14 @@ export default class AddDevice extends Component {
                     </Picker>
                   </View>
                 </View>
-                <Text>{this.state.msg}</Text>
+                <Text>{i18next.t(this.state.msg)}</Text>
               </View>
-              
+              {isLoading && <AppLoader2 />}
               <View style={{ alignItems: "center", justifyContent: "center" }}>
-                <TouchableOpacity style={styles.btnAdd} onPress={this.createEquip}>
+                <TouchableOpacity
+                  style={styles.btnAdd}
+                  onPress={this.createEquip}
+                >
                   <Text style={styles.btnText}>{i18next.t("Create")}</Text>
                 </TouchableOpacity>
               </View>

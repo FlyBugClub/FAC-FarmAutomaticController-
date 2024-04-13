@@ -148,13 +148,13 @@ export default class Home extends Component {
                 }}
               >
                 <Text style={{ fontSize: 13, color: "#777777" }}>
-                  Humidiry: {data[index]["sensor"]["sl_dht"]}
+                  {i18next.t('Humidity')}: {data[index]["sensor"]["sl_dht"]}
                 </Text>
                 <Text style={{ fontSize: 13, color: "#777777" }}>
-                  pH: {data[index]["sensor"]["sl_ph"]}
+                {i18next.t('pH')}: {data[index]["sensor"]["sl_ph"]}
                 </Text>
                 <Text style={{ fontSize: 13, color: "#777777" }}>
-                  Water pump: {data[index]["bc"]["sl"]}
+                {i18next.t('Water pump')}: {data[index]["bc"]["sl"]}
                 </Text>
               </View>
             </TouchableOpacity>

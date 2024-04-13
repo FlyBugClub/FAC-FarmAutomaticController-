@@ -120,7 +120,7 @@ export default class AddFarmForm extends Component {
                   onChangeText={(text) => this.setState({ descript: text })}
                   multiline={true}
                 />
-                <Text>{msg}</Text>
+                <Text>{i18next.t(msg)}</Text>
                 <TouchableOpacity style={styles.btnAdd} onPress={this.createFarm}>
                   <Text style={styles.btnText}>{i18next.t("Create")}</Text>
                   
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     paddingBottom: 3,
     paddingLeft: 10,
     paddingRight: 10,
-    backgroundColor: "#80b918",
+    backgroundColor: "#2BA84A",
     borderRadius: 20,
   },
   btnQrCodeText: {
