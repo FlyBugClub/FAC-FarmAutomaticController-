@@ -79,21 +79,23 @@ export default class Login extends Component {
     const { email, password } = this.state;
     const { addDataAtIndex } = this.context;
     const url = apiUrl + `login/${email}/${password}`;
-
+    console.log(url)
     // Hiển thị loading
     this.setState({ isLoading: true });
 
     try {
       if (email != "" && password != "") {
         const response = await fetch(url);
-        if (!response.ok) {1
+        if (!response.ok) {
           this.setState({ msg: "error" });
           return;
         }
         const json = await response.json();
-        if (json != null) {
+        console.log(json);
+        if (json === "Login_Success") {
           // const combinedJson = Object.assign({}, json[0], json[1],json[2]);
-          addDataAtIndex(json[0], 0);
+          const email_json = {"user":{"gmail":email}}
+          addDataAtIndex(email_json, 0);
           this.setState({ msg: "" });
           this.props.navigation.navigate("TabNavigator");
         } else {

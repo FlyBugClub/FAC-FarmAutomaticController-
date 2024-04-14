@@ -75,7 +75,9 @@ export default class User extends Component {
     console.log("Pakage Premium Page");
     this.props.navigation.navigate("PremiumPakage");
   };
-
+  signout = () =>{
+    this.props.navigation.navigate("Login");
+  }
   render() {
     const { dataArray } = this.context;
     return (
@@ -101,13 +103,13 @@ export default class User extends Component {
               </View>
               <View style={{ marginLeft: 10, marginRight: 10 }}>
                 <Text style={styles.textInfo}>
-                  {i18next.t("Username")}: {dataArray[0]["name"]}
+                  {i18next.t("Username")}: {dataArray[0]["user"]["name"]}
                 </Text>
                 <Text style={styles.textInfo}>
-                  Email: {dataArray[0]["gmail"]}
+                  Email: {dataArray[0]["user"]["gmail"]}
                 </Text>
                 <Text style={styles.textInfo}>
-                  {i18next.t("Phone")}: {dataArray[0]["phone_no"]}
+                  {i18next.t("Phone")}: {dataArray[0]["user"]["phone_no"]}
                 </Text>
               </View>
             </View>
@@ -172,7 +174,7 @@ export default class User extends Component {
               </View>
               <View style={styles.line}></View>
               <View style={styles.settingContent}>
-                <TouchableOpacity style={styles.btn}>
+                <TouchableOpacity style={styles.btn} onPress={this.signout}>
                   <Text style={[styles.text]}>{i18next.t("Sign out")}</Text>
                 </TouchableOpacity>
               </View>
