@@ -23,6 +23,7 @@ export default class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      connect: "connected",
       refresh: false,
       listfarm: [],
     };
@@ -53,15 +54,15 @@ export default class Home extends Component {
       apiUrl +
       `login/${dataArray[0]["user"]["gmail"]}/${dataArray[0]["user"]["password"]}`;
     const response = await fetch(url);
-        if (!response.ok) {
-          this.setState({ msg: "error" });
-          return;
-        }
-        const json = await response.json();
-        // console.log(json[0])
-        
-        this.setState({listfarm : json[0]})
-  }
+    if (!response.ok) {
+      this.setState({ msg: "error" });
+      return;
+    }
+    const json = await response.json();
+    // console.log(json[0])
+
+    this.setState({ listfarm: json[0] });
+  };
 
   DetailPage = (index) => {
     // console.log(index)
@@ -86,6 +87,7 @@ export default class Home extends Component {
 
   render() {
     const { refresh } = this.state;
+    const { connect } = this.state;
 
     const { dataArray } = this.context;
     const { listfarm } = this.state;
@@ -123,17 +125,36 @@ export default class Home extends Component {
                   Farm {index}: {data[index]["name"]}
                 </Text>
                 <View style={styles.connectArea}>
-                  <View style={styles.dot}></View>
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      marginLeft: 2,
-                      marginRight: 2,
-                      fontSize: 13,
-                    }}
-                  >
-                    {i18next.t("Connected")}
-                  </Text>
+                  {connect === "connected" && (
+                    <>
+                      <View style={[styles.dot, {backgroundColor: "#80b918"}]}></View>
+                      <Text
+                        style={{
+                          fontWeight: "bold",
+                          marginLeft: 2,
+                          marginRight: 2,
+                          fontSize: 13,
+                        }}
+                      >
+                        {i18next.t("Connected")}
+                      </Text>
+                    </>
+                  )}
+                  {connect === "disconnected" && (
+                    <>
+                      <View style={[styles.dot, {backgroundColor: "#E31C1C"}]}></View>
+                      <Text
+                        style={{
+                          fontWeight: "bold",
+                          marginLeft: 2,
+                          marginRight: 2,
+                          fontSize: 13,
+                        }}
+                      >
+                        {i18next.t("Disconneted")}
+                      </Text>
+                    </>
+                  )}
                 </View>
               </View>
               <Text style={{ fontSize: 13, marginTop: 5, marginLeft: 4 }}>
@@ -148,13 +169,13 @@ export default class Home extends Component {
                 }}
               >
                 <Text style={{ fontSize: 13, color: "#777777" }}>
-                  {i18next.t('Humidity')}: {data[index]["sensor"]["sl_dht"]}
+                  {i18next.t("Humidity")}: {data[index]["sensor"]["sl_dht"]}
                 </Text>
                 <Text style={{ fontSize: 13, color: "#777777" }}>
-                {i18next.t('pH')}: {data[index]["sensor"]["sl_ph"]}
+                  {i18next.t("pH")}: {data[index]["sensor"]["sl_ph"]}
                 </Text>
                 <Text style={{ fontSize: 13, color: "#777777" }}>
-                {i18next.t('Water pump')}: {data[index]["bc"]["sl"]}
+                  {i18next.t("Water pump")}: {data[index]["bc"]["sl"]}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -267,7 +288,6 @@ const styles = StyleSheet.create({
     height: 7,
     marginLeft: 2,
     marginRight: 2,
-    backgroundColor: "#80b918",
     borderRadius: 12,
   },
 });
