@@ -72,5 +72,12 @@
   "Network connect fail": "Network connect fail",
   "This device is already use": "This device is already use",
   "Name farm is null": "Name farm is null",
-  "Scan QR Code again": "Scan QR Code again"
+  "Scan QR Code again": "Scan QR Code again",
+  "Farm": "Farm",
+  "Set time": "Set time",
+  "Hour": "Hour",
+  "Minuts": "Minuts",
+  "Set duration":"Set duration",
+  "Seconds": "Seconds",
+  "Advance setting": "Advance setting"
 }

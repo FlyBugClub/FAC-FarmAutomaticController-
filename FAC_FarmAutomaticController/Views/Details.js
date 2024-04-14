@@ -39,10 +39,10 @@ init({
   sync: {},
 });
 const options = {
-  host: 'broker.emqx.io',
+  host: "broker.emqx.io",
   port: 8083,
-  path: '/testTopic',
-  id: 'id_' + parseInt(Math.random()*100000)
+  path: "/testTopic",
+  id: "id_" + parseInt(Math.random() * 100000),
 };
 
 client = new Paho.MQTT.Client(options.host, options.port, options.id);
@@ -64,9 +64,9 @@ const chartConfig = {
 };
 const screenWidth = Dimensions.get("window").width;
 
-export default class Details extends Component{
+export default class Details extends Component {
   constructor(props) {
-    console.log("checkstate")
+    console.log("checkstate");
     super(props);
     this.state = {
       status_mqtt: "disconnected",
@@ -124,8 +124,7 @@ export default class Details extends Component{
     // this.setShowPicker = this.setShowPicker.bind(this);
     client.onConnectionLost = this.onConnectionLost;
     client.onMessageArrived = this.onMessageArrived;
-    console.log("checkstateend")
-
+    console.log("checkstateend");
   }
 
   static contextType = MyContext;
@@ -139,7 +138,6 @@ export default class Details extends Component{
     console.log("Advance Setting Device Page");
     this.props.navigation.navigate("AdvanceSettingDevice"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
-
 
   DateTimePage = () => {
     console.log("DateTime Page");
@@ -190,10 +188,10 @@ export default class Details extends Component{
 
   componentDidMount() {
     flag = false;
-    this.getvalueequipment(); 
-    this.connect()
-     // Gọi hàm push vào mảng khi component được mount
-     this.intervalId = setInterval(() => {
+    this.getvalueequipment();
+    this.connect();
+    // Gọi hàm push vào mảng khi component được mount
+    this.intervalId = setInterval(() => {
       // Thực hiện các hành động bạn muốn lặp lại sau mỗi 3 giây ở đây
       // Ví dụ: Gọi hàm kiểm tra trạng thái
 
@@ -215,52 +213,44 @@ export default class Details extends Component{
 
   componentWillUnmount() {
     // Ngắt kết nối MQTT tại đây
-    if (client.isConnected()== true)
-    {
+    if (client.isConnected() == true) {
       client.disconnect();
     }
-    console.log("ngatketnoi")
-}
+    console.log("ngatketnoi");
+  }
 
   connect = () => {
-    if (this.state.status_mqtt !== "isFetching" && this.state.status_mqtt !== "connected" && client.isConnected()== false)
-    {
-      
-      this.setState(
-        { status_mqtt: 'isFetching' },
-        () => {
-          client.connect({
-            onSuccess: this.onConnect,
-            useSSL: false,
-            timeout: 3,
-            onFailure: this.onFailure
-          });
-        }
-      );
-    console.log("conncet: OK")
+    if (
+      this.state.status_mqtt !== "isFetching" &&
+      this.state.status_mqtt !== "connected" &&
+      client.isConnected() == false
+    ) {
+      this.setState({ status_mqtt: "isFetching" }, () => {
+        client.connect({
+          onSuccess: this.onConnect,
+          useSSL: false,
+          timeout: 3,
+          onFailure: this.onFailure,
+        });
+      });
+      console.log("conncet: OK");
     }
-  }
+  };
 
   onConnect = () => {
-    
     this.subscribeTopic();
-    
-    this.setState({ status_mqtt: 'connected' });
-    console.log('onConnect: OK');
-  }
 
-  
+    this.setState({ status_mqtt: "connected" });
+    console.log("onConnect: OK");
+  };
+
   onFailure = (err) => {
     console.log("Connect failed!");
     console.log(err);
-    this.setState(
-      { status_mqtt: 'fail' },
-      () => {
-        this.connect();
-      }
-      
-    );
-    
+    this.setState({ status_mqtt: "fail" }, () => {
+      this.connect();
+    });
+
     // this.setState({ status: '', subscribedTopic: '' });
   };
 
@@ -269,7 +259,6 @@ export default class Details extends Component{
     console.log("ok");
   };
 
-  
   onConnectionLost = (responseObject) => {
     if (responseObject.errorCode !== 0 && responseObject !== null) {
       console.log("onConnectionLost:" + responseObject.errorMessage);
@@ -279,7 +268,6 @@ export default class Details extends Component{
       this.onConnect();
     });
   };
-
 
   toogle1in3 = (setIndex, buttonIndex) => {
     const { sliderValue } = this.state;
@@ -492,10 +480,10 @@ export default class Details extends Component{
         this.setState({ msg: "error" });
         return;
       }
-      console.log("_____________")
+      console.log("_____________");
       const json = await response.json();
-      console.log(json[0])
-      console.log("heheeh")
+      console.log(json[0]);
+      console.log("heheeh");
 
       // console.log(json[0])
       for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -559,7 +547,7 @@ export default class Details extends Component{
       let secondsbe = dateTimebegin.getSeconds();
 
       let hoursen = dateTimeend.getHours();
-let minutesen = dateTimeend.getMinutes();
+      let minutesen = dateTimeend.getMinutes();
       let secondsen = dateTimeend.getSeconds();
       // console.log(`Thời gian: ${hours}:${minutes}:${seconds}`);
 
@@ -586,7 +574,6 @@ let minutesen = dateTimeend.getMinutes();
         ], // Màu cho dataset 6 (màu xanh dương)
       ];
 
-
       // console.log(sum_sensor/2)
       for (let i = 0; i < sum_sensor / 2; i++) {
         let valuedht = [];
@@ -611,7 +598,6 @@ let minutesen = dateTimeend.getMinutes();
             valueph.push(0);
           }
         }
-      
 
         // Chọn màu sắc từ mảng colors
         let colordht = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
@@ -629,41 +615,39 @@ let minutesen = dateTimeend.getMinutes();
           color: (opacity = 1) => `rgba(${colorph}, ${opacity})`,
           strokeWidth: 2, // optional
         });
-        console.log("@2")
+        console.log("@2");
       }
-      console.log("@3")
+      console.log("@3");
 
-    
-    var reversedArray = newlabels.reverse();
-    
-    if (reversedArray[0] === "NaN:NaN:NaN" && newdatasets.length === 0 && newlegend.length ===0)
-    {
-      
-      const newData = {
-        labels: [""],
-        datasets: [
-          {
-            data: [0],
-          }
-        ],
-        legend: ["0"], // optional
+      var reversedArray = newlabels.reverse();
+
+      if (
+        reversedArray[0] === "NaN:NaN:NaN" &&
+        newdatasets.length === 0 &&
+        newlegend.length === 0
+      ) {
+        const newData = {
+          labels: [""],
+          datasets: [
+            {
+              data: [0],
+            },
+          ],
+          legend: ["0"], // optional
+        };
+        this.setState({ datachart: newData });
+      } else {
+        const newData = {
+          labels: reversedArray,
+          datasets: newdatasets,
+          legend: newlegend, // optional
+        };
+        this.setState({ datachart: newData });
       }
-      this.setState({ datachart: newData });
+      // console.log("@3")
 
-    }
-    else 
-    {
-      const newData = { 
-        labels: reversedArray,
-        datasets: newdatasets,
-        legend: newlegend, // optional
-      };
-this.setState({ datachart: newData });
-    }
-    // console.log("@3")
-    
-    console.log(datachart)
-    isFunctionRunning = false;
+      console.log(datachart);
+      isFunctionRunning = false;
     }
   };
 
@@ -687,70 +671,57 @@ this.setState({ datachart: newData });
     this.setState({ showPicker: false }); // Đặt showPicker thành false để ẩn picker
     this.toggleBottomSheet(); // Gọi hàm toggleBottomSheet để đóng bottomSheet
   };
-  onMessageArrived = (message )=> {
+  onMessageArrived = (message) => {
     const slidebarvalue = [];
     const value = [];
     const newSwitchStates = [];
-      // console.log(typeof message)
-      // console.log(message.payloadString);
-      const jsonData = JSON.parse(message.payloadString);
-      // console.log(jsonData["equipment0"])
-      let count = 0;
-      for (const key in jsonData) {
-        const SwitchStates = [];
-        if (key.startsWith("equipment")) {
-          const data = jsonData[key];
-          slidebarvalue.push(data["humid_expect"])
-          value.push(data["humid_expect"])
-          
-           if (data["automode"] === 0 && data["status"] === 1)
-          {
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 1 && data["status"] === 1 )
-          {
-            SwitchStates.push(true)
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 2 && data["status"] === 1 )
-          {
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-            SwitchStates.push(true)
-          }
-          else if (data["automode"] === 0)
-          {
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 1)
-          {
-            SwitchStates.push(false)
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 2)
-          {
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-            SwitchStates.push(true)
-          }
-          
+    // console.log(typeof message)
+    // console.log(message.payloadString);
+    const jsonData = JSON.parse(message.payloadString);
+    // console.log(jsonData["equipment0"])
+    let count = 0;
+    for (const key in jsonData) {
+      const SwitchStates = [];
+      if (key.startsWith("equipment")) {
+        const data = jsonData[key];
+        slidebarvalue.push(data["humid_expect"]);
+        value.push(data["humid_expect"]);
 
-          newSwitchStates.push(SwitchStates)
-
-
-          count++;
+        if (data["automode"] === 0 && data["status"] === 1) {
+          SwitchStates.push(true);
+          SwitchStates.push(false);
+          SwitchStates.push(false);
+        } else if (data["automode"] === 1 && data["status"] === 1) {
+          SwitchStates.push(true);
+          SwitchStates.push(true);
+          SwitchStates.push(false);
+        } else if (data["automode"] === 2 && data["status"] === 1) {
+          SwitchStates.push(true);
+          SwitchStates.push(false);
+          SwitchStates.push(true);
+        } else if (data["automode"] === 0) {
+          SwitchStates.push(false);
+          SwitchStates.push(false);
+          SwitchStates.push(false);
+        } else if (data["automode"] === 1) {
+          SwitchStates.push(false);
+          SwitchStates.push(true);
+          SwitchStates.push(false);
+        } else if (data["automode"] === 2) {
+          SwitchStates.push(false);
+          SwitchStates.push(false);
+          SwitchStates.push(true);
         }
-    }
-    console.log("______________")
 
-    console.log(value)
-    console.log(slidebarvalue)
+        newSwitchStates.push(SwitchStates);
+
+        count++;
+      }
+    }
+    console.log("______________");
+
+    console.log(value);
+    console.log(slidebarvalue);
 
     this.setState({ sliderValue: value });
     this.setState({ slidebar: slidebarvalue });
@@ -784,7 +755,7 @@ this.setState({ datachart: newData });
     const gettimelist = [];
     const name_bc = [];
     const slidebarvalue = [];
-   
+
     const buttonTime = [];
     const modalVisible = [];
     for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -807,19 +778,18 @@ this.setState({ datachart: newData });
           const timeB = new Date(`1970-01-01T${b}`);
           return timeA - timeB;
         });
-        gettimelist.push(time)
-        
-      } 
-      buttonTime.push(false)
-      modalVisible.push(false)
-      
-      slidebarvalue.push(50)
-      value.push(50)
-      name_bc.push(json[0][i]["name"])
+        gettimelist.push(time);
+      }
+      buttonTime.push(false);
+      modalVisible.push(false);
+
+      slidebarvalue.push(50);
+      value.push(50);
+      name_bc.push(json[0][i]["name"]);
     }
-    
-    this.setState({ modalVisible: modalVisible })
-    this.setState({ buttonTime: buttonTime })
+
+    this.setState({ modalVisible: modalVisible });
+    this.setState({ buttonTime: buttonTime });
     this.setState({ name_bc: name_bc });
     this.setState({ timelist: gettimelist });
     this.setState({ sliderValue: value });
@@ -838,33 +808,34 @@ this.setState({ datachart: newData });
   render() {
     const { dataArray } = this.context;
     //Switch
-    const {switchStates } = this.state;
+    const { switchStates } = this.state;
     const { datachart } = this.state;
 
     //API
-    const { name_bc,timelist,sliderValue, isEnabled } =this.state;
+    const { name_bc, timelist, sliderValue, isEnabled } = this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
     //DateTime
     const { dateTime, showPicker } = this.state;
- 
-    
+
     const deviceList = [];
-    
 
-
-    if ( name_bc !== 0 &&timelist.length !== 0 && sliderValue.length !== 0  && switchStates.length !== 0 )
-    {
-    //   flag = false;
+    if (
+      name_bc !== 0 &&
+      timelist.length !== 0 &&
+      sliderValue.length !== 0 &&
+      switchStates.length !== 0
+    ) {
+      //   flag = false;
       [...Array(dataArray[1]["bc"]["sl"])].forEach((_, index) => {
         // console.log(showPicker)
         var timeComponents = [];
 
         for (let i = 0; i < timelist[index].length; i++) {
           const time = timelist[index][i];
-          const timeParts = time.split(':'); // Tách thời gian thành các phần
-          const hourMinute = timeParts[0] + ':' + timeParts[1]; // Lấy giờ và phút
+          const timeParts = time.split(":"); // Tách thời gian thành các phần
+          const hourMinute = timeParts[0] + ":" + timeParts[1]; // Lấy giờ và phút
 
           timeComponents.push(
             <Text
@@ -909,14 +880,19 @@ this.setState({ datachart: newData });
             </View>
           );
         });
-       
-        
+
         deviceList.push(
           <View style={styles.optionArea} key={index}>
-            <Text style={styles.titleDevice}>{name_bc[index]}</Text>
+            <View style={styles.topDevice}>
+              <Text style={styles.titleDevice}>{name_bc[index]}</Text>
+              <TouchableOpacity onPress={this.AdvanceSettingDevicePage}>
+                <Image source={require('../assets/img/more.png')} style={styles.moreOption} />
+              </TouchableOpacity>
+            </View>
+            
             <View style={{}}>
               <View style={styles.function}>
-                <Text>{i18next.t('Custom')}</Text>
+                <Text>{i18next.t("Custom")}</Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#2BA84A" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -926,7 +902,7 @@ this.setState({ datachart: newData });
                   style={styles.switch}
                 />
 
-                <Text>{i18next.t('Auto')}</Text>
+                <Text>{i18next.t("Auto")}</Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#2BA84A" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -952,7 +928,7 @@ this.setState({ datachart: newData });
                 <Text>{sliderValue[index]}%</Text>
               </View>
               <View style={styles.function}>
-                <Text>{i18next.t('Timer')} </Text>
+                <Text>{i18next.t("Timer")} </Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#2BA84A" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -1079,7 +1055,40 @@ this.setState({ datachart: newData });
               bezier
             />
           </TouchableOpacity>
-          <Text>13/04/2024 5:31:24 - 14/04/2024 5:34:12</Text>
+          <View style={styles.dateTimeArea}>
+            <View style={[styles.flex, styles.dateTimePart]}>
+              <View style={styles.flex}>
+                <Image
+                  source={require("../assets/img/calendar.png")}
+                  style={styles.imgDateTimeNote}
+                />
+                <Text style={{color: 'white'}}>13/04/2024</Text>
+              </View>
+              <View style={styles.flex}>
+                <Image
+                  source={require("../assets/img/clock.png")}
+                  style={styles.imgDateTimeNote}
+                />
+                <Text style={{color: 'white'}}>5:31:24</Text>
+              </View>
+            </View>
+            <View style={[styles.flex, styles.dateTimePart]}>
+              <View style={styles.flex}>
+                <Image
+                  source={require("../assets/img/calendar.png")}
+                  style={styles.imgDateTimeNote}
+                />
+                <Text style={{color: 'white'}}>13/04/2024</Text>
+              </View>
+              <View style={styles.flex}>
+                <Image
+                  source={require("../assets/img/clock.png")}
+                  style={styles.imgDateTimeNote}
+                />
+                <Text style={{color: 'white'}}>5:31:24</Text>
+              </View>
+            </View>
+          </View>
 
           {/* <View style={styles.midle}>
             <View style={styles.alarm}>
@@ -1254,6 +1263,11 @@ class BtnCustomMode extends Component {
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   midle: {
     justifyContent: "center",
     alignItems: "center",
@@ -1281,7 +1295,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   TitleTop: {
-    top: -5,
+    top: -15,
     textAlign: "center",
     fontSize: 28,
     fontWeight: "bold",
@@ -1293,6 +1307,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+  },
+  dateTimeArea: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  dateTimePart: {
+    backgroundColor: '#2BA84A',
+    paddingTop: 4,
+    paddingBottom: 4,
+    paddingRight: 4,
+    borderRadius: 6
+  },
+  imgDateTimeNote: {
+    width: 14,
+    height: 14,
+    marginLeft: 4,
+    marginRight: 5,
+    tintColor: "#fff",
   },
   alarm: {
     width: "95%",
@@ -1344,9 +1377,20 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  topDevice: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: 5
+  },
   titleDevice: {
     fontWeight: "bold",
     fontSize: 16,
+  },
+  moreOption: {
+    width: 20,
+    height:20,
+    tintColor: '#333'
   },
   function: {
     gap: 3,
@@ -1439,7 +1483,7 @@ const styles = StyleSheet.create({
         height: 20,
         marginBottom: 20,
         tintColor: "#DEDEDE",
-      }
+      },
     }),
   },
   line: {
