@@ -62,11 +62,9 @@ const chartConfig = {
   decimalPlaces: 0, // Số lượng chữ số thập phân
   fromZero: true,
 };
-
 const screenWidth = Dimensions.get("window").width;
 
 export default class Details extends Component{
-  
   constructor(props) {
     console.log("checkstate")
     super(props);
@@ -217,13 +215,15 @@ export default class Details extends Component{
 
   componentWillUnmount() {
     // Ngắt kết nối MQTT tại đây
-    
-    client.disconnect();
+    if (client.isConnected()== true)
+    {
+      client.disconnect();
+    }
     console.log("ngatketnoi")
 }
 
   connect = () => {
-    if (this.state.status_mqtt !== "isFetching" && this.state.status_mqtt !== "connected")
+    if (this.state.status_mqtt !== "isFetching" && this.state.status_mqtt !== "connected" && client.isConnected()== false)
     {
       
       this.setState(
@@ -238,7 +238,6 @@ export default class Details extends Component{
         }
       );
     console.log("conncet: OK")
-
     }
   }
 
@@ -250,25 +249,6 @@ export default class Details extends Component{
     console.log('onConnect: OK');
   }
 
-  // connect = () => {
-  //   if (this.state.status_mqtt !== "connected")
-  //   {
-  //   this.setState(
-  //     { status_mqtt: 'isFetching' },
-  //     () => {
-  //       client.connect({
-  //         userName: "cuong",
-  //         password: "11111111",
-  //         useSSL: false,
-  //         onSuccess: this.onConnect,
-  //         timeout: 3,
-  //         onFailure: this.onFailure
-  //       });
-  //     }
-  //   );
-  // }
-    
-  // }
   
   onFailure = (err) => {
     console.log("Connect failed!");
@@ -289,18 +269,17 @@ export default class Details extends Component{
     console.log("ok");
   };
 
+  
   onConnectionLost = (responseObject) => {
     if (responseObject.errorCode !== 0 && responseObject !== null) {
       console.log("onConnectionLost:" + responseObject.errorMessage);
     }
-    flag = true;
-    flag_mqtt = true;
-    // console.log("lalalala")
     this.setState({ status_mqtt: "disconnected" }, () => {
       console.log("reconnect");
       this.onConnect();
     });
   };
+
 
   toogle1in3 = (setIndex, buttonIndex) => {
     const { sliderValue } = this.state;

@@ -57,9 +57,10 @@ export default class SignUp extends Component {
             });
             result = await result.json();
             if (result) {
+              console.log(result)
               if (result == "Added Success") {
                 this.props.navigation.navigate("Login");
-              } else if (result == "email is already use") {
+              } else if (result["Message"] == "email is already use") {
                 this.setState({ msg: "email is already use" });
               } else this.setState({ msg: "some thing is wrong" });
             }

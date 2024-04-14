@@ -54,7 +54,7 @@ export default class AddFarmForm extends Component {
       if (name_esp !== "")
       {
         this.setState({ msg: ""})
-        console.log("hâhaaa");
+        
         const url = apiUrl + "esps";
         let result = await fetch(url, {
           method: "POST",

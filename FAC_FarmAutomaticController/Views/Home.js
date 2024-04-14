@@ -25,6 +25,7 @@ export default class Home extends Component {
     this.state = {
       refresh: false,
       listfarm: [],
+      msg:"",
     };
   }
   SignUpPage = () => {
@@ -33,34 +34,29 @@ export default class Home extends Component {
   };
 
   fetchData = async () => {
-    const { dataArray } = this.context;
+    const { dataArray,addDataAtIndex } = this.context;
+    // const { route } = this.props;
+    // const data = route.params;
+    console.log(dataArray[0]["user"]["gmail"])
     const url =
       apiUrl +
-      `login/${dataArray[0]["user"]["gmail"]}/${dataArray[0]["user"]["password"]}`;
-    const response = await fetch(url);
+      `getfarm/${dataArray[0]["user"]["gmail"]}`;
+      const response = await fetch(url);
+    // console.log("ok")
     if (!response.ok) {
       this.setState({ msg: "error" });
       return;
     }
+    // console.log(url)
     const json = await response.json();
-    console.log("heheaaa");
+    
+    addDataAtIndex(json[0], 0);
+    // console.log("heheaaa");
     this.setState({ listfarm: json[0] });
   };
 
   componentDidMount = async () => {
-    const { dataArray } = this.context;
-    const url =
-      apiUrl +
-      `login/${dataArray[0]["user"]["gmail"]}/${dataArray[0]["user"]["password"]}`;
-    const response = await fetch(url);
-        if (!response.ok) {
-          this.setState({ msg: "error" });
-          return;
-        }
-        const json = await response.json();
-        // console.log(json[0])
-        
-        this.setState({listfarm : json[0]})
+    this.fetchData();
   }
 
   DetailPage = (index) => {
@@ -86,15 +82,17 @@ export default class Home extends Component {
 
   render() {
     const { refresh } = this.state;
-
     const { dataArray } = this.context;
     const { listfarm } = this.state;
     const farmHouseList = [];
+    
+    var name_user = "";
     // const jsonObject = JSON.parse(dataArray[1]);
     var keyCount = 0;
     if (listfarm.length !== 0) {
-      // console.log("jaajaj")
+      console.log("jaajaj")
       // console.log(listfarm)
+      name_user = listfarm["user"]["name"]
       for (const key in listfarm["equipment"]) {
         keyCount = keyCount + 1;
       }
@@ -102,7 +100,7 @@ export default class Home extends Component {
         this.DetailPage(index);
       };
       // const farmHouseList = [];
-      // Sử dụng forEach để thêm các phần tử vào mảng items
+      
       [...Array(keyCount)].forEach((_, index) => {
         data[index] = Object.values(listfarm["equipment"])[index];
         // console.log(data)
@@ -172,7 +170,7 @@ export default class Home extends Component {
           >
             <SafeAreaView style={styles.header}>
               <Text style={styles.headerText}>
-                {i18next.t("Hello")}! {dataArray[0]["user"]["name"]}
+                {i18next.t("Hello")}! {name_user}
               </Text>
               <Text style={styles.headerText}>
                 {i18next.t("Have a nice Day")}
