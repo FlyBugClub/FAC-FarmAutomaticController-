@@ -122,12 +122,15 @@
                 }
             }            
     // countPumpActivations(formattedDateTime);
-    // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
-    
+    postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
+    postCountPumpToAPI("/api/equidmentvalues", formattedDateTime, id_sensor);
     
     // manageAutoControl();
-    // sendHelloMessage();
-    // client.loop();
+    
+    sendHelloMessage();
+    
+    
+    client.loop();
     sendMQTTMessage();
 
   }
@@ -192,16 +195,16 @@
   void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor ) {
     WiFiClientSecure client;
     HTTPClient http;
-    String api_url = "http://" + String(server_address) + url;
+    String api_url = "https://" + String(server_address) + url;
 
     http.begin(client, api_url);
     client.setInsecure();
 
     http.addHeader("Content-Type", "application/json");
-
+    Serial.println(formattedDateTime);
     StaticJsonDocument<256> doc;
-    doc["id_sensor"] = id_sensor;
-    doc["value"] = "22222";
+    doc["id_sensor"] = "SenSor0001";
+    doc["value"] = 88.0;
     doc["datetime"] = formattedDateTime;
     String payload;
     serializeJson(doc, payload);
@@ -225,7 +228,7 @@
   void postCountPumpToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
     WiFiClientSecure client;
     HTTPClient http;
-    String api_url = "https://" + String(server_address) + url  ;
+    String api_url = "https://" + String(server_address) + url;
 
     http.begin(client, api_url);
     client.setInsecure();
@@ -235,10 +238,8 @@
     StaticJsonDocument<256> doc;
     doc["id_equipment"] = "BC0001";
     doc["values"] = "20";
-    doc["status"] = "22222";
+    doc["status"] = "1";
     doc["datetime"] = formattedDateTime;
-    doc["autoMode"] = "1";
-    doc["id_sensor"] = "DHT0001-PH0001";
     String payload;
     serializeJson(doc, payload);
 
@@ -530,7 +531,7 @@
 
       doc["equiment"]["equiment0"];
       doc["equiment"]["equiment0"]["id_bc"] = "BC0001";
-      doc["equiment"]["equiment0"]["automode"] = "0";
+      doc["equiment"]["equiment0"]["automode"] = "2";
       doc["equiment"]["equiment0"]["expect_value"] = 85;
       doc["equiment"]["equiment0"]["status"] = 0;
 
@@ -622,7 +623,7 @@
   } else {
     Serial.println("Không kết nối được với máy chủ MQTT!");Serial.flush();
   }
-}
+  }
 
 //region MQTTX GET
   void callback(char* topic, byte* payload, unsigned int length) {
@@ -662,14 +663,14 @@
       int status = equimentData["status"];
 
       // Xử lý dữ liệu của thiết bị
-      Serial.println("automode ");Serial.flush();
+      Serial.print("automode ");Serial.flush();
       Serial.println(count);Serial.flush();
       Serial.println("get ve la: ");
       Serial.flush();
       Serial.println(automode);
       Serial.flush();
       processAutoMode(automode, expect_value, status, count);
-     count++;
+      count++;
     }
   }
   }
