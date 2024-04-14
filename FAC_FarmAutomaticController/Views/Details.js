@@ -492,8 +492,10 @@ export default class Details extends Component{
         this.setState({ msg: "error" });
         return;
       }
+      console.log("_____________")
       const json = await response.json();
-      // console.log(json[0])
+      console.log(json[0])
+      console.log("heheeh")
 
       // console.log(json[0])
       for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -502,6 +504,7 @@ export default class Details extends Component{
           id_check.push(json[0]["combo" + i.toString()]["PH"]["id"]);
         }
       }
+      // console.log(id_check)
 
       let sum_sensor =
         dataArray[1]["sensor"]["sl_dht"] + dataArray[1]["sensor"]["sl_ph"];
@@ -517,6 +520,7 @@ export default class Details extends Component{
           jsonObject[key] = value;
         }
       }
+      // console.log("@1")
 
       newlegend = id_check.filter(
         (item, index) => id_check.indexOf(item) === index
@@ -526,7 +530,7 @@ export default class Details extends Component{
           newlegend[i] = jsonObject[newlegend[i]];
         }
       }
-      // console.log(json[0]);
+      console.log(json[0]);
 
       var datelist = [];
       for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -555,7 +559,7 @@ export default class Details extends Component{
       let secondsbe = dateTimebegin.getSeconds();
 
       let hoursen = dateTimeend.getHours();
-      let minutesen = dateTimeend.getMinutes();
+let minutesen = dateTimeend.getMinutes();
       let secondsen = dateTimeend.getSeconds();
       // console.log(`Thời gian: ${hours}:${minutes}:${seconds}`);
 
@@ -564,6 +568,7 @@ export default class Details extends Component{
       newlabels.push("");
       newlabels.push("");
       newlabels.push(`${hoursen}:${minutesen}:${secondsen}`);
+      // console.log("@1")
 
       // console.log(newlabels)
       const colors = [
@@ -580,6 +585,7 @@ export default class Details extends Component{
           "0, 255, 0",
         ], // Màu cho dataset 6 (màu xanh dương)
       ];
+
 
       // console.log(sum_sensor/2)
       for (let i = 0; i < sum_sensor / 2; i++) {
@@ -605,9 +611,12 @@ export default class Details extends Component{
             valueph.push(0);
           }
         }
+      
+
         // Chọn màu sắc từ mảng colors
         let colordht = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
         let colorph = colors[i][1] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
+        // console.log("@2")
 
         // Thêm đối tượng dataset vào mảng
         newdatasets.push({
@@ -620,7 +629,9 @@ export default class Details extends Component{
           color: (opacity = 1) => `rgba(${colorph}, ${opacity})`,
           strokeWidth: 2, // optional
         });
+        console.log("@2")
       }
+      console.log("@3")
 
     
     var reversedArray = newlabels.reverse();
@@ -647,11 +658,11 @@ export default class Details extends Component{
         datasets: newdatasets,
         legend: newlegend, // optional
       };
-      this.setState({ datachart: newData });
+this.setState({ datachart: newData });
     }
+    // console.log("@3")
     
-    
-    // console.log(datachart)
+    console.log(datachart)
     isFunctionRunning = false;
     }
   };
@@ -852,6 +863,8 @@ export default class Details extends Component{
 
         for (let i = 0; i < timelist[index].length; i++) {
           const time = timelist[index][i];
+          const timeParts = time.split(':'); // Tách thời gian thành các phần
+          const hourMinute = timeParts[0] + ':' + timeParts[1]; // Lấy giờ và phút
 
           timeComponents.push(
             <Text
@@ -861,7 +874,7 @@ export default class Details extends Component{
                 { color: switchStates[index][2] ? "#333" : "#8A8A8A" },
               ]}
             >
-              {time}
+              {hourMinute}
             </Text>
           );
         }
@@ -934,6 +947,7 @@ export default class Details extends Component{
                     this.handleSliderComplete(index, value)
                   }
                   minimumTrackTintColor={"#81BB4D"}
+                  thumbTintColor={"#81BB4D"}
                 />
                 <Text>{sliderValue[index]}%</Text>
               </View>
@@ -1065,6 +1079,7 @@ export default class Details extends Component{
               bezier
             />
           </TouchableOpacity>
+          <Text>13/04/2024 5:31:24 - 14/04/2024 5:34:12</Text>
 
           {/* <View style={styles.midle}>
             <View style={styles.alarm}>

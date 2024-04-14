@@ -120,7 +120,7 @@ export default class AddDevice extends Component {
                     id_equipment: bc_id,
                     name_equipment: bc_name,
                     automode: 0,
-                    id_sensor: dht_id + "/" + ph_id,
+                    id_sensor: dht_id + "-" + ph_id,
                   };
                   var result_bc = await this.postfunction(
                     "equidmentmanager",
@@ -144,7 +144,7 @@ export default class AddDevice extends Component {
 
               this.setState({ isLoading: false });
             } else
-              this.setState({ msg:  "The ph sensor has not yet been named" });
+              this.setState({ msg: "The ph sensor has not yet been named" });
           } else
             this.setState({ msg: "The dht sensor has not yet been named" });
         } else this.setState({ msg: "The pump has not yet been named" });
@@ -176,7 +176,7 @@ export default class AddDevice extends Component {
 
   render() {
     const { isLoading } = this.state;
-    
+
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#2BA84A" />
@@ -208,16 +208,19 @@ export default class AddDevice extends Component {
               </View>
               <View style={styles.containerContent}>
                 <TextInput
+                  maxLength={19}
                   placeholder={i18next.t("pump name")}
                   style={styles.input}
                   onChangeText={(text) => this.setState({ bc_name: text })}
                 />
                 <TextInput
+                  maxLength={19}
                   placeholder={i18next.t("humid sensor name")}
                   style={styles.input}
                   onChangeText={(text) => this.setState({ dht_name: text })}
                 />
                 <TextInput
+                  maxLength={19}
                   placeholder={i18next.t("ph sensor name")}
                   style={styles.input}
                   onChangeText={(text) => this.setState({ ph_name: text })}
@@ -298,20 +301,20 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Platform.select({
-        ios: {
-            textAlign: "center",
-    fontSize: 23,
-    color: "#fff",
-    fontWeight: "bold",
-    marginTop: 28,
-        },
-        android: {
-            textAlign: "center",
-            fontSize: 23,
-            color: "#fff",
-            fontWeight: "bold",
-        }
-    })
+      ios: {
+        textAlign: "center",
+        fontSize: 23,
+        color: "#fff",
+        fontWeight: "bold",
+        marginTop: 28,
+      },
+      android: {
+        textAlign: "center",
+        fontSize: 23,
+        color: "#fff",
+        fontWeight: "bold",
+      },
+    }),
   },
   input: {
     width: "85%",

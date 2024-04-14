@@ -260,7 +260,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         width: 170,
         textAlign: "center",
-        borderWidth: 1,
       },
       android: {
         fontWeight: "bold",

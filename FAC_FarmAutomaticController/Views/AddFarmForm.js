@@ -19,16 +19,14 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 import apiUrl from "../apiURL";
 import MyContext from "../DataContext.js";
 
-
 export default class AddFarmForm extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       id_esp: "",
-      name_esp:"",
-      descript:"",
-      msg:""
+      name_esp: "",
+      descript: "",
+      msg: "",
     };
   }
   static contextType = MyContext;
@@ -38,24 +36,21 @@ export default class AddFarmForm extends Component {
     this.props.navigation.navigate("CameraCreateNewFarmHouse");
   };
 
-
   componentDidMount() {
     const { route } = this.props;
     const { id_esp } = route.params || {};
     this.setState({ id_esp: id_esp });
   }
   createFarm = async () => {
-    const {descript,name_esp,id_esp} = this.state
-    const {dataArray} = this.context
-    console.log()
-    if (id_esp !== "")
-    {
-      this.setState({ msg: ""})
-      
-      if (name_esp !== "")
-      {
-        this.setState({ msg: ""})
-        
+    const { descript, name_esp, id_esp } = this.state;
+    const { dataArray } = this.context;
+    console.log();
+    if (id_esp !== "") {
+      this.setState({ msg: "" });
+
+      if (name_esp !== "") {
+        this.setState({ msg: "" });
+
         const url = apiUrl + "esps";
         let result = await fetch(url, {
           method: "POST",
@@ -71,22 +66,19 @@ export default class AddFarmForm extends Component {
           }),
         });
         result = await result.json();
-        console.log(result)
+        console.log(result);
         if (result) {
           if (result == "Success") {
             this.props.navigation.navigate("Home");
-            
-          } else if (result["Message"] == "esp is already use")
-           {
+          } else if (result["Message"] == "esp is already use") {
             this.setState({ msg: "This device is already use" });
-          }
-           else this.setState({ msg: "Network connect fail" });
+          } else this.setState({ msg: "Network connect fail" });
         }
       } else this.setState({ msg: "Name farm is null" });
     } else this.setState({ msg: "Scan QR Code again" });
-  }
+  };
   render() {
-    const{msg}= this.state;
+    const { msg } = this.state;
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#2BA84A" />
@@ -103,7 +95,9 @@ export default class AddFarmForm extends Component {
                 <SafeAreaView
                   style={{ alignItems: "center", justifyContent: "center" }}
                 >
-                  <Text style={styles.title}>{i18next.t("Create Farm House")}</Text>
+                  <Text style={styles.title}>
+                    {i18next.t("Create Farm House")}
+                  </Text>
                 </SafeAreaView>
               </LinearGradient>
               <View style={{ alignItems: "flex-end", right: 40 }}>
@@ -111,21 +105,31 @@ export default class AddFarmForm extends Component {
                   style={styles.btnQrCode}
                   onPress={this.OpenCamera}
                 >
-                  <Text style={styles.btnQrCodeText}>{i18next.t("Scan Qr code")}</Text>
+                  <Text style={styles.btnQrCodeText}>
+                    {i18next.t("Scan Qr code")}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.containerContent}>
-                <TextInput placeholder={i18next.t("Farm name")} style={styles.input}  onChangeText={(text) => this.setState({ name_esp: text })} />
                 <TextInput
+                  maxLength={19}
+                  placeholder={i18next.t("Farm name")}
+                  style={styles.input}
+                  onChangeText={(text) => this.setState({ name_esp: text })}
+                />
+                <TextInput
+                  maxLength={99}
                   placeholder={i18next.t("Description")}
                   style={styles.textArea}
                   onChangeText={(text) => this.setState({ descript: text })}
                   multiline={true}
                 />
                 <Text>{i18next.t(msg)}</Text>
-                <TouchableOpacity style={styles.btnAdd} onPress={this.createFarm}>
+                <TouchableOpacity
+                  style={styles.btnAdd}
+                  onPress={this.createFarm}
+                >
                   <Text style={styles.btnText}>{i18next.t("Create")}</Text>
-                  
                 </TouchableOpacity>
               </View>
             </View>
@@ -171,20 +175,20 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Platform.select({
-        ios: {
-            textAlign: "center",
-    fontSize: 23,
-    color: "#fff",
-    fontWeight: "bold",
-    marginTop: 28,
-        },
-        android: {
-            textAlign: "center",
-            fontSize: 23,
-            color: "#fff",
-            fontWeight: "bold",
-        }
-    })
+      ios: {
+        textAlign: "center",
+        fontSize: 23,
+        color: "#fff",
+        fontWeight: "bold",
+        marginTop: 28,
+      },
+      android: {
+        textAlign: "center",
+        fontSize: 23,
+        color: "#fff",
+        fontWeight: "bold",
+      },
+    }),
   },
   textLogin: {
     marginLeft: 20,

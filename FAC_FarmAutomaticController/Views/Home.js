@@ -60,9 +60,6 @@ export default class Home extends Component {
     this.fetchData();
   }
 
-    this.setState({ listfarm: json[0] });
-  };
-
   DetailPage = (index) => {
     // console.log(index)
     this.GetEquidmentValues(index);
@@ -203,6 +200,7 @@ export default class Home extends Component {
             </SafeAreaView>
           </LinearGradient>
           <View style={styles.body}>
+            <Text style={styles.littleTitle}>Farm house</Text>
             <ScrollView
               style={{ height: "73%" }}
               showsVerticalScrollIndicator={false}
@@ -257,6 +255,12 @@ const styles = StyleSheet.create({
     width: "90%",
     marginTop: 6,
     justifyContent: "center",
+  },
+  littleTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    marginLeft: 18,
+    color: "#2BA84A",
   },
   famrItem: {
     padding: 8,
