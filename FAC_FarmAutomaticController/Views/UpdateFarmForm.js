@@ -165,7 +165,6 @@ export default class AdvanceSettingDevice extends Component {
   );
 
   render() {
-    let Premium = true;
     const { connect } = this.state;
     const { Farm, selectedFarm, isBottomSheetOpen } = this.state;
 
