@@ -4,16 +4,12 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
   SafeAreaView,
-  Dimensions,
   ScrollView,
-  statusbar,
-  Image,
   Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import i18next, { languageResources } from "../services/i18next";
+import i18next from "../services/i18next";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 var flag = false;

@@ -886,10 +886,13 @@ export default class Details extends Component {
             <View style={styles.topDevice}>
               <Text style={styles.titleDevice}>{name_bc[index]}</Text>
               <TouchableOpacity onPress={this.AdvanceSettingDevicePage}>
-                <Image source={require('../assets/img/more.png')} style={styles.moreOption} />
+                <Image
+                  source={require("../assets/img/more.png")}
+                  style={styles.moreOption}
+                />
               </TouchableOpacity>
             </View>
-            
+
             <View style={{}}>
               <View style={styles.function}>
                 <Text>{i18next.t("Custom")}</Text>
@@ -1062,14 +1065,14 @@ export default class Details extends Component {
                   source={require("../assets/img/calendar.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{color: 'white'}}>13/04/2024</Text>
+                <Text style={{ color: "white" }}>13/04/2024</Text>
               </View>
               <View style={styles.flex}>
                 <Image
                   source={require("../assets/img/clock.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{color: 'white'}}>5:31:24</Text>
+                <Text style={{ color: "white" }}>5:31:24</Text>
               </View>
             </View>
             <View style={[styles.flex, styles.dateTimePart]}>
@@ -1078,14 +1081,14 @@ export default class Details extends Component {
                   source={require("../assets/img/calendar.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{color: 'white'}}>13/04/2024</Text>
+                <Text style={{ color: "white" }}>13/04/2024</Text>
               </View>
               <View style={styles.flex}>
                 <Image
                   source={require("../assets/img/clock.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{color: 'white'}}>5:31:24</Text>
+                <Text style={{ color: "white" }}>5:31:24</Text>
               </View>
             </View>
           </View>
@@ -1264,9 +1267,9 @@ class BtnCustomMode extends Component {
 
 const styles = StyleSheet.create({
   flex: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   midle: {
     justifyContent: "center",
@@ -1309,16 +1312,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
   },
   dateTimeArea: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
   dateTimePart: {
-    backgroundColor: '#2BA84A',
+    backgroundColor: "#2BA84A",
     paddingTop: 4,
     paddingBottom: 4,
     paddingRight: 4,
-    borderRadius: 6
+    borderRadius: 6,
   },
   imgDateTimeNote: {
     width: 14,
@@ -1378,10 +1381,10 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   topDevice: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingRight: 5
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingRight: 5,
   },
   titleDevice: {
     fontWeight: "bold",
@@ -1389,8 +1392,8 @@ const styles = StyleSheet.create({
   },
   moreOption: {
     width: 20,
-    height:20,
-    tintColor: '#333'
+    height: 20,
+    tintColor: "#333",
   },
   function: {
     gap: 3,
@@ -1472,19 +1475,13 @@ const styles = StyleSheet.create({
   closeModalTimer: {
     ...Platform.select({
       ios: {
-        width: 20,
-        height: 20,
-        marginBottom: 20,
         marginTop: 35,
-        tintColor: "#DEDEDE",
-      },
-      android: {
-        width: 20,
-        height: 20,
-        marginBottom: 20,
-        tintColor: "#DEDEDE",
       },
     }),
+    width: 20,
+    height: 20,
+    marginBottom: 20,
+    tintColor: "#DEDEDE",
   },
   line: {
     width: "95%",

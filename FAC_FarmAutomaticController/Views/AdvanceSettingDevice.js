@@ -26,6 +26,7 @@ export default class AdvanceSettingDevice extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      connect: "connected",
       sliderValue: 50,
 
       // ===== Switch ===== //
@@ -124,6 +125,9 @@ export default class AdvanceSettingDevice extends Component {
   }
 
   render() {
+    let Premium = true;
+    const { connect } = this.state;
+
     //Slider
     const { sliderValue } = this.state;
 
@@ -144,14 +148,8 @@ export default class AdvanceSettingDevice extends Component {
       TimerList.push(
         <View>
           <View style={styles.timeArea}>
-            <Text style={styles.timeText}>{index}:50</Text>
+            <Text style={styles.timeText}>{index}:50 - 5s</Text>
             <View style={{ flexDirection: "row" }}>
-              <TouchableOpacity onPress={this.toggleDatePicker}>
-                <Image
-                  source={require("../assets/img/settings.png")}
-                  style={styles.imgIcon}
-                />
-              </TouchableOpacity>
               <TouchableOpacity>
                 <Image
                   source={require("../assets/img/remove.png")}
@@ -190,7 +188,51 @@ export default class AdvanceSettingDevice extends Component {
         <View style={styles.content}>
           <View style={styles.flex}>
             <View style={styles.deviceNameArea}>
-              <Text style={styles.deviceName}>DEVICE NAME</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={styles.deviceName}>DEVICE NAME</Text>
+                <View style={styles.connectArea}>
+                  {connect === "connected" && (
+                    <>
+                      <View
+                        style={[styles.dot, { backgroundColor: "#80b918" }]}
+                      ></View>
+                      <Text
+                        style={{
+                          fontWeight: "bold",
+                          marginLeft: 2,
+                          marginRight: 2,
+                          fontSize: 14,
+                        }}
+                      >
+                        {i18next.t("Connected")}
+                      </Text>
+                    </>
+                  )}
+                  {connect === "disconnected" && (
+                    <>
+                      <View
+                        style={[styles.dot, { backgroundColor: "#E31C1C" }]}
+                      ></View>
+                      <Text
+                        style={{
+                          fontWeight: "bold",
+                          marginLeft: 2,
+                          marginRight: 2,
+                          fontSize: 14,
+                        }}
+                      >
+                        {i18next.t("Disconneted")}
+                      </Text>
+                    </>
+                  )}
+                </View>
+              </View>
             </View>
           </View>
 
@@ -238,13 +280,20 @@ export default class AdvanceSettingDevice extends Component {
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
                   value={switch1Enabled}
+                  style={styles.switch}
                 />
               </View>
             </View>
             <View style={styles.option}>
               <View style={styles.optionPart}>
                 <Text>{i18next.t("Auto")}</Text>
-                <View style={{ flex: 1, flexDirection: "row" }}>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
                   <Slider
                     style={{ flex: 1 }}
                     minimumValue={50}
@@ -262,6 +311,7 @@ export default class AdvanceSettingDevice extends Component {
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
                   value={switch2Enabled}
+                  style={styles.switch}
                 />
               </View>
             </View>
@@ -273,6 +323,7 @@ export default class AdvanceSettingDevice extends Component {
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
                   value={switch3Enabled}
+                  style={styles.switch}
                 />
               </View>
               <View
@@ -375,20 +426,19 @@ export default class AdvanceSettingDevice extends Component {
                   <View style={styles.overlay} />
                   <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                      <TouchableOpacity
-                        style={{ alignItems: "flex-end", top: 20, right: 20 }}
-                        onPress={() => this.setModalVisible(false)}
-                      >
-                        <Image
-                          source={require("../assets/img/x.png")}
-                          style={{
-                            width: 20,
-                            height: 20,
-                            marginBottom: 20,
-                            tintColor: "#DEDEDE",
-                          }}
-                        />
-                      </TouchableOpacity>
+                      <SafeAreaView style={styles.modalTopArea}>
+                        <Text style={styles.timerTitleText}>
+                          {i18next.t("Timer")}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => this.setModalVisible(false)}
+                        >
+                          <Image
+                            source={require("../assets/img/x.png")}
+                            style={styles.closeModalTimer}
+                          />
+                        </TouchableOpacity>
+                      </SafeAreaView>
 
                       <ScrollView showsVerticalScrollIndicator={false}>
                         {TimerList}
@@ -414,38 +464,40 @@ export default class AdvanceSettingDevice extends Component {
                   />
                 </TouchableOpacity>
               </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <View>
-                  <View style={styles.optionPart}>
-                    <View style={[styles.flex, styles.inputTimeArea]}>
-                      <Text>{i18next.t("Set time")}:</Text>
-                      <TextInput placeholder="HH" style={styles.inputTime} />
-                      <Text>{i18next.t("Hour")}</Text>
-                      <TextInput placeholder="mm" style={styles.inputTime} />
-                      <Text>{i18next.t("Minuts")}</Text>
+              {Premium === true && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <View>
+                    <View style={styles.optionPart}>
+                      <View style={[styles.flex, styles.inputTimeArea]}>
+                        <Text>{i18next.t("Set time")}:</Text>
+                        <TextInput placeholder="HH" style={styles.inputTime} />
+                        <Text>{i18next.t("Hour")}</Text>
+                        <TextInput placeholder="mm" style={styles.inputTime} />
+                        <Text>{i18next.t("Minuts")}</Text>
+                      </View>
+                    </View>
+                    <View style={styles.optionPart}>
+                      <View style={[styles.flex, styles.inputTimeArea]}>
+                        <Text>{i18next.t("Set duration")}:</Text>
+                        <TextInput placeholder="ss" style={styles.inputTime} />
+                        <Text>{i18next.t("Seconds")}</Text>
+                      </View>
                     </View>
                   </View>
-                  <View style={styles.optionPart}>
-                    <View style={[styles.flex, styles.inputTimeArea]}>
-                      <Text>{i18next.t("Set duration")}:</Text>
-                      <TextInput placeholder="ss" style={styles.inputTime} />
-                      <Text>{i18next.t("Seconds")}</Text>
-                    </View>
-                  </View>
+                  <TouchableOpacity style={styles.btnPlus}>
+                    <Image
+                      source={require("../assets/img/plus.png")}
+                      style={styles.plusIcon}
+                    />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.btnPlus}>
-                  <Image
-                    source={require("../assets/img/plus.png")}
-                    style={styles.plusIcon}
-                  />
-                </TouchableOpacity>
-              </View>
+              )}
             </View>
           </View>
         </View>
@@ -458,6 +510,13 @@ const styles = StyleSheet.create({
   flex: {
     justifyContent: "center",
     alignItems: "center",
+  },
+  switch: {
+    ...Platform.select({
+      ios: {
+        transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+      },
+    }),
   },
   container: {
     flex: 1,
@@ -523,11 +582,18 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   option: {
+    ...Platform.select({
+      ios: {
+        padding: 8,
+      },
+      android: {
+        paddingLeft: 8,
+        paddingRight: 8,
+      },
+    }),
     width: "90%",
     marginTop: 6,
     marginBottom: 8,
-    paddingLeft: 8,
-    paddingRight: 8,
     backgroundColor: "#fff",
     borderRadius: 8,
     shadowColor: "#000",
@@ -555,8 +621,16 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   time: {
-    marginLeft: 60,
-    marginRight: 60,
+    ...Platform.select({
+      ios: {
+        marginLeft: 10,
+        marginRight: 10,
+      },
+      android: {
+        marginLeft: 60,
+        marginRight: 60,
+      },
+    }),
   },
   inputTimeArea: {
     marginTop: 8,
@@ -629,5 +703,43 @@ const styles = StyleSheet.create({
     height: 0.5,
 
     backgroundColor: "#D9D9D9",
+  },
+
+  // ========== Connect Status ==========//
+  connectArea: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#EDEDED",
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderRadius: 12,
+    paddingTop: 3,
+    paddingBottom: 3,
+  },
+  dot: {
+    width: 7,
+    height: 7,
+    marginLeft: 2,
+    marginRight: 2,
+    borderRadius: 12,
+  },
+
+  // ========== Modal Area ==========//
+  modalTopArea: {
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  closeModalTimer: {
+    width: 20,
+    height: 20,
+    marginRight: 20,
+    tintColor: "#DEDEDE",
+  },
+  timerTitleText: {
+    fontSize: 23,
+    fontWeight: "800",
+    marginLeft: 20
   },
 });
