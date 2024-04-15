@@ -74,7 +74,7 @@ export default class Home extends Component {
     }
     // console.log(url)
     const json = await response.json();
-    console.log(json)
+    // console.log(json)
     this.setState({isConnect : json["status"]})
 
   };
@@ -118,8 +118,11 @@ export default class Home extends Component {
     var name_user = "";
     // const jsonObject = JSON.parse(dataArray[1]);
     var keyCount = 0;
+    // console.log(listfarm)
+    // console.log(isConnect)
+
     if (listfarm.length !== 0 && isConnect.length !==0 ) {
-      console.log(isConnect)
+      // console.log(isConnect)
       // console.log(listfarm)
       name_user = listfarm["user"]["name"]
       for (const key in listfarm["equipment"]) {
@@ -150,7 +153,7 @@ export default class Home extends Component {
                   Farm {index}: {data[index]["name"]}
                 </Text>
                 <View style={styles.connectArea}>
-                  {isConnect["esp"+index.toString()]["status"] === true && (
+                  {isConnect["esp"+index.toString()] === true && (
                     <>
                       <View style={[styles.dot, {backgroundColor: "#80b918"}]}></View>
                       <Text
@@ -165,7 +168,7 @@ export default class Home extends Component {
                       </Text>
                     </>
                   )}
-                  {isConnect["esp"+index.toString()]["status"] === false && (
+                  {isConnect["esp"+index.toString()] === false && (
                     <>
                       <View style={[styles.dot, {backgroundColor: "#E31C1C"}]}></View>
                       <Text

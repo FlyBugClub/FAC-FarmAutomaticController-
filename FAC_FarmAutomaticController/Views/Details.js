@@ -152,9 +152,6 @@ export default class Details extends Component {
     this.connect();
     // Gọi hàm push vào mảng khi component được mount
     this.intervalId = setInterval(() => {
-      // Thực hiện các hành động bạn muốn lặp lại sau mỗi 3 giây ở đây
-      // Ví dụ: Gọi hàm kiểm tra trạng thái
-
       this.getvalue();
     }, 3000);
   }
@@ -826,7 +823,7 @@ export default class Details extends Component {
 
     const deviceList = [];
 
-
+    // console.log(timelist)
 
     if (name_bc !== 0 && timelist.length !== 0 && sliderValue.length !== 0 && switchStates.length !== 0) {
       //   flag = false;
@@ -838,7 +835,7 @@ export default class Details extends Component {
           const time = timelist[index][i];
           const timeParts = time.split(":"); // Tách thời gian thành các phần
           const hourMinute = timeParts[0] + ":" + timeParts[1]; // Lấy giờ và phút
-
+          console.log()
           timeComponents.push(
             <Text
               key={i}
@@ -854,6 +851,9 @@ export default class Details extends Component {
         var time = [];
 
         [...Array(timelist[index].length)].forEach((_, indextime) => {
+          console.log(timelist[index][indextime])
+          console.log("hehe")
+          
           time.push(
             <View key={indextime.toString() + index.toString()}>
               <View style={styles.timeArea}>
@@ -882,7 +882,7 @@ export default class Details extends Component {
             </View>
           );
         });
-
+        
         deviceList.push(
           <View style={styles.optionArea} key={index}>
             <View style={styles.topDevice}>
@@ -997,7 +997,7 @@ export default class Details extends Component {
                     <Image
                       source={require("../assets/img/plus.png")}
                       style={styles.plusIcon}
-                    />
+                    />  
                   </TouchableOpacity>
                 )}
                 {Platform.OS === "ios" && (
