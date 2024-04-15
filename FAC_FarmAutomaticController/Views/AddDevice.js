@@ -120,7 +120,7 @@ export default class AddDevice extends Component {
                     id_equipment: bc_id,
                     name_equipment: bc_name,
                     automode: 0,
-                    id_sensor: dht_id + "/" + ph_id,
+                    id_sensor: dht_id + "-" + ph_id,
                   };
                   var result_bc = await this.postfunction(
                     "equidmentmanager",

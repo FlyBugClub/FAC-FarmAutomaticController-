@@ -27,6 +27,7 @@ export default class Home extends Component {
       refresh: false,
       listfarm: [],
       msg:"",
+      isConnect: {}
     };
   }
   SignUpPage = () => {
@@ -38,7 +39,7 @@ export default class Home extends Component {
     const { dataArray,addDataAtIndex } = this.context;
     // const { route } = this.props;
     // const data = route.params;
-    console.log(dataArray[0]["user"]["gmail"])
+    // console.log(dataArray[0]["user"]["gmail"])
     const url =
       apiUrl +
       `getfarm/${dataArray[0]["user"]["gmail"]}`;
@@ -56,11 +57,33 @@ export default class Home extends Component {
     this.setState({ listfarm: json[0] });
   };
 
+
+  fetchIsConnect = async () => {
+    const { dataArray,addDataAtIndex } = this.context;
+    // const { route } = this.props;
+    // const data = route.params;
+    // console.log(dataArray[0]["user"])
+    const url =
+      apiUrl +
+      `isconect/${dataArray[0]["user"]["id"]}`;
+      const response = await fetch(url);
+    // console.log("ok")
+    if (!response.ok) {
+      this.setState({ msg: "error" });
+      return;
+    }
+    // console.log(url)
+    const json = await response.json();
+    console.log(json)
+    this.setState({isConnect : json["status"]})
+
+  };
+
   componentDidMount = async () => {
     this.fetchData();
-  }
-
-    this.setState({ listfarm: json[0] });
+    this.intervalId = setInterval(() => {
+      this.fetchIsConnect();
+    }, 3000);
   };
 
   DetailPage = (index) => {
@@ -89,14 +112,14 @@ export default class Home extends Component {
     const { connect } = this.state;
 
     const { dataArray } = this.context;
-    const { listfarm } = this.state;
+    const { listfarm,isConnect } = this.state;
     const farmHouseList = [];
     
     var name_user = "";
     // const jsonObject = JSON.parse(dataArray[1]);
     var keyCount = 0;
-    if (listfarm.length !== 0) {
-      console.log("jaajaj")
+    if (listfarm.length !== 0 && isConnect.length !==0 ) {
+      console.log(isConnect)
       // console.log(listfarm)
       name_user = listfarm["user"]["name"]
       for (const key in listfarm["equipment"]) {
@@ -127,7 +150,7 @@ export default class Home extends Component {
                   Farm {index}: {data[index]["name"]}
                 </Text>
                 <View style={styles.connectArea}>
-                  {connect === "connected" && (
+                  {isConnect["esp"+index.toString()]["status"] === true && (
                     <>
                       <View style={[styles.dot, {backgroundColor: "#80b918"}]}></View>
                       <Text
@@ -142,7 +165,7 @@ export default class Home extends Component {
                       </Text>
                     </>
                   )}
-                  {connect === "disconnected" && (
+                  {isConnect["esp"+index.toString()]["status"] === false && (
                     <>
                       <View style={[styles.dot, {backgroundColor: "#E31C1C"}]}></View>
                       <Text

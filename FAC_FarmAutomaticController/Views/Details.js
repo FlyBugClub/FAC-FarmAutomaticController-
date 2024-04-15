@@ -42,7 +42,7 @@ const options = {
   host: 'broker.emqx.io',
   port: 8083,
   path: '/testTopic',
-  id: 'id_' + parseInt(Math.random()*100000)
+  id: 'id_' + parseInt(Math.random() * 100000)
 };
 
 client = new Paho.MQTT.Client(options.host, options.port, options.id);
@@ -64,7 +64,7 @@ const chartConfig = {
 };
 const screenWidth = Dimensions.get("window").width;
 
-export default class Details extends Component{
+export default class Details extends Component {
   constructor(props) {
     console.log("checkstate")
     super(props);
@@ -147,53 +147,13 @@ export default class Details extends Component{
     this.props.navigation.navigate("DateTime"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
-  sendMessage = () => {
-    const { sliderValue, switchStates } = this.state;
-    const { dataArray } = this.context;
-    // console.log(switchStates)
-    var Data = {};
-
-    // Data["id_esp"] = dataArray[1]["id_esp"];
-    for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
-      var equipment = {};
-      equipment["humid_expect"] = sliderValue[i];
-
-      if (switchStates[i][0] === true) {
-        equipment["status"] = 1;
-        equipment["automode"] = 0;
-      } else if (switchStates[i][1] === true) {
-        equipment["status"] = 0;
-        equipment["automode"] = 1;
-      } else if (switchStates[i][2] === true) {
-        equipment["status"] = 0;
-        equipment["automode"] = 2;
-      } else if (
-        switchStates[i][0] === false &&
-        switchStates[i][0] === false &&
-        switchStates[i][0] === false
-      ) {
-        equipment["status"] = 0;
-        equipment["automode"] = 0;
-      }
-      Data["equipment" + i.toString()] = equipment;
-    }
-    // console.log(Data)
-    if (this.state.status_mqtt === "connected") {
-      // console.log(JSON.stringify(Data))
-      const jsonString = JSON.stringify(Data);
-      var message = new Paho.MQTT.Message(jsonString);
-      message.destinationName = this.state.subscribedTopic;
-      client.send(message);
-      // console.log("oks")
-    }
-  };
-
+ 
   componentDidMount() {
     flag = false;
-    this.getvalueequipment(); 
+    this.getvalueequipment();
     this.connect()
-     // Gọi hàm push vào mảng khi component được mount
-     this.intervalId = setInterval(() => {
+    // Gọi hàm push vào mảng khi component được mount
+    this.intervalId = setInterval(() => {
       // Thực hiện các hành động bạn muốn lặp lại sau mỗi 3 giây ở đây
       // Ví dụ: Gọi hàm kiểm tra trạng thái
 
@@ -215,17 +175,15 @@ export default class Details extends Component{
 
   componentWillUnmount() {
     // Ngắt kết nối MQTT tại đây
-    if (client.isConnected()== true)
-    {
+    if (client.isConnected() == true) {
       client.disconnect();
     }
     console.log("ngatketnoi")
-}
+  }
 
   connect = () => {
-    if (this.state.status_mqtt !== "isFetching" && this.state.status_mqtt !== "connected" && client.isConnected()== false)
-    {
-      
+    if (this.state.status_mqtt !== "isFetching" && this.state.status_mqtt !== "connected" && client.isConnected() == false) {
+
       this.setState(
         { status_mqtt: 'isFetching' },
         () => {
@@ -237,19 +195,19 @@ export default class Details extends Component{
           });
         }
       );
-    console.log("conncet: OK")
+      console.log("conncet: OK")
     }
   }
 
   onConnect = () => {
-    
+
     this.subscribeTopic();
-    
+
     this.setState({ status_mqtt: 'connected' });
     console.log('onConnect: OK');
   }
 
-  
+
   onFailure = (err) => {
     console.log("Connect failed!");
     console.log(err);
@@ -258,9 +216,9 @@ export default class Details extends Component{
       () => {
         this.connect();
       }
-      
+
     );
-    
+
     // this.setState({ status: '', subscribedTopic: '' });
   };
 
@@ -269,7 +227,7 @@ export default class Details extends Component{
     console.log("ok");
   };
 
-  
+
   onConnectionLost = (responseObject) => {
     if (responseObject.errorCode !== 0 && responseObject !== null) {
       console.log("onConnectionLost:" + responseObject.errorMessage);
@@ -492,8 +450,9 @@ export default class Details extends Component{
         this.setState({ msg: "error" });
         return;
       }
+
       const json = await response.json();
-      // console.log(json[0])
+
 
       // console.log(json[0])
       for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -502,6 +461,7 @@ export default class Details extends Component{
           id_check.push(json[0]["combo" + i.toString()]["PH"]["id"]);
         }
       }
+      // console.log(id_check)
 
       let sum_sensor =
         dataArray[1]["sensor"]["sl_dht"] + dataArray[1]["sensor"]["sl_ph"];
@@ -517,6 +477,7 @@ export default class Details extends Component{
           jsonObject[key] = value;
         }
       }
+      // console.log("@1")
 
       newlegend = id_check.filter(
         (item, index) => id_check.indexOf(item) === index
@@ -526,7 +487,6 @@ export default class Details extends Component{
           newlegend[i] = jsonObject[newlegend[i]];
         }
       }
-      // console.log(json[0]);
 
       var datelist = [];
       for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -564,6 +524,7 @@ export default class Details extends Component{
       newlabels.push("");
       newlabels.push("");
       newlabels.push(`${hoursen}:${minutesen}:${secondsen}`);
+      // console.log("@1")
 
       // console.log(newlabels)
       const colors = [
@@ -580,6 +541,7 @@ export default class Details extends Component{
           "0, 255, 0",
         ], // Màu cho dataset 6 (màu xanh dương)
       ];
+
 
       // console.log(sum_sensor/2)
       for (let i = 0; i < sum_sensor / 2; i++) {
@@ -605,9 +567,12 @@ export default class Details extends Component{
             valueph.push(0);
           }
         }
+
+
         // Chọn màu sắc từ mảng colors
         let colordht = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
         let colorph = colors[i][1] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
+        // console.log("@2")
 
         // Thêm đối tượng dataset vào mảng
         newdatasets.push({
@@ -620,39 +585,38 @@ export default class Details extends Component{
           color: (opacity = 1) => `rgba(${colorph}, ${opacity})`,
           strokeWidth: 2, // optional
         });
+   
       }
+   
 
-    
-    var reversedArray = newlabels.reverse();
-    
-    if (reversedArray[0] === "NaN:NaN:NaN" && newdatasets.length === 0 && newlegend.length ===0)
-    {
-      
-      const newData = {
-        labels: [""],
-        datasets: [
-          {
-            data: [0],
-          }
-        ],
-        legend: ["0"], // optional
+
+      var reversedArray = newlabels.reverse();
+
+      if (reversedArray[0] === "NaN:NaN:NaN" && newdatasets.length === 0 && newlegend.length === 0) {
+
+        const newData = {
+          labels: [""],
+          datasets: [
+            {
+              data: [0],
+            }
+          ],
+          legend: ["0"], // optional
+        }
+        this.setState({ datachart: newData });
+
       }
-      this.setState({ datachart: newData });
+      else {
+        const newData = {
+          labels: reversedArray,
+          datasets: newdatasets,
+          legend: newlegend, // optional
+        };
+        this.setState({ datachart: newData });
+      }
+      // console.log("@3")
 
-    }
-    else 
-    {
-      const newData = { 
-        labels: reversedArray,
-        datasets: newdatasets,
-        legend: newlegend, // optional
-      };
-      this.setState({ datachart: newData });
-    }
-    
-    
-    // console.log(datachart)
-    isFunctionRunning = false;
+      isFunctionRunning = false;
     }
   };
 
@@ -676,85 +640,113 @@ export default class Details extends Component{
     this.setState({ showPicker: false }); // Đặt showPicker thành false để ẩn picker
     this.toggleBottomSheet(); // Gọi hàm toggleBottomSheet để đóng bottomSheet
   };
-  onMessageArrived = (message )=> {
+
+
+  sendMessage = () => {
+    const { sliderValue, switchStates } = this.state;
+    const { dataArray } = this.context;
+    // console.log(switchStates)
+    var Data = {};
+    // Data["id_esp"] = dataArray[1]["id_esp"];
+    Data["id_esp"] = dataArray[1]["id_esp"];
+    for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
+      var equipment = {};
+      equipment["humid_expect"] = sliderValue[i];
+
+      if (switchStates[i][0] === true) {
+        equipment["status"] = 1;
+        equipment["automode"] = 0;
+      } else if (switchStates[i][1] === true) {
+        equipment["status"] = 0;
+        equipment["automode"] = 1;
+      } else if (switchStates[i][2] === true) {
+        equipment["status"] = 0;
+        equipment["automode"] = 2;
+      } else if (
+        switchStates[i][0] === false &&
+        switchStates[i][0] === false &&
+        switchStates[i][0] === false
+      ) {
+        equipment["status"] = 0;
+        equipment["automode"] = 0;
+      }
+      Data["equipment" + i.toString()] = equipment;
+    }
+    // console.log(Data)
+    if (this.state.status_mqtt === "connected" && client.isConnected() == true) {
+      // console.log(JSON.stringify(Data))
+      // console.log("gui")
+      // console.log(client.isConnected())
+      const jsonString = JSON.stringify(Data);
+      var message = new Paho.MQTT.Message(jsonString);
+      message.destinationName = this.state.subscribedTopic;
+      client.send(message);
+      // console.log("oks")
+    }
+  };
+
+
+
+  onMessageArrived = (message) => {
     const slidebarvalue = [];
+    const { dataArray } = this.context;
+
     const value = [];
     const newSwitchStates = [];
-      // console.log(typeof message)
-      // console.log(message.payloadString);
-      const jsonData = JSON.parse(message.payloadString);
-      // console.log(jsonData["equipment0"])
-      let count = 0;
+    // console.log(typeof message)
+    // console.log(message.payloadString);
+    const jsonData = JSON.parse(message.payloadString);
+    // console.log(jsonData["equipment0"])
+    let count = 0;
+ 
+    if (jsonData["id_esp"] == dataArray[1]["id_esp"])
+    { 
       for (const key in jsonData) {
         const SwitchStates = [];
         if (key.startsWith("equipment")) {
           const data = jsonData[key];
           slidebarvalue.push(data["humid_expect"])
           value.push(data["humid_expect"])
-          
-           if (data["automode"] === 0 && data["status"] === 1)
-          {
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 1 && data["status"] === 1 )
-          {
-            SwitchStates.push(true)
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 2 && data["status"] === 1 )
-          {
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-            SwitchStates.push(true)
-          }
-          else if (data["automode"] === 0)
-          {
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 1)
-          {
-            SwitchStates.push(false)
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 2)
-          {
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-            SwitchStates.push(true)
-          }
-          
 
+          if (data["automode"] === 0 && data["status"] === 1) {
+            SwitchStates.push(true)
+            SwitchStates.push(false)
+            SwitchStates.push(false)
+          }
+          else if (data["automode"] === 1 && data["status"] === 1) {
+            SwitchStates.push(true)
+            SwitchStates.push(true)
+            SwitchStates.push(false)
+          }
+          else if (data["automode"] === 2 && data["status"] === 1) {
+            SwitchStates.push(true)
+            SwitchStates.push(false)
+            SwitchStates.push(true)
+          }
+          else if (data["automode"] === 0) {
+            SwitchStates.push(false)
+            SwitchStates.push(false)
+            SwitchStates.push(false)
+          }
+          else if (data["automode"] === 1) {
+            SwitchStates.push(false)
+            SwitchStates.push(true)
+            SwitchStates.push(false)
+          }
+          else if (data["automode"] === 2) {
+            SwitchStates.push(false)
+            SwitchStates.push(false)
+            SwitchStates.push(true)
+          }
           newSwitchStates.push(SwitchStates)
-
 
           count++;
         }
+      }
+      this.setState({ sliderValue: value });
+      this.setState({ slidebar: slidebarvalue });
+      this.setState({ switchStates: newSwitchStates });
     }
-    console.log("______________")
-
-    console.log(value)
-    console.log(slidebarvalue)
-
-    this.setState({ sliderValue: value });
-    this.setState({ slidebar: slidebarvalue });
-    this.setState({ switchStates: newSwitchStates });
-
-    // var jsonString = message.payloadString;
-    // const keyValuePairs = jsonString.slice(1, -1).split(',');
-
-    // keyValuePairs.forEach(pair => {
-    //   const [key, value] = pair.split(':').map(item => item.trim());
-    //  if (key === '"humid"')
-    //  {
-    //   globalVariable = value;
-    //  }
-    // });
   };
 
   getvalueequipment = async () => {
@@ -773,7 +765,7 @@ export default class Details extends Component{
     const gettimelist = [];
     const name_bc = [];
     const slidebarvalue = [];
-   
+
     const buttonTime = [];
     const modalVisible = [];
     for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -797,16 +789,16 @@ export default class Details extends Component{
           return timeA - timeB;
         });
         gettimelist.push(time)
-        
-      } 
+
+      }
       buttonTime.push(false)
       modalVisible.push(false)
-      
+
       slidebarvalue.push(50)
       value.push(50)
       name_bc.push(json[0][i]["name"])
     }
-    
+
     this.setState({ modalVisible: modalVisible })
     this.setState({ buttonTime: buttonTime })
     this.setState({ name_bc: name_bc });
@@ -827,25 +819,24 @@ export default class Details extends Component{
   render() {
     const { dataArray } = this.context;
     //Switch
-    const {switchStates } = this.state;
+    const { switchStates } = this.state;
     const { datachart } = this.state;
 
     //API
-    const { name_bc,timelist,sliderValue, isEnabled } =this.state;
+    const { name_bc, timelist, sliderValue, isEnabled } = this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
     //DateTime
     const { dateTime, showPicker } = this.state;
- 
-    
+
+
     const deviceList = [];
-    
 
 
-    if ( name_bc !== 0 &&timelist.length !== 0 && sliderValue.length !== 0  && switchStates.length !== 0 )
-    {
-    //   flag = false;
+
+    if (name_bc !== 0 && timelist.length !== 0 && sliderValue.length !== 0 && switchStates.length !== 0) {
+      //   flag = false;
       [...Array(dataArray[1]["bc"]["sl"])].forEach((_, index) => {
         // console.log(showPicker)
         var timeComponents = [];
@@ -896,8 +887,8 @@ export default class Details extends Component{
             </View>
           );
         });
-       
-        
+
+
         deviceList.push(
           <View style={styles.optionArea} key={index}>
             <Text style={styles.titleDevice}>{name_bc[index]}</Text>
@@ -1177,8 +1168,8 @@ class BtnConnect extends Component {
             backgroundColor: isPressed
               ? "#2D314A"
               : disabled
-              ? "#F0F0F0"
-              : "#2D3A3A",
+                ? "#F0F0F0"
+                : "#2D3A3A",
             marginRight: 15,
           },
         ]}

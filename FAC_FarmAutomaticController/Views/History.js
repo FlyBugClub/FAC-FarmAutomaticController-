@@ -72,6 +72,7 @@ export default class History extends Component {
         month: "2-digit",
         day: "2-digit",
       };
+
       // const weekday = date.toLocaleString('vi-VN', { weekday: 'long' });
       const dateString = date.toLocaleDateString("vi-VN", options);
       const timeString = timePart;
@@ -130,7 +131,7 @@ export default class History extends Component {
                     <Text style={{ width: 55 }}>
                       {historyList[index][0]}
                     </Text>
-                    <Text style={{ width: 60,  }}>
+                    <Text style={{ width: 60, }}>
                       {timeString}
                     </Text>
                   </>

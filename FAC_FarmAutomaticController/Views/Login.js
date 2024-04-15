@@ -84,6 +84,7 @@ export default class Login extends Component {
     this.setState({ isLoading: true });
 
     try {
+
       if (email != "" && password != "") {
         const response = await fetch(url);
         if (!response.ok) {
@@ -91,7 +92,7 @@ export default class Login extends Component {
           return;
         }
         const json = await response.json();
-        console.log(json);
+      
         if (json === "Login_Success") {
           // const combinedJson = Object.assign({}, json[0], json[1],json[2]);
           const email_json = {"user":{"gmail":email}}
