@@ -4,16 +4,12 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
   SafeAreaView,
-  Dimensions,
   ScrollView,
-  statusbar,
-  Image,
   Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import i18next, { languageResources } from "../services/i18next";
+import i18next from "../services/i18next";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 var flag = false;
@@ -155,7 +151,7 @@ export default class History extends Component {
       <View style={styles.container}>
         <LinearGradient
           colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
-          style={[styles.NavigationTop]}
+          style={styles.NavigationTop}
         >
           <SafeAreaView
             style={{
@@ -261,7 +257,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         width: 170,
         textAlign: "center",
-        borderWidth: 1,
       },
       android: {
         fontWeight: "bold",

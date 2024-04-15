@@ -72,5 +72,12 @@
     "Network connect fail": "Lỗi kết nối mạng",
     "This device is already use": "Thiệt bị đã được sử dụng",
     "Name farm is null": "Tên nông trại rỗng",
-    "Scan QR Code again": "Quét lại mã QR"
+    "Scan QR Code again": "Quét lại mã QR",
+    "Farm": "Nông trại",
+    "Set time": "Đặt thời gian",
+    "Hour": "Giờ",
+    "Minuts": "Phút",
+    "Set duration":"Đặt thời lượng bơm",
+    "Seconds": "Giây",
+    "Advance setting": "Cài đặt nâng cao"
   }

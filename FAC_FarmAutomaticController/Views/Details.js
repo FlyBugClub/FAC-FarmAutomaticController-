@@ -39,10 +39,10 @@ init({
   sync: {},
 });
 const options = {
-  host: 'broker.emqx.io',
+  host: "broker.emqx.io",
   port: 8083,
-  path: '/testTopic',
-  id: 'id_' + parseInt(Math.random() * 100000)
+  path: "/testTopic",
+  id: "id_" + parseInt(Math.random() * 100000),
 };
 
 client = new Paho.MQTT.Client(options.host, options.port, options.id);
@@ -66,7 +66,7 @@ const screenWidth = Dimensions.get("window").width;
 
 export default class Details extends Component {
   constructor(props) {
-    console.log("checkstate")
+    console.log("checkstate");
     super(props);
     this.state = {
       status_mqtt: "disconnected",
@@ -124,8 +124,7 @@ export default class Details extends Component {
     // this.setShowPicker = this.setShowPicker.bind(this);
     client.onConnectionLost = this.onConnectionLost;
     client.onMessageArrived = this.onMessageArrived;
-    console.log("checkstateend")
-
+    console.log("checkstateend");
   }
 
   static contextType = MyContext;
@@ -140,7 +139,6 @@ export default class Details extends Component {
     this.props.navigation.navigate("AdvanceSettingDevice"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
-
   DateTimePage = () => {
     console.log("DateTime Page");
     flag = true;
@@ -151,7 +149,7 @@ export default class Details extends Component {
   componentDidMount() {
     flag = false;
     this.getvalueequipment();
-    this.connect()
+    this.connect();
     // Gọi hàm push vào mảng khi component được mount
     this.intervalId = setInterval(() => {
       // Thực hiện các hành động bạn muốn lặp lại sau mỗi 3 giây ở đây
@@ -178,7 +176,7 @@ export default class Details extends Component {
     if (client.isConnected() == true) {
       client.disconnect();
     }
-    console.log("ngatketnoi")
+    console.log("ngatketnoi");
   }
 
   connect = () => {
@@ -197,7 +195,7 @@ export default class Details extends Component {
       );
       console.log("conncet: OK")
     }
-  }
+  };
 
   onConnect = () => {
 
@@ -237,7 +235,6 @@ export default class Details extends Component {
       this.onConnect();
     });
   };
-
 
   toogle1in3 = (setIndex, buttonIndex) => {
     const { sliderValue } = this.state;
@@ -568,7 +565,6 @@ export default class Details extends Component {
           }
         }
 
-
         // Chọn màu sắc từ mảng colors
         let colordht = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
         let colorph = colors[i][1] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
@@ -585,9 +581,7 @@ export default class Details extends Component {
           color: (opacity = 1) => `rgba(${colorph}, ${opacity})`,
           strokeWidth: 2, // optional
         });
-   
       }
-   
 
 
       var reversedArray = newlabels.reverse();
@@ -789,16 +783,16 @@ export default class Details extends Component {
           return timeA - timeB;
         });
         gettimelist.push(time)
-
-      }
+        
+      } 
       buttonTime.push(false)
       modalVisible.push(false)
-
+      
       slidebarvalue.push(50)
       value.push(50)
       name_bc.push(json[0][i]["name"])
     }
-
+    
     this.setState({ modalVisible: modalVisible })
     this.setState({ buttonTime: buttonTime })
     this.setState({ name_bc: name_bc });
@@ -830,7 +824,6 @@ export default class Details extends Component {
     //DateTime
     const { dateTime, showPicker } = this.state;
 
-
     const deviceList = [];
 
 
@@ -843,6 +836,8 @@ export default class Details extends Component {
 
         for (let i = 0; i < timelist[index].length; i++) {
           const time = timelist[index][i];
+          const timeParts = time.split(":"); // Tách thời gian thành các phần
+          const hourMinute = timeParts[0] + ":" + timeParts[1]; // Lấy giờ và phút
 
           timeComponents.push(
             <Text
@@ -852,7 +847,7 @@ export default class Details extends Component {
                 { color: switchStates[index][2] ? "#333" : "#8A8A8A" },
               ]}
             >
-              {time}
+              {hourMinute}
             </Text>
           );
         }
@@ -888,13 +883,21 @@ export default class Details extends Component {
           );
         });
 
-
         deviceList.push(
           <View style={styles.optionArea} key={index}>
-            <Text style={styles.titleDevice}>{name_bc[index]}</Text>
+            <View style={styles.topDevice}>
+              <Text style={styles.titleDevice}>{name_bc[index]}</Text>
+              <TouchableOpacity onPress={this.AdvanceSettingDevicePage}>
+                <Image
+                  source={require("../assets/img/more.png")}
+                  style={styles.moreOption}
+                />
+              </TouchableOpacity>
+            </View>
+
             <View style={{}}>
               <View style={styles.function}>
-                <Text>{i18next.t('Custom')}</Text>
+                <Text>{i18next.t("Custom")}</Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#2BA84A" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -904,7 +907,7 @@ export default class Details extends Component {
                   style={styles.switch}
                 />
 
-                <Text>{i18next.t('Auto')}</Text>
+                <Text>{i18next.t("Auto")}</Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#2BA84A" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -925,11 +928,12 @@ export default class Details extends Component {
                     this.handleSliderComplete(index, value)
                   }
                   minimumTrackTintColor={"#81BB4D"}
+                  thumbTintColor={"#81BB4D"}
                 />
                 <Text>{sliderValue[index]}%</Text>
               </View>
               <View style={styles.function}>
-                <Text>{i18next.t('Timer')} </Text>
+                <Text>{i18next.t("Timer")} </Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#2BA84A" }}
                   thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
@@ -1056,6 +1060,40 @@ export default class Details extends Component {
               bezier
             />
           </TouchableOpacity>
+          <View style={styles.dateTimeArea}>
+            <View style={[styles.flex, styles.dateTimePart]}>
+              <View style={styles.flex}>
+                <Image
+                  source={require("../assets/img/calendar.png")}
+                  style={styles.imgDateTimeNote}
+                />
+                <Text style={{ color: "white" }}>13/04/2024</Text>
+              </View>
+              <View style={styles.flex}>
+                <Image
+                  source={require("../assets/img/clock.png")}
+                  style={styles.imgDateTimeNote}
+                />
+                <Text style={{ color: "white" }}>5:31:24</Text>
+              </View>
+            </View>
+            <View style={[styles.flex, styles.dateTimePart]}>
+              <View style={styles.flex}>
+                <Image
+                  source={require("../assets/img/calendar.png")}
+                  style={styles.imgDateTimeNote}
+                />
+                <Text style={{ color: "white" }}>13/04/2024</Text>
+              </View>
+              <View style={styles.flex}>
+                <Image
+                  source={require("../assets/img/clock.png")}
+                  style={styles.imgDateTimeNote}
+                />
+                <Text style={{ color: "white" }}>5:31:24</Text>
+              </View>
+            </View>
+          </View>
 
           {/* <View style={styles.midle}>
             <View style={styles.alarm}>
@@ -1230,6 +1268,11 @@ class BtnCustomMode extends Component {
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   midle: {
     justifyContent: "center",
     alignItems: "center",
@@ -1257,7 +1300,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   TitleTop: {
-    top: -5,
+    top: -15,
     textAlign: "center",
     fontSize: 28,
     fontWeight: "bold",
@@ -1269,6 +1312,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+  },
+  dateTimeArea: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  dateTimePart: {
+    backgroundColor: "#2BA84A",
+    paddingTop: 4,
+    paddingBottom: 4,
+    paddingRight: 4,
+    borderRadius: 6,
+  },
+  imgDateTimeNote: {
+    width: 14,
+    height: 14,
+    marginLeft: 4,
+    marginRight: 5,
+    tintColor: "#fff",
   },
   alarm: {
     width: "95%",
@@ -1320,9 +1382,20 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  topDevice: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingRight: 5,
+  },
   titleDevice: {
     fontWeight: "bold",
     fontSize: 16,
+  },
+  moreOption: {
+    width: 20,
+    height: 20,
+    tintColor: "#333",
   },
   function: {
     gap: 3,
@@ -1404,19 +1477,13 @@ const styles = StyleSheet.create({
   closeModalTimer: {
     ...Platform.select({
       ios: {
-        width: 20,
-        height: 20,
-        marginBottom: 20,
         marginTop: 35,
-        tintColor: "#DEDEDE",
       },
-      android: {
-        width: 20,
-        height: 20,
-        marginBottom: 20,
-        tintColor: "#DEDEDE",
-      }
     }),
+    width: 20,
+    height: 20,
+    marginBottom: 20,
+    tintColor: "#DEDEDE",
   },
   line: {
     width: "95%",
