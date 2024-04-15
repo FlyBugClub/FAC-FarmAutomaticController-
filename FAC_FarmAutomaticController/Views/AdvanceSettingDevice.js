@@ -158,7 +158,7 @@ export default class AdvanceSettingDevice extends Component {
   // Render mỗi mục trong danh sách farm
   renderFarmItem = ({ item }) => (
     <TouchableOpacity onPress={() => this.handleFarmSelect(item.itemName)}>
-      <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
+      <View style={{ padding: 10, borderBottomWidth: 1, borderColor: "#ccc" }}>
         <Text>{item.itemName}</Text>
       </View>
     </TouchableOpacity>
@@ -231,7 +231,7 @@ export default class AdvanceSettingDevice extends Component {
                     }}
                   >
                     <Text style={styles.title}>
-                      {i18next.t("Advance setting")}
+                      {i18next.t("Device infomation")}
                     </Text>
                   </SafeAreaView>
                 </LinearGradient>
@@ -292,7 +292,7 @@ export default class AdvanceSettingDevice extends Component {
                     </View>
                   </View>
 
-                  <View>
+                  <ScrollView>
                     <View style={styles.flex}>
                       <View style={styles.deviceNameArea}>
                         <Text style={styles.titleSetting}>
@@ -300,6 +300,35 @@ export default class AdvanceSettingDevice extends Component {
                         </Text>
                       </View>
                     </View>
+                    <View style={styles.flex}>
+                      <View style={{width: "90%"}}>
+                        <TextInput
+                            maxLength={19}
+                            placeholder={i18next.t("pump name")}
+                            style={styles.input}
+                            onChangeText={(text) =>
+                              this.setState({ bc_name: text })
+                            }
+                          />
+                          <TextInput
+                            maxLength={19}
+                            placeholder={i18next.t("humid sensor name")}
+                            style={styles.input}
+                            onChangeText={(text) =>
+                              this.setState({ dht_name: text })
+                            }
+                          />
+                          <TextInput
+                            maxLength={19}
+                            placeholder={i18next.t("ph sensor name")}
+                            style={styles.input}
+                            onChangeText={(text) =>
+                              this.setState({ ph_name: text })
+                            }
+                          />
+                      </View>
+                          
+                        </View>
                     <View style={styles.flex}>
                       <View style={styles.option}>
                         <View
@@ -332,7 +361,9 @@ export default class AdvanceSettingDevice extends Component {
                               // onPress={this.handleOpenPress}
                               onPress={this.toggleBottomSheet}
                             >
-                              <Text style={styles.text}>{selectedFarm || 'Farm 1'}</Text>
+                              <Text style={styles.text}>
+                                {selectedFarm || "Farm 1"}
+                              </Text>
                               <Image
                                 source={require("../assets/img/down.png")}
                                 style={{
@@ -347,7 +378,7 @@ export default class AdvanceSettingDevice extends Component {
                       </View>
                     </View>
 
-                    <View style={styles.flex}>
+                    {/* <View style={styles.flex}>
                       <View style={styles.deviceNameArea}>
                         <Text style={styles.titleSetting}>
                           {i18next.t("Setting")}
@@ -435,7 +466,6 @@ export default class AdvanceSettingDevice extends Component {
                               }}
                               onPress={() => this.setModalVisible(true)}
                             >
-                              {/* Data time */}
                               <Text
                                 style={[
                                   styles.time,
@@ -518,7 +548,6 @@ export default class AdvanceSettingDevice extends Component {
                               </Text>
                             </TouchableOpacity>
                           </ScrollView>
-                          {/* Modal Timer List*/}
                           <Modal
                             animationType="slide"
                             transparent={true}
@@ -618,8 +647,15 @@ export default class AdvanceSettingDevice extends Component {
                           </View>
                         )}
                       </View>
+                    </View> */}
+                    <View style={styles.flex}>
+                      <View style={{width: "90%"}}>
+                        <TouchableOpacity style={styles.btnSave}>
+                          <Text style={styles.btnSaveText}>Save</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
+                  </ScrollView>
                 </View>
                 {Platform.OS === "ios" && (
                   <BottomSheet
@@ -755,6 +791,19 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 5,
   },
+  input: {
+    width: "100%",
+    height: 40,
+    marginTop: 10,
+    marginBottom: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 15,
+    paddingRight: 10,
+    borderRadius: 24,
+    opacity: 0.9,
+    backgroundColor: "#edede9",
+  },
   changeFarmArea: {
     gap: 18,
     flexDirection: "row",
@@ -857,6 +906,18 @@ const styles = StyleSheet.create({
     height: 0.5,
 
     backgroundColor: "#D9D9D9",
+  },
+
+  btnSave:{
+    height: 36,
+    backgroundColor: "#2BA84A",
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  btnSaveText: {
+    color: 'white',
+    fontWeight: "500"
   },
 
   // ========== Connect Status ==========//
