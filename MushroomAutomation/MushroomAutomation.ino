@@ -23,6 +23,14 @@
   };
 
   Equipment equipments[MAX_EQUIPMENTS];
+
+  const char* equipmentIds[MAX_EQUIPMENTS];
+  const char* id_bcs[MAX_EQUIPMENTS];
+  const char* automodes[MAX_EQUIPMENTS];
+  int expect_values[MAX_EQUIPMENTS];
+  int statuses[MAX_EQUIPMENTS];
+  int count = 0;
+  
   size_t num_equipments = 0;
 //region Constants
 
@@ -101,6 +109,13 @@
     if (!client.connected()) {
     reconnect();
     }
+    client.loop();
+    // sendHelloMessage();
+    for(int i = 0; i < count; i++)
+    {
+      processAutoMode(automodes[i], expect_values[i], statuses[i], i);
+    }
+          
     
     
     String formattedDateTime;
@@ -122,15 +137,15 @@
                 }
             }            
     // countPumpActivations(formattedDateTime);
-    postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
-    postCountPumpToAPI("/api/equidmentvalues", formattedDateTime, id_sensor);
+    // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
+    // postCountPumpToAPI("/api/equidmentvalues", formattedDateTime, id_sensor);
     
     // manageAutoControl();
     
-    sendHelloMessage();
     
     
-    client.loop();
+    
+    
     sendMQTTMessage();
 
   }
@@ -425,21 +440,23 @@
 
 //region process
   void processAutoMode(const char* automode, int expect_value, int status, int count) {
-    if (strcmp(automode, "0") == 0) { // Chế độ tự động
-        // Serial.println("Chế độ tự động");
+    if (strcmp(automode, "1") == 0) { // Chế độ tự động
+        Serial.print("Chế độ tự động ");
+        Serial.print("của thiết bị ");
+        Serial.println(count);
         switch (count) {
             case 0:
-                autoMode0 = "0";
+                autoMode0 = "1";
                 desiredHumidity0 = expect_value;
                 autoControlMode(0, desiredHumidity0);
                 break;
             case 1:
-                autoMode1 = "0";
+                autoMode1 = "1";
                 desiredHumidity1 = expect_value;
                 autoControlMode(1, desiredHumidity1);
                 break;
             case 2:
-                autoMode2 = "0";
+                autoMode2 = "1";
                 desiredHumidity2 = expect_value;
                 autoControlMode(2, desiredHumidity2);
                 break;
@@ -447,29 +464,34 @@
                 // Serial.println("Số lượng không hợp lệ");
                 break;
         }
-    } else if (strcmp(automode, "1") == 0) { // Chế độ thủ công
-        // Serial.println("Chế độ thủ công");
+    } else if (strcmp(automode, "0") == 0) { // Chế độ thủ công
+        Serial.print("Chế độ thủ công ");
+        Serial.print("của thiết bị ");
+        Serial.println(count);
         switch (count) {
             case 0:
                 controlPump(0, status);
                 desiredHumidity0 = expect_value;
-                autoMode0 = "1";
+                autoMode0 = "0";
                 break;
             case 1:
                 controlPump(1, status);
                 desiredHumidity0 = expect_value;
-                autoMode1 = "1";
+                autoMode1 = "0";
                 break;
             case 2:
                 controlPump(2, status);
                 desiredHumidity0 = expect_value;
-                autoMode2 = "1";
+                autoMode2 = "0";
                 break;
             default:
                 // Serial.println("Số lượng không hợp lệ");
                 break;
         }
     } else if (strcmp(automode, "2") == 0) { // Chế độ hẹn giờ
+        Serial.print("Chế độ hẹn giờ ");
+        Serial.print("của thiết bị ");
+        Serial.println(count);
         switch (count) {
             case 0:
                 autoMode0 = "2";
@@ -529,17 +551,17 @@
       // Thiết lập các giá trị trong JSON
       doc["id_esp"] = "ESP0001";
 
-      doc["equiment"]["equiment0"];
-      doc["equiment"]["equiment0"]["id_bc"] = "BC0001";
-      doc["equiment"]["equiment0"]["automode"] = "2";
-      doc["equiment"]["equiment0"]["expect_value"] = 85;
-      doc["equiment"]["equiment0"]["status"] = 0;
+      doc["equipment"]["equipment0"];
+      doc["equipment"]["equipment0"]["id_bc"] = "BC0001";
+      doc["equipment"]["equipment0"]["automode"] = "2";
+      doc["equipment"]["equipment0"]["expect_value"] = 85;
+      doc["equipment"]["equipment0"]["status"] = 0;
 
-      doc["equiment"]["equiment1"];
-      doc["equiment"]["equiment1"]["id_bc"] = "BC0002";
-      doc["equiment"]["equiment1"]["automode"] = "2";
-      doc["equiment"]["equiment1"]["expect_value"] = 85;
-      doc["equiment"]["equiment1"]["status"] = 1;
+      doc["equipment"]["equipment1"];
+      doc["equipment"]["equipment1"]["id_bc"] = "BC0002";
+      doc["equipment"]["equipment1"]["automode"] = "2";
+      doc["equipment"]["equipment1"]["expect_value"] = 85;
+      doc["equipment"]["equipment1"]["status"] = 1;
       
 
       // Chuyển đổi JSON thành chuỗi
@@ -616,7 +638,7 @@
     bool messageSent = client.publish(mqtt_topic_send, jsonBuffer);
     client.flush();
     if (messageSent) {
-      Serial.println("Thành công khi gửi tin nhắn MQTT!");
+      Serial.println("Thành công khi gửi tin nhắn MQTT! ! ! !");
     } else {
       Serial.println("Không thể gửi tin nhắn MQTT!");Serial.flush();
     }
@@ -627,9 +649,9 @@
 
 //region MQTTX GET
   void callback(char* topic, byte* payload, unsigned int length) {
-  // Serial.print("Message arrived [");
-  // Serial.print(topic);
-  // Serial.print("] ");
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
 
   // Parse JSON
   StaticJsonDocument<200> doc;
@@ -646,31 +668,32 @@
   if (strcmp(id_esp, id_sensor) == 0) {
     Serial.println("correct id");Serial.flush();
     // Lấy dữ liệu về thiết bị
-    JsonObject equiments = doc["equiment"];
-    int count = 0;
+    JsonObject equipments = doc["equipment"];
+    count = 0;
     // Duyệt qua từng thiết bị
-    for (JsonPair equiment : equiments) {
+    for (JsonPair equipment : equipments) {
      
-      const char* equimentId = equiment.key().c_str();
+      equipmentIds[count] = equipment.key().c_str();
       // Serial.print("Equiment ID: ");
       // Serial.println(equimentId);
       
       // Truy cập thông tin của từng thiết bị
-      JsonObject equimentData = equiment.value();
-      const char* id_bc = equimentData["id_bc"];
-      const char* automode = equimentData["automode"];
-      int expect_value = equimentData["expect_value"];
-      int status = equimentData["status"];
+      JsonObject equipmentData = equipment.value();
+      id_bcs[count] = equipmentData["id_bc"];
+      automodes[count] = equipmentData["automode"];
+      expect_values[count] = equipmentData["expect_value"];
+      statuses[count] = equipmentData["status"];
 
       // Xử lý dữ liệu của thiết bị
       Serial.print("automode ");Serial.flush();
       Serial.println(count);Serial.flush();
       Serial.println("get ve la: ");
       Serial.flush();
-      Serial.println(automode);
+      Serial.println(automodes[count]);
       Serial.flush();
-      processAutoMode(automode, expect_value, status, count);
       count++;
+
+
     }
   }
   }
