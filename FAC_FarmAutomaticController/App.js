@@ -36,6 +36,7 @@ import ChangePassword from "./Views/ChangePassword.js";
 import AddFarmForm from "./Views/AddFarmForm.js";
 import AdvanceSettingDevice from "./Views/AdvanceSettingDevice.js";
 import CheckOut from "./Views/CheckOut.js";
+import UpdateFarmForm from "./Views/UpdateFarmForm.js";
 import DateTime from "./Views/DateTime.js";
 
 const Stack = createNativeStackNavigator();
@@ -54,6 +55,7 @@ function StackNavigator() {
       <Stack.Screen name="AddFarm" component={AddFarm} />
       <Stack.Screen name="User" component={User} />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="UpdateFarmForm" component={UpdateFarmForm} />
       <Stack.Screen
         name="CameraCreateNewFarmHouse"
         component={CameraCreateNewFarmHouse}

@@ -27,7 +27,7 @@ import i18next from "../services/i18next";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 import * as Notifications from "expo-notifications";
-import { thresholdFreedmanDiaconis } from "d3";
+import { style, thresholdFreedmanDiaconis } from "d3";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import init from "react_native_mqtt";
 
@@ -146,7 +146,53 @@ export default class Details extends Component {
     this.props.navigation.navigate("DateTime"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
- 
+  UpdateFarmPage = () => {
+    console.log("Update Farm Page");
+    flag = true;
+    this.props.navigation.navigate("UpdateFarmForm"); // 'History' là tên của màn hình History trong định tuyến của bạn
+  };
+
+  sendMessage = () => {
+    const { sliderValue, switchStates } = this.state;
+    const { dataArray } = this.context;
+    // console.log(switchStates)
+    var Data = {};
+
+    // Data["id_esp"] = dataArray[1]["id_esp"];
+    for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
+      var equipment = {};
+      equipment["humid_expect"] = sliderValue[i];
+
+      if (switchStates[i][0] === true) {
+        equipment["status"] = 1;
+        equipment["automode"] = 0;
+      } else if (switchStates[i][1] === true) {
+        equipment["status"] = 0;
+        equipment["automode"] = 1;
+      } else if (switchStates[i][2] === true) {
+        equipment["status"] = 0;
+        equipment["automode"] = 2;
+      } else if (
+        switchStates[i][0] === false &&
+        switchStates[i][0] === false &&
+        switchStates[i][0] === false
+      ) {
+        equipment["status"] = 0;
+        equipment["automode"] = 0;
+      }
+      Data["equipment" + i.toString()] = equipment;
+    }
+    // console.log(Data)
+    if (this.state.status_mqtt === "connected") {
+      // console.log(JSON.stringify(Data))
+      const jsonString = JSON.stringify(Data);
+      var message = new Paho.MQTT.Message(jsonString);
+      message.destinationName = this.state.subscribedTopic;
+      client.send(message);
+      // console.log("oks")
+    }
+  };
+
   componentDidMount() {
     flag = false;
     this.getvalueequipment();
@@ -1040,23 +1086,19 @@ getvalueequipment = async () => {
           <SafeAreaView>
             <View style={styles.TitleTopArea}>
               <Text style={styles.TitleTop}>{dataArray[1]["name"]}</Text>
-            </View>
-            {/* <Text
-              style={[
-                styles.TitleTop,
-                { fontSize: 20 },
-                { textAlign: "center" },
-                { marginTop: 5 },
-              ]}
-            >
-            </Text>
-            {/* <View style={{ width: "90%", marginBottom: 12 }}>
-              <Text style={{ color: "white", textAlign: "center" }}>
-                It is a long established fact that a reader will be distracted
-                by the readable
+              <Text
+                style={{ textAlign: "center", color: "white", marginTop: -10, fontWeight: '500' }}
+              >
+                {dataArray[1]["decription"]}
               </Text>
-            </View> */}
+            </View>
           </SafeAreaView>
+          <TouchableOpacity style={styles.btnSetting} onPress={this.UpdateFarmPage}>
+              <Image
+                source={require("../assets/img/settings.png")}
+                style={styles.imgSetting}
+              />
+            </TouchableOpacity>
         </LinearGradient>
         <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
           <TouchableOpacity onPress={this.HistoryPage}>
@@ -1317,6 +1359,17 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     color: "#fff",
+  },
+  imgSetting: {
+    width: 23,
+    height: 23,
+
+    tintColor: "white",
+  },
+  btnSetting: {
+    position: "absolute",
+    top: 20,
+    right: 20,
   },
   body: {
     flex: 1,
