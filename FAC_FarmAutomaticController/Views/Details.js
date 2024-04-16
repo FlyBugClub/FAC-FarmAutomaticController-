@@ -86,6 +86,7 @@ export default class Details extends Component {
         ],
         legend: ["Loading"], // optional
       },
+      timeDuration : ["__","__","__","__"],
       switchStates: [],
       slidebar: [],
       sliderValue: [],
@@ -119,7 +120,7 @@ export default class Details extends Component {
     };
     this.snapPoint = ["40%"];
     this.bottomSheetRef = React.createRef();
-
+    
     // this.setDate = this.setDate.bind(this);
     // this.setShowPicker = this.setShowPicker.bind(this);
     client.onConnectionLost = this.onConnectionLost;
@@ -219,7 +220,6 @@ export default class Details extends Component {
 
   subscribeTopic = () => {
     client.subscribe(this.state.topic, { qos: 0 });
-    console.log("ok");
   };
 
 
@@ -436,6 +436,8 @@ export default class Details extends Component {
       var newlegend = [];
       var newlabels = [];
       var id_check = [];
+      var timeDuration = [];
+
       var newdatasets = [];
       // console.log(url);
       // console.log(dataArray[1])
@@ -507,12 +509,22 @@ export default class Details extends Component {
       let hoursbe = dateTimebegin.getHours();
       let minutesbe = dateTimebegin.getMinutes();
       let secondsbe = dateTimebegin.getSeconds();
+      let datebe = dateTimebegin.getDay();
+      let monthbe = dateTimebegin.getMonth();
+      let yearbe = dateTimebegin.getFullYear();
+
 
       let hoursen = dateTimeend.getHours();
       let minutesen = dateTimeend.getMinutes();
       let secondsen = dateTimeend.getSeconds();
+      let dateen = dateTimebegin.getDay();
+      let monthen = dateTimebegin.getMonth();
+      let yearen = dateTimebegin.getFullYear();
       // console.log(`Thời gian: ${hours}:${minutes}:${seconds}`);
-
+      timeDuration.push(`${datebe}:${monthbe}:${yearbe}`)
+      timeDuration.push(`${hoursbe}:${minutesbe}:${secondsbe}`)
+      timeDuration.push(`${dateen}:${monthen}:${yearen}`)
+      timeDuration.push(`${hoursen}:${minutesen}:${secondsen}`)
       newlabels.push(`${hoursbe}:${minutesbe}:${secondsbe}`);
       newlabels.push("");
       newlabels.push("");
@@ -603,6 +615,8 @@ export default class Details extends Component {
           datasets: newdatasets,
           legend: newlegend, // optional
         };
+        this.setState({ timeDuration: timeDuration });
+
         this.setState({ datachart: newData });
       }
       // console.log("@3")
@@ -677,7 +691,6 @@ export default class Details extends Component {
   };
 
 
-
   onMessageArrived = (message) => {
     const slidebarvalue = [];
     const { dataArray } = this.context;
@@ -740,7 +753,8 @@ export default class Details extends Component {
     }
   };
 
-  getvalueequipment = async () => {
+
+getvalueequipment = async () => {
     const { dataArray } = this.context;
 
     const url = apiUrl + `getvalueequipment/${dataArray[1]["id_esp"]}`;
@@ -800,12 +814,14 @@ export default class Details extends Component {
     this.setState({ switchStates: newSwitchStates });
   };
 
+
   //Picker
   async onValueChangeCat(value) {
     flag = true;
     // console.log(value)
     this.setState({ selecedCat: value });
   }
+
 
   render() {
     const { dataArray } = this.context;
@@ -814,7 +830,7 @@ export default class Details extends Component {
     const { datachart } = this.state;
 
     //API
-    const { name_bc, timelist, sliderValue, isEnabled } = this.state;
+    const { name_bc, timelist, sliderValue, isEnabled,timeDuration } = this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
@@ -850,10 +866,7 @@ export default class Details extends Component {
         }
         var time = [];
 
-        [...Array(timelist[index].length)].forEach((_, indextime) => {
-          console.log(timelist[index][indextime])
-          console.log("hehe")
-          
+        [...Array(timelist[index].length)].forEach((_, indextime) => {          
           time.push(
             <View key={indextime.toString() + index.toString()}>
               <View style={styles.timeArea}>
@@ -906,7 +919,6 @@ export default class Details extends Component {
                   value={switchStates[index][0]}
                   style={styles.switch}
                 />
-
                 <Text>{i18next.t("Auto")}</Text>
                 <Switch
                   trackColor={{ false: "#767577", true: "#2BA84A" }}
@@ -984,7 +996,7 @@ export default class Details extends Component {
                       </TouchableOpacity>
 
                       <ScrollView showsVerticalScrollIndicator={false}>
-                        {time[index]}
+                        {time}
                       </ScrollView>
                     </View>
                   </View>
@@ -1067,14 +1079,14 @@ export default class Details extends Component {
                   source={require("../assets/img/calendar.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{ color: "white" }}>13/04/2024</Text>
+                <Text style={{ color: "white" }}>{timeDuration[0]}</Text>
               </View>
               <View style={styles.flex}>
                 <Image
                   source={require("../assets/img/clock.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{ color: "white" }}>5:31:24</Text>
+                <Text style={{ color: "white" }}>{timeDuration[1]}</Text>
               </View>
             </View>
             <View style={[styles.flex, styles.dateTimePart]}>
@@ -1083,14 +1095,14 @@ export default class Details extends Component {
                   source={require("../assets/img/calendar.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{ color: "white" }}>13/04/2024</Text>
+                <Text style={{ color: "white" }}>{timeDuration[2]}</Text>
               </View>
               <View style={styles.flex}>
                 <Image
                   source={require("../assets/img/clock.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{ color: "white" }}>5:31:24</Text>
+                <Text style={{ color: "white" }}>{timeDuration[3]}</Text>
               </View>
             </View>
           </View>
