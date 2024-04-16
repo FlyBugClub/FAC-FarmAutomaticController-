@@ -26,14 +26,13 @@
 
   const char* equipmentIds[MAX_EQUIPMENTS];
   const char* id_bcs[MAX_EQUIPMENTS];
-  const char* automodes[MAX_EQUIPMENTS];
+  int automodes[MAX_EQUIPMENTS];
   int expect_values[MAX_EQUIPMENTS];
   int statuses[MAX_EQUIPMENTS];
   int count = 0;
   
   size_t num_equipments = 0;
 //region Constants
-
   const char* ntpServer = "pool.ntp.org";
   const int ntpPort = 123;
   const char* server_address = "ngunemay123.bsite.net";
@@ -56,9 +55,9 @@
   Adafruit_SHT31 sht31;
   WiFiUDP ntpUDP;
   NTPClient timeClient(ntpUDP, ntpServer, ntpPort);
-  const char* autoMode0 = "0";
-  const char* autoMode1 = "0";
-  const char* autoMode2 = "0";
+  int autoMode0 = 0;
+  int autoMode1 = 0;
+  int autoMode2 = 0;
   float desiredTemperature = 25.0;
   float desiredHumidity0 = 60.0;
   float desiredHumidity1 = 60.0;
@@ -110,11 +109,15 @@
     reconnect();
     }
     client.loop();
+    Serial.print("số thiết bị nhận được: ");
+    Serial.println(count);
+    printValues();
     // sendHelloMessage();
     for(int i = 0; i < count; i++)
     {
       processAutoMode(automodes[i], expect_values[i], statuses[i], i);
     }
+    Serial.println("Hehehihi");
           
     
     
@@ -150,6 +153,24 @@
 
   }
 //region stuff
+  void printValues() {
+    for (int i = 0; i < count; ++i) {
+      Serial.print("automodes[");
+      Serial.print(i);
+      Serial.print("]: ");
+      Serial.println(automodes[i]);
+      
+      Serial.print("expect_values[");
+      Serial.print(i);
+      Serial.print("]: ");
+      Serial.println(expect_values[i]);
+      
+      Serial.print("statuses[");
+      Serial.print(i);
+      Serial.print("]: ");
+      Serial.println(statuses[i]);
+    }
+  }
   bool isNewDay(String formattedTime, String& previousDate) {
     // Lấy ngày từ chuỗi định dạng "%Y-%m-%d"
     String currentDate = formattedTime.substring(0, 10);
@@ -439,24 +460,24 @@
 
 
 //region process
-  void processAutoMode(const char* automode, int expect_value, int status, int count) {
-    if (strcmp(automode, "1") == 0) { // Chế độ tự động
+  void processAutoMode(int automode, int expect_value, int status, int count) {
+    if (automode == 1) { // Chế độ tự động
         Serial.print("Chế độ tự động ");
         Serial.print("của thiết bị ");
         Serial.println(count);
         switch (count) {
             case 0:
-                autoMode0 = "1";
+                autoMode0 = 1;
                 desiredHumidity0 = expect_value;
                 autoControlMode(0, desiredHumidity0);
                 break;
             case 1:
-                autoMode1 = "1";
+                autoMode1 = 1;
                 desiredHumidity1 = expect_value;
                 autoControlMode(1, desiredHumidity1);
                 break;
             case 2:
-                autoMode2 = "1";
+                autoMode2 = 1;
                 desiredHumidity2 = expect_value;
                 autoControlMode(2, desiredHumidity2);
                 break;
@@ -464,7 +485,7 @@
                 // Serial.println("Số lượng không hợp lệ");
                 break;
         }
-    } else if (strcmp(automode, "0") == 0) { // Chế độ thủ công
+    } else if (automode == 0) { // Chế độ thủ công
         Serial.print("Chế độ thủ công ");
         Serial.print("của thiết bị ");
         Serial.println(count);
@@ -472,39 +493,39 @@
             case 0:
                 controlPump(0, status);
                 desiredHumidity0 = expect_value;
-                autoMode0 = "0";
+                autoMode0 = 0;
                 break;
             case 1:
                 controlPump(1, status);
                 desiredHumidity0 = expect_value;
-                autoMode1 = "0";
+                autoMode1 = 0;
                 break;
             case 2:
                 controlPump(2, status);
                 desiredHumidity0 = expect_value;
-                autoMode2 = "0";
+                autoMode2 = 0;
                 break;
             default:
                 // Serial.println("Số lượng không hợp lệ");
                 break;
         }
-    } else if (strcmp(automode, "2") == 0) { // Chế độ hẹn giờ
+    } else if (automode == 2) { // Chế độ hẹn giờ
         Serial.print("Chế độ hẹn giờ ");
         Serial.print("của thiết bị ");
         Serial.println(count);
         switch (count) {
             case 0:
-                autoMode0 = "2";
+                autoMode0 = 2;
                 desiredHumidity0 = expect_value;
                 waterPlants(0);
                 break;
             case 1:
-                autoMode1 = "2";
+                autoMode1 = 2;
                 desiredHumidity1 = expect_value;
                 waterPlants(1);
                 break;
             case 2:
-                autoMode2 = "2";
+                autoMode2 = 2;
                 desiredHumidity2 = expect_value;
                 waterPlants(2);
                 break;
@@ -594,19 +615,19 @@
     JsonObject equipmentObject = doc.createNestedObject("equipment");
 
     // Lặp qua mảng equipments và thêm từng thiết bị vào như một đối tượng lồng nhau
-    for (size_t i = 0; i < num_equipments; ++i) {
+    for (size_t i = 0; i < num_equipments; i++) {
       // Tạo một đối tượng lồng nhau mới cho thiết bị hiện tại
       String equipmentName = "equipment" + String(i);
       JsonObject currentEquipment = equipmentObject.createNestedObject(equipmentName);
 
       // Thêm dữ liệu từ equipments[i] vào đối tượng thiết bị hiện tại
       currentEquipment["id_bc"] = equipments[i].id_bc;
-      const char* autoMode;
+      int autoMode;
       // Sử dụng mảng autoMode để thiết lập automode
       autoMode = (i == 0) ? autoMode0 : ((i == 1) ? autoMode1 : autoMode2);
-      Serial.print("autoMode ");Serial.flush();
+      Serial.print("autoMode của thiết bị thứ ");Serial.flush();
       Serial.print(i);Serial.flush();
-      Serial.print(": ");Serial.flush();
+      Serial.print(" là: ");Serial.flush();
       Serial.println(autoMode);Serial.flush();
       currentEquipment["automode"] = autoMode;  
 
@@ -648,6 +669,7 @@
   }
 
 //region MQTTX GET
+
   void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
