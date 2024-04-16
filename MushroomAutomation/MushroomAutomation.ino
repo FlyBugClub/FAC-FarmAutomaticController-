@@ -13,7 +13,7 @@
   #include <WiFiUdp.h>
 //region Struct
   #define MAX_EQUIPMENTS 2
-  #define SCHEDULE_CAPACITY 6
+  #define SCHEDULE_CAPACITY 6 
 
   struct Equipment {
       char id_sensor[20];
@@ -23,7 +23,6 @@
   };
 
   Equipment equipments[MAX_EQUIPMENTS];
-
   const char* equipmentIds[MAX_EQUIPMENTS];
   const char* id_bcs[MAX_EQUIPMENTS];
   int automodes[MAX_EQUIPMENTS];
@@ -42,6 +41,16 @@
   const int pumpPin2 = D8;
   const long timeZoneOffset = 7 * 3600;
   const unsigned long sprayInterval = 10000; // 10 seconds
+  
+  static unsigned long lastWateringTime = 0; // Biến lưu thời điểm tưới cây cuối cùng
+  unsigned long currentEpochTime; // Lấy thời gian Epoch
+  // Chuyển đổi sang dạng time_t
+
+  // Lấy giờ, phút và giây từ cấu trúc tm
+  int hour;
+  int minute;
+  int second;
+  int totalSeconds = hour * 3600 + minute * 60 + second;
 
   const char* mqtt_server = "broker.emqx.io";
   const uint16_t mqtt_port = 1883;
@@ -109,10 +118,10 @@
     reconnect();
     }
     client.loop();
-    Serial.print("số thiết bị nhận được: ");
-    Serial.println(count);
+    getAndParseAPI("/api/getvalueesp/ESP0001");
+    
     printValues();
-    // sendHelloMessage();
+    sendHelloMessage();
     for(int i = 0; i < count; i++)
     {
       processAutoMode(automodes[i], expect_values[i], statuses[i], i);
@@ -123,22 +132,9 @@
     
     String formattedDateTime;
     getCurrentDateTime(formattedDateTime);
-    getAndParseAPI("/api/getvalueesp/ESP0001");
+    
 
-    Serial.println("num_equipments:");Serial.flush();
-    Serial.println(num_equipments);Serial.flush();
-    for (int i = 0; i < num_equipments; i++) {
-                Serial.print("ID Sensor: ");Serial.flush();
-                Serial.println(equipments[i].id_sensor);Serial.flush();
-                Serial.print("ID BC: ");Serial.flush();
-                Serial.println(equipments[i].id_bc);Serial.flush();
-                Serial.print("Mode: ");Serial.flush();
-              
-                Serial.println("Schedule:");Serial.flush();
-                for (int j = 0; j < equipments[i].schedule_size; j++) {
-                    Serial.println(equipments[i].schedule[j]);Serial.flush();
-                }
-            }            
+    
     // countPumpActivations(formattedDateTime);
     // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
     // postCountPumpToAPI("/api/equidmentvalues", formattedDateTime, id_sensor);
@@ -150,10 +146,12 @@
     
     
     sendMQTTMessage();
-
+  Serial.println("=======================================");
   }
 //region stuff
   void printValues() {
+    Serial.print("số thiết bị nhận được: ");
+    Serial.println(count);
     for (int i = 0; i < count; ++i) {
       Serial.print("automodes[");
       Serial.print(i);
@@ -169,6 +167,22 @@
       Serial.print(i);
       Serial.print("]: ");
       Serial.println(statuses[i]);
+      Serial.println("-----------------------------------------");
+      Serial.println("num_equipments:");Serial.flush();
+    Serial.println(num_equipments);Serial.flush();
+    for (int i = 0; i < num_equipments; i++) {
+                Serial.print("ID Sensor: ");Serial.flush();
+                Serial.println(equipments[i].id_sensor);Serial.flush();
+                Serial.print("ID BC: ");Serial.flush();
+                Serial.println(equipments[i].id_bc);Serial.flush();
+                Serial.print("Mode: ");Serial.flush();
+              
+                Serial.println("Schedule:");Serial.flush();
+                for (int j = 0; j < equipments[i].schedule_size; j++) {
+                    Serial.println(equipments[i].schedule[j]);Serial.flush();
+                }
+            }           
+            Serial.println("-----------------------------------------") ;
     }
   }
   bool isNewDay(String formattedTime, String& previousDate) {
@@ -395,25 +409,27 @@
   bool isPumpActive = false; // Biến kiểm tra xem bơm đã được kích hoạt để tưới cây hay chưa
 
   void waterPlants(int count) {
-    static unsigned long lastWateringTime = 0; // Biến lưu thời điểm tưới cây cuối cùng
-    unsigned long currentEpochTime = timeClient.getEpochTime(); // Lấy thời gian Epoch
+     // Biến lưu thời điểm tưới cây cuối cùng
+    currentEpochTime = timeClient.getEpochTime(); // Lấy thời gian Epoch
     time_t epochTime = (time_t)currentEpochTime; // Chuyển đổi sang dạng time_t
     struct tm *currentTimeStruct = localtime(&epochTime); // Chuyển đổi sang cấu trúc tm
 
     // Lấy giờ, phút và giây từ cấu trúc tm
-    int hour = currentTimeStruct->tm_hour;
-    int minute = currentTimeStruct->tm_min;
-    int second = currentTimeStruct->tm_sec;
-    int totalSeconds = hour * 3600 + minute * 60 + second;
+    hour = currentTimeStruct->tm_hour;
+    minute = currentTimeStruct->tm_min;
+    second = currentTimeStruct->tm_sec;
+    totalSeconds = hour * 3600 + minute * 60 + second;
     
     // In ra giờ, phút và giây
+    Serial.println("waterPlants RUN: ");Serial.flush();
+    Serial.println("BÂY GIỜ LÀ : ");Serial.flush();
     Serial.print("Giờ: ");Serial.flush();
-    Serial.println(hour);Serial.flush();
-    Serial.print("Phút: ");Serial.flush();
-    Serial.println(minute);Serial.flush();
-    Serial.print("Giây: ");Serial.flush();
-    Serial.println(second);Serial.flush();
-
+    Serial.print(hour);Serial.flush();
+    Serial.print(" Phút: ");Serial.flush();
+    Serial.print(minute);Serial.flush();
+    Serial.print(" Giây: ");Serial.flush();
+    Serial.print(second);Serial.flush();
+    Serial.println("-----------------------------------------");
     // Kiểm tra xem đã đến lúc tưới cây chưa và bơm chưa được kích hoạt
     if (!isPumpActive && (totalSeconds - lastWateringTime >= 5000)) { // Chờ 5 giây giữa mỗi lần tưới
         // Lấy lịch trình tưới cây cho thiết bị có chỉ số count
@@ -448,6 +464,7 @@
             Serial.print(" giờ ");Serial.flush();
             Serial.print(remainingMinutes);Serial.flush();
             Serial.println(" phút nữa sẽ tưới cây");Serial.flush();
+            Serial.println("-----------------------------------------");
         }
     }
 
