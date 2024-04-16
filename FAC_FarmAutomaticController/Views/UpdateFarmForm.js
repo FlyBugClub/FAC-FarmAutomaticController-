@@ -31,142 +31,11 @@ export default class AdvanceSettingDevice extends Component {
     super(props);
     this.state = {
       connect: "connected",
-      sliderValue: 50,
-      isBottomSheetOpen: false,
-
-      // ===== Switch ===== //
-      switch1Enabled: false,
-      switch2Enabled: true,
-      switch3Enabled: false,
-
-      // ===== DateTime ===== //
-      dateTime: new Date(),
-      showPicker: false,
-
-      // ===== Modal ==== //
-      modalVisible: false,
-
-      // ===== Picker Change Farm =====//
-      selectedFarm: "",
-      Farm: [
-        {
-          itemName: "Farm 0",
-        },
-
-        {
-          itemName: "Farm 1",
-        },
-      ],
     };
-    this.snapPoint = ["25%", "50%", "75%"];
-    this.bottomSheetRef = React.createRef();
   }
-
-  // ============== Bottom Sheet ============== //
-  handleClosePress = () => this.bottomSheetRef.current?.close();
-  handleOpenPress = () => this.bottomSheetRef.current?.expand();
-
-  // Phương thức mở hoặc đóng BottomSheet
-  toggleBottomSheet = () => {
-    this.setState(
-      (prevState) => ({ isBottomSheetOpen: !prevState.isBottomSheetOpen }),
-      () => {
-        if (this.state.isBottomSheetOpen) {
-          this.bottomSheetRef.current.expand();
-        } else {
-          this.bottomSheetRef.current.close();
-        }
-      }
-    );
-  };
-
-  // ============== Slider ============== //
-  handleSliderChange = (value) => {
-    this.setState({ sliderValue: value });
-  };
-
-  handleSliderComplete = (value) => {
-    // Khi người dùng kết thúc việc điều chỉnh slider, bạn có thể lấy giá trị ở đây
-    this.setState({ sliderValue: value });
-    this.sendMessage();
-  };
-
-  // ============== Swich ============== //
-  handleSwitch1Change = () => {
-    this.setState({
-      switch1Enabled: true,
-      switch2Enabled: false,
-      switch3Enabled: false,
-    });
-  };
-
-  handleSwitch2Change = () => {
-    this.setState({
-      switch1Enabled: false,
-      switch2Enabled: true,
-      switch3Enabled: false,
-    });
-  };
-
-  handleSwitch3Change = () => {
-    this.setState({
-      switch1Enabled: false,
-      switch2Enabled: false,
-      switch3Enabled: true,
-    });
-  };
-
-  // ============== DateTime ============== //
-  toggleDatePicker = () => {
-    this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
-  };
-
-  onChange = (event, selectedDate) => {
-    if (event.type === "set") {
-      const currentDate = selectedDate || this.state.date;
-      this.setState({ date: currentDate });
-      if (Platform.OS === "android") {
-        this.toggleDatePicker();
-      }
-    } else {
-      this.toggleDatePicker();
-    }
-  };
-
-  // ============== Picker ============== //
-  async onValueChangeCat(value) {
-    this.setState({ selecedCat: value });
-  }
-
-  // ============== Set Modal View ============== //
-  setModalVisible = (visible) => {
-    this.setState({ modalVisible: visible });
-  };
-
-  // ============== Picker Change Farm ============== //
-  async onValueChangeFarm(value) {
-    flag = true;
-    this.setState({ selectedFarm: value });
-  }
-
-  // ============== Flatlist Change Farm ============== //
-  // Hàm xử lý khi chọn một farm
-  handleFarmSelect = (farm) => {
-    this.setState({ selectedFarm: farm });
-  };
-
-  // Render mỗi mục trong danh sách farm
-  renderFarmItem = ({ item }) => (
-    <TouchableOpacity onPress={() => this.handleFarmSelect(item.itemName)}>
-      <View style={{ padding: 10, borderBottomWidth: 1, borderColor: "#ccc" }}>
-        <Text>{item.itemName}</Text>
-      </View>
-    </TouchableOpacity>
-  );
 
   render() {
     const { connect } = this.state;
-    const { Farm, selectedFarm, isBottomSheetOpen } = this.state;
 
     return (
       <View style={styles.container}>
@@ -286,28 +155,6 @@ export default class AdvanceSettingDevice extends Component {
                     </View>
                   </ScrollView>
                 </View>
-                {Platform.OS === "ios" && (
-                  <BottomSheet
-                    ref={this.bottomSheetRef}
-                    snapPoints={this.snapPoint}
-                    enablePanDownToClose={true}
-                    index={this.state.isBottomSheetOpen ? 0 : -1}
-                  >
-                    <View>
-                      <Text
-                        style={{ color: "gray", fontSize: 20, marginLeft: 10 }}
-                      >
-                        {i18next.t("Farm")}
-                      </Text>
-                      <FlatList
-                        style={{ marginBottom: 50 }}
-                        data={Farm}
-                        renderItem={this.renderFarmItem}
-                        keyExtractor={(item, index) => index.toString()}
-                      />
-                    </View>
-                  </BottomSheet>
-                )}
               </View>
             </TouchableWithoutFeedback>
           </KeyboardAvoidingView>

@@ -7,12 +7,10 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  Switch,
   TextInput,
   ScrollView,
   StatusBar,
   SafeAreaView,
-  Modal,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
@@ -33,6 +31,7 @@ export default class AdvanceSettingDevice extends Component {
       connect: "connected",
       sliderValue: 50,
       isBottomSheetOpen: false,
+      showSetting: "Setting",
 
       // ===== Switch ===== //
       switch1Enabled: false,
@@ -164,9 +163,15 @@ export default class AdvanceSettingDevice extends Component {
     </TouchableOpacity>
   );
 
+  // ============== Change Component To Earch other ============== //
+  toggleSetting = (settingType) => {
+    this.setState({ showSetting: settingType });
+  };
+
   render() {
     const { connect } = this.state;
     const { Farm, selectedFarm, isBottomSheetOpen } = this.state;
+    const { showSetting } = this.state;
 
     return (
       <View style={styles.container}>
@@ -193,155 +198,242 @@ export default class AdvanceSettingDevice extends Component {
                   </SafeAreaView>
                 </LinearGradient>
                 <View style={styles.content}>
-                  <View style={styles.flex}>
-                    <View style={styles.deviceNameArea}>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
+                  <View style={styles.optionComponent}>
+                    <TouchableOpacity
+                      onPress={() => this.toggleSetting("Setting")}
+                      style={[
+                        styles.btnOptionComponent,
+                        { borderRightWidth: 0.5 },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.optionComponentText,
+                          {
+                            color:
+                              showSetting === "Setting" ? "#333" : "#DEDEDE",
+                          },
+                        ]}
                       >
-                        <Text style={styles.deviceName}>DEVICE NAME</Text>
-                        <View style={styles.connectArea}>
-                          {connect === "connected" && (
-                            <>
-                              <View
-                                style={[
-                                  styles.dot,
-                                  { backgroundColor: "#80b918" },
-                                ]}
-                              ></View>
-                              <Text
-                                style={{
-                                  fontWeight: "bold",
-                                  marginLeft: 2,
-                                  marginRight: 2,
-                                  fontSize: 14,
-                                }}
-                              >
-                                {i18next.t("Connected")}
-                              </Text>
-                            </>
-                          )}
-                          {connect === "disconnected" && (
-                            <>
-                              <View
-                                style={[
-                                  styles.dot,
-                                  { backgroundColor: "#E31C1C" },
-                                ]}
-                              ></View>
-                              <Text
-                                style={{
-                                  fontWeight: "bold",
-                                  marginLeft: 2,
-                                  marginRight: 2,
-                                  fontSize: 14,
-                                }}
-                              >
-                                {i18next.t("Disconneted")}
-                              </Text>
-                            </>
-                          )}
-                        </View>
-                      </View>
-                    </View>
+                        {i18next.t("Setting")}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.toggleSetting("Farm")}
+                      style={[
+                        styles.btnOptionComponent,
+                        { borderLefttWidth: 0.5 },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.optionComponentText,
+                          {
+                            color: showSetting === "Farm" ? "#333" : "#DEDEDE",
+                          },
+                        ]}
+                      >
+                        {i18next.t("Farm")}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-
-                  <ScrollView>
-                    <View style={styles.flex}>
-                      <View style={styles.deviceNameArea}>
-                        <Text style={styles.titleSetting}>
-                          {i18next.t("Device")}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.flex}>
-                      <View style={{width: "90%"}}>
-                        <TextInput
-                            maxLength={19}
-                            placeholder={i18next.t("pump name")}
-                            style={styles.input}
-                            onChangeText={(text) =>
-                              this.setState({ bc_name: text })
-                            }
-                          />
-                          <TextInput
-                            maxLength={19}
-                            placeholder={i18next.t("humid sensor name")}
-                            style={styles.input}
-                            onChangeText={(text) =>
-                              this.setState({ dht_name: text })
-                            }
-                          />
-                          <TextInput
-                            maxLength={19}
-                            placeholder={i18next.t("ph sensor name")}
-                            style={styles.input}
-                            onChangeText={(text) =>
-                              this.setState({ ph_name: text })
-                            }
-                          />
-                      </View>
-                          
+                  {showSetting === "Farm" && (
+                    <>
+                      <View style={styles.flex}>
+                        <View style={styles.deviceNameArea}>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Text style={styles.deviceName}>DEVICE NAME</Text>
+                            <View style={styles.connectArea}>
+                              {connect === "connected" && (
+                                <>
+                                  <View
+                                    style={[
+                                      styles.dot,
+                                      { backgroundColor: "#80b918" },
+                                    ]}
+                                  ></View>
+                                  <Text
+                                    style={{
+                                      fontWeight: "bold",
+                                      marginLeft: 2,
+                                      marginRight: 2,
+                                      fontSize: 14,
+                                    }}
+                                  >
+                                    {i18next.t("Connected")}
+                                  </Text>
+                                </>
+                              )}
+                              {connect === "disconnected" && (
+                                <>
+                                  <View
+                                    style={[
+                                      styles.dot,
+                                      { backgroundColor: "#E31C1C" },
+                                    ]}
+                                  ></View>
+                                  <Text
+                                    style={{
+                                      fontWeight: "bold",
+                                      marginLeft: 2,
+                                      marginRight: 2,
+                                      fontSize: 14,
+                                    }}
+                                  >
+                                    {i18next.t("Disconneted")}
+                                  </Text>
+                                </>
+                              )}
+                            </View>
+                          </View>
                         </View>
+                      </View>
+
+                      <ScrollView>
+                        <View style={styles.flex}>
+                          <View style={styles.deviceNameArea}>
+                            <Text style={styles.titleSetting}>
+                              {i18next.t("Device")}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={styles.flex}>
+                          <View style={{ width: "90%" }}>
+                            <TextInput
+                              maxLength={19}
+                              placeholder={i18next.t("pump name")}
+                              style={styles.input}
+                              onChangeText={(text) =>
+                                this.setState({ bc_name: text })
+                              }
+                            />
+                            <TextInput
+                              maxLength={19}
+                              placeholder={i18next.t("humid sensor name")}
+                              style={styles.input}
+                              onChangeText={(text) =>
+                                this.setState({ dht_name: text })
+                              }
+                            />
+                            <TextInput
+                              maxLength={19}
+                              placeholder={i18next.t("ph sensor name")}
+                              style={styles.input}
+                              onChangeText={(text) =>
+                                this.setState({ ph_name: text })
+                              }
+                            />
+                          </View>
+                        </View>
+                        <View style={styles.flex}>
+                          <View style={styles.option}>
+                            <View
+                              style={[
+                                styles.optionPart,
+                                { marginBottom: 6, marginTop: 6 },
+                              ]}
+                            >
+                              <Text>{i18next.t("Farm")}</Text>
+                              {Platform.OS === "android" && (
+                                <Picker
+                                  style={{ width: 180 }}
+                                  mode="dropdown"
+                                  selectedValue={this.state.selectedFarm}
+                                  onValueChange={this.onValueChangeFarm.bind(
+                                    this
+                                  )}
+                                >
+                                  {this.state.Farm.map((item, index) => (
+                                    <Picker.Item
+                                      color="#333"
+                                      label={item.itemName}
+                                      value={item.itemName}
+                                      index={index}
+                                    />
+                                  ))}
+                                </Picker>
+                              )}
+                              {Platform.OS === "ios" && (
+                                <TouchableOpacity
+                                  style={styles.changeFarmArea}
+                                  // onPress={this.handleOpenPress}
+                                  onPress={this.toggleBottomSheet}
+                                >
+                                  <Text style={styles.text}>
+                                    {selectedFarm || "Farm 1"}
+                                  </Text>
+                                  <Image
+                                    source={require("../assets/img/down.png")}
+                                    style={{
+                                      width: 12,
+                                      height: 12,
+                                      tintColor: "#767577",
+                                    }}
+                                  />
+                                </TouchableOpacity>
+                              )}
+                            </View>
+                          </View>
+                        </View>
+                        <View style={styles.flex}>
+                          <View style={{ width: "90%" }}>
+                            <TouchableOpacity style={styles.btnSave}>
+                              <Text style={styles.btnSaveText}>Save</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </ScrollView>
+                    </>
+                  )}
+                  {showSetting === "Setting" && (
                     <View style={styles.flex}>
                       <View style={styles.option}>
-                        <View
-                          style={[
-                            styles.optionPart,
-                            { marginBottom: 6, marginTop: 6 },
-                          ]}
-                        >
-                          <Text>{i18next.t("Farm")}</Text>
-                          {Platform.OS === "android" && (
-                            <Picker
-                              style={{ width: 180 }}
-                              mode="dropdown"
-                              selectedValue={this.state.selectedFarm}
-                              onValueChange={this.onValueChangeFarm.bind(this)}
+                        <View style={styles.optionPart}>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                            }}
+                          >
+                            {i18next.t("Duration")}
+                          </Text>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              gap: 5,
+                              alignItems: "center",
+                            }}
+                          >
+                            <TextInput
+                              style={{
+                                width: 60,
+                                textAlign: "center",
+                                fontSize: 16,
+                                backgroundColor: "#edede9",
+                                borderRadius: 6,
+                              }}
+                            />
+                            <Text
+                              style={{
+                                fontSize: 16,
+                              }}
                             >
-                              {this.state.Farm.map((item, index) => (
-                                <Picker.Item
-                                  color="#333"
-                                  label={item.itemName}
-                                  value={item.itemName}
-                                  index={index}
-                                />
-                              ))}
-                            </Picker>
-                          )}
-                          {Platform.OS === "ios" && (
-                            <TouchableOpacity
-                              style={styles.changeFarmArea}
-                              // onPress={this.handleOpenPress}
-                              onPress={this.toggleBottomSheet}
-                            >
-                              <Text style={styles.text}>
-                                {selectedFarm || "Farm 1"}
-                              </Text>
-                              <Image
-                                source={require("../assets/img/down.png")}
-                                style={{
-                                  width: 12,
-                                  height: 12,
-                                  tintColor: "#767577",
-                                }}
-                              />
+                              {i18next.t("seconds")}
+                            </Text>
+                            <TouchableOpacity style={[styles.btnSaveDuration]}>
+                              <Image source={require('../assets/img/diskette.png')}
+                              style={{width: 14, height: 14, tintColor: 'white'}}/>
                             </TouchableOpacity>
-                          )}
+                          </View>
                         </View>
                       </View>
                     </View>
-                    <View style={styles.flex}>
-                      <View style={{width: "90%"}}>
-                        <TouchableOpacity style={styles.btnSave}>
-                          <Text style={styles.btnSaveText}>Save</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </ScrollView>
+                  )}
                 </View>
                 {Platform.OS === "ios" && (
                   <BottomSheet
@@ -432,7 +524,29 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    paddingTop: 20,
+  },
+  optionComponent: {
+    height: 58,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginBottom: 10,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  btnOptionComponent: {
+    width: "50%",
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 0.5,
+    borderColor: "#DEDEDE",
+  },
+  optionComponentText: {
+    textAlign: "center",
+    textAlignVertical: "center",
+    fontSize: 18,
+    fontWeight: "500",
   },
   deviceNameArea: {
     width: "90%",
@@ -462,6 +576,8 @@ const styles = StyleSheet.create({
     width: "90%",
     marginTop: 6,
     marginBottom: 8,
+    paddingBottom: 5,
+    paddingTop: 5,
     backgroundColor: "#fff",
     borderRadius: 8,
     shadowColor: "#000",
@@ -476,6 +592,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 5,
     marginBottom: 5,
+  },
+  btnSaveDuration: {
+    width: 42,
+    height: 26,
+    marginLeft: 5,
+    borderRadius: 3,
+    backgroundColor: "#2BA84A",
+    justifyContent: "center",
+    alignItems: "center",
   },
   input: {
     width: "100%",
@@ -496,17 +621,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
   },
-  btnSave:{
+  btnSave: {
     height: 36,
     marginTop: 5,
     backgroundColor: "#2BA84A",
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center'
+    borderRadius: 3,
+    justifyContent: "center",
+    alignItems: "center",
   },
   btnSaveText: {
-    color: 'white',
-    fontWeight: "500"
+    color: "white",
+    fontWeight: "500",
   },
 
   // ========== Connect Status ==========//
