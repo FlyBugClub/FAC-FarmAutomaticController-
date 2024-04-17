@@ -59,10 +59,9 @@ export default class Home extends Component {
 
 
   fetchIsConnect = async () => {
-    const { dataArray,addDataAtIndex } = this.context;
+    const { dataArray } = this.context;
     // const { route } = this.props;
     // const data = route.params;
-    // console.log(dataArray[0]["user"])
     const url =
       apiUrl +
       `isconect/${dataArray[0]["user"]["id"]}`;
@@ -74,15 +73,28 @@ export default class Home extends Component {
     }
     // console.log(url)
     const json = await response.json();
-    // console.log(json)
-    this.setState({isConnect : json["status"]})
+   
+
+    if (dataArray[0]["user"]["id"] !== undefined)
+    {
+      this.setState({isConnect : json["status"]})
+
+    }
+    
 
   };
 
   componentDidMount = async () => {
     this.fetchData();
+    // this.fetchIsConnect();
     this.intervalId = setInterval(() => {
-      this.fetchIsConnect();
+      const {listfarm} = this.state
+      if (listfarm.length !== 0 )
+      {
+        this.fetchIsConnect();
+
+      }
+      else this.fetchData()
     }, 3000);
   };
 
@@ -100,7 +112,6 @@ export default class Home extends Component {
 
   pullMe = () => {
     this.setState({ refresh: true });
-
     setTimeout(() => {
       this.setState({ refresh: false });
       this.fetchData();
@@ -115,15 +126,14 @@ export default class Home extends Component {
     const { listfarm,isConnect } = this.state;
     const farmHouseList = [];
     
-    var name_user = "";
+    var name_user = " ";
     // const jsonObject = JSON.parse(dataArray[1]);
     var keyCount = 0;
     // console.log(listfarm)
     // console.log(isConnect)
 
-    if (listfarm.length !== 0 && isConnect.length !==0 ) {
-      // console.log(isConnect)
-      // console.log(listfarm)
+    if (listfarm.length !== 0 && isConnect !== undefined ) {
+      
       name_user = listfarm["user"]["name"]
       for (const key in listfarm["equipment"]) {
         keyCount = keyCount + 1;
@@ -212,9 +222,12 @@ export default class Home extends Component {
       });
     }
     return (
+     
       <View style={styles.safeContainer}>
-        <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
-        <View style={styles.container}>
+      <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
+
+         
+          <View style={styles.container}>
           <LinearGradient
             colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
             style={styles.header}
@@ -228,6 +241,8 @@ export default class Home extends Component {
               </Text>
             </SafeAreaView>
           </LinearGradient>
+
+          {farmHouseList.length !== 0 && (
           <View style={styles.body}>
             <Text style={styles.littleTitle}>Farm house</Text>
             <ScrollView
@@ -240,7 +255,10 @@ export default class Home extends Component {
               <View style={{ marginTop: 8 }}>{farmHouseList}</View>
             </ScrollView>
           </View>
+          )}
         </View>
+        
+        
       </View>
     );
   }

@@ -23,114 +23,58 @@ import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { Picker } from "@react-native-picker/picker";
 import i18next from "../services/i18next";
 import * as Notifications from "expo-notifications";
+import MyContext from "../DataContext.js";
+import apiUrl from "../apiURL.js";
 
 export default class AdvanceSettingDevice extends Component {
   constructor(props) {
     super(props);
     this.state = {
       connect: "connected",
-      sliderValue: 50,
-      isBottomSheetOpen: false,
       showSetting: "Setting",
-
-      // ===== Switch ===== //
-      switch1Enabled: false,
-      switch2Enabled: true,
-      switch3Enabled: false,
-
-      // ===== DateTime ===== //
-      dateTime: new Date(),
       showPicker: false,
 
-      // ===== Modal ==== //
+      name_equipment:"",
+      name_dht:"",
+      name_ph:"",
+      msg : "",
       modalVisible: false,
-
-      // ===== Picker Change Farm =====//
+      index: "",
       selectedFarm: "",
-      Farm: [
-        {
-          itemName: "Farm 0",
-        },
-
-        {
-          itemName: "Farm 1",
-        },
-      ],
+      Farm: [],
     };
     this.snapPoint = ["25%", "50%", "75%"];
     this.bottomSheetRef = React.createRef();
   }
 
   // ============== Bottom Sheet ============== //
-  handleClosePress = () => this.bottomSheetRef.current?.close();
-  handleOpenPress = () => this.bottomSheetRef.current?.expand();
+  // handleClosePress = () => this.bottomSheetRef.current?.close();
+  // handleOpenPress = () => this.bottomSheetRef.current?.expand();
+  static contextType = MyContext;
 
-  // Phương thức mở hoặc đóng BottomSheet
-  toggleBottomSheet = () => {
-    this.setState(
-      (prevState) => ({ isBottomSheetOpen: !prevState.isBottomSheetOpen }),
-      () => {
-        if (this.state.isBottomSheetOpen) {
-          this.bottomSheetRef.current.expand();
-        } else {
-          this.bottomSheetRef.current.close();
-        }
-      }
-    );
-  };
+  componentDidMount() {
+    const { route } = this.props;
+    const { index} = route.params || {};
+    const { dataArray } = this.context;
 
-  // ============== Slider ============== //
-  handleSliderChange = (value) => {
-    this.setState({ sliderValue: value });
-  };
-
-  handleSliderComplete = (value) => {
-    // Khi người dùng kết thúc việc điều chỉnh slider, bạn có thể lấy giá trị ở đây
-    this.setState({ sliderValue: value });
-    this.sendMessage();
-  };
-
-  // ============== Swich ============== //
-  handleSwitch1Change = () => {
-    this.setState({
-      switch1Enabled: true,
-      switch2Enabled: false,
-      switch3Enabled: false,
+    this.setState({name_equipment : dataArray[1]["bc"][index]["name_bc"]})
+    this.setState({name_dht : dataArray[1]["sensor"][index]["name_dht"]})
+    this.setState({name_ph : dataArray[1]["sensor"][(parseInt(index, 10)+2).toString()]["name_ph"]})
+  
+    const Farmlist = [];
+    Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
+      const farm = {};
+      // console.log(obj["name_esp"])
+      farm["itemName"] = obj["name"];
+      Farmlist.push(farm);
+      // console.log(obj["name"])
     });
-  };
+    this.setState({ index: index });
 
-  handleSwitch2Change = () => {
-    this.setState({
-      switch1Enabled: false,
-      switch2Enabled: true,
-      switch3Enabled: false,
-    });
-  };
+    this.setState({ Farm: Farmlist });
+  }
 
-  handleSwitch3Change = () => {
-    this.setState({
-      switch1Enabled: false,
-      switch2Enabled: false,
-      switch3Enabled: true,
-    });
-  };
-
-  // ============== DateTime ============== //
-  toggleDatePicker = () => {
-    this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
-  };
-
-  onChange = (event, selectedDate) => {
-    if (event.type === "set") {
-      const currentDate = selectedDate || this.state.date;
-      this.setState({ date: currentDate });
-      if (Platform.OS === "android") {
-        this.toggleDatePicker();
-      }
-    } else {
-      this.toggleDatePicker();
-    }
-  };
+ // ============== DateTime ============== //
 
   // ============== Picker ============== //
   async onValueChangeCat(value) {
@@ -151,17 +95,74 @@ export default class AdvanceSettingDevice extends Component {
   // ============== Flatlist Change Farm ============== //
   // Hàm xử lý khi chọn một farm
   handleFarmSelect = (farm) => {
-    this.setState({ selectedFarm: farm });
+    this.setState({ selectedFarm: farm });  
   };
+  UpdateDevice = async () =>
+  {
+    const { dataArray } = this.context;
+    const {name_equipment, name_dht,name_ph,selectedFarm,index} = this.state
+    console.log(selectedFarm)
+    if (name_equipment !== "")
+    {
+      this.setState({msg:""})
+      if (name_dht !== "")
+      {
+        this.setState({msg:""})
+        if (name_ph !== "")
+        {
+          this.setState({msg:""})
+          var id_esp = "";
+              Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
+                const farm = {};
+                if (obj["name"] === selectedFarm) {
+                  id_esp = obj["id_esp"];
+                }
+              });
+              console.log(id_esp)
+          const url = apiUrl + "updateequipmentsensor"
+          let result = await fetch(url, {
+            method: 'PUT',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              "id_esp": id_esp,
+              "id_equipment": dataArray[1]["bc"][index]["id_bc"],
+              "id_dht": dataArray[1]["sensor"][index]["id_dht"],
+              "id_ph": dataArray[1]["sensor"][(parseInt(index, 10)+2).toString()]["id_ph"],
+              "name_equipment": name_equipment,
+              "name_dht": name_dht,
+              "name_ph": name_ph
+            }),
+          });
+          result = await result.json();
+          if (result) {
+            if (result == "Update equipment/sensor success") {
+              this.props.navigation.navigate('Home');
+            }
+            else if (result["Message"] == "Can't not update equipment/sensor") {
+              this.setState({ msg: "Can't not update equipment/sensor" });
+            }
+            else this.setState({ msg: "Net Work fail" });
+          }
 
+        }else this.setState({msg:"Invalid ph sensor name"})
+
+      }else this.setState({msg:"Invalid dht sensor name"})
+
+
+    }else this.setState({msg:"Invalid Pump name"})
+
+  }
   // Render mỗi mục trong danh sách farm
-  renderFarmItem = ({ item }) => (
-    <TouchableOpacity onPress={() => this.handleFarmSelect(item.itemName)}>
-      <View style={{ padding: 10, borderBottomWidth: 1, borderColor: "#ccc" }}>
-        <Text>{item.itemName}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  // renderFarmItem = ({ item }) => (
+  //   <TouchableOpacity onPress={() => this.handleFarmSelect(item.itemName)} key={index}>
+  //     <View style={{ padding: 10, borderBottomWidth: 1, borderColor: "#ccc" }}>
+  //       <Text>{item.itemName}</Text>
+  //     </View>
+  //   </TouchableOpacity>
+  // );
 
   // ============== Change Component To Earch other ============== //
   toggleSetting = (settingType) => {
@@ -169,8 +170,8 @@ export default class AdvanceSettingDevice extends Component {
   };
 
   render() {
-    const { connect } = this.state;
-    const { Farm, selectedFarm, isBottomSheetOpen } = this.state;
+    const { connect,msg } = this.state;
+    const { Farm, selectedFarm, name_dht ,name_equipment,name_ph} = this.state;
     const { showSetting } = this.state;
 
     return (
@@ -248,49 +249,9 @@ export default class AdvanceSettingDevice extends Component {
                               alignItems: "center",
                             }}
                           >
+                            
                             <Text style={styles.deviceName}>DEVICE NAME</Text>
-                            <View style={styles.connectArea}>
-                              {connect === "connected" && (
-                                <>
-                                  <View
-                                    style={[
-                                      styles.dot,
-                                      { backgroundColor: "#80b918" },
-                                    ]}
-                                  ></View>
-                                  <Text
-                                    style={{
-                                      fontWeight: "bold",
-                                      marginLeft: 2,
-                                      marginRight: 2,
-                                      fontSize: 14,
-                                    }}
-                                  >
-                                    {i18next.t("Connected")}
-                                  </Text>
-                                </>
-                              )}
-                              {connect === "disconnected" && (
-                                <>
-                                  <View
-                                    style={[
-                                      styles.dot,
-                                      { backgroundColor: "#E31C1C" },
-                                    ]}
-                                  ></View>
-                                  <Text
-                                    style={{
-                                      fontWeight: "bold",
-                                      marginLeft: 2,
-                                      marginRight: 2,
-                                      fontSize: 14,
-                                    }}
-                                  >
-                                    {i18next.t("Disconneted")}
-                                  </Text>
-                                </>
-                              )}
-                            </View>
+                      
                           </View>
                         </View>
                       </View>
@@ -309,24 +270,27 @@ export default class AdvanceSettingDevice extends Component {
                               maxLength={19}
                               placeholder={i18next.t("pump name")}
                               style={styles.input}
+                              value = {name_equipment}
                               onChangeText={(text) =>
-                                this.setState({ bc_name: text })
+                                this.setState({ name_equipment: text })
                               }
                             />
                             <TextInput
                               maxLength={19}
                               placeholder={i18next.t("humid sensor name")}
                               style={styles.input}
+                              value = {name_dht}
                               onChangeText={(text) =>
-                                this.setState({ dht_name: text })
+                                this.setState({ name_dht: text })
                               }
                             />
                             <TextInput
                               maxLength={19}
                               placeholder={i18next.t("ph sensor name")}
                               style={styles.input}
+                              value = {name_ph}
                               onChangeText={(text) =>
-                                this.setState({ ph_name: text })
+                                this.setState({ name_ph: text })
                               }
                             />
                           </View>
@@ -340,7 +304,7 @@ export default class AdvanceSettingDevice extends Component {
                               ]}
                             >
                               <Text>{i18next.t("Farm")}</Text>
-                              {Platform.OS === "android" && (
+                              {Platform.OS === "android" && Farm.length !== 0 && (
                                 <Picker
                                   style={{ width: 180 }}
                                   mode="dropdown"
@@ -351,6 +315,7 @@ export default class AdvanceSettingDevice extends Component {
                                 >
                                   {this.state.Farm.map((item, index) => (
                                     <Picker.Item
+                                    key={index}
                                       color="#333"
                                       label={item.itemName}
                                       value={item.itemName}
@@ -359,14 +324,14 @@ export default class AdvanceSettingDevice extends Component {
                                   ))}
                                 </Picker>
                               )}
-                              {Platform.OS === "ios" && (
+                              {Platform.OS === "ios" && Farm.length !== 0 && (
                                 <TouchableOpacity
                                   style={styles.changeFarmArea}
                                   // onPress={this.handleOpenPress}
                                   onPress={this.toggleBottomSheet}
                                 >
                                   <Text style={styles.text}>
-                                    {selectedFarm || "Farm 1"}
+                                    {selectedFarm }
                                   </Text>
                                   <Image
                                     source={require("../assets/img/down.png")}
@@ -380,10 +345,11 @@ export default class AdvanceSettingDevice extends Component {
                               )}
                             </View>
                           </View>
+                          <Text>{msg}</Text>
                         </View>
                         <View style={styles.flex}>
                           <View style={{ width: "90%" }}>
-                            <TouchableOpacity style={styles.btnSave}>
+                            <TouchableOpacity style={styles.btnSave} onPress={this.UpdateDevice}>
                               <Text style={styles.btnSaveText}>Save</Text>
                             </TouchableOpacity>
                           </View>

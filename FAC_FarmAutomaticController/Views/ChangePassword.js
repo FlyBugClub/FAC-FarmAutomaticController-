@@ -56,7 +56,7 @@ export default class ChangePassword extends Component {
                             {
                                     this.props.navigation.navigate('Login'); 
                             }
-                            else if (result == "error")
+                            else if (result["Message"] == "error")
                             {
                                 this.setState({ msg: "Chage password fail" });
                             }

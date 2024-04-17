@@ -99,6 +99,7 @@ export default class Details extends Component {
       index_time: 0,
       topic: "hello_topic",
       modalVisible: [],
+      buttonAdvance: [],
       settingTimeModal: false,
       subscribedTopic: "hello_topic",
       //DateTime
@@ -139,9 +140,9 @@ export default class Details extends Component {
     this.props.navigation.navigate("History"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
-  AdvanceSettingDevicePage = () => {
-    console.log("Advance Setting Device Page");
-    this.props.navigation.navigate("AdvanceSettingDevice"); // 'History' là tên của màn hình History trong định tuyến của bạn
+  AdvanceSettingDevicePage = (index) => {
+    console.log(index);
+    this.props.navigation.navigate("AdvanceSettingDevice",{index:index}); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
   DateTimePage = () => {
@@ -395,7 +396,7 @@ export default class Details extends Component {
       if (Platform.OS === "android") {
         const selectedTime = new Date(event["nativeEvent"]["timestamp"]);
 
-        console.log(dataArray[1]["bc"][index_time]["id_bc"]);
+        // console.log(dataArray[1]["bc"][index_time]["id_bc"]);
         const formattedTime = `${selectedTime.getHours()}:${selectedTime.getMinutes()}:${selectedTime.getSeconds()}.000`;
         const url = apiUrl + "schedules";
         let result = await fetch(url, {
@@ -420,13 +421,13 @@ export default class Details extends Component {
             this.setState((prevState) => ({
               showPicker: !prevState.showPicker,
             }));
-          } else if (result == "this time is already add") {
+          } else if (result["Message"] == "this time is already add") {
             console.warn("this time is already add");
             this.setState((prevState) => ({
               showPicker: !prevState.showPicker,
             }));
           } else {
-            console.warn("cuong");
+            // console.warn("cuong");
             this.setState({ msg: "some thing is wrong" });
           }
         }
@@ -448,7 +449,7 @@ export default class Details extends Component {
       var timeDuration = [];
 
       var newdatasets = [];
-      // console.log(url);
+      
       // console.log(dataArray[1])
       const response = await fetch(url);
       if (!response.ok) {
@@ -482,16 +483,35 @@ export default class Details extends Component {
           jsonObject[key] = value;
         }
       }
-      // console.log("@1")
 
       newlegend = id_check.filter(
         (item, index) => id_check.indexOf(item) === index
       );
+      
       for (let i = 0; i < newlegend.length; i++) {
-        if (jsonObject.hasOwnProperty(newlegend[i])) {
-          newlegend[i] = jsonObject[newlegend[i]];
+        // Kiểm tra xem key trong jsonObject có tồn tại hay không
+        if (jsonObject && jsonObject.hasOwnProperty(newlegend[i])) {
+            newlegend[i] = jsonObject[newlegend[i]];
         }
-      }
+    
+        // Kiểm tra xem index hiện tại là 0 hoặc 2 (0-based index)
+
+        if (i === 0 || i === 3) {
+            // Lưu phần tử hiện tại
+            const currentElement = newlegend[i];
+    
+            // Thêm "_Humid" và "_Temp" vào sau phần tử hiện tại
+            newlegend.splice(i + 1, 0, currentElement + "_Humid", currentElement + "_Temp");
+    
+            // Xóa phần tử ban đầu tại vị trí hiện tại
+            newlegend.splice(i, 1);
+    
+            // Sau khi thêm 2 phần tử mới vào mảng và xóa phần tử ban đầu, không cần tăng giá trị i lên thêm 2
+            // Vì phần tử hiện tại đã bị xóa và các phần tử mới đã được thêm vào, do đó `i` vẫn đúng.
+        }
+    }
+      // console.log(newlegend)
+      // console.log("_______________________________")
 
       var datelist = [];
       for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -547,22 +567,27 @@ export default class Details extends Component {
         [
           "0, 119, 182", // Màu cho dataset 0
           "165, 99, 54",
+          "255, 255, 0"
+
         ], // Màu cho dataset 1
         [
           "134, 65, 244", // Màu cho dataset 2
           "134, 0, 244",
+          "0, 255, 255"
         ], // Màu cho dataset 3
         [
           "255, 0, 0", // Màu cho dataset 4 (màu đỏ)
           "0, 255, 0",
+          "255, 0, 255"
         ], // Màu cho dataset 6 (màu xanh dương)
       ];
 
 
       // console.log(sum_sensor/2)
       for (let i = 0; i < sum_sensor / 2; i++) {
-        let valuedht = [];
+        let valuehumid = [];
         let valueph = [];
+        let valuetemp = [];
         // console.log()
         // Sinh dữ liệu ngẫu nhiên cho mỗi dataset
         for (let j = 0; j < 6; j++) {
@@ -572,27 +597,36 @@ export default class Details extends Component {
             json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())
           ) {
             // console.log(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"])
-            valuedht.push(
-              json[0]["combo" + i.toString()]["DHT"][j.toString()]["value"]
+            valuehumid.push(
+              json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_humid"]
             );
             valueph.push(
               json[0]["combo" + i.toString()]["PH"][j.toString()]["value"]
             );
+            valuetemp.push(
+              json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_temp"]
+            );
           } else {
-            valuedht.push(0);
+            valuehumid.push(0);
             valueph.push(0);
+            valuetemp.push(0);
           }
         }
 
         // Chọn màu sắc từ mảng colors
-        let colordht = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
-        let colorph = colors[i][1] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
-        // console.log("@2")
+        let colorhumid = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
+        let colortemp = colors[i][1] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
+        let colorph = colors[i][2] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
 
         // Thêm đối tượng dataset vào mảng
         newdatasets.push({
-          data: valuedht,
-          color: (opacity = 1) => `rgba(${colordht}, ${opacity})`,
+          data: valuehumid,
+          color: (opacity = 1) => `rgba(${colorhumid}, ${opacity})`,
+          strokeWidth: 2, // optional
+        });
+        newdatasets.push({
+          data: valuetemp,
+          color: (opacity = 1) => `rgba(${colortemp}, ${opacity})`,
           strokeWidth: 2, // optional
         });
         newdatasets.push({
@@ -604,9 +638,7 @@ export default class Details extends Component {
 
 
       var reversedArray = newlabels.reverse();
-
       if (reversedArray[0] === "NaN:NaN:NaN" && newdatasets.length === 0 && newlegend.length === 0) {
-
         const newData = {
           labels: [""],
           datasets: [
@@ -629,7 +661,6 @@ export default class Details extends Component {
 
         this.setState({ datachart: newData });
       }
-      // console.log("@3")
 
       isFunctionRunning = false;
     }
@@ -772,7 +803,7 @@ getvalueequipment = async () => {
     const { dataArray } = this.context;
 
     const url = apiUrl + `getvalueequipment/${dataArray[1]["id_esp"]}`;
-
+    console.log(dataArray[1])
     const response = await fetch(url);
     if (!response.ok) {
       this.setState({ msg: "error" });
@@ -783,6 +814,7 @@ getvalueequipment = async () => {
     const newSwitchStates = [];
     const gettimelist = [];
     const name_bc = [];
+    const buttonAdvance = [];
     const slidebarvalue = [];
 
     const buttonTime = [];
@@ -810,6 +842,7 @@ getvalueequipment = async () => {
         gettimelist.push(time)
         
       } 
+      // buttonAdvance.push(false)
       buttonTime.push(false)
       modalVisible.push(false)
       
@@ -817,6 +850,7 @@ getvalueequipment = async () => {
       value.push(50)
       name_bc.push(json[0][i]["name"])
     }
+    // this.setState({ buttonAdvance: buttonAdvance })
     
     this.setState({ modalVisible: modalVisible })
     this.setState({ buttonTime: buttonTime })
@@ -844,7 +878,7 @@ getvalueequipment = async () => {
     const { datachart } = this.state;
 
     //API
-    const { name_bc, timelist, sliderValue, isEnabled,timeDuration } = this.state;
+    const { name_bc, timelist, sliderValue, isEnabled,timeDuration,buttonAdvance } = this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
@@ -914,7 +948,8 @@ getvalueequipment = async () => {
           <View style={styles.optionArea} key={index}>
             <View style={styles.topDevice}>
               <Text style={styles.titleDevice}>{name_bc[index]}</Text>
-              <TouchableOpacity onPress={this.AdvanceSettingDevicePage}>
+              <TouchableOpacity onPress={() => this.AdvanceSettingDevicePage(index)}>
+              
                 <Image
                   source={require("../assets/img/more.png")}
                   style={styles.moreOption}
@@ -1158,9 +1193,11 @@ getvalueequipment = async () => {
                   <View style={styles.optionArea}></View>
                 </View>
               )}
+
               {this.state.selecedCat === "Independence" && (
                 <View>
                   <Text style={styles.titleNote}>
+
                     {i18next.t("Custom control")}
                   </Text>
                   {deviceList}

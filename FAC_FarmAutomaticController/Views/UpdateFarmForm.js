@@ -25,17 +25,64 @@ import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { Picker } from "@react-native-picker/picker";
 import i18next from "../services/i18next";
 import * as Notifications from "expo-notifications";
+import MyContext from "../DataContext.js";
+import apiUrl from "../apiURL.js";
+
 
 export default class AdvanceSettingDevice extends Component {
   constructor(props) {
     super(props);
     this.state = {
       connect: "connected",
+      name_farm: "",
+      description: "",
+      msg: ""
     };
+  }
+  static contextType = MyContext;
+  componentDidMount() {
+    const { dataArray } = this.context;
+    this.setState({name_farm : dataArray[1]["name"] });
+    this.setState({ description: dataArray[1]["decription"] });
+  }
+  updateFarm = async () => {
+    const { name_farm, description } = this.state;
+    const { dataArray } = this.context;
+
+    console.log(name_farm)
+    console.log(description)
+    if (name_farm !== "") {
+      this.setState({ msg: "" })
+      const url = apiUrl + "esps"
+      let result = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "id_esp": dataArray[1]["id_esp"],
+          "name_esp": name_farm,
+          "decription": description
+
+        }),
+      });
+      result = await result.json();
+      if (result) {
+        if (result == "Update Esp Success") {
+          this.props.navigation.navigate('Home');
+        }
+        else if (result["Message"] == "Can't update esp") {
+          this.setState({ msg: "Update fail" });
+        }
+        else this.setState({ msg: "Update fail" });
+      }
+    }
+    else this.setState({ msg: "Invalid farm name" })
   }
 
   render() {
-    const { connect } = this.state;
+    const { name_farm,description, msg } = this.state;
 
     return (
       <View style={styles.container}>
@@ -72,7 +119,7 @@ export default class AdvanceSettingDevice extends Component {
                         }}
                       >
                         <Text style={styles.deviceName}>FARM NAME</Text>
-                        <View style={styles.connectArea}>
+                        {/* <View style={styles.connectArea}>
                           {connect === "connected" && (
                             <>
                               <View
@@ -113,7 +160,7 @@ export default class AdvanceSettingDevice extends Component {
                               </Text>
                             </>
                           )}
-                        </View>
+                        </View> */}
                       </View>
                     </View>
                   </View>
@@ -132,23 +179,27 @@ export default class AdvanceSettingDevice extends Component {
                           maxLength={19}
                           placeholder={i18next.t("Farm name")}
                           style={styles.input}
+                          value = {name_farm}
                           onChangeText={(text) =>
-                            this.setState({ bc_name: text })
+                            this.setState({ name_farm: text })
                           }
                         />
                         <TextInput
                           maxLength={99}
                           placeholder={i18next.t("Description")}
                           style={styles.textArea}
+                          value = {description}
                           onChangeText={(text) =>
-                            this.setState({ dht_name: text })
+                            this.setState({ description: text })
                           }
                         />
                       </View>
+                      <Text>{msg}</Text>
                     </View>
+
                     <View style={styles.flex}>
                       <View style={{ width: "90%" }}>
-                        <TouchableOpacity style={styles.btnSave}>
+                        <TouchableOpacity style={styles.btnSave} onPress={this.updateFarm}>
                           <Text style={styles.btnSaveText}>Save</Text>
                         </TouchableOpacity>
                       </View>
