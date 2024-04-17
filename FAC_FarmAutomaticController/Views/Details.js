@@ -86,7 +86,7 @@ export default class Details extends Component {
         ],
         legend: ["Loading"], // optional
       },
-      timeDuration : ["__","__","__","__"],
+      timeDuration : ["________","________","________","________"],
       switchStates: [],
       slidebar: [],
       sliderValue: [],
@@ -97,10 +97,10 @@ export default class Details extends Component {
       TimerList: [],
       switchAll: [false, false, false],
       index_time: 0,
-      topic: "tr6r/cuong",
+      topic: "hello_topic",
       modalVisible: [],
       settingTimeModal: false,
-      subscribedTopic: "tr6r/cuong",
+      subscribedTopic: "hello_topic",
       //DateTime
       dateTime: new Date(),
       showPicker: false,
@@ -123,8 +123,12 @@ export default class Details extends Component {
     
     // this.setDate = this.setDate.bind(this);
     // this.setShowPicker = this.setShowPicker.bind(this);
-    client.onConnectionLost = this.onConnectionLost;
-    client.onMessageArrived = this.onMessageArrived;
+    if (client.isConnected() == true)
+    {
+      client.onConnectionLost = this.onConnectionLost;
+      client.onMessageArrived = this.onMessageArrived;
+    }
+    
     console.log("checkstateend");
   }
 
@@ -150,47 +154,6 @@ export default class Details extends Component {
     console.log("Update Farm Page");
     flag = true;
     this.props.navigation.navigate("UpdateFarmForm"); // 'History' là tên của màn hình History trong định tuyến của bạn
-  };
-
-  sendMessage = () => {
-    const { sliderValue, switchStates } = this.state;
-    const { dataArray } = this.context;
-    // console.log(switchStates)
-    var Data = {};
-
-    // Data["id_esp"] = dataArray[1]["id_esp"];
-    for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
-      var equipment = {};
-      equipment["humid_expect"] = sliderValue[i];
-
-      if (switchStates[i][0] === true) {
-        equipment["status"] = 1;
-        equipment["automode"] = 0;
-      } else if (switchStates[i][1] === true) {
-        equipment["status"] = 0;
-        equipment["automode"] = 1;
-      } else if (switchStates[i][2] === true) {
-        equipment["status"] = 0;
-        equipment["automode"] = 2;
-      } else if (
-        switchStates[i][0] === false &&
-        switchStates[i][0] === false &&
-        switchStates[i][0] === false
-      ) {
-        equipment["status"] = 0;
-        equipment["automode"] = 0;
-      }
-      Data["equipment" + i.toString()] = equipment;
-    }
-    // console.log(Data)
-    if (this.state.status_mqtt === "connected") {
-      // console.log(JSON.stringify(Data))
-      const jsonString = JSON.stringify(Data);
-      var message = new Paho.MQTT.Message(jsonString);
-      message.destinationName = this.state.subscribedTopic;
-      client.send(message);
-      // console.log("oks")
-    }
   };
 
   componentDidMount() {
@@ -555,22 +518,23 @@ export default class Details extends Component {
       let hoursbe = dateTimebegin.getHours();
       let minutesbe = dateTimebegin.getMinutes();
       let secondsbe = dateTimebegin.getSeconds();
-      let datebe = dateTimebegin.getDay();
-      let monthbe = dateTimebegin.getMonth();
+      let datebe = dateTimebegin.getDate();
+      let monthbe = (dateTimebegin.getMonth() + 1).toString().padStart(2, '0');
       let yearbe = dateTimebegin.getFullYear();
 
 
       let hoursen = dateTimeend.getHours();
       let minutesen = dateTimeend.getMinutes();
       let secondsen = dateTimeend.getSeconds();
-      let dateen = dateTimebegin.getDay();
-      let monthen = dateTimebegin.getMonth();
+      let dateen = dateTimebegin.getDate();
+      let monthen = (dateTimebegin.getMonth() + 1).toString().padStart(2, '0');
       let yearen = dateTimebegin.getFullYear();
       // console.log(`Thời gian: ${hours}:${minutes}:${seconds}`);
-      timeDuration.push(`${datebe}:${monthbe}:${yearbe}`)
-      timeDuration.push(`${hoursbe}:${minutesbe}:${secondsbe}`)
-      timeDuration.push(`${dateen}:${monthen}:${yearen}`)
+      
+      timeDuration.push(`${dateen}/${monthen}/${yearen}`)
       timeDuration.push(`${hoursen}:${minutesen}:${secondsen}`)
+      timeDuration.push(`${datebe}/${monthbe}/${yearbe}`)
+      timeDuration.push(`${hoursbe}:${minutesbe}:${secondsbe}`)
       newlabels.push(`${hoursbe}:${minutesbe}:${secondsbe}`);
       newlabels.push("");
       newlabels.push("");
@@ -698,36 +662,40 @@ export default class Details extends Component {
     const { dataArray } = this.context;
     // console.log(switchStates)
     var Data = {};
+    var equipment_josn = {}
+    // console.log("hshsh")
+    // console.log(dataArray[1])
     // Data["id_esp"] = dataArray[1]["id_esp"];
-    Data["id_esp"] = dataArray[1]["id_esp"];
+    Data["id_esp"] = dataArray[1]["id_esp"]
     for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
       var equipment = {};
-      equipment["humid_expect"] = sliderValue[i];
+      equipment["id_bc"] = dataArray[1]["bc"][i.toString()]["id_bc"];
+      equipment["expect_value"] = sliderValue[i];
 
       if (switchStates[i][0] === true) {
         equipment["status"] = 1;
-        equipment["automode"] = 0;
+        equipment["automode"] = "0";
       } else if (switchStates[i][1] === true) {
         equipment["status"] = 0;
-        equipment["automode"] = 1;
+        equipment["automode"] = "1";
       } else if (switchStates[i][2] === true) {
         equipment["status"] = 0;
-        equipment["automode"] = 2;
+        equipment["automode"] = "2";
       } else if (
         switchStates[i][0] === false &&
         switchStates[i][0] === false &&
         switchStates[i][0] === false
       ) {
         equipment["status"] = 0;
-        equipment["automode"] = 0;
+        equipment["automode"] = "0";
       }
-      Data["equipment" + i.toString()] = equipment;
+      equipment_josn["equipment" + i.toString()] = equipment;
+      Data["equipment"] = equipment_josn;
+      
     }
     // console.log(Data)
-    if (this.state.status_mqtt === "connected" && client.isConnected() == true) {
+    if (this.state.status_mqtt === "connected") {
       // console.log(JSON.stringify(Data))
-      // console.log("gui")
-      // console.log(client.isConnected())
       const jsonString = JSON.stringify(Data);
       var message = new Paho.MQTT.Message(jsonString);
       message.destinationName = this.state.subscribedTopic;
@@ -749,7 +717,7 @@ export default class Details extends Component {
     // console.log(jsonData["equipment0"])
     let count = 0;
  
-    if (jsonData["id_esp"] == dataArray[1]["id_esp"])
+    if (jsonData["id_esp"] == dataArray[1]["id_esp"] && client.isConnected() == true)
     { 
       for (const key in jsonData) {
         const SwitchStates = [];
@@ -897,7 +865,7 @@ getvalueequipment = async () => {
           const time = timelist[index][i];
           const timeParts = time.split(":"); // Tách thời gian thành các phần
           const hourMinute = timeParts[0] + ":" + timeParts[1]; // Lấy giờ và phút
-          console.log()
+          // console.log()
           timeComponents.push(
             <Text
               key={i}
