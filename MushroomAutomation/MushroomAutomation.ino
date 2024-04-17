@@ -39,6 +39,8 @@
   const int pumpPin0 = D6;
   const int pumpPin1 = D7;
   const int pumpPin2 = D8;
+  const int buttonAP = D0; // Nút để kích hoạt AP Mode
+  const int buttonReset = D3; // Nút để reset ESP
   const long timeZoneOffset = 7 * 3600;
   const unsigned long sprayInterval = 10000; // 10 seconds
   
@@ -91,6 +93,8 @@
     pinMode(pumpPin0, OUTPUT);
     pinMode(pumpPin1, OUTPUT);
     pinMode(pumpPin2, OUTPUT);
+    pinMode(buttonAP, INPUT_PULLUP);
+    pinMode(buttonReset, INPUT_PULLUP);
     Serial.begin(9600);
     delay(100);
 
@@ -111,12 +115,20 @@
   int soLan = 0;
 //region loop
   void loop() {
-    if (!wifiConnected) {
+    if (!WiFi.isConnected()) {
       connectToWiFi();
     }
     if (!client.connected()) {
     reconnect();
     }
+
+    if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
+    activateAPMode();
+    }
+    if (digitalRead(buttonReset) == LOW) { // Nếu nút được nhấn
+      resetESP();
+    }
+
     client.loop();
     getAndParseAPI("/api/getvalueesp/ESP0001");
     
@@ -145,11 +157,6 @@
     // postCountPumpToAPI("/api/equidmentvalues", formattedDateTime, id_sensor);
     
     // manageAutoControl();
-    
-    
-    
-    
-    
     sendMQTTMessage();
   Serial.println("=======================================");
   }
@@ -563,26 +570,47 @@
 
 //region connect wifi and sensor
   void connectToWiFi() {
-  // Khởi tạo WiFiManager
-  WiFiManager wifiManager;
+    // Thử kết nối WiFi
+    WiFi.begin(ssid, pass);
 
-  // Kiểm tra xem ESP8266 có kết nối WiFi hay không
-  if (!WiFi.isConnected()) {
-    // Thử kết nối WiFi hoặc chuyển sang chế độ điểm truy cập (AP) để cấu hình WiFi mới
-    if (!wifiManager.autoConnect("ESP8266_AP")) {
-      Serial.println("Failed to connect and hit timeout");Serial.flush();
-      // Nếu kết nối thất bại sau một khoảng thời gian, reset thiết bị
-      ESP.reset();
-      delay(1000);
-    } else {
-      // In ra thông báo khi kết nối WiFi thành công
-      Serial.println("Connected to WiFi");Serial.flush();
-      Serial.print("SSID: ");Serial.flush();
-      Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nốiSerial.flush();
-      timeClient.setTimeOffset(timeZoneOffset);
-      wifiConnected = true; // Cập nhật trạng thái kết nối WiFi
+    // Đợi cho đến khi kết nối được thiết lập hoặc nhận được tín hiệu từ nút
+    while (!WiFi.isConnected()) {
+      delay(100); // Giảm thời gian đợi để tăng tần suất kiểm tra nút
+
+      // Kiểm tra nút AP
+      if (digitalRead(buttonAP) == HIGH) {
+        activateAPMode(); // Gọi hàm kích hoạt AP Mode
+        return; // Thoát khỏi hàm để không tiếp tục kết nối WiFi
+      }
+
+      // Kiểm tra nút Reset
+      if (digitalRead(buttonReset) == HIGH) {
+        resetESP(); // Gọi hàm reset
+        return; // Thoát khỏi hàm vì ESP sẽ khởi động lại
+      }
+
+      Serial.print("."); // In dấu chấm để biểu thị rằng đang đợi kết nối
     }
+
+    Serial.println("\nKết nối WiFi thành công!");
+    Serial.print("Địa chỉ IP: ");
+    Serial.println(WiFi.localIP());
+    wifiConnected = true;
   }
+
+
+  void activateAPMode() {
+  Serial.println("Chuyển sang AP Mode.");
+  WiFiManager wifiManager;
+  wifiManager.resetSettings();
+  wifiManager.startConfigPortal("ESP8266_MODE_Access Point");
+  while(true); // Giữ ESP trong AP mode cho đến khi được reset hoặc cấu hình lại
+  }
+
+
+  void resetESP() {
+  Serial.println("Resetting ESP...");
+  ESP.restart(); // Lệnh reset ESP8266
   }
 //region MQTTX POST
   void sendHelloMessage() {
