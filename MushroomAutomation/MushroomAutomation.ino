@@ -108,7 +108,7 @@
     
     client.setCallback(callback);
   }
-  
+  int soLan = 0;
 //region loop
   void loop() {
     if (!wifiConnected) {
@@ -121,7 +121,12 @@
     getAndParseAPI("/api/getvalueesp/ESP0001");
     
     printValues();
-    sendHelloMessage();
+    while(soLan == 0)
+    {
+      sendHelloMessage();
+      soLan++;
+    }
+    
     for(int i = 0; i < count; i++)
     {
       processAutoMode(automodes[i], expect_values[i], statuses[i], i);
@@ -613,7 +618,7 @@
         bool messageSent = client.publish(mqtt_topic_hello, jsonBuffer);
         client.flush();
         if (messageSent) {
-          Serial.println("Thành công khi gửi tin nhắn MQTT!");Serial.flush();
+          Serial.println("Thành công khi gửi tin nhắn MQTT topic hello");Serial.flush();
         } else {
           Serial.println("Không thể gửi tin nhắn MQTT!");Serial.flush();
         }
