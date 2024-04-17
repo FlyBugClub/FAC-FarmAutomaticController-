@@ -179,7 +179,7 @@ export default class Home extends Component {
                           fontSize: 13,
                         }}
                       >
-                        {i18next.t("Disconneted")}
+                        {i18next.t("Disconnected")}
                       </Text>
                     </>
                   )}
