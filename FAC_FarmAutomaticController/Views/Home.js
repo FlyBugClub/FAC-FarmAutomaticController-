@@ -26,8 +26,8 @@ export default class Home extends Component {
       connect: "connected",
       refresh: false,
       listfarm: [],
-      msg:"",
-      isConnect: {}
+      msg: "",
+      isConnect: {},
     };
   }
   SignUpPage = () => {
@@ -36,14 +36,12 @@ export default class Home extends Component {
   };
 
   fetchData = async () => {
-    const { dataArray,addDataAtIndex } = this.context;
+    const { dataArray, addDataAtIndex } = this.context;
     // const { route } = this.props;
     // const data = route.params;
     // console.log(dataArray[0]["user"]["gmail"])
-    const url =
-      apiUrl +
-      `getfarm/${dataArray[0]["user"]["gmail"]}`;
-      const response = await fetch(url);
+    const url = apiUrl + `getfarm/${dataArray[0]["user"]["gmail"]}`;
+    const response = await fetch(url);
     // console.log("ok")
     if (!response.ok) {
       this.setState({ msg: "error" });
@@ -51,21 +49,23 @@ export default class Home extends Component {
     }
     // console.log(url)
     const json = await response.json();
-    
+
     addDataAtIndex(json[0], 0);
     // console.log("heheaaa");
     this.setState({ listfarm: json[0] });
   };
 
+  DetailPage = (index) => {
+    // console.log(index)
+    this.GetEquidmentValues(index);
+  };
 
   fetchIsConnect = async () => {
     const { dataArray } = this.context;
     // const { route } = this.props;
     // const data = route.params;
-    const url =
-      apiUrl +
-      `isconect/${dataArray[0]["user"]["id"]}`;
-      const response = await fetch(url);
+    const url = apiUrl + `isconect/${dataArray[0]["user"]["id"]}`;
+    const response = await fetch(url);
     // console.log("ok")
     if (!response.ok) {
       this.setState({ msg: "error" });
@@ -73,34 +73,21 @@ export default class Home extends Component {
     }
     // console.log(url)
     const json = await response.json();
-   
 
-    if (dataArray[0]["user"]["id"] !== undefined)
-    {
-      this.setState({isConnect : json["status"]})
-
+    if (dataArray[0]["user"]["id"] !== undefined) {
+      this.setState({ isConnect: json["status"] });
     }
-    
-
   };
 
   componentDidMount = async () => {
     this.fetchData();
     // this.fetchIsConnect();
     this.intervalId = setInterval(() => {
-      const {listfarm} = this.state
-      if (listfarm.length !== 0 )
-      {
+      const { listfarm } = this.state;
+      if (listfarm.length !== 0) {
         this.fetchIsConnect();
-
-      }
-      else this.fetchData()
+      } else this.fetchData();
     }, 3000);
-  };
-
-  DetailPage = (index) => {
-    // console.log(index)
-    this.GetEquidmentValues(index);
   };
 
   static contextType = MyContext;
@@ -123,18 +110,17 @@ export default class Home extends Component {
     const { connect } = this.state;
 
     const { dataArray } = this.context;
-    const { listfarm,isConnect } = this.state;
+    const { listfarm, isConnect } = this.state;
     const farmHouseList = [];
-    
+
     var name_user = " ";
     // const jsonObject = JSON.parse(dataArray[1]);
     var keyCount = 0;
     // console.log(listfarm)
     // console.log(isConnect)
 
-    if (listfarm.length !== 0 && isConnect !== undefined ) {
-      
-      name_user = listfarm["user"]["name"]
+    if (listfarm.length !== 0 && isConnect !== undefined) {
+      name_user = listfarm["user"]["name"];
       for (const key in listfarm["equipment"]) {
         keyCount = keyCount + 1;
       }
@@ -142,7 +128,7 @@ export default class Home extends Component {
         this.DetailPage(index);
       };
       // const farmHouseList = [];
-      
+
       [...Array(keyCount)].forEach((_, index) => {
         data[index] = Object.values(listfarm["equipment"])[index];
         // console.log(data)
@@ -163,9 +149,11 @@ export default class Home extends Component {
                   Farm {index}: {data[index]["name"]}
                 </Text>
                 <View style={styles.connectArea}>
-                  {isConnect["esp"+index.toString()] === true && (
+                  {isConnect["esp" + index.toString()] === true && (
                     <>
-                      <View style={[styles.dot, {backgroundColor: "#80b918"}]}></View>
+                      <View
+                        style={[styles.dot, { backgroundColor: "#80b918" }]}
+                      ></View>
                       <Text
                         style={{
                           fontWeight: "bold",
@@ -178,9 +166,11 @@ export default class Home extends Component {
                       </Text>
                     </>
                   )}
-                  {isConnect["esp"+index.toString()] === false && (
+                  {isConnect["esp" + index.toString()] === false && (
                     <>
-                      <View style={[styles.dot, {backgroundColor: "#E31C1C"}]}></View>
+                      <View
+                        style={[styles.dot, { backgroundColor: "#E31C1C" }]}
+                      ></View>
                       <Text
                         style={{
                           fontWeight: "bold",
@@ -222,12 +212,10 @@ export default class Home extends Component {
       });
     }
     return (
-     
       <View style={styles.safeContainer}>
-      <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
+        <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
 
-         
-          <View style={styles.container}>
+        <View style={styles.container}>
           <LinearGradient
             colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
             style={styles.header}
@@ -243,22 +231,23 @@ export default class Home extends Component {
           </LinearGradient>
 
           {farmHouseList.length !== 0 && (
-          <View style={styles.body}>
-            <Text style={styles.littleTitle}>Farm house</Text>
-            <ScrollView
-              style={{ height: "73%" }}
-              showsVerticalScrollIndicator={false}
-              refreshControl={
-                <RefreshControl refreshing={refresh} onRefresh={this.pullMe} />
-              }
-            >
-              <View style={{ marginTop: 8 }}>{farmHouseList}</View>
-            </ScrollView>
-          </View>
+            <View style={styles.body}>
+              <Text style={styles.littleTitle}>Farm house</Text>
+              <ScrollView
+                style={{ height: "73%" }}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refresh}
+                    onRefresh={this.pullMe}
+                  />
+                }
+              >
+                <View style={{ marginTop: 8 }}>{farmHouseList}</View>
+              </ScrollView>
+            </View>
           )}
         </View>
-        
-        
       </View>
     );
   }

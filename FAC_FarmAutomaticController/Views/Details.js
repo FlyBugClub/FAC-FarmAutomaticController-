@@ -76,6 +76,7 @@ export default class Details extends Component {
       isBottomSheetOpen: false,
       message_humid: "0.0",
       showArcRanges: false,
+      refresh: false,
       msg: "gg",
       datachart: {
         labels: [""],
@@ -857,7 +858,17 @@ export default class Details extends Component {
     this.setState({ selecedCat: value });
   }
 
+  // ========== Refresh ========== //
+  pullMe = () => {
+    this.setState({ refresh: true });
+    setTimeout(() => {
+      this.setState({ refresh: false });
+      this.fetchData();
+    }, 1000);
+  };
+
   render() {
+    const { refresh } = this.state; //Refresh
     const { dataArray } = this.context;
     //Switch
     const { switchStates } = this.state;
@@ -1117,7 +1128,13 @@ export default class Details extends Component {
             />
           </TouchableOpacity>
         </LinearGradient>
-        <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.body}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refresh} onRefresh={this.pullMe} />
+          }
+        >
           <TouchableOpacity onPress={this.HistoryPage}>
             {chunkedLegends.map((legendRow, rowIndex) => (
               <View style={styles.flex}>
@@ -1125,11 +1142,13 @@ export default class Details extends Component {
                   <View style={styles.legendSpace}>
                     {legendRow.map((legend, legendIndex) => (
                       <View style={styles.legendPart}>
-                        <View style={[styles.legendDot, {backgroundColor: "#fb8500"}]}></View>
-                        <Text
-                          style={styles.legendText}
-                          key={legendIndex}
-                        >
+                        <View
+                          style={[
+                            styles.legendDot,
+                            { backgroundColor: "#fb8500" },
+                          ]}
+                        ></View>
+                        <Text style={styles.legendText} key={legendIndex}>
                           {legend}
                         </Text>
                       </View>
@@ -1439,7 +1458,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 12,
-    color: '#023e8a'
+    color: "#023e8a",
   },
   //Display DateTime
   dateTimeArea: {
