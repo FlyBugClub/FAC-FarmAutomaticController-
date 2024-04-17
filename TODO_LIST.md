@@ -1,10 +1,10 @@
 STATUS|TODO job|Person								
-NO 	| arduinoide				post	http						|	DUC
-NO	| button to config new wifi									|	DUC
+YES 	| arduinoide				post	http						|	DUC
+YES	| button to config new wifi									|	DUC
 YES	| arduinoide  				get	http		
 YES	| arduinoide  				get	MQTT						|		
 YES	| arduinoide  				post    MQTT	
-NO	| esp get from sql and save variable								|	DUC
+YES	| esp get from sql and save variable								|	DUC
 |
 |
 |
