@@ -631,7 +631,7 @@
     StaticJsonDocument<512> doc;
 
     // Thiết lập giá trị "id_esp" chung
-    doc["id_esp"] = "ESP0001";
+    doc["id_esp"] = id_sensor;
 
     // Tạo một đối tượng lồng nhau cho "equipment"
     JsonObject equipmentObject = doc.createNestedObject("equipment");
