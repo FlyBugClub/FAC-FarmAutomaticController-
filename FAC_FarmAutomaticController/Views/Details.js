@@ -86,7 +86,7 @@ export default class Details extends Component {
         ],
         legend: ["Loading"], // optional
       },
-      timeDuration : ["________","________","________","________"],
+      timeDuration: ["________", "________", "________", "________"],
       switchStates: [],
       slidebar: [],
       sliderValue: [],
@@ -121,15 +121,14 @@ export default class Details extends Component {
     };
     this.snapPoint = ["40%"];
     this.bottomSheetRef = React.createRef();
-    
+
     // this.setDate = this.setDate.bind(this);
     // this.setShowPicker = this.setShowPicker.bind(this);
-    if (client.isConnected() == true)
-    {
+    if (client.isConnected() == true) {
       client.onConnectionLost = this.onConnectionLost;
       client.onMessageArrived = this.onMessageArrived;
     }
-    
+
     console.log("checkstateend");
   }
 
@@ -142,7 +141,7 @@ export default class Details extends Component {
 
   AdvanceSettingDevicePage = (index) => {
     console.log(index);
-    this.props.navigation.navigate("AdvanceSettingDevice",{index:index}); // 'History' là tên của màn hình History trong định tuyến của bạn
+    this.props.navigation.navigate("AdvanceSettingDevice", { index: index }); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
   DateTimePage = () => {
@@ -188,42 +187,36 @@ export default class Details extends Component {
   }
 
   connect = () => {
-    if (this.state.status_mqtt !== "isFetching" && this.state.status_mqtt !== "connected" && client.isConnected() == false) {
-
-      this.setState(
-        { status_mqtt: 'isFetching' },
-        () => {
-          client.connect({
-            onSuccess: this.onConnect,
-            useSSL: false,
-            timeout: 3,
-            onFailure: this.onFailure
-          });
-        }
-      );
-      console.log("conncet: OK")
+    if (
+      this.state.status_mqtt !== "isFetching" &&
+      this.state.status_mqtt !== "connected" &&
+      client.isConnected() == false
+    ) {
+      this.setState({ status_mqtt: "isFetching" }, () => {
+        client.connect({
+          onSuccess: this.onConnect,
+          useSSL: false,
+          timeout: 3,
+          onFailure: this.onFailure,
+        });
+      });
+      console.log("conncet: OK");
     }
   };
 
   onConnect = () => {
-
     this.subscribeTopic();
 
-    this.setState({ status_mqtt: 'connected' });
-    console.log('onConnect: OK');
-  }
-
+    this.setState({ status_mqtt: "connected" });
+    console.log("onConnect: OK");
+  };
 
   onFailure = (err) => {
     console.log("Connect failed!");
     console.log(err);
-    this.setState(
-      { status_mqtt: 'fail' },
-      () => {
-        this.connect();
-      }
-
-    );
+    this.setState({ status_mqtt: "fail" }, () => {
+      this.connect();
+    });
 
     // this.setState({ status: '', subscribedTopic: '' });
   };
@@ -231,7 +224,6 @@ export default class Details extends Component {
   subscribeTopic = () => {
     client.subscribe(this.state.topic, { qos: 0 });
   };
-
 
   onConnectionLost = (responseObject) => {
     if (responseObject.errorCode !== 0 && responseObject !== null) {
@@ -449,7 +441,7 @@ export default class Details extends Component {
       var timeDuration = [];
 
       var newdatasets = [];
-      
+
       // console.log(dataArray[1])
       const response = await fetch(url);
       if (!response.ok) {
@@ -458,7 +450,6 @@ export default class Details extends Component {
       }
 
       const json = await response.json();
-
 
       // console.log(json[0])
       for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
@@ -487,29 +478,34 @@ export default class Details extends Component {
       newlegend = id_check.filter(
         (item, index) => id_check.indexOf(item) === index
       );
-      
+
       for (let i = 0; i < newlegend.length; i++) {
         // Kiểm tra xem key trong jsonObject có tồn tại hay không
         if (jsonObject && jsonObject.hasOwnProperty(newlegend[i])) {
-            newlegend[i] = jsonObject[newlegend[i]];
+          newlegend[i] = jsonObject[newlegend[i]];
         }
-    
+
         // Kiểm tra xem index hiện tại là 0 hoặc 2 (0-based index)
 
         if (i === 0 || i === 3) {
-            // Lưu phần tử hiện tại
-            const currentElement = newlegend[i];
-    
-            // Thêm "_Humid" và "_Temp" vào sau phần tử hiện tại
-            newlegend.splice(i + 1, 0, currentElement + "_Humid", currentElement + "_Temp");
-    
-            // Xóa phần tử ban đầu tại vị trí hiện tại
-            newlegend.splice(i, 1);
-    
-            // Sau khi thêm 2 phần tử mới vào mảng và xóa phần tử ban đầu, không cần tăng giá trị i lên thêm 2
-            // Vì phần tử hiện tại đã bị xóa và các phần tử mới đã được thêm vào, do đó `i` vẫn đúng.
+          // Lưu phần tử hiện tại
+          const currentElement = newlegend[i];
+
+          // Thêm "_Humid" và "_Temp" vào sau phần tử hiện tại
+          newlegend.splice(
+            i + 1,
+            0,
+            currentElement + "_Humid",
+            currentElement + "_Temp"
+          );
+
+          // Xóa phần tử ban đầu tại vị trí hiện tại
+          newlegend.splice(i, 1);
+
+          // Sau khi thêm 2 phần tử mới vào mảng và xóa phần tử ban đầu, không cần tăng giá trị i lên thêm 2
+          // Vì phần tử hiện tại đã bị xóa và các phần tử mới đã được thêm vào, do đó `i` vẫn đúng.
         }
-    }
+      }
       // console.log(newlegend)
       // console.log("_______________________________")
 
@@ -539,22 +535,21 @@ export default class Details extends Component {
       let minutesbe = dateTimebegin.getMinutes();
       let secondsbe = dateTimebegin.getSeconds();
       let datebe = dateTimebegin.getDate();
-      let monthbe = (dateTimebegin.getMonth() + 1).toString().padStart(2, '0');
+      let monthbe = (dateTimebegin.getMonth() + 1).toString().padStart(2, "0");
       let yearbe = dateTimebegin.getFullYear();
-
 
       let hoursen = dateTimeend.getHours();
       let minutesen = dateTimeend.getMinutes();
       let secondsen = dateTimeend.getSeconds();
       let dateen = dateTimebegin.getDate();
-      let monthen = (dateTimebegin.getMonth() + 1).toString().padStart(2, '0');
+      let monthen = (dateTimebegin.getMonth() + 1).toString().padStart(2, "0");
       let yearen = dateTimebegin.getFullYear();
       // console.log(`Thời gian: ${hours}:${minutes}:${seconds}`);
-      
-      timeDuration.push(`${dateen}/${monthen}/${yearen}`)
-      timeDuration.push(`${hoursen}:${minutesen}:${secondsen}`)
-      timeDuration.push(`${datebe}/${monthbe}/${yearbe}`)
-      timeDuration.push(`${hoursbe}:${minutesbe}:${secondsbe}`)
+
+      timeDuration.push(`${dateen}/${monthen}/${yearen}`);
+      timeDuration.push(`${hoursen}:${minutesen}:${secondsen}`);
+      timeDuration.push(`${datebe}/${monthbe}/${yearbe}`);
+      timeDuration.push(`${hoursbe}:${minutesbe}:${secondsbe}`);
       newlabels.push(`${hoursbe}:${minutesbe}:${secondsbe}`);
       newlabels.push("");
       newlabels.push("");
@@ -567,21 +562,19 @@ export default class Details extends Component {
         [
           "0, 119, 182", // Màu cho dataset 0
           "165, 99, 54",
-          "255, 255, 0"
-
+          "255, 255, 0",
         ], // Màu cho dataset 1
         [
           "134, 65, 244", // Màu cho dataset 2
           "134, 0, 244",
-          "0, 255, 255"
+          "0, 255, 255",
         ], // Màu cho dataset 3
         [
           "255, 0, 0", // Màu cho dataset 4 (màu đỏ)
           "0, 255, 0",
-          "255, 0, 255"
+          "255, 0, 255",
         ], // Màu cho dataset 6 (màu xanh dương)
       ];
-
 
       // console.log(sum_sensor/2)
       for (let i = 0; i < sum_sensor / 2; i++) {
@@ -598,7 +591,9 @@ export default class Details extends Component {
           ) {
             // console.log(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"])
             valuehumid.push(
-              json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_humid"]
+              json[0]["combo" + i.toString()]["DHT"][j.toString()][
+                "value_humid"
+              ]
             );
             valueph.push(
               json[0]["combo" + i.toString()]["PH"][j.toString()]["value"]
@@ -636,22 +631,23 @@ export default class Details extends Component {
         });
       }
 
-
       var reversedArray = newlabels.reverse();
-      if (reversedArray[0] === "NaN:NaN:NaN" && newdatasets.length === 0 && newlegend.length === 0) {
+      if (
+        reversedArray[0] === "NaN:NaN:NaN" &&
+        newdatasets.length === 0 &&
+        newlegend.length === 0
+      ) {
         const newData = {
           labels: [""],
           datasets: [
             {
               data: [0],
-            }
+            },
           ],
           legend: ["0"], // optional
-        }
+        };
         this.setState({ datachart: newData });
-
-      }
-      else {
+      } else {
         const newData = {
           labels: reversedArray,
           datasets: newdatasets,
@@ -687,17 +683,16 @@ export default class Details extends Component {
     this.toggleBottomSheet(); // Gọi hàm toggleBottomSheet để đóng bottomSheet
   };
 
-
   sendMessage = () => {
     const { sliderValue, switchStates } = this.state;
     const { dataArray } = this.context;
     // console.log(switchStates)
     var Data = {};
-    var equipment_josn = {}
+    var equipment_josn = {};
     // console.log("hshsh")
     // console.log(dataArray[1])
     // Data["id_esp"] = dataArray[1]["id_esp"];
-    Data["id_esp"] = dataArray[1]["id_esp"]
+    Data["id_esp"] = dataArray[1]["id_esp"];
     for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
       var equipment = {};
       equipment["id_bc"] = dataArray[1]["bc"][i.toString()]["id_bc"];
@@ -722,7 +717,6 @@ export default class Details extends Component {
       }
       equipment_josn["equipment" + i.toString()] = equipment;
       Data["equipment"] = equipment_josn;
-      
     }
     // console.log(Data)
     if (this.state.status_mqtt === "connected") {
@@ -735,7 +729,6 @@ export default class Details extends Component {
     }
   };
 
-
   onMessageArrived = (message) => {
     const slidebarvalue = [];
     const { dataArray } = this.context;
@@ -747,47 +740,44 @@ export default class Details extends Component {
     const jsonData = JSON.parse(message.payloadString);
     // console.log(jsonData["equipment0"])
     let count = 0;
- 
-    if (jsonData["id_esp"] == dataArray[1]["id_esp"] && client.isConnected() == true)
-    { 
+
+    if (
+      jsonData["id_esp"] == dataArray[1]["id_esp"] &&
+      client.isConnected() == true
+    ) {
       for (const key in jsonData) {
         const SwitchStates = [];
         if (key.startsWith("equipment")) {
           const data = jsonData[key];
-          slidebarvalue.push(data["humid_expect"])
-          value.push(data["humid_expect"])
+          slidebarvalue.push(data["humid_expect"]);
+          value.push(data["humid_expect"]);
 
           if (data["automode"] === 0 && data["status"] === 1) {
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-            SwitchStates.push(false)
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+          } else if (data["automode"] === 1 && data["status"] === 1) {
+            SwitchStates.push(true);
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+          } else if (data["automode"] === 2 && data["status"] === 1) {
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+            SwitchStates.push(true);
+          } else if (data["automode"] === 0) {
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+          } else if (data["automode"] === 1) {
+            SwitchStates.push(false);
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+          } else if (data["automode"] === 2) {
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+            SwitchStates.push(true);
           }
-          else if (data["automode"] === 1 && data["status"] === 1) {
-            SwitchStates.push(true)
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 2 && data["status"] === 1) {
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-            SwitchStates.push(true)
-          }
-          else if (data["automode"] === 0) {
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 1) {
-            SwitchStates.push(false)
-            SwitchStates.push(true)
-            SwitchStates.push(false)
-          }
-          else if (data["automode"] === 2) {
-            SwitchStates.push(false)
-            SwitchStates.push(false)
-            SwitchStates.push(true)
-          }
-          newSwitchStates.push(SwitchStates)
+          newSwitchStates.push(SwitchStates);
 
           count++;
         }
@@ -798,12 +788,11 @@ export default class Details extends Component {
     }
   };
 
-
-getvalueequipment = async () => {
+  getvalueequipment = async () => {
     const { dataArray } = this.context;
 
     const url = apiUrl + `getvalueequipment/${dataArray[1]["id_esp"]}`;
-    console.log(dataArray[1])
+    console.log(dataArray[1]);
     const response = await fetch(url);
     if (!response.ok) {
       this.setState({ msg: "error" });
@@ -839,21 +828,20 @@ getvalueequipment = async () => {
           const timeB = new Date(`1970-01-01T${b}`);
           return timeA - timeB;
         });
-        gettimelist.push(time)
-        
-      } 
+        gettimelist.push(time);
+      }
       // buttonAdvance.push(false)
-      buttonTime.push(false)
-      modalVisible.push(false)
-      
-      slidebarvalue.push(50)
-      value.push(50)
-      name_bc.push(json[0][i]["name"])
+      buttonTime.push(false);
+      modalVisible.push(false);
+
+      slidebarvalue.push(50);
+      value.push(50);
+      name_bc.push(json[0][i]["name"]);
     }
     // this.setState({ buttonAdvance: buttonAdvance })
-    
-    this.setState({ modalVisible: modalVisible })
-    this.setState({ buttonTime: buttonTime })
+
+    this.setState({ modalVisible: modalVisible });
+    this.setState({ buttonTime: buttonTime });
     this.setState({ name_bc: name_bc });
     this.setState({ timelist: gettimelist });
     this.setState({ sliderValue: value });
@@ -862,7 +850,6 @@ getvalueequipment = async () => {
     this.setState({ switchStates: newSwitchStates });
   };
 
-
   //Picker
   async onValueChangeCat(value) {
     flag = true;
@@ -870,15 +857,28 @@ getvalueequipment = async () => {
     this.setState({ selecedCat: value });
   }
 
-
   render() {
     const { dataArray } = this.context;
     //Switch
     const { switchStates } = this.state;
     const { datachart } = this.state;
 
+    // ===== Setting Label Chart ===== //
+    // Chia mảng legend thành các mảng con mỗi khi cần xuống dòng
+    const chunkedLegends = [];
+    const chunkSize = 3; // Số lượng legend trên mỗi dòng
+    for (let i = 0; i < datachart.legend.length; i += chunkSize) {
+      chunkedLegends.push(datachart.legend.slice(i, i + chunkSize));
+    }
     //API
-    const { name_bc, timelist, sliderValue, isEnabled,timeDuration,buttonAdvance } = this.state;
+    const {
+      name_bc,
+      timelist,
+      sliderValue,
+      isEnabled,
+      timeDuration,
+      buttonAdvance,
+    } = this.state;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
@@ -889,7 +889,12 @@ getvalueequipment = async () => {
 
     // console.log(timelist)
 
-    if (name_bc !== 0 && timelist.length !== 0 && sliderValue.length !== 0 && switchStates.length !== 0) {
+    if (
+      name_bc !== 0 &&
+      timelist.length !== 0 &&
+      sliderValue.length !== 0 &&
+      switchStates.length !== 0
+    ) {
       //   flag = false;
       [...Array(dataArray[1]["bc"]["sl"])].forEach((_, index) => {
         // console.log(showPicker)
@@ -914,7 +919,7 @@ getvalueequipment = async () => {
         }
         var time = [];
 
-        [...Array(timelist[index].length)].forEach((_, indextime) => {          
+        [...Array(timelist[index].length)].forEach((_, indextime) => {
           time.push(
             <View key={indextime.toString() + index.toString()}>
               <View style={styles.timeArea}>
@@ -943,13 +948,14 @@ getvalueequipment = async () => {
             </View>
           );
         });
-        
+
         deviceList.push(
           <View style={styles.optionArea} key={index}>
             <View style={styles.topDevice}>
               <Text style={styles.titleDevice}>{name_bc[index]}</Text>
-              <TouchableOpacity onPress={() => this.AdvanceSettingDevicePage(index)}>
-              
+              <TouchableOpacity
+                onPress={() => this.AdvanceSettingDevicePage(index)}
+              >
                 <Image
                   source={require("../assets/img/more.png")}
                   style={styles.moreOption}
@@ -1058,7 +1064,7 @@ getvalueequipment = async () => {
                     <Image
                       source={require("../assets/img/plus.png")}
                       style={styles.plusIcon}
-                    />  
+                    />
                   </TouchableOpacity>
                 )}
                 {Platform.OS === "ios" && (
@@ -1090,21 +1096,48 @@ getvalueequipment = async () => {
             <View style={styles.TitleTopArea}>
               <Text style={styles.TitleTop}>{dataArray[1]["name"]}</Text>
               <Text
-                style={{ textAlign: "center", color: "white", marginTop: -10, fontWeight: '500' }}
+                style={{
+                  textAlign: "center",
+                  color: "white",
+                  marginTop: -10,
+                  fontWeight: "500",
+                }}
               >
                 {dataArray[1]["decription"]}
               </Text>
             </View>
           </SafeAreaView>
-          <TouchableOpacity style={styles.btnSetting} onPress={this.UpdateFarmPage}>
-              <Image
-                source={require("../assets/img/settings.png")}
-                style={styles.imgSetting}
-              />
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnSetting}
+            onPress={this.UpdateFarmPage}
+          >
+            <Image
+              source={require("../assets/img/settings.png")}
+              style={styles.imgSetting}
+            />
+          </TouchableOpacity>
         </LinearGradient>
         <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
           <TouchableOpacity onPress={this.HistoryPage}>
+            {chunkedLegends.map((legendRow, rowIndex) => (
+              <View style={styles.flex}>
+                <View key={rowIndex} style={styles.legendWidth}>
+                  <View style={styles.legendSpace}>
+                    {legendRow.map((legend, legendIndex) => (
+                      <View style={styles.legendPart}>
+                        <View style={[styles.legendDot, {backgroundColor: "#fb8500"}]}></View>
+                        <Text
+                          style={styles.legendText}
+                          key={legendIndex}
+                        >
+                          {legend}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              </View>
+            ))}
             <LineChart
               data={datachart}
               width={screenWidth}
@@ -1117,6 +1150,7 @@ getvalueequipment = async () => {
               bezier
             />
           </TouchableOpacity>
+
           <View style={styles.dateTimeArea}>
             <View style={[styles.flex, styles.dateTimePart]}>
               <View style={styles.flex}>
@@ -1197,7 +1231,6 @@ getvalueequipment = async () => {
               {this.state.selecedCat === "Independence" && (
                 <View>
                   <Text style={styles.titleNote}>
-
                     {i18next.t("Custom control")}
                   </Text>
                   {deviceList}
@@ -1265,8 +1298,8 @@ class BtnConnect extends Component {
             backgroundColor: isPressed
               ? "#2D314A"
               : disabled
-                ? "#F0F0F0"
-                : "#2D3A3A",
+              ? "#F0F0F0"
+              : "#2D3A3A",
             marginRight: 15,
           },
         ]}
@@ -1383,6 +1416,32 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
   },
+  //Legend Chart
+  legendWidth: {
+    width: "100%",
+    marginTop: 20,
+  },
+  legendSpace: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  legendPart: {
+    gap: 5,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  legendDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 20,
+  },
+  legendText: {
+    fontSize: 12,
+    color: '#023e8a'
+  },
+  //Display DateTime
   dateTimeArea: {
     flexDirection: "row",
     justifyContent: "space-around",
