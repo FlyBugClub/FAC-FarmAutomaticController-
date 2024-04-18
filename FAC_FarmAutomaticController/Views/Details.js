@@ -14,6 +14,7 @@ import {
   SafeAreaView,
   Dimensions,
   Modal,
+  RefreshControl,
   TouchableWithoutFeedback,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
