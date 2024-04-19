@@ -92,60 +92,115 @@ export default class History extends Component {
   }
 
   render() {
-    let Premium = true;
     const { historyList } = this.state;
     const history = [];
-    if (flag) {
-      flag = false;
-      // Sử dụng forEach để thêm các phần tử vào mảng items
-      [...Array(historyList.length)].forEach((_, index) => {
-        const timeParts = historyList[index][2].split(".");
-        const timeString = timeParts[0];
+    // lịch sử version 1
+    // if (flag) {
+    //   flag = false;
+    //   // Sử dụng forEach để thêm các phần tử vào mảng items
+    //   [...Array(historyList.length)].forEach((_, index) => {
+    //     const timeParts = historyList[index][2].split(".");
+    //     const timeString = timeParts[0];
 
-        history.push(
-          <View key={index}>
-            <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <View style={styles.lineHistoy}>
-                {Platform.OS === "ios" && (
-                  <>
-                    <Text style={{ width: 170 }}>
-                      {historyList[index][1]}
-                    </Text>
-                    <Text style={{ width: 65 }}>
-                      {historyList[index][0]}
-                    </Text>
-                    <Text style={{ width: 72 }}>
-                      {timeString}
-                    </Text>
-                  </>
-                )}
-                {Platform.OS === "android" && (
-                  <>
-                    <Text style={{ width: 150 }}>
-                      {historyList[index][1]}
-                    </Text>
-                    <Text style={{ width: 55 }}>
-                      {historyList[index][0]}
-                    </Text>
-                    <Text style={{ width: 60, }}>
-                      {timeString}
-                    </Text>
-                  </>
-                )}
-              </View>
-              <View
-                style={{
-                  width: "95%",
-                  height: 0.5,
-                  backgroundColor: "#D9D9D9",
-                  marginBottom: 2,
-                }}
-              ></View>
+    //     history.push(
+    //       <View key={index}>
+    //         <View style={{ alignItems: "center", justifyContent: "center" }}>
+    //           <View style={styles.lineHistoy}>
+    //             {Platform.OS === "ios" && (
+    //               <>
+    //                 <Text style={{ width: 170 }}>
+    //                   {historyList[index][1]}
+    //                 </Text>
+    //                 <Text style={{ width: 65 }}>
+    //                   {historyList[index][0]}
+    //                 </Text>
+    //                 <Text style={{ width: 72 }}>
+    //                   {timeString}
+    //                 </Text>
+    //               </>
+    //             )}
+    //             {Platform.OS === "android" && (
+    //               <>
+    //                 <Text style={{ width: 150 }}>
+    //                   {historyList[index][1]}
+    //                 </Text>
+    //                 <Text style={{ width: 55 }}>
+    //                   {historyList[index][0]}
+    //                 </Text>
+    //                 <Text style={{ width: 60, }}>
+    //                   {timeString}
+    //                 </Text>
+    //               </>
+    //             )}
+    //           </View>
+    //           <View
+    //             style={{
+    //               width: "95%",
+    //               height: 0.5,
+    //               backgroundColor: "#D9D9D9",
+    //               marginBottom: 2,
+    //             }}
+    //           ></View>
+    //         </View>
+    //       </View>
+    //     );
+    //   });
+    // }
+
+    // lịch sử version 2
+    const historyDate = [];
+    const historyTime = [];
+    [...Array(4)].forEach((_, indexDate) => {
+      historyDate.push(
+        <View key={indexDate}>
+          <View style={{}}>
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: "500" }}>
+                1{indexDate}/04/2024
+              </Text>
+              <Text
+                style={{ marginRight: 10, fontSize: 16, fontWeight: "500" }}
+              >
+                T4
+              </Text>
             </View>
+            <View style={[styles.verticalLine, { marginLeft: 20 }]}></View>
+            <View>{historyTime}</View>
+          </View>
+        </View>
+      );
+
+      [...Array(3)].forEach((_, indexTime) => {
+        historyTime.push(
+          <View key={indexTime} style={{ marginLeft: 16 }}>
+            <View style={{flexDirection: 'row'}}>
+              <View
+                style={[
+                  {
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4,
+                    width: 140,
+                  },
+                ]}
+              >
+                <View style={styles.dot}></View>
+                <Text>{indexTime}/12/2024</Text>
+              </View>
+              <Text>TBC000{indexDate}: Đã mở</Text>
+            </View>
+
+            <View style={styles.verticalLine}></View>
           </View>
         );
       });
-    }
+    });
 
     return (
       <View style={styles.container}>
@@ -165,12 +220,12 @@ export default class History extends Component {
         <View style={styles.body}>
           <View
             style={{
-              justifyContent: "center",
+              // justifyContent: "center",
               alignItems: "center",
               width: "100%",
             }}
           >
-            <View
+            {/* <View
               style={{
                 flexDirection: "row",
                 width: "100%",
@@ -183,9 +238,10 @@ export default class History extends Component {
               <Text style={styles.date}>{i18next.t("Date")}</Text>
               <Text style={styles.device}>{i18next.t("Device")}</Text>
               <Text style={styles.time}>{i18next.t("Time")}</Text>
-            </View>
+            </View> */}
             <ScrollView showsVerticalScrollIndicator={false}>
-              {history}
+              {/* {history} */}
+              {historyDate}
             </ScrollView>
           </View>
         </View>
@@ -206,14 +262,14 @@ const styles = StyleSheet.create({
         height: "18%",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#73A942",
+        backgroundColor: "#2BA84A",
       },
       android: {
         width: "100%",
         height: "14%",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#73A942",
+        backgroundColor: "#2BA84A",
       },
     }),
   },
@@ -238,6 +294,7 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     top: -23,
+    paddingTop: 23,
     backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
@@ -249,7 +306,20 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     gap: 15,
   },
-
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 18,
+    backgroundColor: "#2BA84A",
+  },
+  verticalLine: {
+    width: "0.6%",
+    height: 20,
+    marginLeft: 4,
+    backgroundColor: "#D9D9D9",
+    marginTop: 2,
+    marginBottom: 2,
+  },
   date: {
     ...Platform.select({
       ios: {
