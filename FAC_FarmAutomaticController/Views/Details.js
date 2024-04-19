@@ -1142,7 +1142,7 @@ export default class Details extends Component {
         >
           <TouchableOpacity onPress={this.HistoryPage}>
             {chunkedLegends.map((legendRow, rowIndex) => (
-              <View style={styles.flex}>
+              <View style={styles.flex} key={rowIndex}>
                 <View key={rowIndex} style={styles.legendWidth}>
                   <View style={styles.legendSpace}>
                     {legendRow.map((legend, legendIndex) => (
