@@ -65,6 +65,24 @@ const chartConfig = {
 };
 const screenWidth = Dimensions.get("window").width;
 
+const colors = [
+  [
+    "0, 119, 182", // Màu cho dataset 0
+    "165, 99, 54",
+    "255, 255, 0",
+  ], // Màu cho dataset 1
+  [
+    "134, 65, 244", // Màu cho dataset 2
+    "134, 0, 244",
+    "0, 255, 255",
+  ], // Màu cho dataset 3
+  [
+    "255, 0, 0", // Màu cho dataset 4 (màu đỏ)
+    "0, 255, 0",
+    "255, 0, 255",
+  ], // Màu cho dataset 6 (màu xanh dương)
+];
+
 export default class Details extends Component {
   constructor(props) {
     console.log("checkstate");
@@ -560,23 +578,7 @@ export default class Details extends Component {
       // console.log("@1")
 
       // console.log(newlabels)
-      const colors = [
-        [
-          "0, 119, 182", // Màu cho dataset 0
-          "165, 99, 54",
-          "255, 255, 0",
-        ], // Màu cho dataset 1
-        [
-          "134, 65, 244", // Màu cho dataset 2
-          "134, 0, 244",
-          "0, 255, 255",
-        ], // Màu cho dataset 3
-        [
-          "255, 0, 0", // Màu cho dataset 4 (màu đỏ)
-          "0, 255, 0",
-          "255, 0, 255",
-        ], // Màu cho dataset 6 (màu xanh dương)
-      ];
+      
 
       // console.log(sum_sensor/2)
       for (let i = 0; i < sum_sensor / 2; i++) {
@@ -871,6 +873,8 @@ export default class Details extends Component {
   render() {
     const { refresh } = this.state; //Refresh
     const { dataArray } = this.context;
+    const legends = this.state.datachart.legend;
+
     //Switch
     const { switchStates } = this.state;
     const { datachart } = this.state;
@@ -1144,10 +1148,10 @@ export default class Details extends Component {
                     {legendRow.map((legend, legendIndex) => (
                       <View style={styles.legendPart}>
                         <View
-                          style={[
-                            styles.legendDot,
-                            { backgroundColor: "#fb8500" },
-                          ]}
+                            style={[
+                                styles.legendDot,
+                                { backgroundColor: `rgba(${colors[rowIndex][legendIndex]}, 1)` },
+                            ]}
                         ></View>
                         <Text style={styles.legendText} key={legendIndex}>
                           {legend}
@@ -1158,17 +1162,27 @@ export default class Details extends Component {
                 </View>
               </View>
             ))}
-            <LineChart
-              data={datachart}
+            <View>
+              <LineChart
+              data={{
+                ...this.state.datachart,
+                legend: Array(legends.length).fill(""), // Chuyển legend trên biểu đồ thành các legend rỗng
+              }}
               width={screenWidth}
               height={200}
               fromZero={true}
               verticalLabelRotation={0}
-              chartConfig={chartConfig}
-              style={{ marginTop: 20 }}
+              chartConfig={{
+                ...chartConfig,
+                withHorizontalLabels: false, // Ẩn legend ngang
+                withVerticalLabels: false, // Ẩn legend dọc
+              }}
               yAxisSuffix="%"
               bezier
             />
+            <View style={styles.backgroundCover}></View>
+            </View>
+            
           </TouchableOpacity>
 
           <View style={styles.dateTimeArea}>
@@ -1460,6 +1474,13 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 12,
     color: "#023e8a",
+  },
+  backgroundCover: {
+    width: "100%",
+    height: 30,
+    position: "absolute",
+    top: "0%",
+    backgroundColor: "#fff",
   },
   //Display DateTime
   dateTimeArea: {
