@@ -33,7 +33,7 @@ export default class AdvanceSettingDevice extends Component {
       connect: "connected",
       showSetting: "Setting",
       showPicker: false,
-
+      offset :"",
       name_equipment:"",
       name_dht:"",
       name_ph:"",
@@ -51,16 +51,34 @@ export default class AdvanceSettingDevice extends Component {
   // handleClosePress = () => this.bottomSheetRef.current?.close();
   // handleOpenPress = () => this.bottomSheetRef.current?.expand();
   static contextType = MyContext;
-
-  componentDidMount() {
+  
+   async componentDidMount() {
     const { route } = this.props;
     const { index} = route.params || {};
     const { dataArray } = this.context;
-
-    this.setState({name_equipment : dataArray[1]["bc"][index]["name_bc"]})
-    this.setState({name_dht : dataArray[1]["sensor"][index]["name_dht"]})
-    this.setState({name_ph : dataArray[1]["sensor"][(parseInt(index, 10)+2).toString()]["name_ph"]})
-  
+    const url = apiUrl + `getoffset/${dataArray[1]["bc"][index]["id_bc"]}`;
+    const response = await fetch(url);
+    // console.log(url)
+    // console.log("ok")
+    if (!response.ok) {
+      console.warn("network fail!");
+      return;
+    }
+    // console.log(url)
+    const json = await response.json();
+    if (dataArray[1]["bc"]["sl"] === 1)
+    {
+      this.setState({name_equipment : dataArray[1]["bc"][index]["name_bc"]})
+      this.setState({name_dht : dataArray[1]["sensor"][index]["name_dht"]})
+      this.setState({name_ph : dataArray[1]["sensor"][(parseInt(index, 10)+1).toString()]["name_ph"]})
+    }
+    else if (dataArray[1]["bc"]["sl"] === 2)
+    {
+      this.setState({name_equipment : dataArray[1]["bc"][index]["name_bc"]})
+      this.setState({name_dht : dataArray[1]["sensor"][index]["name_dht"]})
+      this.setState({name_ph : dataArray[1]["sensor"][(parseInt(index, 10)+2).toString()]["name_ph"]})
+    }
+    
     const Farmlist = [];
     Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
       const farm = {};
@@ -69,8 +87,9 @@ export default class AdvanceSettingDevice extends Component {
       Farmlist.push(farm);
       // console.log(obj["name"])
     });
+    this.setState({ offset: (json["times_offset"]).toString() });
     this.setState({ index: index });
-
+    this.setState({ selectedFarm: Farmlist[0].itemName });
     this.setState({ Farm: Farmlist });
   }
 
@@ -86,6 +105,8 @@ export default class AdvanceSettingDevice extends Component {
     this.setState({ modalVisible: visible });
   };
 
+
+
   // ============== Picker Change Farm ============== //
   async onValueChangeFarm(value) {
     flag = true;
@@ -97,11 +118,16 @@ export default class AdvanceSettingDevice extends Component {
   handleFarmSelect = (farm) => {
     this.setState({ selectedFarm: farm });  
   };
+
+  delay(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
   UpdateDevice = async () =>
   {
-    const { dataArray } = this.context;
-    const {name_equipment, name_dht,name_ph,selectedFarm,index} = this.state
-    console.log(selectedFarm)
+    const { dataArray ,addDataAtIndex} = this.context;
+    const {name_equipment, name_dht,name_ph,selectedFarm,index,Farm} = this.state
     if (name_equipment !== "")
     {
       this.setState({msg:""})
@@ -111,6 +137,15 @@ export default class AdvanceSettingDevice extends Component {
         if (name_ph !== "")
         {
           this.setState({msg:""})
+          var id_ph = "";
+          if (dataArray[1]["bc"]["sl"] === 1)
+          {
+            id_ph = dataArray[1]["sensor"][(parseInt(index, 10)+1).toString()]["id_ph"]
+          }
+          else if (dataArray[1]["bc"]["sl"] === 2)
+          {
+             id_ph = dataArray[1]["sensor"][(parseInt(index, 10)+2).toString()]["id_ph"]
+          }
           var id_esp = "";
               Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
                 const farm = {};
@@ -118,7 +153,7 @@ export default class AdvanceSettingDevice extends Component {
                   id_esp = obj["id_esp"];
                 }
               });
-              console.log(id_esp)
+              console.log(id_ph)
           const url = apiUrl + "updateequipmentsensor"
           let result = await fetch(url, {
             method: 'PUT',
@@ -130,16 +165,27 @@ export default class AdvanceSettingDevice extends Component {
               "id_esp": id_esp,
               "id_equipment": dataArray[1]["bc"][index]["id_bc"],
               "id_dht": dataArray[1]["sensor"][index]["id_dht"],
-              "id_ph": dataArray[1]["sensor"][(parseInt(index, 10)+2).toString()]["id_ph"],
+              "id_ph": id_ph,
               "name_equipment": name_equipment,
               "name_dht": name_dht,
               "name_ph": name_ph
             }),
           });
           result = await result.json();
+          
           if (result) {
             if (result == "Update equipment/sensor success") {
-              this.props.navigation.navigate('Home');
+            const url_getfarm = apiUrl + `getfarm/${dataArray[0]["user"]["gmail"]}`;
+            const response = await fetch(url_getfarm);
+            if (!response.ok) {
+              this.setState({ msg: "Net work fail" });
+              return;
+            }
+            // console.log(url)
+            const json = await response.json();
+            await this.delay(2000);
+            addDataAtIndex(json[0], 0)
+            this.props.navigation.navigate('Home');
             }
             else if (result["Message"] == "Can't not update equipment/sensor") {
               this.setState({ msg: "Can't not update equipment/sensor" });
@@ -168,10 +214,40 @@ export default class AdvanceSettingDevice extends Component {
   toggleSetting = (settingType) => {
     this.setState({ showSetting: settingType });
   };
+  UpdateDeviceOffset = async () =>{
+    const { dataArray} = this.context;
+
+    const {offset,index} = this.state;
+    const url = apiUrl + "schedules";
+        let result = await fetch(url, {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json", 
+          },
+          body: JSON.stringify({
+            id_equipment: dataArray[1]["bc"][index]["id_bc"],
+            times_offset: parseInt(offset, 10),
+          }),
+        });
+        result = await result.json();
+        if (result) {
+          flag = true;
+          if (result == "update time success") {
+            console.info("update time success");
+          } else if (result["Message"] == "can't add equipment") {
+            console.warn("Network fail!");
+          } else {
+            // console.warn("cuong");
+            console.warn("Network fail!");
+          }
+        }
+
+  }
 
   render() {
     const { connect,msg } = this.state;
-    const { Farm, selectedFarm, name_dht ,name_equipment,name_ph} = this.state;
+    const { Farm, selectedFarm, name_dht ,offset,name_equipment,name_ph} = this.state;
     const { showSetting } = this.state;
 
     return (
@@ -383,16 +459,21 @@ export default class AdvanceSettingDevice extends Component {
                                 backgroundColor: "#edede9",
                                 borderRadius: 6,
                               }}
+                              onChangeText={(text) =>
+                                this.setState({ offset: text })
+                              }
+                              value={offset}
                             />
-                            <Text
+                            <Text 
                               style={{
                                 fontSize: 16,
                               }}
                             >
                               {i18next.t("seconds")}
                             </Text>
-                            <TouchableOpacity style={[styles.btnSaveDuration]}>
+                            <TouchableOpacity style={[styles.btnSaveDuration]} onPress={this.UpdateDeviceOffset}>
                               <Image source={require('../assets/img/diskette.png')}
+
                               style={{width: 14, height: 14, tintColor: 'white'}}/>
                             </TouchableOpacity>
                           </View>

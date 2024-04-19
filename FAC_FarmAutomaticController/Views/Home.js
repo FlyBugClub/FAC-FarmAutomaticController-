@@ -78,9 +78,23 @@ export default class Home extends Component {
       this.setState({ isConnect: json["status"] });
     }
   };
-
+  componentWillUnmount() {
+    // Dừng vòng lặp khi trang được thoát
+    clearInterval(this.intervalId);
+    if (this.focusListener) {
+      this.focusListener();
+  }
+  }
   componentDidMount = async () => {
     this.fetchData();
+    this.focusListener = this.props.navigation.addListener('focus', () => {
+      // console.log("Details screen is focused");
+      this.fetchData();
+      // Thực hiện các hành động khi trang được focus
+  });
+
+  // Lắng nghe sự kiện blur khi trang bị blur
+ 
     // this.fetchIsConnect();
     this.intervalId = setInterval(() => {
       const { listfarm } = this.state;
@@ -89,7 +103,7 @@ export default class Home extends Component {
       } else this.fetchData();
     }, 3000);
   };
-
+    
   static contextType = MyContext;
   GetEquidmentValues = async (index) => {
     const { addDataAtIndex } = this.context;

@@ -50,6 +50,10 @@ client = new Paho.MQTT.Client(options.host, options.port, options.id);
 let isFunctionRunning = false;
 var flag = false;
 var flag_mqtt = true;
+let isConnecting = false;
+let isDisconnecting = false;
+
+
 // Cấu hình cho biểu đồ
 const chartConfig = {
   backgroundGradientFrom: "#fff",
@@ -91,8 +95,11 @@ export default class Details extends Component {
       timeDuration: ["________", "________", "________", "________"],
       switchStates: [],
       slidebar: [],
+      offset: "",
       sliderValue: [],
       name_bc: [],
+      id_esp : "",
+      Current_Data: {},
       timelist: [],
       buttonTime: [],
       buttonaddtime: [],
@@ -133,7 +140,8 @@ export default class Details extends Component {
 
     console.log("checkstateend");
   }
-
+  cancelled = false;
+  
   static contextType = MyContext;
   HistoryPage = () => {
     // console.log("HistoryPage");
@@ -142,7 +150,7 @@ export default class Details extends Component {
   };
 
   AdvanceSettingDevicePage = (index) => {
-    console.log(index);
+
     this.props.navigation.navigate("AdvanceSettingDevice", { index: index }); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
@@ -159,11 +167,15 @@ export default class Details extends Component {
   };
 
   componentDidMount() {
-    flag = false;
+    const { dataArray } = this.context;
+    this.setState({id_esp : dataArray[1]["id_esp"]})
+    this.setState({Current_Data : dataArray[1]})
+    
     this.getvalueequipment();
     this.connect();
     // Gọi hàm push vào mảng khi component được mount
     this.intervalId = setInterval(() => {
+      // console.log(dataArray[1])
       this.getvalue();
     }, 3000);
   }
@@ -185,6 +197,8 @@ export default class Details extends Component {
     if (client.isConnected() == true) {
       client.disconnect();
     }
+    clearInterval(this.intervalId);
+    this.cancelled = true;
     console.log("ngatketnoi");
   }
 
@@ -192,10 +206,16 @@ export default class Details extends Component {
     if (
       this.state.status_mqtt !== "isFetching" &&
       this.state.status_mqtt !== "connected" &&
-      client.isConnected() == false
+      client.isConnected() == false &&
+      !isConnecting
+     
     ) {
+      isConnecting = true;
       this.setState({ status_mqtt: "isFetching" }, () => {
+        console.log(client.isConnected())
+        console.log("_____----__________")
         client.connect({
+
           onSuccess: this.onConnect,
           useSSL: false,
           timeout: 3,
@@ -211,6 +231,7 @@ export default class Details extends Component {
 
     this.setState({ status_mqtt: "connected" });
     console.log("onConnect: OK");
+    isConnecting = false;
   };
 
   onFailure = (err) => {
@@ -383,7 +404,7 @@ export default class Details extends Component {
   };
 
   onChange = async (event) => {
-    const { index_time } = this.state;
+    const { index_time ,offset} = this.state;
     const { dataArray } = this.context;
 
     if (event.type === "set") {
@@ -392,6 +413,17 @@ export default class Details extends Component {
 
         // console.log(dataArray[1]["bc"][index_time]["id_bc"]);
         const formattedTime = `${selectedTime.getHours()}:${selectedTime.getMinutes()}:${selectedTime.getSeconds()}.000`;
+        if (offset === "")
+        {
+          const url_offset = apiUrl + `getoffset/${dataArray[1]["bc"][index_time]["id_bc"]}`;
+          const response = await fetch(url_offset);
+          if (!response.ok) {
+            console.warn("network fail!");
+            return;
+          }
+          const json = await response.json();
+          this.setState({offset : (json["times_offset"]).toString()})
+        }
         const url = apiUrl + "schedules";
         let result = await fetch(url, {
           method: "POST",
@@ -401,7 +433,7 @@ export default class Details extends Component {
           },
           body: JSON.stringify({
             id_equipment: dataArray[1]["bc"][index_time]["id_bc"],
-            times_offset: 5,
+            times_offset: parseInt(this.state.offset, 10),
             times: formattedTime,
           }),
         });
@@ -430,13 +462,15 @@ export default class Details extends Component {
       this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
     }
   };
-
   getvalue = async () => {
-    if (!isFunctionRunning) {
       isFunctionRunning = true;
-      const { dataArray } = this.context;
-      const { datachart } = this.state;
-      const url = apiUrl + `getsensorvalue/${dataArray[1]["id_esp"]}`;
+       const {dataArray}  = this.context
+      const { datachart,id_esp,Current_Data } = this.state;
+      let dataArray2 = Current_Data
+
+      console.log(dataArray2)
+      const url = apiUrl + `getsensorvalue/${dataArray2["id_esp"]}`;
+
       var newlegend = [];
       var newlabels = [];
       var id_check = [];
@@ -450,12 +484,26 @@ export default class Details extends Component {
         this.setState({ msg: "error" });
         return;
       }
-
+      
       const json = await response.json();
+      console.log(id_esp)
+      console.log(dataArray[1]["id_esp"])
 
-      // console.log(json[0])
-      for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
-        if (json[0]["combo" + i.toString()]["DHT"].hasOwnProperty("id")) {
+      if (id_esp !== dataArray[1]["id_esp"]) {
+        
+        // Nếu component đã bị hủy, dừng xử lý
+        dataArray2 = Current_Data
+        // return;
+      }
+      console.log(dataArray2)
+      const keys = Object.keys(json[0]);
+      
+
+      if (keys.length === dataArray2["bc"]["sl"])
+      {
+
+      for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
+        if (json[0]["combo" + i.toString()]["DHT"].hasOwnProperty("id")&& json[0]["combo" + i.toString()]["DHT"] !== undefined) {
           id_check.push(json[0]["combo" + i.toString()]["DHT"]["id"]);
           id_check.push(json[0]["combo" + i.toString()]["PH"]["id"]);
         }
@@ -463,16 +511,16 @@ export default class Details extends Component {
       // console.log(id_check)
 
       let sum_sensor =
-        dataArray[1]["sensor"]["sl_dht"] + dataArray[1]["sensor"]["sl_ph"];
+        dataArray2["sensor"]["sl_dht"] + dataArray2["sensor"]["sl_ph"];
       let jsonObject = {};
       for (let i = 0; i < sum_sensor; i++) {
-        if (dataArray[1]["sensor"][i].hasOwnProperty("name_dht")) {
-          let value = dataArray[1]["sensor"][i]["name_dht"];
-          let key = dataArray[1]["sensor"][i]["id_dht"];
+        if (dataArray2["sensor"][i].hasOwnProperty("name_dht")) {
+          let value = dataArray2["sensor"][i]["name_dht"];
+          let key = dataArray2["sensor"][i]["id_dht"];
           jsonObject[key] = value;
-        } else if (dataArray[1]["sensor"][i].hasOwnProperty("name_ph")) {
-          let value = dataArray[1]["sensor"][i]["name_ph"];
-          let key = dataArray[1]["sensor"][i]["id_ph"];
+        } else if (dataArray2["sensor"][i].hasOwnProperty("name_ph")) {
+          let value = dataArray2["sensor"][i]["name_ph"];
+          let key = dataArray2["sensor"][i]["id_ph"];
           jsonObject[key] = value;
         }
       }
@@ -499,7 +547,7 @@ export default class Details extends Component {
             0,
             currentElement + "_Humid",
             currentElement + "_Temp"
-          );
+          );  
 
           // Xóa phần tử ban đầu tại vị trí hiện tại
           newlegend.splice(i, 1);
@@ -512,10 +560,11 @@ export default class Details extends Component {
       // console.log("_______________________________")
 
       var datelist = [];
-      for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
+      for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
         for (let j = 0; j < 6; j++) {
           if (
             json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())
+            && json[0]["combo" + i.toString()]["DHT"] !== undefined
           ) {
             datelist.push(
               json[0]["combo" + i.toString()]["DHT"][j.toString()]["datetime"]
@@ -590,6 +639,7 @@ export default class Details extends Component {
 
           if (
             json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())
+            && json[0]["combo" + i.toString()]["DHT"] !== undefined
           ) {
             // console.log(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"])
             valuehumid.push(
@@ -646,7 +696,7 @@ export default class Details extends Component {
               data: [0],
             },
           ],
-          legend: ["0"], // optional
+          legend: [""], // optional
         };
         this.setState({ datachart: newData });
       } else {
@@ -659,9 +709,9 @@ export default class Details extends Component {
 
         this.setState({ datachart: newData });
       }
-
+      
       isFunctionRunning = false;
-    }
+      }
   };
 
   // Phương thức mở hoặc đóng BottomSheet
@@ -794,7 +844,7 @@ export default class Details extends Component {
     const { dataArray } = this.context;
 
     const url = apiUrl + `getvalueequipment/${dataArray[1]["id_esp"]}`;
-    console.log(dataArray[1]);
+
     const response = await fetch(url);
     if (!response.ok) {
       this.setState({ msg: "error" });
@@ -864,7 +914,7 @@ export default class Details extends Component {
     this.setState({ refresh: true });
     setTimeout(() => {
       this.setState({ refresh: false });
-      this.fetchData();
+      this.getvalue();
     }, 1000);
   };
 
@@ -872,7 +922,7 @@ export default class Details extends Component {
     const { refresh } = this.state; //Refresh
     const { dataArray } = this.context;
     //Switch
-    const { switchStates } = this.state;
+    const { switchStates, Current_Data } = this.state;
     const { datachart } = this.state;
 
     // ===== Setting Label Chart ===== //
@@ -1106,7 +1156,7 @@ export default class Details extends Component {
         >
           <SafeAreaView>
             <View style={styles.TitleTopArea}>
-              <Text style={styles.TitleTop}>{dataArray[1]["name"]}</Text>
+              <Text style={styles.TitleTop}>{Current_Data["name"]}</Text>
               <Text
                 style={{
                   textAlign: "center",
@@ -1115,7 +1165,7 @@ export default class Details extends Component {
                   fontWeight: "500",
                 }}
               >
-                {dataArray[1]["decription"]}
+                {Current_Data["decription"]}
               </Text>
             </View>
           </SafeAreaView>
