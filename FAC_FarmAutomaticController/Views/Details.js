@@ -72,8 +72,9 @@ const screenWidth = Dimensions.get("window").width;
 const colors = [
   [
     "0, 119, 182", // Màu cho dataset 0
+    "255, 0, 0",
     "165, 99, 54",
-    "255, 255, 0",
+
   ], // Màu cho dataset 1
   [
     "134, 65, 244", // Màu cho dataset 2
@@ -116,7 +117,7 @@ export default class Details extends Component {
       offset: "",
       sliderValue: [],
       name_bc: [],
-      id_esp : "",
+      id_esp: "",
       Current_Data: {},
       timelist: [],
       buttonTime: [],
@@ -124,7 +125,8 @@ export default class Details extends Component {
       TimerList: [],
       switchAll: [false, false, false],
       index_time: 0,
-      topic: "hello_topic",
+      topic: ["hello_topic", "tr6r/cuong"],
+      topic_flag: 0,
       modalVisible: [],
       buttonAdvance: [],
       settingTimeModal: false,
@@ -151,15 +153,10 @@ export default class Details extends Component {
 
     // this.setDate = this.setDate.bind(this);
     // this.setShowPicker = this.setShowPicker.bind(this);
-    if (client.isConnected() == true) {
-      client.onConnectionLost = this.onConnectionLost;
-      client.onMessageArrived = this.onMessageArrived;
-    }
-
     console.log("checkstateend");
   }
   cancelled = false;
-  
+
   static contextType = MyContext;
   HistoryPage = () => {
     // console.log("HistoryPage");
@@ -186,11 +183,14 @@ export default class Details extends Component {
 
   componentDidMount() {
     const { dataArray } = this.context;
-    this.setState({id_esp : dataArray[1]["id_esp"]})
-    this.setState({Current_Data : dataArray[1]})
-    
+    this.setState({ id_esp: dataArray[1]["id_esp"] })
+    this.setState({ Current_Data: dataArray[1] })
+
     this.getvalueequipment();
     this.connect();
+    
+    // console.log("daaaaa2")
+
     // Gọi hàm push vào mảng khi component được mount
     this.intervalId = setInterval(() => {
       // console.log(dataArray[1])
@@ -226,7 +226,7 @@ export default class Details extends Component {
       this.state.status_mqtt !== "connected" &&
       client.isConnected() == false &&
       !isConnecting
-     
+
     ) {
       isConnecting = true;
       this.setState({ status_mqtt: "isFetching" }, () => {
@@ -263,7 +263,15 @@ export default class Details extends Component {
   };
 
   subscribeTopic = () => {
-    client.subscribe(this.state.topic, { qos: 0 });
+    // console.log(this.state.topic[1])
+    client.subscribe(this.state.topic[0], { qos: 0 });
+    client.subscribe(this.state.topic[1], { qos: 0 });
+    if (client.isConnected() == true) {
+      // console.log("daaaaa")
+      client.onConnectionLost = this.onConnectionLost;
+      client.onMessageArrived = this.onMessageArrived;
+    }
+    this.setState({topic_flag : 1});
   };
 
   onConnectionLost = (responseObject) => {
@@ -422,7 +430,7 @@ export default class Details extends Component {
   };
 
   onChange = async (event) => {
-    const { index_time ,offset} = this.state;
+    const { index_time, offset } = this.state;
     const { dataArray } = this.context;
 
     if (event.type === "set") {
@@ -431,8 +439,7 @@ export default class Details extends Component {
 
         // console.log(dataArray[1]["bc"][index_time]["id_bc"]);
         const formattedTime = `${selectedTime.getHours()}:${selectedTime.getMinutes()}:${selectedTime.getSeconds()}.000`;
-        if (offset === "")
-        {
+        if (offset === "") {
           const url_offset = apiUrl + `getoffset/${dataArray[1]["bc"][index_time]["id_bc"]}`;
           const response = await fetch(url_offset);
           if (!response.ok) {
@@ -440,7 +447,7 @@ export default class Details extends Component {
             return;
           }
           const json = await response.json();
-          this.setState({offset : (json["times_offset"]).toString()})
+          this.setState({ offset: (json["times_offset"]).toString() })
         }
         const url = apiUrl + "schedules";
         let result = await fetch(url, {
@@ -481,47 +488,45 @@ export default class Details extends Component {
     }
   };
   getvalue = async () => {
-      isFunctionRunning = true;
-       const {dataArray}  = this.context
-      const { datachart,id_esp,Current_Data } = this.state;
-      let dataArray2 = Current_Data
+    isFunctionRunning = true;
+    const { dataArray } = this.context
+    const { datachart, id_esp, Current_Data } = this.state;
+    let dataArray2 = Current_Data
 
-      console.log(dataArray2)
-      const url = apiUrl + `getsensorvalue/${dataArray2["id_esp"]}`;
+    // console.log(dataArray2)
+    const url = apiUrl + `getsensorvalue/${dataArray2["id_esp"]}`;
 
-      var newlegend = [];
-      var newlabels = [];
-      var id_check = [];
-      var timeDuration = [];
+    var newlegend = [];
+    var newlabels = [];
+    var id_check = [];
+    var timeDuration = [];
+    var newdatasets = [];
 
-      var newdatasets = [];
+    // console.log(dataArray[1])
+    const response = await fetch(url);
+    if (!response.ok) {
+      this.setState({ msg: "error" });
+      return;
+    }
 
-      // console.log(dataArray[1])
-      const response = await fetch(url);
-      if (!response.ok) {
-        this.setState({ msg: "error" });
-        return;
-      }
-      
-      const json = await response.json();
-      console.log(id_esp)
-      console.log(dataArray[1]["id_esp"])
+    const json = await response.json();
+    // console.log(id_esp)
+    // console.log(dataArray[1]["id_esp"])
 
-      if (id_esp !== dataArray[1]["id_esp"]) {
-        
-        // Nếu component đã bị hủy, dừng xử lý
-        dataArray2 = Current_Data
-        // return;
-      }
-      console.log(dataArray2)
-      const keys = Object.keys(json[0]);
-      
+    if (id_esp !== dataArray[1]["id_esp"]) {
 
-      if (keys.length === dataArray2["bc"]["sl"])
-      {
+      // Nếu component đã bị hủy, dừng xử lý
+      dataArray2 = Current_Data
+      // return;
+    }
+    // console.log(dataArray2)
+    const keys = Object.keys(json[0]);
+
+
+    if (keys.length === dataArray2["bc"]["sl"]) {
 
       for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
-        if (json[0]["combo" + i.toString()]["DHT"].hasOwnProperty("id")&& json[0]["combo" + i.toString()]["DHT"] !== undefined) {
+        if (json[0]["combo" + i.toString()]["DHT"].hasOwnProperty("id") && json[0]["combo" + i.toString()]["DHT"] !== undefined) {
           id_check.push(json[0]["combo" + i.toString()]["DHT"]["id"]);
           id_check.push(json[0]["combo" + i.toString()]["PH"]["id"]);
         }
@@ -565,7 +570,7 @@ export default class Details extends Component {
             0,
             currentElement + "_Humid",
             currentElement + "_Temp"
-          );  
+          );
 
           // Xóa phần tử ban đầu tại vị trí hiện tại
           newlegend.splice(i, 1);
@@ -627,7 +632,7 @@ export default class Details extends Component {
       // console.log("@1")
 
       // console.log(newlabels)
-      
+
 
       // console.log(sum_sensor/2)
       for (let i = 0; i < sum_sensor / 2; i++) {
@@ -646,7 +651,7 @@ export default class Details extends Component {
             // console.log(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"])
             valuehumid.push(
               json[0]["combo" + i.toString()]["DHT"][j.toString()][
-                "value_humid"
+              "value_humid"
               ]
             );
             valueph.push(
@@ -711,24 +716,11 @@ export default class Details extends Component {
 
         this.setState({ datachart: newData });
       }
-      
+
       isFunctionRunning = false;
-      }
+    }
   };
 
-  // Phương thức mở hoặc đóng BottomSheet
-  // toggleBottomSheet = () => {
-  //   this.setState(
-  //     (prevState) => ({ isBottomSheetOpen: !prevState.isBottomSheetOpen }),
-  //     () => {
-  //       if (this.state.isBottomSheetOpen) {
-  //         this.bottomSheetRef.current.expand();
-  //       } else {
-  //         this.bottomSheetRef.current.close();
-  //       }
-  //     }
-  //   );
-  // };
   handleOpenPress = () => this.bottomSheetRef.current?.expand();
   handleClosePress = () => this.bottomSheetRef.current?.close();
 
@@ -777,7 +769,7 @@ export default class Details extends Component {
       // console.log(JSON.stringify(Data))
       const jsonString = JSON.stringify(Data);
       var message = new Paho.MQTT.Message(jsonString);
-      message.destinationName = this.state.subscribedTopic;
+      message.destinationName = this.state.topic[0];
       client.send(message);
       // console.log("oks")
     }
@@ -785,61 +777,67 @@ export default class Details extends Component {
 
   onMessageArrived = (message) => {
     const slidebarvalue = [];
-    const { dataArray } = this.context;
+    const { Current_Data } = this.state;
 
+    const topic = message.topic;
     const value = [];
     const newSwitchStates = [];
+    // console.log(topic)
+      
+      const jsonData = JSON.parse(message.payloadString);
+
+      if (
+        jsonData["id_esp"] == Current_Data["id_esp"] &&
+        client.isConnected() == true && message.topic === this.state.topic[1]
+      ) {
+        // console.log(message.payloadString)
+        let count = 0;
+        for (const key in jsonData) {
+          const SwitchStates = [];
+          if (key.startsWith("equipment")) {
+            const data = jsonData[key];
+            // console.log(data["equipment"+count.toString()]["expect_value"])
+            slidebarvalue.push(data["equipment"+count.toString()]["expect_value"]);
+            value.push(data["equipment"+count.toString()]["expect_value"]);
+
+            if (data["equipment"+count.toString()]["automode"] === "0" && data["equipment"+count.toString()]["status"] === 1) {
+              SwitchStates.push(true);
+              SwitchStates.push(false);
+              SwitchStates.push(false);
+            } else if (data["equipment"+count.toString()]["automode"] === "1" && data["equipment"+count.toString()]["status"] === 1) {
+              SwitchStates.push(true);
+              SwitchStates.push(true);
+              SwitchStates.push(false);
+            } else if (data["equipment"+count.toString()]["automode"] === "2" && data["equipment"+count.toString()]["status"] === 1) {
+              SwitchStates.push(true);
+              SwitchStates.push(false);
+              SwitchStates.push(true);
+            } else if (data["equipment"+count.toString()]["automode"] === "0") {
+              SwitchStates.push(false);
+              SwitchStates.push(false);
+              SwitchStates.push(false);
+            } else if (data["equipment"+count.toString()]["automode"] === "1") {
+              SwitchStates.push(false);
+              SwitchStates.push(true);
+              SwitchStates.push(false);
+            } else if (data["equipment"+count.toString()]["automode"] === "2") {
+              SwitchStates.push(false);
+              SwitchStates.push(false);
+              SwitchStates.push(true);
+            }
+            newSwitchStates.push(SwitchStates);
+
+            count++;
+          }
+        }
+        this.setState({ sliderValue: value });
+        this.setState({ slidebar: slidebarvalue });
+        this.setState({ switchStates: newSwitchStates });
+      }
+    
     // console.log(typeof message)
     // console.log(message.payloadString);
-    const jsonData = JSON.parse(message.payloadString);
-    // console.log(jsonData["equipment0"])
-    let count = 0;
 
-    if (
-      jsonData["id_esp"] == dataArray[1]["id_esp"] &&
-      client.isConnected() == true
-    ) {
-      for (const key in jsonData) {
-        const SwitchStates = [];
-        if (key.startsWith("equipment")) {
-          const data = jsonData[key];
-          slidebarvalue.push(data["humid_expect"]);
-          value.push(data["humid_expect"]);
-
-          if (data["automode"] === 0 && data["status"] === 1) {
-            SwitchStates.push(true);
-            SwitchStates.push(false);
-            SwitchStates.push(false);
-          } else if (data["automode"] === 1 && data["status"] === 1) {
-            SwitchStates.push(true);
-            SwitchStates.push(true);
-            SwitchStates.push(false);
-          } else if (data["automode"] === 2 && data["status"] === 1) {
-            SwitchStates.push(true);
-            SwitchStates.push(false);
-            SwitchStates.push(true);
-          } else if (data["automode"] === 0) {
-            SwitchStates.push(false);
-            SwitchStates.push(false);
-            SwitchStates.push(false);
-          } else if (data["automode"] === 1) {
-            SwitchStates.push(false);
-            SwitchStates.push(true);
-            SwitchStates.push(false);
-          } else if (data["automode"] === 2) {
-            SwitchStates.push(false);
-            SwitchStates.push(false);
-            SwitchStates.push(true);
-          }
-          newSwitchStates.push(SwitchStates);
-
-          count++;
-        }
-      }
-      this.setState({ sliderValue: value });
-      this.setState({ slidebar: slidebarvalue });
-      this.setState({ switchStates: newSwitchStates });
-    }
   };
 
   getvalueequipment = async () => {
@@ -926,7 +924,7 @@ export default class Details extends Component {
     const legends = this.state.datachart.legend;
 
     //Switch
-    const { switchStates, Current_Data } = this.state;
+    const { switchStates, Current_Data,topic_flag } = this.state;
     const { datachart } = this.state;
 
     // ===== Setting Label Chart ===== //
@@ -959,7 +957,8 @@ export default class Details extends Component {
       name_bc !== 0 &&
       timelist.length !== 0 &&
       sliderValue.length !== 0 &&
-      switchStates.length !== 0
+      switchStates.length !== 0 &&
+      topic_flag !== 0
     ) {
       //   flag = false;
       [...Array(dataArray[1]["bc"]["sl"])].forEach((_, index) => {
@@ -1192,16 +1191,16 @@ export default class Details extends Component {
         >
           <TouchableOpacity onPress={this.HistoryPage}>
             {chunkedLegends.map((legendRow, rowIndex) => (
-              <View style={styles.flex}>
+              <View style={styles.flex} key={rowIndex}>
                 <View key={rowIndex} style={styles.legendWidth}>
                   <View style={styles.legendSpace}>
                     {legendRow.map((legend, legendIndex) => (
                       <View style={styles.legendPart}>
                         <View
-                            style={[
-                                styles.legendDot,
-                                { backgroundColor: `rgba(${colors[rowIndex][legendIndex]}, 1)` },
-                            ]}
+                          style={[
+                            styles.legendDot,
+                            { backgroundColor: `rgba(${colors[rowIndex][legendIndex]}, 1)` },
+                          ]}
                         ></View>
                         <Text style={styles.legendText} key={legendIndex}>
                           {legend}
@@ -1214,25 +1213,25 @@ export default class Details extends Component {
             ))}
             <View>
               <LineChart
-              data={{
-                ...this.state.datachart,
-                legend: Array(legends.length).fill(""), // Chuyển legend trên biểu đồ thành các legend rỗng
-              }}
-              width={screenWidth}
-              height={200}
-              fromZero={true}
-              verticalLabelRotation={0}
-              chartConfig={{
-                ...chartConfig,
-                withHorizontalLabels: false, // Ẩn legend ngang
-                withVerticalLabels: false, // Ẩn legend dọc
-              }}
-              yAxisSuffix="%"
-              bezier
-            />
-            <View style={styles.backgroundCover}></View>
+                data={{
+                  ...this.state.datachart,
+                  legend: Array(legends.length).fill(""), // Chuyển legend trên biểu đồ thành các legend rỗng
+                }}
+                width={screenWidth}
+                height={200}
+                fromZero={true}
+                verticalLabelRotation={0}
+                chartConfig={{
+                  ...chartConfig,
+                  withHorizontalLabels: false, // Ẩn legend ngang
+                  withVerticalLabels: false, // Ẩn legend dọc
+                }}
+                yAxisSuffix="%"
+                bezier
+              />
+              <View style={styles.backgroundCover}></View>
             </View>
-            
+
           </TouchableOpacity>
 
           <View style={styles.dateTimeArea}>
@@ -1382,8 +1381,8 @@ class BtnConnect extends Component {
             backgroundColor: isPressed
               ? "#2D314A"
               : disabled
-              ? "#F0F0F0"
-              : "#2D3A3A",
+                ? "#F0F0F0"
+                : "#2D3A3A",
             marginRight: 15,
           },
         ]}

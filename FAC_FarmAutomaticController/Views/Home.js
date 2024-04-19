@@ -47,14 +47,15 @@ export default class Home extends Component {
       this.setState({ msg: "error" });
       return;
     }
+
     // console.log(url)
     const json = await response.json();
-
     addDataAtIndex(json[0], 0);
     // console.log("heheaaa");
     this.setState({ listfarm: json[0] });
   };
 
+  
   DetailPage = (index) => {
     // console.log(index)
     this.GetEquidmentValues(index);
