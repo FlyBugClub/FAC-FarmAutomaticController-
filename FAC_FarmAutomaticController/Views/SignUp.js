@@ -18,7 +18,7 @@ import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import i18next, { languageResources } from "../services/i18next";
 import apiUrl from "../apiURL";
 
-const { height } = Dimensions.get('window');
+const { height } = Dimensions.get("window");
 
 export default class SignUp extends Component {
   constructor(props) {
@@ -30,7 +30,6 @@ export default class SignUp extends Component {
       verifypassword: "",
       msg: "",
       showPassword: false,
-      showVerifyPassword: false,
     };
   }
 
@@ -87,11 +86,14 @@ export default class SignUp extends Component {
   };
 
   togglePasswordVisibility = () => {
-    this.setState(prevState => ({ showPassword: !prevState.showPassword }), this.toggleVerifyPasswordVisibility);
+    this.setState(
+      (prevState) => ({ showPassword: !prevState.showPassword }),
+      this.toggleVerifyPasswordVisibility
+    );
   };
-  
+
   render() {
-    const { showPassword, showVerifyPassword } = this.state;
+    const { showPassword } = this.state;
     const { msg } = this.state;
 
     return (
@@ -159,11 +161,15 @@ export default class SignUp extends Component {
                   secureTextEntry={true}
                 />
                 <TouchableOpacity onPress={this.togglePasswordVisibility}>
-            <Image
-              source={showPassword ? require("../assets/img/hidden.png") : require("../assets/img/eye.png")}
-              style={[styles.imgShowPassword, styles.imgInput]}
-            />
-          </TouchableOpacity>
+                  <Image
+                    source={
+                      showPassword
+                        ? require("../assets/img/hidden.png")
+                        : require("../assets/img/eye.png")
+                    }
+                    style={[styles.imgShowPassword, styles.imgInput]}
+                  />
+                </TouchableOpacity>
               </View>
               <View style={styles.inputArea}>
                 <Image
@@ -184,11 +190,15 @@ export default class SignUp extends Component {
                   secureTextEntry={true}
                 />
                 <TouchableOpacity onPress={this.togglePasswordVisibility}>
-            <Image
-              source={showPassword ? require("../assets/img/hidden.png") : require("../assets/img/eye.png")}
-              style={[styles.imgShowPassword, styles.imgInput]}
-            />
-          </TouchableOpacity>
+                  <Image
+                    source={
+                      showPassword
+                        ? require("../assets/img/hidden.png")
+                        : require("../assets/img/eye.png")
+                    }
+                    style={[styles.imgShowPassword, styles.imgInput]}
+                  />
+                </TouchableOpacity>
               </View>
               <Text>{i18next.t(msg)}</Text>
               <TouchableOpacity
@@ -239,7 +249,7 @@ const styles = StyleSheet.create({
   },
   imgShowPassword: {
     position: "absolute",
-    top: -12
+    top: -12,
   },
   textLogin: {
     fontSize: 28,
