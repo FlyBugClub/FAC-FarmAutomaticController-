@@ -12,6 +12,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+// import Toast from 'react-native-toast-message';
 import i18next, { languageResources } from "../services/i18next";
 import apiUrl from "../apiURL.js";
 import MyContext from "../DataContext.js";
@@ -55,7 +56,6 @@ export default class Home extends Component {
     this.setState({ listfarm: json[0] });
   };
 
-  
   DetailPage = (index) => {
     // console.log(index)
     this.GetEquidmentValues(index);
@@ -84,18 +84,18 @@ export default class Home extends Component {
     clearInterval(this.intervalId);
     if (this.focusListener) {
       this.focusListener();
-  }
+    }
   }
   componentDidMount = async () => {
     this.fetchData();
-    this.focusListener = this.props.navigation.addListener('focus', () => {
+    this.focusListener = this.props.navigation.addListener("focus", () => {
       // console.log("Details screen is focused");
       this.fetchData();
       // Thực hiện các hành động khi trang được focus
-  });
+    });
 
-  // Lắng nghe sự kiện blur khi trang bị blur
- 
+    // Lắng nghe sự kiện blur khi trang bị blur
+
     // this.fetchIsConnect();
     this.intervalId = setInterval(() => {
       const { listfarm } = this.state;
@@ -104,7 +104,7 @@ export default class Home extends Component {
       } else this.fetchData();
     }, 3000);
   };
-    
+
   static contextType = MyContext;
   GetEquidmentValues = async (index) => {
     const { addDataAtIndex } = this.context;
@@ -227,43 +227,44 @@ export default class Home extends Component {
       });
     }
     return (
-      <View style={styles.safeContainer}>
-        <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
 
-        <View style={styles.container}>
-          <LinearGradient
-            colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
-            style={styles.header}
-          >
-            <SafeAreaView style={styles.header}>
-              <Text style={styles.headerText}>
-                {i18next.t("Hello")}! {name_user}
-              </Text>
-              <Text style={styles.headerText}>
-                {i18next.t("Have a nice Day")}
-              </Text>
-            </SafeAreaView>
-          </LinearGradient>
+        <View style={styles.safeContainer}>
+          <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
 
-          {farmHouseList.length !== 0 && (
-            <View style={styles.body}>
-              <Text style={styles.littleTitle}>Farm house</Text>
-              <ScrollView
-                style={{ height: "73%" }}
-                showsVerticalScrollIndicator={false}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={refresh}
-                    onRefresh={this.pullMe}
-                  />
-                }
-              >
-                <View style={{ marginTop: 8 }}>{farmHouseList}</View>
-              </ScrollView>
-            </View>
-          )}
+          <View style={styles.container}>
+            <LinearGradient
+              colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
+              style={styles.header}
+            >
+              <SafeAreaView style={styles.header}>
+                <Text style={styles.headerText}>
+                  {i18next.t("Hello")}! {name_user}
+                </Text>
+                <Text style={styles.headerText}>
+                  {i18next.t("Have a nice Day")}
+                </Text>
+              </SafeAreaView>
+            </LinearGradient>
+
+            {farmHouseList.length !== 0 && (
+              <View style={styles.body}>
+                <Text style={styles.littleTitle}>Farm house</Text>
+                <ScrollView
+                  style={{ height: "73%" }}
+                  showsVerticalScrollIndicator={false}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refresh}
+                      onRefresh={this.pullMe}
+                    />
+                  }
+                >
+                  <View style={{ marginTop: 8 }}>{farmHouseList}</View>
+                </ScrollView>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
     );
   }
 }

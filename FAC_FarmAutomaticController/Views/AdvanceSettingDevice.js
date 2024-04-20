@@ -93,8 +93,6 @@ export default class AdvanceSettingDevice extends Component {
     this.setState({ Farm: Farmlist });
   }
 
- // ============== DateTime ============== //
-
   // ============== Picker ============== //
   async onValueChangeCat(value) {
     this.setState({ selecedCat: value });
@@ -105,7 +103,10 @@ export default class AdvanceSettingDevice extends Component {
     this.setState({ modalVisible: visible });
   };
 
-
+  DetailPage = () => {
+    // console.log(index)
+    this.props.navigation.navigate("Details");
+  };
 
   // ============== Picker Change Farm ============== //
   async onValueChangeFarm(value) {
@@ -235,6 +236,7 @@ export default class AdvanceSettingDevice extends Component {
           flag = true;
           if (result == "update time success") {
             console.info("update time success");
+            this.props.navigation.navigate("Details");
           } else if (result["Message"] == "can't add equipment") {
             console.warn("Network fail!");
           } else {
@@ -452,6 +454,7 @@ export default class AdvanceSettingDevice extends Component {
                             }}
                           >
                             <TextInput
+                              maxLength={2}
                               style={{
                                 width: 60,
                                 textAlign: "center",
