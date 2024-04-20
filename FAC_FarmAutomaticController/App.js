@@ -7,8 +7,8 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  StatusBar,
   Platform,
+  Dimensions,
 } from "react-native";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -41,7 +41,6 @@ import DateTime from "./Views/DateTime.js";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-//Pakage Navigator
 
 // Tạo Stack Navigator
 function StackNavigator() {
@@ -78,6 +77,7 @@ function StackNavigator() {
 
 // Tạo Tab Navigator
 function TabNavigator() {
+  const { height } = Dimensions.get("window");
   const navigation = useNavigation();
   return (
     <Tab.Navigator
@@ -86,7 +86,7 @@ function TabNavigator() {
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: "#ebf2f2",
-          height: "10%",
+          height:  height>1000 ? "7%" : "10%",
         },
       }}
     >
@@ -95,7 +95,7 @@ function TabNavigator() {
         component={StackNavigator}
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={{ alignItems: "center", justifyContent: "center"}}>
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
               <Image
                 source={require("./assets/img/home.png")}
                 resizeMode="contain"
@@ -106,7 +106,12 @@ function TabNavigator() {
                 }}
               />
               <Text
-                style={{ color: focused ? "#2BA84A" : "#333", fontSize: 12, width:60, textAlign:'center' }}
+                style={{
+                  color: focused ? "#2BA84A" : "#333",
+                  fontSize: 12,
+                  width: 60,
+                  textAlign: "center",
+                }}
               >
                 {i18next.t("Home")}
               </Text>
@@ -128,7 +133,7 @@ function TabNavigator() {
                   borderRadius: 35,
                   justifyContent: "center",
                   alignItems: "center",
-                  top: "-70%",
+                  top: "-50%",
                 }}
               >
                 <Image
@@ -161,7 +166,12 @@ function TabNavigator() {
                 }}
               />
               <Text
-                style={{ color: focused ? "#2BA84A" : "#333", fontSize: 12, width:60, textAlign:'center' }}
+                style={{
+                  color: focused ? "#2BA84A" : "#333",
+                  fontSize: 12,
+                  width: 60,
+                  textAlign: "center",
+                }}
               >
                 {i18next.t("User")}
               </Text>
@@ -217,7 +227,6 @@ export default RootComponent = function () {
     <MyContext.Provider value={{ dataArray, addDataAtIndex }}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
           <Stack.Screen name="SignUp" component={SignUp} />

@@ -10,12 +10,16 @@ import {
   TextInput,
   Image,
   Keyboard,
+  Dimensions,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
 } from "react-native";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import i18next, { languageResources } from "../services/i18next";
 import apiUrl from "../apiURL";
+
+const { height } = Dimensions.get('window');
+
 export default class SignUp extends Component {
   constructor(props) {
     super(props);
@@ -25,6 +29,8 @@ export default class SignUp extends Component {
       password: "",
       verifypassword: "",
       msg: "",
+      showPassword: false,
+      showVerifyPassword: false,
     };
   }
 
@@ -57,12 +63,12 @@ export default class SignUp extends Component {
             });
             result = await result.json();
             if (result) {
-              console.log(result)
+              console.log(result);
               if (result == "Added Success") {
                 this.props.navigation.navigate("Login");
               } else if (result["Message"] == "email is already use") {
                 this.setState({ msg: "Email is already use" });
-              } else this.setState({ msg: "Network connect fail"});
+              } else this.setState({ msg: "Network connect fail" });
             }
           } else
             this.setState({
@@ -79,8 +85,15 @@ export default class SignUp extends Component {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
+
+  togglePasswordVisibility = () => {
+    this.setState(prevState => ({ showPassword: !prevState.showPassword }), this.toggleVerifyPasswordVisibility);
+  };
+  
   render() {
+    const { showPassword, showVerifyPassword } = this.state;
     const { msg } = this.state;
+
     return (
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView behavior="padding" style={styles.container}>
@@ -145,6 +158,12 @@ export default class SignUp extends Component {
                   onChangeText={(text) => this.setState({ password: text })}
                   secureTextEntry={true}
                 />
+                <TouchableOpacity onPress={this.togglePasswordVisibility}>
+            <Image
+              source={showPassword ? require("../assets/img/hidden.png") : require("../assets/img/eye.png")}
+              style={[styles.imgShowPassword, styles.imgInput]}
+            />
+          </TouchableOpacity>
               </View>
               <View style={styles.inputArea}>
                 <Image
@@ -164,6 +183,12 @@ export default class SignUp extends Component {
                   placeholder={i18next.t("Verify password")}
                   secureTextEntry={true}
                 />
+                <TouchableOpacity onPress={this.togglePasswordVisibility}>
+            <Image
+              source={showPassword ? require("../assets/img/hidden.png") : require("../assets/img/eye.png")}
+              style={[styles.imgShowPassword, styles.imgInput]}
+            />
+          </TouchableOpacity>
               </View>
               <Text>{i18next.t(msg)}</Text>
               <TouchableOpacity
@@ -212,6 +237,10 @@ const styles = StyleSheet.create({
     height: 28,
     tintColor: "#2BA84A",
   },
+  imgShowPassword: {
+    position: "absolute",
+    top: -12
+  },
   textLogin: {
     fontSize: 28,
     fontWeight: "bold",
@@ -236,7 +265,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   inputAccount: {
-    width: "80%",
+    width: height > 1000 ? "86%" : "68%",
     height: 40,
     margin: 5,
     paddingTop: 5,

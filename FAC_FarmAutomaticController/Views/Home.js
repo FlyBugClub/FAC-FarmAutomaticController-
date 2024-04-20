@@ -10,6 +10,7 @@ import {
   StatusBar,
   Platform,
   RefreshControl,
+  Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 // import Toast from 'react-native-toast-message';
@@ -31,11 +32,19 @@ export default class Home extends Component {
       isConnect: {},
     };
   }
+
+  // ========== Change Page ========== //
   SignUpPage = () => {
     console.log("SignUp Page");
     this.props.navigation.navigate("SignUp");
   };
 
+DetailPage = (index) => {
+    // console.log(index)
+    this.GetEquidmentValues(index);
+  };
+
+  // ========== Fetch Data ========== //
   fetchData = async () => {
     const { dataArray, addDataAtIndex } = this.context;
     // const { route } = this.props;
@@ -56,11 +65,6 @@ export default class Home extends Component {
     this.setState({ listfarm: json[0] });
   };
 
-  DetailPage = (index) => {
-    // console.log(index)
-    this.GetEquidmentValues(index);
-  };
-
   fetchIsConnect = async () => {
     const { dataArray } = this.context;
     // const { route } = this.props;
@@ -79,6 +83,7 @@ export default class Home extends Component {
       this.setState({ isConnect: json["status"] });
     }
   };
+
   componentWillUnmount() {
     // Dừng vòng lặp khi trang được thoát
     clearInterval(this.intervalId);
@@ -121,6 +126,7 @@ export default class Home extends Component {
   };
 
   render() {
+    const { height } = Dimensions.get('window');
     const { refresh } = this.state;
     const { connect } = this.state;
 
@@ -250,7 +256,7 @@ export default class Home extends Component {
               <View style={styles.body}>
                 <Text style={styles.littleTitle}>Farm house</Text>
                 <ScrollView
-                  style={{ height: "73%" }}
+                  style={{ height: height>1000 ? "82%" : "70%" }}
                   showsVerticalScrollIndicator={false}
                   refreshControl={
                     <RefreshControl
