@@ -75,7 +75,12 @@
   float desiredHumidity2 = 60.0;
   unsigned long lastSprayTime[MAX_EQUIPMENTS] = {0};
   bool wifiConnected = false;
-  int pumpActivationCount = 0;
+  int pumpActivationCount1 = 0;
+  int pumpActivationCount2 = 0;
+  int pumpActivationCount3 = 0;
+  int statusPump0 = LOW;
+  int statusPump1 = LOW;
+  int statusPump2 = LOW;
   String previousDate = "";
 
 //region Function prototypes
@@ -90,9 +95,9 @@
 
 //region setup
   void setup() {
-    pinMode(pumpPin0, OUTPUT);
-    pinMode(pumpPin1, OUTPUT);
-    pinMode(pumpPin2, OUTPUT);
+    pinMode(pumpPin0, INPUT);
+    pinMode(pumpPin1, INPUT);
+    pinMode(pumpPin2, INPUT);
     pinMode(buttonAP, INPUT_PULLUP);
     pinMode(buttonReset, INPUT_PULLUP);
     Serial.begin(9600);
@@ -228,17 +233,29 @@
     snprintf(currentTimeWithMilliseconds, sizeof(currentTimeWithMilliseconds), "%s.%03ld", currentTime, milliseconds);
     formattedDateTime = String(currentTimeWithMilliseconds);
   }
+  int statusPump;
+  void countPumpActivations(String formattedTime) {
+    if (isNewDay(formattedTime, previousDate)) {
+      pumpActivationCount1 = 0;
+      pumpActivationCount2 = 0;
+      pumpActivationCount3 = 0;
+    }
+    for (int i = 0; i < num_equipments; i++) { 
+        Serial.print("ID BC: ");Serial.flush();
+        Serial.println(equipments[i].id_bc);Serial.flush();          
+    }    
+    checkPump(pumpPin0, pumpActivationCount1, statusPump0, formattedTime, equipments[0].id_bc);
+    checkPump(pumpPin1, pumpActivationCount2, statusPump1, formattedTime, equipments[1].id_bc);
+    checkPump(pumpPin2, pumpActivationCount3, statusPump2, formattedTime, equipments[2].id_bc);
+  }
 
-  // void countPumpActivations(String formattedTime) {
-  //   if (isNewDay(formattedTime, previousDate)) {
-  //     pumpActivationCount = 0;
-  //   }
-  //   if (digitalRead(pumpPin) == HIGH) {
-  //     pumpActivationCount++;
-  //     postCountPumpToAPI("/api/equidmentvalues", formattedTime, id_sensor);
-
-  //   }
-  // }
+  void checkPump(int pumpPin, int &activationCount, int &statusPump, String formattedTime, const char* id_bc) {
+  if (digitalRead(pumpPin) == HIGH) {
+    statusPump = HIGH;
+    activationCount++;
+    postCountPumpToAPI("/api/equipmentvalues", formattedTime, id_bc, activationCount, statusPump);
+  }
+  }
   void reconnect() {
     while (!client.connected()) {
       Serial.print("Attempting MQTT connection...");Serial.flush();
@@ -254,7 +271,7 @@
     }
   }
 //region POST
-  void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor ) {
+  void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
     WiFiClientSecure client;
     HTTPClient http;
     String api_url = "https://" + String(server_address) + url;
@@ -287,7 +304,7 @@
     http.end();
   }
 
-  void postCountPumpToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
+  void postCountPumpToAPI(const char* url, String formattedDateTime, const char* id_equipment, int count, int status) {
     WiFiClientSecure client;
     HTTPClient http;
     String api_url = "https://" + String(server_address) + url;
@@ -298,9 +315,9 @@
     http.addHeader("Content-Type", "application/json");
 
     StaticJsonDocument<256> doc;
-    doc["id_equipment"] = "BC0001";
-    doc["values"] = "20";
-    doc["status"] = "1";
+    doc["id_equipment"] = id_equipment;
+    doc["values"] = count;
+    doc["status"] = status;
     doc["datetime"] = formattedDateTime;
     String payload;
     serializeJson(doc, payload);
@@ -347,8 +364,6 @@
                     String equipmentKey = "equiment" + String(i);
                     if (equipmentData.containsKey(equipmentKey)) {
                         JsonObject equipment = equipmentData[equipmentKey];
-                        
-                        // Extract id_sensor and id_bc
                         const char* id_sensor = equipment["id_sensor"];
                         const char* id_bc = equipment["id_bc"];
 
@@ -434,13 +449,14 @@
     
     // In ra giờ, phút và giây
     Serial.println("waterPlants RUN: ");Serial.flush();
-    Serial.println("BÂY GIỜ LÀ : ");Serial.flush();
-    Serial.print("Giờ: ");Serial.flush();
+    Serial.print("BÂY GIỜ LÀ : ");Serial.flush();
     Serial.print(hour);Serial.flush();
-    Serial.print(" Phút: ");Serial.flush();
+    Serial.print("Giờ: ");Serial.flush();
     Serial.print(minute);Serial.flush();
-    Serial.print(" Giây: ");Serial.flush();
+    Serial.print(" Phút: ");Serial.flush();
     Serial.print(second);Serial.flush();
+    Serial.println(" Giây: ");Serial.flush();
+    
     Serial.println("-----------------------------------------");
     // Kiểm tra xem đã đến lúc tưới cây chưa và bơm chưa được kích hoạt
     if (!isPumpActive && (totalSeconds - lastWateringTime >= 5000)) { // Chờ 5 giây giữa mỗi lần tưới
@@ -570,33 +586,30 @@
 
 //region connect wifi and sensor
   void connectToWiFi() {
-    // Thử kết nối WiFi
+    Serial.println("Starting connection to WiFi");
     WiFi.begin(ssid, pass);
 
-    // Đợi cho đến khi kết nối được thiết lập hoặc nhận được tín hiệu từ nút
-    while (!WiFi.isConnected()) {
-      delay(100); // Giảm thời gian đợi để tăng tần suất kiểm tra nút
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(100);
+        Serial.print(".");
 
-      // Kiểm tra nút AP
-      if (digitalRead(buttonAP) == HIGH) {
-        activateAPMode(); // Gọi hàm kích hoạt AP Mode
-        return; // Thoát khỏi hàm để không tiếp tục kết nối WiFi
-      }
+        if (digitalRead(buttonAP) == LOW) {
+            Serial.println("\nButton AP is pressed. Activating AP Mode...");
+            activateAPMode(); // Gọi hàm kích hoạt AP Mode
+            return;
+        }
 
-      // Kiểm tra nút Reset
-      if (digitalRead(buttonReset) == HIGH) {
-        resetESP(); // Gọi hàm reset
-        return; // Thoát khỏi hàm vì ESP sẽ khởi động lại
-      }
-
-      Serial.print("."); // In dấu chấm để biểu thị rằng đang đợi kết nối
+        if (digitalRead(buttonReset) == LOW) {
+            Serial.println("\nButton Reset is pressed. Resetting ESP...");
+            resetESP(); // Gọi hàm reset
+            return;
+        }
     }
 
-    Serial.println("\nKết nối WiFi thành công!");
-    Serial.print("Địa chỉ IP: ");
+    Serial.println("\nWiFi connection successful!");
+    Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
-    wifiConnected = true;
-  }
+}
 
 
   void activateAPMode() {
@@ -654,51 +667,51 @@
   }
 
   void sendMQTTMessage() {
-  if (client.connected()) {
-    // Tạo một tài liệu JSON với phân bổ bộ nhớ đủ
-    StaticJsonDocument<512> doc;
+    if (client.connected()) {
+      // Tạo một tài liệu JSON với phân bổ bộ nhớ đủ
+      StaticJsonDocument<512> doc;
 
-    // Thiết lập giá trị "id_esp" chung
-    doc["id_esp"] = id_sensor;
+      // Thiết lập giá trị "id_esp" chung
+      doc["id_esp"] = id_sensor;
 
-    // Tạo một đối tượng lồng nhau cho "equipment"
-    JsonObject equipmentObject = doc.createNestedObject("equipment");
+      // Tạo một đối tượng lồng nhau cho "equipment"
+      JsonObject equipmentObject = doc.createNestedObject("equipment");
 
-    // Lặp qua mảng equipments và thêm từng thiết bị vào như một đối tượng lồng nhau
-    for (size_t i = 0; i < num_equipments; i++) {
-      // Tạo một đối tượng lồng nhau mới cho thiết bị hiện tại
-      String equipmentName = "equipment" + String(i);
-      JsonObject currentEquipment = equipmentObject.createNestedObject(equipmentName);
+      // Lặp qua mảng equipments và thêm từng thiết bị vào như một đối tượng lồng nhau
+      for (size_t i = 0; i < num_equipments; i++) {
+        // Tạo một đối tượng lồng nhau mới cho thiết bị hiện tại
+        String equipmentName = "equipment" + String(i);
+        JsonObject currentEquipment = equipmentObject.createNestedObject(equipmentName);
 
-      // Thêm dữ liệu từ equipments[i] vào đối tượng thiết bị hiện tại
-      currentEquipment["id_bc"] = equipments[i].id_bc;
-      int autoMode;
-      // Sử dụng mảng autoMode để thiết lập automode
-      autoMode = (i == 0) ? autoMode0 : ((i == 1) ? autoMode1 : autoMode2);
-      Serial.print("autoMode của thiết bị thứ ");Serial.flush();
-      Serial.print(i);Serial.flush();
-      Serial.print(" là: ");Serial.flush();
-      Serial.println(autoMode);Serial.flush();
-      currentEquipment["automode"] = autoMode;  
+        // Thêm dữ liệu từ equipments[i] vào đối tượng thiết bị hiện tại
+        currentEquipment["id_bc"] = equipments[i].id_bc;
+        int autoMode;
+        // Sử dụng mảng autoMode để thiết lập automode
+        autoMode = (i == 0) ? autoMode0 : ((i == 1) ? autoMode1 : autoMode2);
+        Serial.print("autoMode của thiết bị thứ ");Serial.flush();
+        Serial.print(i);Serial.flush();
+        Serial.print(" là: ");Serial.flush();
+        Serial.println(autoMode);Serial.flush();
+        currentEquipment["automode"] = autoMode;  
 
-      // Sử dụng một câu lệnh switch-case để xác định thiết bị và thiết lập giá trị mong muốn và trạng thái
-      switch (i) {
-        case 0:
-          currentEquipment["expect_value"] = desiredHumidity0;
-          currentEquipment["status"] = digitalRead(pumpPin0);
-          break;
-        case 1:
-          currentEquipment["expect_value"] = desiredHumidity1;
-          currentEquipment["status"] = digitalRead(pumpPin1);
-          break;
-        case 2:
-          currentEquipment["expect_value"] = desiredHumidity2;
-          currentEquipment["status"] = digitalRead(pumpPin2);
-          break;
-        default:
-          // Xử lý trường hợp index có thể vượt quá giới hạn (tùy chọn)
-          break;
-      }
+        // Sử dụng một câu lệnh switch-case để xác định thiết bị và thiết lập giá trị mong muốn và trạng thái
+        switch (i) {
+          case 0:
+            currentEquipment["expect_value"] = desiredHumidity0;
+            currentEquipment["status"] = digitalRead(pumpPin0);
+            break;
+          case 1:
+            currentEquipment["expect_value"] = desiredHumidity1;
+            currentEquipment["status"] = digitalRead(pumpPin1);
+            break;
+          case 2:
+            currentEquipment["expect_value"] = desiredHumidity2;
+            currentEquipment["status"] = digitalRead(pumpPin2);
+            break;
+          default:
+            // Xử lý trường hợp index có thể vượt quá giới hạn (tùy chọn)
+            break;
+        }
     }
 
     // Chuyển đổi tài liệu JSON thành một bộ đệm ký tự
@@ -719,7 +732,6 @@
   }
 
 //region MQTTX GET
-
   void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
@@ -764,8 +776,6 @@
       Serial.println(automodes[count]);
       Serial.flush();
       count++;
-
-
     }
   }
   }
