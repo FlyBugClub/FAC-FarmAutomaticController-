@@ -95,7 +95,7 @@ function TabNavigator() {
         component={StackNavigator}
         options={{
           tabBarIcon: ({ focused }) => (
-            <View style={{ alignItems: "center", justifyContent: "center" }}>
+            <View style={{ alignItems: "center", justifyContent: "center"}}>
               <Image
                 source={require("./assets/img/home.png")}
                 resizeMode="contain"
@@ -106,7 +106,7 @@ function TabNavigator() {
                 }}
               />
               <Text
-                style={{ color: focused ? "#2BA84A" : "#333", fontSize: 12 }}
+                style={{ color: focused ? "#2BA84A" : "#333", fontSize: 12, width:60, textAlign:'center' }}
               >
                 {i18next.t("Home")}
               </Text>
@@ -128,7 +128,7 @@ function TabNavigator() {
                   borderRadius: 35,
                   justifyContent: "center",
                   alignItems: "center",
-                  top: -30,
+                  top: "-70%",
                 }}
               >
                 <Image
@@ -161,7 +161,7 @@ function TabNavigator() {
                 }}
               />
               <Text
-                style={{ color: focused ? "#2BA84A" : "#333", fontSize: 12 }}
+                style={{ color: focused ? "#2BA84A" : "#333", fontSize: 12, width:60, textAlign:'center' }}
               >
                 {i18next.t("User")}
               </Text>

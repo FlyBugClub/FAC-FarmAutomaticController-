@@ -168,7 +168,7 @@ export default class User extends Component {
                   onPress={this.PakagePremiumPage}
                 >
                   <Text style={[styles.text]}>
-                    {i18next.t("Update Pakage")}
+                    {i18next.t("Update")}
                   </Text>
                 </TouchableOpacity>
               </View>

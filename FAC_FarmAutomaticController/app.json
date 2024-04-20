@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FAC_FarmAutomaticController",
-    "slug": "FAC_FarmAutomaticController",
+    "slug": "facfarmautomaticcontroller-4hckflgnivdiupan5nyd",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/splash/icon.png",
@@ -30,11 +30,15 @@
     },
     "extra": {
       "eas": {
-        "projectId": "4d5129d4-7ccf-407e-ab8c-05d52eb50bbd"
+        "projectId": "95caca11-519f-4c69-b128-d7da3e291a2b"
+      },
+      "router": {
+        "origin": false
       }
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "owner": "nqd2399"
   }
 }
