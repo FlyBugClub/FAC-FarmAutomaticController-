@@ -126,7 +126,8 @@
     if (!client.connected()) {
     reconnect();
     }
-
+    String formattedDateTime;
+    getCurrentDateTime(formattedDateTime);
     if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
     activateAPMode();
     }
@@ -135,8 +136,14 @@
     }
 
     client.loop();
-    getAndParseAPI("/api/getvalueesp/ESP0001");
-    
+    getAndParseAPI("/api/getvalueesp/ESP0004");
+    for (int i = 0; i < num_equipments; i++) {
+      Serial.print("ID Sensor: ");
+      Serial.println(equipments[i].id_sensor);
+
+      handleSensorData(equipments[i].id_sensor, formattedDateTime);
+    }
+    // postHumidityToAPI("/api/sensorvalues", formattedDateTime, "DHT0001");
     printValues();
     while(soLan == 0)
     {
@@ -152,8 +159,7 @@
           
     
     
-    String formattedDateTime;
-    getCurrentDateTime(formattedDateTime);
+    
     
 
     
@@ -201,6 +207,30 @@
             }           
             Serial.println("-----------------------------------------") ;
     }
+  }
+  void handleSensorData(const String& idSensor, const String& formattedDateTime) {
+  int startIndex = 0;
+  int endIndex = 0;
+
+  while (endIndex != -1) {
+    endIndex = idSensor.indexOf('-', startIndex);
+    String part = idSensor.substring(startIndex, endIndex != -1 ? endIndex : idSensor.length());
+    startIndex = endIndex + 1;
+
+    Serial.print("Processing ID Part: ");
+    Serial.println(part);
+
+    if (!part.isEmpty()) {
+      if (part.startsWith("P")) {
+        postHumidityToAPI("/api/sensorvalues", formattedDateTime, part.c_str());
+      } else if (part.startsWith("D")) {
+        postHumidityAndTempToAPI("/api/sensorvalues", formattedDateTime, part.c_str());
+      }
+    }
+
+  }
+
+
   }
   bool isNewDay(String formattedTime, String& previousDate) {
     // Lấy ngày từ chuỗi định dạng "%Y-%m-%d"
@@ -270,7 +300,51 @@
       }
     }
   }
+
+  String getIdPart(const String& id_sensor, int partIndex) {
+  int dashIndex = id_sensor.indexOf('-');
+  if (dashIndex != -1) {
+    if (partIndex == 0)
+      return id_sensor.substring(0, dashIndex);  // Trả về phần trước dấu gạch ngang
+    else
+      return id_sensor.substring(dashIndex + 1); // Trả về phần sau dấu gạch ngang
+  }
+  return ""; // Trả về chuỗi rỗng nếu không tìm thấy dấu gạch ngang
+  }
 //region POST
+  void postHumidityAndTempToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
+    WiFiClientSecure client;
+    HTTPClient http;
+    String api_url = "https://" + String(server_address) + url;
+
+    http.begin(client, api_url);
+    client.setInsecure();
+
+    http.addHeader("Content-Type", "application/json");
+    Serial.println(formattedDateTime);
+    StaticJsonDocument<256> doc;
+    doc["id_sensor"] = id_sensor;
+    doc["value_humid"] = 88.0;
+    doc["datetime"] = formattedDateTime;
+    doc["value_temp"] = 30;
+    String payload;
+    serializeJson(doc, payload);
+
+    int httpCode = http.POST(payload);
+    Serial.print("POST httpCode: ");Serial.flush();
+    Serial.println(httpCode);Serial.flush();
+
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.print("POST Humidity response: ");Serial.flush();
+      Serial.println(payload);Serial.flush();
+    } else {
+      Serial.print("POST request failed with error code: ");Serial.flush();
+      Serial.println(httpCode);Serial.flush();
+    }
+
+    http.end();
+  }
   void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
     WiFiClientSecure client;
     HTTPClient http;
@@ -282,9 +356,10 @@
     http.addHeader("Content-Type", "application/json");
     Serial.println(formattedDateTime);
     StaticJsonDocument<256> doc;
-    doc["id_sensor"] = "SenSor0001";
-    doc["value"] = 88.0;
+    doc["id_sensor"] = id_sensor;
+    doc["value_humid"] = 99.0;
     doc["datetime"] = formattedDateTime;
+    doc["value_temp"] = 0;
     String payload;
     serializeJson(doc, payload);
 
