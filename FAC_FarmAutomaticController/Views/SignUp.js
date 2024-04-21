@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
   imgShowPassword: {
     position: "absolute",
-    top: -12,
+    top: -14,
   },
   textLogin: {
     fontSize: 28,

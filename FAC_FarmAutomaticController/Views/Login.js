@@ -9,6 +9,7 @@ import {
   Statusbar,
   TextInput,
   Image,
+  Dimensions,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
@@ -22,6 +23,8 @@ import apiUrl from "../apiURL.js";
 import AppLoader from "./AppLoader.js";
 
 const data = [];
+const { height } = Dimensions.get("window");
+
 export default class Login extends Component {
   constructor(props) {
     super(props);
@@ -31,6 +34,7 @@ export default class Login extends Component {
       password: "123456",
       isChecked: false,
       secureTextEntry: true,
+      showPassword: false,
       status: "Show password",
     };
   }
@@ -47,6 +51,7 @@ export default class Login extends Component {
       this.setState({ secureTextEntry: false });
     }
   };
+
   static contextType = MyContext;
   //   handleLogin = async () => {
   //     var erorr = true;
@@ -75,6 +80,7 @@ export default class Login extends Component {
   //         });
 
   //   };
+  
   handleLogin = async () => {
     const { email, password } = this.state;
     const { addDataAtIndex } = this.context;
@@ -112,6 +118,13 @@ export default class Login extends Component {
     this.setState({ isLoading: false });
   };
 
+  togglePasswordVisibility = () => {
+    this.setState(
+      (prevState) => ({ showPassword: !prevState.showPassword }),
+      this.toggleVerifyPasswordVisibility
+    );
+  };
+
   HomePage = () => {
     this.props.navigation.navigate("Home");
   };
@@ -124,8 +137,10 @@ export default class Login extends Component {
   ChangePassPage = () => {
     this.props.navigation.navigate("PremiumPakage");
   };
+
   render() {
     const { msg, secureTextEntry, status } = this.state;
+    const { showPassword } = this.state;
     const { isChecked } = this.state;
     const { isLoading } = this.state;
 
@@ -169,6 +184,16 @@ export default class Login extends Component {
                     onChangeText={(text) => this.setState({ password: text })}
                     secureTextEntry={secureTextEntry}
                   />
+                  <TouchableOpacity onPress={this.togglePasswordVisibility}>
+                  <Image
+                    source={
+                      showPassword
+                        ? require("../assets/img/hidden.png")
+                        : require("../assets/img/eye.png")
+                    }
+                    style={[styles.imgShowPassword, styles.imgInput]}
+                  />
+                </TouchableOpacity>
                 </View>
                 <Text>{i18next.t(msg)}</Text>
                 <View style={styles.functionArea}>
@@ -211,8 +236,8 @@ export default class Login extends Component {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={this.SignUpPage}>
-                  <Text style={{ color: "#333", marginTop: 10, fontSize: 12 }}>
-                    {i18next.t("Don't have account!")}
+                  <Text style={styles.btnSignUp}>
+                    {i18next.t("Don't you have account!")}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -243,6 +268,15 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     tintColor: "#2BA84A",
   },
+  imgInput: {
+    width: 28,
+    height: 28,
+    tintColor: "#2BA84A",
+  },
+  imgShowPassword: {
+    position: "absolute",
+    top: -14,
+  },
   textLogin: {
     fontSize: 28,
     fontWeight: "bold",
@@ -267,7 +301,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   inputAccount: {
-    width: "80%",
+    width: height > 1000 ? "86%" : "68%",
     height: 40,
     margin: 5,
     paddingTop: 5,
@@ -309,5 +343,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#2BA84A",
     justifyContent: "center",
     borderRadius: 24,
+  },
+  btnSignUp: {
+    color: "#333", 
+    marginTop: 10, 
+    fontSize: 12,
+    borderBottomWidth: 1.2,
+    borderColor: "#2BA84A",
+    borderStyle: "dotted"
   },
 });

@@ -191,6 +191,10 @@ const styles = StyleSheet.create({
     height: 28,
     tintColor: "#2BA84A",
   },
+  imgShowPassword: {
+    position: "absolute",
+    top: -14,
+  },
   textLogin: {
     fontSize: 28,
     fontWeight: "bold",
