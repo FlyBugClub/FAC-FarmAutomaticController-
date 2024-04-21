@@ -93,6 +93,8 @@
   void autoControlMode(float& temperature, float& humidity);
   bool isNewDay(String formattedTime);
 
+  unsigned long previousMillisForStatusUpdate = 0;  // Lưu trữ lần ghi nhận thời gian trước đó cho cập nhật trạng thái
+  const long statusUpdateInterval = 10000;
 //region setup
   void setup() {
     pinMode(pumpPin0, INPUT);
@@ -121,22 +123,33 @@
   int soLan = 0;
 //region loop
   void loop() {
-    if (!WiFi.isConnected()) {
-      connectToWiFi();
-    }
-    if (!client.connected()) {
-    reconnect();
-    }
-    String formattedDateTime;
-    getCurrentDateTime(formattedDateTime);
-    if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
-    activateAPMode();
-    }
-    if (digitalRead(buttonReset) == LOW) { // Nếu nút được nhấn
-      resetESP();
-    }
+    //region config
+      if (!WiFi.isConnected()) {
+        connectToWiFi();
+      }
+      if (!client.connected()) {
+      reconnect();
+      }
+      String formattedDateTime;
+      getCurrentDateTime(formattedDateTime);
+      if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
+      activateAPMode();
+      }
+      if (digitalRead(buttonReset) == LOW) { // Nếu nút được nhấn
+        resetESP();
+      }
+      client.loop();
+    //endregion config
+    
+    //region getWhenStart
+      unsigned long currentMillisForStatusUpdate = millis();  // Lấy thời gian hiện tại
 
-    client.loop();
+      if (currentMillisForStatusUpdate - previousMillisForStatusUpdate >= statusUpdateInterval) {  // Kiểm tra nếu đã qua 10 giây
+          previousMillisForStatusUpdate = currentMillisForStatusUpdate;  // Cập nhật thời gian trước đó
+          getWhenStart("/api/laststatus/esp0004");  // Gọi hàm
+      }
+    //endregion getWhenStart
+
     //region handleSensorData
       getAndParseAPI("/api/getvalueesp/ESP0004");
 
@@ -147,24 +160,30 @@
         handleSensorData(equipments[i].id_sensor, formattedDateTime);
       }
     //endregion handleSensorData
-    
-    while(soLan == 0)
-    {
-      sendHelloMessage();
-      soLan++;
-    }
-    
-    for(int i = 0; i < count; i++)
-    {
-      processAutoMode(automodes[i], expect_values[i], statuses[i], i);
-    }
-  printValues();
-  Serial.println("Hehehihi");
-  sendMQTTMessage();
-  Serial.println("=======================================");
-  
-  delay(10000);
-  
+
+    //region sendHelloMessage
+      // while(soLan == 0)
+      // {
+      //   sendHelloMessage();
+      //   soLan++;
+      // }
+    //endregion sendHelloMessage
+
+    //region processAutoMode
+      for(int i = 0; i < count; i++)
+      {
+        processAutoMode(automodes[i], expect_values[i], statuses[i], i);
+      }
+    //endregion processAutoMode
+
+    //region stuff
+      printValues();
+      Serial.println("Hehehihi");
+      sendMQTTMessage();
+      Serial.println("=======================================");
+      delay(10000);
+    //endregion stuff
+
   }
 //region stuff
   void printValues() {
