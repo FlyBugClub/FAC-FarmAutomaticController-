@@ -116,7 +116,7 @@
     client.setServer(mqtt_server, mqtt_port);
     
     client.setCallback(callback);
-    getWhenStart("/api/laststatus/esp0004");
+    
   }
   int soLan = 0;
 //region loop
@@ -137,43 +137,34 @@
     }
 
     client.loop();
-    // //region handleSensorData
-    //   getAndParseAPI("/api/getvalueesp/ESP0004");
-    //   for (int i = 0; i < num_equipments; i++) {
-    //     Serial.print("ID Sensor: ");
-    //     Serial.println(equipments[i].id_sensor);
+    //region handleSensorData
+      getAndParseAPI("/api/getvalueesp/ESP0004");
 
-    //     handleSensorData(equipments[i].id_sensor, formattedDateTime);
-    //   }
-    // //endregion handleSensorData
-    // postHumidityToAPI("/api/sensorvalues", formattedDateTime, "DHT0001");
-    printValues();
-    // while(soLan == 0)
-    // {
-    //   sendHelloMessage();
-    //   soLan++;
-    // }
-    
-    // for(int i = 0; i < count; i++)
-    // {
-    //   processAutoMode(automodes[i], expect_values[i], statuses[i], i);
-    // }
-    Serial.println("Hehehihi");
-          
-    
-    
-    
-    
+      for (int i = 0; i < num_equipments; i++) {
+        Serial.print("ID Sensor: ");
+        Serial.println(equipments[i].id_sensor);
 
+        handleSensorData(equipments[i].id_sensor, formattedDateTime);
+      }
+    //endregion handleSensorData
     
-    // countPumpActivations(formattedDateTime);
-    // postHumidityToAPI("/api/sensorvalues", formattedDateTime, id_sensor);
-    // postCountPumpToAPI("/api/equidmentvalues", formattedDateTime, id_sensor);
+    while(soLan == 0)
+    {
+      sendHelloMessage();
+      soLan++;
+    }
     
-    // manageAutoControl();
-    // sendMQTTMessage();
+    for(int i = 0; i < count; i++)
+    {
+      processAutoMode(automodes[i], expect_values[i], statuses[i], i);
+    }
+  printValues();
+  Serial.println("Hehehihi");
+  sendMQTTMessage();
   Serial.println("=======================================");
+  
   delay(10000);
+  
   }
 //region stuff
   void printValues() {
@@ -740,7 +731,7 @@
             return;
         }
     }
-
+    getWhenStart("/api/laststatus/esp0004");
     Serial.println("\nWiFi connection successful!");
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
@@ -750,9 +741,20 @@
   void activateAPMode() {
   Serial.println("Chuyển sang AP Mode.");
   WiFiManager wifiManager;
+
+  // Xóa cài đặt cũ
   wifiManager.resetSettings();
-  wifiManager.startConfigPortal("ESP8266_MODE_Access Point");
-  while(true); // Giữ ESP trong AP mode cho đến khi được reset hoặc cấu hình lại
+
+  // Bắt đầu cổng cấu hình, "ESP8266_MODE_Access Point" là tên mạng WiFi cho AP Mode
+  // Hàm startConfigPortal() sẽ tự động ngắt khi kết nối WiFi được cấu hình xong và kết nối
+  if (wifiManager.startConfigPortal("ESP8266_MODE_Access Point")) {
+    Serial.println("Kết nối được cấu hình xong và đã kết nối!");
+  } else {
+    Serial.println("Không kết nối được sau cấu hình.");
+  }
+
+  // Nếu bạn muốn tiếp tục chạy chương trình sau khi kết nối hoặc sau khi cấu hình thất bại, bạn có thể thực hiện các bước tiếp theo tại đây.
+  Serial.println("Tiếp tục chạy chương trình...");
   }
 
 
