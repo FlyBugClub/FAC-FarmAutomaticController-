@@ -116,6 +116,7 @@
     client.setServer(mqtt_server, mqtt_port);
     
     client.setCallback(callback);
+    getWhenStart("/api/laststatus/esp0004");
   }
   int soLan = 0;
 //region loop
@@ -136,25 +137,27 @@
     }
 
     client.loop();
-    getAndParseAPI("/api/getvalueesp/ESP0004");
-    for (int i = 0; i < num_equipments; i++) {
-      Serial.print("ID Sensor: ");
-      Serial.println(equipments[i].id_sensor);
+    // //region handleSensorData
+    //   getAndParseAPI("/api/getvalueesp/ESP0004");
+    //   for (int i = 0; i < num_equipments; i++) {
+    //     Serial.print("ID Sensor: ");
+    //     Serial.println(equipments[i].id_sensor);
 
-      handleSensorData(equipments[i].id_sensor, formattedDateTime);
-    }
+    //     handleSensorData(equipments[i].id_sensor, formattedDateTime);
+    //   }
+    // //endregion handleSensorData
     // postHumidityToAPI("/api/sensorvalues", formattedDateTime, "DHT0001");
     printValues();
-    while(soLan == 0)
-    {
-      sendHelloMessage();
-      soLan++;
-    }
+    // while(soLan == 0)
+    // {
+    //   sendHelloMessage();
+    //   soLan++;
+    // }
     
-    for(int i = 0; i < count; i++)
-    {
-      processAutoMode(automodes[i], expect_values[i], statuses[i], i);
-    }
+    // for(int i = 0; i < count; i++)
+    // {
+    //   processAutoMode(automodes[i], expect_values[i], statuses[i], i);
+    // }
     Serial.println("Hehehihi");
           
     
@@ -168,8 +171,9 @@
     // postCountPumpToAPI("/api/equidmentvalues", formattedDateTime, id_sensor);
     
     // manageAutoControl();
-    sendMQTTMessage();
+    // sendMQTTMessage();
   Serial.println("=======================================");
+  delay(10000);
   }
 //region stuff
   void printValues() {
@@ -413,6 +417,62 @@
     http.end();
   }
 //region GET
+  void getWhenStart(const char* url) {
+    WiFiClientSecure client;
+    HTTPClient http;
+
+    String api_url = "https://" + String(server_address) + url;
+    http.begin(client, api_url);
+    client.setInsecure();
+    int httpCode = http.GET();
+    
+    if (httpCode > 0) {
+        String payload = http.getString();
+        Serial.println(payload);
+        StaticJsonDocument<1024> doc;
+        DeserializationError error = deserializeJson(doc, payload);
+        
+        if (!error) {
+            const char* id_esp = doc["id_esp"];
+            if (strcmp(id_esp, id_sensor) == 0) {
+                Serial.println("Correct ID");
+                
+                JsonObject equipmentsJson = doc["equipment"].as<JsonObject>();
+                count = 0; // Reset count each time we fetch new data
+                
+                for (JsonPair kv : equipmentsJson) {
+                    const char* key = kv.key().c_str(); // Get equipment ID key
+                    JsonObject equipmentData = kv.value().as<JsonObject>();
+
+                    equipmentIds[count] = strdup(key); // Store the equipment ID key
+                    id_bcs[count] = strdup(equipmentData["id_bc"]); // Duplicate the string for safe storage
+                    automodes[count] = equipmentData["automode"]; // Store integer values directly
+                    expect_values[count] = equipmentData["expect_value"];
+                    statuses[count] = equipmentData["status"];
+
+                    Serial.print("Equipment ID: ");
+                    Serial.println(equipmentIds[count]);
+                    Serial.print("BC ID: ");
+                    Serial.println(id_bcs[count]);
+                    Serial.print("Automode: ");
+                    Serial.println(automodes[count]);
+
+                    count++;
+                    if (count >= MAX_EQUIPMENTS) break; // Prevent overflow
+                }
+            } else {
+                Serial.println("ID mismatch");
+            }
+        } else {
+            Serial.println("JSON deserialization failed");
+        }
+    } else {
+        Serial.print("GET request failed with error code: ");
+        Serial.println(httpCode);
+    }
+
+    http.end();
+  }
   void getAndParseAPI(const char* url) {
     num_equipments = 0;
     WiFiClientSecure client;
@@ -684,7 +744,7 @@
     Serial.println("\nWiFi connection successful!");
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
-}
+  }
 
 
   void activateAPMode() {
