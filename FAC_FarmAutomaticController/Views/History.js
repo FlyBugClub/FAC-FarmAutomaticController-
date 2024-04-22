@@ -12,6 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import i18next from "../services/i18next";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
+import { index } from "d3";
 var flag = false;
 
 export default class History extends Component {
@@ -148,59 +149,130 @@ export default class History extends Component {
     // }
 
     // lịch sử version 2
-    const historyDate = [];
-    const historyTime = [];
-    [...Array(4)].forEach((_, indexDate) => {
-      historyDate.push(
-        <View key={indexDate}>
-          <View style={{}}>
-            <View
-              style={{
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={{ fontSize: 16, fontWeight: "500" }}>
-                1{indexDate}/04/2024
-              </Text>
+    // const historyDate = [];
+    // const historyTime = [];
+    // if (historyList.length != 0) {
+    //   [...Array(4)].forEach((_, indexDate) => {
+    //     const historyTimes = [];
+
+    //     [...Array(3)].forEach((_, indexTime) => {
+    //       historyTimes.push(
+    //         <View key={`${indexDate}-${indexTime}`} style={{ marginLeft: 16 }}>
+    //           <View style={{ flexDirection: "row" }}>
+    //             <View
+    //               style={[
+    //                 {
+    //                   flexDirection: "row",
+    //                   alignItems: "center",
+    //                   gap: 4,
+    //                   width: 140,
+    //                 },
+    //               ]}
+    //             >
+    //               <View style={styles.dot}></View>
+    //               <Text>{indexTime}/12/2024</Text>
+    //             </View>
+    //             <Text>TBC000{indexTime}: Đã mở</Text>
+    //           </View>
+
+    //           <View style={styles.verticalLine}></View>
+    //         </View>
+    //       );
+    //     });
+
+    //     historyDate.push(
+    //       <View key={indexDate}>
+    //         <View style={{}}>
+    //           <View
+    //             style={{
+    //               width: "100%",
+    //               flexDirection: "row",
+    //               justifyContent: "space-between",
+    //             }}
+    //           >
+    //             <Text style={{ fontSize: 16, fontWeight: "500" }}>
+    //               1{indexDate}/04/2024
+    //             </Text>
+    //             <Text
+    //               style={{ marginRight: 10, fontSize: 16, fontWeight: "500" }}
+    //             >
+    //               T4
+    //             </Text>
+    //           </View>
+    //           <View style={[styles.verticalLine, { marginLeft: 20 }]}></View>
+    //           <View>{historyTimes}</View>
+    //         </View>
+    //       </View>
+    //     );
+    //   });
+    // }
+
+    // Tạo một đối tượng để nhóm các mục theo ngày
+    const groupedHistory = {};
+    historyList.forEach((item) => {
+      const date = item[1]; // Lấy ngày từ mục
+      const time = item[2]; // Lấy thời gian từ mục
+      const device = item[0]; // Lấy hành động từ mục
+
+      // Tách ngày thành "Thứ Tư" và "17/04/2024"
+      const [dayOfWeek, dateString] = date.split(", ");
+
+      // Nếu chưa có mục nào cho ngày này, tạo một mảng mới
+      if (!groupedHistory[dateString]) {
+        groupedHistory[dateString] = [];
+      }
+
+      // Thêm mục vào mảng tương ứng với ngày
+      groupedHistory[dateString].push({ dayOfWeek, time, device });
+    });
+
+    const renderedHistory = Object.entries(groupedHistory).map(
+      ([date, devices], index) => (
+        <View key={index}>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: "500" }}>{date}</Text>
+            {devices.length > 0 && (
               <Text
                 style={{ marginRight: 10, fontSize: 16, fontWeight: "500" }}
               >
-                T4
+                {devices[0].dayOfWeek}
               </Text>
-            </View>
-            <View style={[styles.verticalLine, { marginLeft: 20 }]}></View>
-            <View>{historyTime}</View>
+            )}
+          </View>
+          <View style={[styles.verticalLine, { marginLeft: 20 }]}></View>
+          <View>
+            {devices.map((devices, index) => (
+              <View key={index} style={{ marginLeft: 16 }}>
+                <View style={{ flexDirection: "row" }}>
+                  <View
+                    style={[
+                      {
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 4,
+                        width: 140,
+                      },
+                    ]}
+                  >
+                    <View style={styles.dot}></View>
+                    <Text>{devices.time.substring(0,8)}</Text>
+                  </View>
+                  <Text>{devices.device}: Đã mở</Text>
+                </View>
+
+                <View style={styles.verticalLine}></View>
+              </View>
+            ))}
           </View>
         </View>
-      );
-
-      [...Array(3)].forEach((_, indexTime) => {
-        historyTime.push(
-          <View key={indexTime} style={{ marginLeft: 16 }}>
-            <View style={{flexDirection: 'row'}}>
-              <View
-                style={[
-                  {
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 4,
-                    width: 140,
-                  },
-                ]}
-              >
-                <View style={styles.dot}></View>
-                <Text>{indexTime}/12/2024</Text>
-              </View>
-              <Text>TBC000{indexDate}: Đã mở</Text>
-            </View>
-
-            <View style={styles.verticalLine}></View>
-          </View>
-        );
-      });
-    });
+      )
+    );
 
     return (
       <View style={styles.container}>
@@ -241,7 +313,7 @@ export default class History extends Component {
             </View> */}
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* {history} */}
-              {historyDate}
+              {renderedHistory}
             </ScrollView>
           </View>
         </View>
