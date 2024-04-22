@@ -27,6 +27,7 @@ export default class ChangePassword extends Component {
       confirmpassword: "",
       msg: "",
       showPassword: false,
+      showPasswordHint: false,
     };
   }
 
@@ -72,6 +73,16 @@ export default class ChangePassword extends Component {
     } else this.setState({ msg: "Password must have at least 6 characters" });
   };
 
+  // ========== Password Hint ========== //
+  handlePasswordChange = (text) => {
+    this.setState({ verifypassword: text });
+    if (text.length >= 6) {
+      this.setState({ passwordValid: true });
+    } else {
+      this.setState({ passwordValid: false });
+    }
+  };
+
   render() {
     const { showPassword } = this.state;
     const { msg } = this.state;
@@ -100,7 +111,12 @@ export default class ChangePassword extends Component {
                 </Text>
                 <TextInput
                   style={styles.inputAccount}
-                  onChangeText={(text) => this.setState({ password: text })}
+                  onChangeText={(text) => {
+                    this.handlePasswordChange(text);
+                    this.setState({ password: text });
+                  }}
+                  onFocus={() => this.setState({ showPasswordHint: true })}
+                  onBlur={() => this.setState({ showPasswordHint: false })}
                   placeholder="New password"
                   secureTextEntry={true}
                 />
@@ -144,6 +160,34 @@ export default class ChangePassword extends Component {
                   />
                 </TouchableOpacity>
               </View>
+              {this.state.showPasswordHint && (
+                <View
+                  style={{
+                    width: "65%",
+                    flexDirection: "row",
+                    gap: 5,
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: 10,
+                      backgroundColor: this.state.passwordValid
+                        ? "#2BA84A"
+                        : "#333",
+                    }}
+                  ></View>
+                  <Text
+                    style={{
+                      color: this.state.passwordValid ? "#2BA84A" : "#333",
+                    }}
+                  >
+                    {i18next.t("Password minimum 6 characters")}
+                  </Text>
+                </View>
+              )}
               <Text>{msg}</Text>
               <TouchableOpacity
                 onPress={this.ChangePassword}
