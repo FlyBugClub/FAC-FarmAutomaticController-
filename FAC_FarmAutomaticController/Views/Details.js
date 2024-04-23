@@ -53,7 +53,6 @@ var flag_mqtt = true;
 let isConnecting = false;
 let isDisconnecting = false;
 
-
 // Cấu hình cho biểu đồ
 const chartConfig = {
   backgroundGradientFrom: "#fff",
@@ -74,7 +73,6 @@ const colors = [
     "0, 119, 182", // Màu cho dataset 0
     "255, 0, 0",
     "165, 99, 54",
-
   ], // Màu cho dataset 1
   [
     "134, 65, 244", // Màu cho dataset 2
@@ -111,7 +109,7 @@ export default class Details extends Component {
         ],
         legend: ["Loading"], // optional
       },
-      timeDuration: ["________", "________", "________", "________"],
+      timeDuration: ["__", "_____", "__", "_____"],
       switchStates: [],
       slidebar: [],
       offset: "",
@@ -165,7 +163,6 @@ export default class Details extends Component {
   };
 
   AdvanceSettingDevicePage = (index) => {
-
     this.props.navigation.navigate("AdvanceSettingDevice", { index: index }); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
@@ -181,14 +178,20 @@ export default class Details extends Component {
     this.props.navigation.navigate("UpdateFarmForm"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
+  HomePage = () => {
+    console.log("Home Page");
+    flag = true;
+    this.props.navigation.navigate("Home"); // 'History' là tên của màn hình History trong định tuyến của bạn
+  };
+
   componentDidMount() {
     const { dataArray } = this.context;
-    this.setState({ id_esp: dataArray[1]["id_esp"] })
-    this.setState({ Current_Data: dataArray[1] })
+    this.setState({ id_esp: dataArray[1]["id_esp"] });
+    this.setState({ Current_Data: dataArray[1] });
 
     this.getvalueequipment();
     this.connect();
-    
+
     // console.log("daaaaa2")
 
     // Gọi hàm push vào mảng khi component được mount
@@ -226,14 +229,12 @@ export default class Details extends Component {
       this.state.status_mqtt !== "connected" &&
       client.isConnected() == false &&
       !isConnecting
-
     ) {
       isConnecting = true;
       this.setState({ status_mqtt: "isFetching" }, () => {
-        console.log(client.isConnected())
-        console.log("_____----__________")
+        console.log(client.isConnected());
+        console.log("_____----__________");
         client.connect({
-
           onSuccess: this.onConnect,
           useSSL: false,
           timeout: 3,
@@ -271,7 +272,7 @@ export default class Details extends Component {
       client.onConnectionLost = this.onConnectionLost;
       client.onMessageArrived = this.onMessageArrived;
     }
-    this.setState({topic_flag : 1});
+    this.setState({ topic_flag: 1 });
   };
 
   onConnectionLost = (responseObject) => {
@@ -440,14 +441,15 @@ export default class Details extends Component {
         // console.log(dataArray[1]["bc"][index_time]["id_bc"]);
         const formattedTime = `${selectedTime.getHours()}:${selectedTime.getMinutes()}:${selectedTime.getSeconds()}.000`;
         if (offset === "") {
-          const url_offset = apiUrl + `getoffset/${dataArray[1]["bc"][index_time]["id_bc"]}`;
+          const url_offset =
+            apiUrl + `getoffset/${dataArray[1]["bc"][index_time]["id_bc"]}`;
           const response = await fetch(url_offset);
           if (!response.ok) {
             console.warn("network fail!");
             return;
           }
           const json = await response.json();
-          this.setState({ offset: (json["times_offset"]).toString() })
+          this.setState({ offset: json["times_offset"].toString() });
         }
         const url = apiUrl + "schedules";
         let result = await fetch(url, {
@@ -487,11 +489,12 @@ export default class Details extends Component {
       this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
     }
   };
+
   getvalue = async () => {
     isFunctionRunning = true;
-    const { dataArray } = this.context
+    const { dataArray } = this.context;
     const { datachart, id_esp, Current_Data } = this.state;
-    let dataArray2 = Current_Data
+    let dataArray2 = Current_Data;
 
     // console.log(dataArray2)
     const url = apiUrl + `getsensorvalue/${dataArray2["id_esp"]}`;
@@ -514,19 +517,19 @@ export default class Details extends Component {
     // console.log(dataArray[1]["id_esp"])
 
     if (id_esp !== dataArray[1]["id_esp"]) {
-
       // Nếu component đã bị hủy, dừng xử lý
-      dataArray2 = Current_Data
+      dataArray2 = Current_Data;
       // return;
     }
     // console.log(dataArray2)
     const keys = Object.keys(json[0]);
 
-
     if (keys.length === dataArray2["bc"]["sl"]) {
-
       for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
-        if (json[0]["combo" + i.toString()]["DHT"].hasOwnProperty("id") && json[0]["combo" + i.toString()]["DHT"] !== undefined) {
+        if (
+          json[0]["combo" + i.toString()]["DHT"].hasOwnProperty("id") &&
+          json[0]["combo" + i.toString()]["DHT"] !== undefined
+        ) {
           id_check.push(json[0]["combo" + i.toString()]["DHT"]["id"]);
           id_check.push(json[0]["combo" + i.toString()]["PH"]["id"]);
         }
@@ -586,8 +589,10 @@ export default class Details extends Component {
       for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
         for (let j = 0; j < 6; j++) {
           if (
-            json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())
-            && json[0]["combo" + i.toString()]["DHT"] !== undefined
+            json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(
+              j.toString()
+            ) &&
+            json[0]["combo" + i.toString()]["DHT"] !== undefined
           ) {
             datelist.push(
               json[0]["combo" + i.toString()]["DHT"][j.toString()]["datetime"]
@@ -633,7 +638,6 @@ export default class Details extends Component {
 
       // console.log(newlabels)
 
-
       // console.log(sum_sensor/2)
       for (let i = 0; i < sum_sensor / 2; i++) {
         let valuehumid = [];
@@ -645,13 +649,15 @@ export default class Details extends Component {
           // console.log(json[0]["combo"+i.toString()]["sensor"]["dht"+j.toString()])
 
           if (
-            json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())
-            && json[0]["combo" + i.toString()]["DHT"] !== undefined
+            json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(
+              j.toString()
+            ) &&
+            json[0]["combo" + i.toString()]["DHT"] !== undefined
           ) {
             // console.log(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"])
             valuehumid.push(
               json[0]["combo" + i.toString()]["DHT"][j.toString()][
-              "value_humid"
+                "value_humid"
               ]
             );
             valueph.push(
@@ -783,61 +789,72 @@ export default class Details extends Component {
     const value = [];
     const newSwitchStates = [];
     // console.log(topic)
-      
-      const jsonData = JSON.parse(message.payloadString);
 
-      if (
-        jsonData["id_esp"] == Current_Data["id_esp"] &&
-        client.isConnected() == true && message.topic === this.state.topic[1]
-      ) {
-        // console.log(message.payloadString)
-        let count = 0;
-        for (const key in jsonData) {
-          const SwitchStates = [];
-          if (key.startsWith("equipment")) {
-            const data = jsonData[key];
-            // console.log(data["equipment"+count.toString()]["expect_value"])
-            slidebarvalue.push(data["equipment"+count.toString()]["expect_value"]);
-            value.push(data["equipment"+count.toString()]["expect_value"]);
+    const jsonData = JSON.parse(message.payloadString);
 
-            if (data["equipment"+count.toString()]["automode"] === "0" && data["equipment"+count.toString()]["status"] === 1) {
-              SwitchStates.push(true);
-              SwitchStates.push(false);
-              SwitchStates.push(false);
-            } else if (data["equipment"+count.toString()]["automode"] === "1" && data["equipment"+count.toString()]["status"] === 1) {
-              SwitchStates.push(true);
-              SwitchStates.push(true);
-              SwitchStates.push(false);
-            } else if (data["equipment"+count.toString()]["automode"] === "2" && data["equipment"+count.toString()]["status"] === 1) {
-              SwitchStates.push(true);
-              SwitchStates.push(false);
-              SwitchStates.push(true);
-            } else if (data["equipment"+count.toString()]["automode"] === "0") {
-              SwitchStates.push(false);
-              SwitchStates.push(false);
-              SwitchStates.push(false);
-            } else if (data["equipment"+count.toString()]["automode"] === "1") {
-              SwitchStates.push(false);
-              SwitchStates.push(true);
-              SwitchStates.push(false);
-            } else if (data["equipment"+count.toString()]["automode"] === "2") {
-              SwitchStates.push(false);
-              SwitchStates.push(false);
-              SwitchStates.push(true);
-            }
-            newSwitchStates.push(SwitchStates);
+    if (
+      jsonData["id_esp"] == Current_Data["id_esp"] &&
+      client.isConnected() == true &&
+      message.topic === this.state.topic[1]
+    ) {
+      // console.log(message.payloadString)
+      let count = 0;
+      for (const key in jsonData) {
+        const SwitchStates = [];
+        if (key.startsWith("equipment")) {
+          const data = jsonData[key];
+          // console.log(data["equipment"+count.toString()]["expect_value"])
+          slidebarvalue.push(
+            data["equipment" + count.toString()]["expect_value"]
+          );
+          value.push(data["equipment" + count.toString()]["expect_value"]);
 
-            count++;
+          if (
+            data["equipment" + count.toString()]["automode"] === "0" &&
+            data["equipment" + count.toString()]["status"] === 1
+          ) {
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+          } else if (
+            data["equipment" + count.toString()]["automode"] === "1" &&
+            data["equipment" + count.toString()]["status"] === 1
+          ) {
+            SwitchStates.push(true);
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+          } else if (
+            data["equipment" + count.toString()]["automode"] === "2" &&
+            data["equipment" + count.toString()]["status"] === 1
+          ) {
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+            SwitchStates.push(true);
+          } else if (data["equipment" + count.toString()]["automode"] === "0") {
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+          } else if (data["equipment" + count.toString()]["automode"] === "1") {
+            SwitchStates.push(false);
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+          } else if (data["equipment" + count.toString()]["automode"] === "2") {
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+            SwitchStates.push(true);
           }
+          newSwitchStates.push(SwitchStates);
+
+          count++;
         }
-        this.setState({ sliderValue: value });
-        this.setState({ slidebar: slidebarvalue });
-        this.setState({ switchStates: newSwitchStates });
       }
-    
+      this.setState({ sliderValue: value });
+      this.setState({ slidebar: slidebarvalue });
+      this.setState({ switchStates: newSwitchStates });
+    }
+
     // console.log(typeof message)
     // console.log(message.payloadString);
-
   };
 
   getvalueequipment = async () => {
@@ -924,7 +941,7 @@ export default class Details extends Component {
     const legends = this.state.datachart.legend;
 
     //Switch
-    const { switchStates, Current_Data,topic_flag } = this.state;
+    const { switchStates, Current_Data, topic_flag } = this.state;
     const { datachart } = this.state;
 
     // ===== Setting Label Chart ===== //
@@ -934,6 +951,7 @@ export default class Details extends Component {
     for (let i = 0; i < datachart.legend.length; i += chunkSize) {
       chunkedLegends.push(datachart.legend.slice(i, i + chunkSize));
     }
+
     //API
     const {
       name_bc,
@@ -943,6 +961,20 @@ export default class Details extends Component {
       timeDuration,
       buttonAdvance,
     } = this.state;
+
+    const dateStr1 = timeDuration[0];
+    const dateParts1 = dateStr1.split("/");
+    const formattedDateStr1 = `${dateParts1[1] || "__"}/${
+      dateParts1[0] || "__"
+    }/${dateParts1[2] || "____"}`;
+
+    // const formattedDateStr1 = `${dateParts1[1]}/${dateParts1[0]}/${dateParts1[2]}`;
+
+    const dateStr2 = timeDuration[2];
+    const dateParts2 = dateStr2.split("/");
+    const formattedDateStr2 = `${dateParts2[1] || "__"}/${
+      dateParts2[0] || "__"
+    }/${dateParts2[2] || "____"}`;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
@@ -1172,15 +1204,26 @@ export default class Details extends Component {
               </Text>
             </View>
           </SafeAreaView>
-          <TouchableOpacity
-            style={styles.btnSetting}
-            onPress={this.UpdateFarmPage}
-          >
-            <Image
-              source={require("../assets/img/settings.png")}
-              style={styles.imgSetting}
-            />
-          </TouchableOpacity>
+          <SafeAreaView style={styles.btnSetting}>
+            <TouchableOpacity
+              style={{marginLeft: 20}}
+              onPress={this.HomePage}
+            >
+              <Image
+                source={require("../assets/img/left-arrow.png")}
+                style={styles.imgSetting}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{marginRight: 20}}
+              onPress={this.UpdateFarmPage}
+            >
+              <Image
+                source={require("../assets/img/settings.png")}
+                style={styles.imgSetting}
+              />
+            </TouchableOpacity>
+          </SafeAreaView>
         </LinearGradient>
         <ScrollView
           style={styles.body}
@@ -1199,7 +1242,9 @@ export default class Details extends Component {
                         <View
                           style={[
                             styles.legendDot,
-                            { backgroundColor: `rgba(${colors[rowIndex][legendIndex]}, 1)` },
+                            {
+                              backgroundColor: `rgba(${colors[rowIndex][legendIndex]}, 1)`,
+                            },
                           ]}
                         ></View>
                         <Text style={styles.legendText} key={legendIndex}>
@@ -1231,7 +1276,6 @@ export default class Details extends Component {
               />
               <View style={styles.backgroundCover}></View>
             </View>
-
           </TouchableOpacity>
 
           <View style={styles.dateTimeArea}>
@@ -1241,7 +1285,12 @@ export default class Details extends Component {
                   source={require("../assets/img/calendar.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{ color: "white" }}>{timeDuration[0]}</Text>
+                {i18next.t("dateFormat") === "vi-VI" && (
+                  <Text style={{ color: "white" }}>{timeDuration[0]}</Text>
+                )}
+                {i18next.t("dateFormat") === "en-EN" && (
+                  <Text style={{ color: "white" }}>{formattedDateStr1}</Text>
+                )}
               </View>
               <View style={styles.flex}>
                 <Image
@@ -1257,7 +1306,12 @@ export default class Details extends Component {
                   source={require("../assets/img/calendar.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{ color: "white" }}>{timeDuration[2]}</Text>
+                {i18next.t("dateFormat") === "vi-VI" && (
+                  <Text style={{ color: "white" }}>{timeDuration[2]}</Text>
+                )}
+                {i18next.t("dateFormat") === "en-EN" && (
+                  <Text style={{ color: "white" }}>{formattedDateStr2}</Text>
+                )}
               </View>
               <View style={styles.flex}>
                 <Image
@@ -1381,8 +1435,8 @@ class BtnConnect extends Component {
             backgroundColor: isPressed
               ? "#2D314A"
               : disabled
-                ? "#F0F0F0"
-                : "#2D3A3A",
+              ? "#F0F0F0"
+              : "#2D3A3A",
             marginRight: 15,
           },
         ]}
@@ -1484,13 +1538,14 @@ const styles = StyleSheet.create({
   imgSetting: {
     width: 23,
     height: 23,
-
     tintColor: "white",
   },
   btnSetting: {
+    width: "100%",
     position: "absolute",
-    top: 20,
-    right: 20,
+    top: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   body: {
     flex: 1,

@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   ScrollView,
   Platform,
+  TouchableOpacity,
+  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import i18next from "../services/i18next";
@@ -23,6 +25,15 @@ export default class History extends Component {
       historyList: [],
     };
   }
+
+  // ========== Change Page ========== //
+  DetailPage = () => {
+    console.log("Detail Page");
+    flag = true;
+    this.props.navigation.navigate("Details"); // 'History' là tên của màn hình History trong định tuyến của bạn
+  };
+
+  // ========== Context ========== //
   static contextType = MyContext;
   gethistory = async () => {
     // api/history/{id_esp}/{strtimebegin}/{strtimeend}
@@ -51,11 +62,25 @@ export default class History extends Component {
       return;
     }
     const json = await response.json();
+
+    // Chuyển đổi object equipment thành một mảng các cặp key-value
+    const equipmentArray = Object.entries(json[0]["equipment"]);
+
     Object.values(json[0]["schedule"]).forEach((obj, index) => {
       const history = [];
       const idEquipment = obj["id_equipment"];
 
-      history.push(idEquipment);
+      // Tìm thiết bị tương ứng trong bảng equipment
+      const equipment = equipmentArray.find(
+        ([key, value]) => value.id === idEquipment
+      );
+
+      // Nếu tìm thấy thiết bị, thêm tên của thiết bị vào lịch sử
+      if (equipment) {
+        history.push(equipment[1].name);
+      } else {
+        history.push("Unknown"); // Nếu không tìm thấy thiết bị
+      }
 
       // Tách chuỗi dựa trên ký tự 'T' để lấy phần ngày và thời gian
       const [datePart, timePart] = obj["datetime"].split("T");
@@ -72,15 +97,12 @@ export default class History extends Component {
       };
 
       // const weekday = date.toLocaleString('vi-VN', { weekday: 'long' });
-      // const dateString = i18next.t('date', { date: date });
       const timeString = timePart;
 
-      if(i18next.t("dateFormat") == "en-EN")
-      {
+      if (i18next.t("dateFormat") == "en-EN") {
         const dateString = date.toLocaleDateString("en-EN", options);
         history.push(dateString);
-      }
-      else if (i18next.t("dateFormat") == "vi-VI"){
+      } else if (i18next.t("dateFormat") == "vi-VI") {
         const dateString = date.toLocaleDateString("vi-VI", options);
         history.push(dateString);
       }
@@ -91,7 +113,6 @@ export default class History extends Component {
     });
     // console.log(historyList)
 
-    flag = true;
     this.setState({ historyList: historyList });
   };
 
@@ -245,7 +266,7 @@ export default class History extends Component {
               justifyContent: "space-between",
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "500" }}>{date}</Text>
+            <Text style={{ marginLeft: 3, fontSize: 16, fontWeight: "500" }}>{date}</Text>
             {devices.length > 0 && (
               <Text
                 style={{ marginRight: 10, fontSize: 16, fontWeight: "500" }}
@@ -297,6 +318,17 @@ export default class History extends Component {
           >
             <Text style={styles.title}>{i18next.t("History")}</Text>
           </SafeAreaView>
+          <SafeAreaView style={styles.btnSetting}>
+            <TouchableOpacity
+              style={{ marginLeft: 20 }}
+              onPress={this.DetailPage}
+            >
+              <Image
+                source={require("../assets/img/left-arrow.png")}
+                style={styles.imgSetting}
+              />
+            </TouchableOpacity>
+          </SafeAreaView>
         </LinearGradient>
         <View style={styles.body}>
           <View
@@ -320,7 +352,10 @@ export default class History extends Component {
               <Text style={styles.device}>{i18next.t("Device")}</Text>
               <Text style={styles.time}>{i18next.t("Time")}</Text>
             </View> */}
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView 
+              style={{paddingTop: 26}}
+              showsVerticalScrollIndicator={false}
+            >
               {/* {history} */}
               {renderedHistory}
             </ScrollView>
@@ -372,10 +407,22 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  btnSetting: {
+    width: "100%",
+    position: "absolute",
+    top: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  imgSetting: {
+    width: 23,
+    height: 23,
+    tintColor: "white",
+  },
   body: {
     flex: 1,
     top: -23,
-    paddingTop: 23,
+    // paddingTop: 23,
     backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
