@@ -53,8 +53,9 @@ export default class History extends Component {
     const json = await response.json();
     Object.values(json[0]["schedule"]).forEach((obj, index) => {
       const history = [];
+      const idEquipment = obj["id_equipment"];
 
-      history.push(obj["id_equipment"]);
+      history.push(idEquipment);
 
       // Tách chuỗi dựa trên ký tự 'T' để lấy phần ngày và thời gian
       const [datePart, timePart] = obj["datetime"].split("T");
@@ -71,17 +72,25 @@ export default class History extends Component {
       };
 
       // const weekday = date.toLocaleString('vi-VN', { weekday: 'long' });
-      const dateString = date.toLocaleDateString("vi-VN", options);
+      // const dateString = i18next.t('date', { date: date });
       const timeString = timePart;
 
-      history.push(dateString);
+      if(i18next.t("dateFormat") == "en-EN")
+      {
+        const dateString = date.toLocaleDateString("en-EN", options);
+        history.push(dateString);
+      }
+      else if (i18next.t("dateFormat") == "vi-VI"){
+        const dateString = date.toLocaleDateString("vi-VI", options);
+        history.push(dateString);
+      }
       // history.push()
       history.push(timeString);
 
       historyList.push(history);
     });
     // console.log(historyList)
-    // console.log(historyList)
+
     flag = true;
     this.setState({ historyList: historyList });
   };
@@ -261,7 +270,7 @@ export default class History extends Component {
                     ]}
                   >
                     <View style={styles.dot}></View>
-                    <Text>{devices.time.substring(0,8)}</Text>
+                    <Text>{devices.time.substring(0, 8)}</Text>
                   </View>
                   <Text>{devices.device}: Đã mở</Text>
                 </View>

@@ -85,5 +85,6 @@
   "Save": "Save",
   "seconds": "seconds",
   "Duration": "Duration",
-  "Password minimum 6 characters" : "Password minimum 6 characters"
+  "Password minimum 6 characters" : "Password minimum 6 characters",
+  "dateFormat": "en-EN"
 }
