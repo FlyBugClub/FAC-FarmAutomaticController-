@@ -62,7 +62,6 @@ export default class History extends Component {
       return;
     }
     const json = await response.json();
-
     // Chuyển đổi object equipment thành một mảng các cặp key-value
     const equipmentArray = Object.entries(json[0]["equipment"]);
 
@@ -108,7 +107,7 @@ export default class History extends Component {
       }
       // history.push()
       history.push(timeString);
-
+      history.push(obj["status"]);
       historyList.push(history);
     });
     // console.log(historyList)
@@ -243,6 +242,7 @@ export default class History extends Component {
       const date = item[1]; // Lấy ngày từ mục
       const time = item[2]; // Lấy thời gian từ mục
       const device = item[0]; // Lấy hành động từ mục
+      const status = item[3]; // Lấy trạng thái từ mục
 
       // Tách ngày thành "Thứ Tư" và "17/04/2024"
       const [dayOfWeek, dateString] = date.split(", ");
@@ -253,7 +253,7 @@ export default class History extends Component {
       }
 
       // Thêm mục vào mảng tương ứng với ngày
-      groupedHistory[dateString].push({ dayOfWeek, time, device });
+      groupedHistory[dateString].push({ dayOfWeek, time, device, status });
     });
 
     const renderedHistory = Object.entries(groupedHistory).map(
@@ -293,9 +293,13 @@ export default class History extends Component {
                     <View style={styles.dot}></View>
                     <Text>{devices.time.substring(0, 8)}</Text>
                   </View>
-                  <Text>{devices.device}: Đã mở</Text>
+                  {devices.status === 1 && (
+                    <Text>{devices.device}: {i18next.t("On")}</Text>
+                  )}
+                  {devices.status === 0 && (
+                    <Text>{devices.device}: {i18next.t("Off")}</Text>
+                  )}
                 </View>
-
                 <View style={styles.verticalLine}></View>
               </View>
             ))}
