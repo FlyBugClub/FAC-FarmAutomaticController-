@@ -31,6 +31,8 @@ import * as Notifications from "expo-notifications";
 import { style, thresholdFreedmanDiaconis } from "d3";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import init from "react_native_mqtt";
+import Toast from 'react-native-simple-toast';
+
 
 init({
   size: 10000,
@@ -69,24 +71,7 @@ const chartConfig = {
 };
 const screenWidth = Dimensions.get("window").width;
 
-const colors = [
-  [
-    "0, 119, 182", // Màu cho dataset 0
-    "255, 0, 0",
-    "165, 99, 54",
-
-  ], // Màu cho dataset 1
-  [
-    "134, 65, 244", // Màu cho dataset 2
-    "134, 0, 244",
-    "0, 255, 255",
-  ], // Màu cho dataset 3
-  [
-    "255, 0, 0", // Màu cho dataset 4 (màu đỏ)
-    "0, 255, 0",
-    "255, 0, 255",
-  ], // Màu cho dataset 6 (màu xanh dương)
-];
+const colors = ["0, 119, 182", "255, 0, 0", "165, 99, 54", "134, 65, 244", "255, 0, 244", "0, 255, 255", "255, 0, 0", "0, 255, 0", "255, 0, 255"]
 
 export default class Details extends Component {
   constructor(props) {
@@ -123,6 +108,7 @@ export default class Details extends Component {
       buttonTime: [],
       buttonaddtime: [],
       TimerList: [],
+      thisEquipments: [],
       switchAll: [false, false, false],
       index_time: 0,
       topic: ["hello_topic", "tr6r/cuong"],
@@ -165,8 +151,16 @@ export default class Details extends Component {
   };
 
   AdvanceSettingDevicePage = (index) => {
+    const { Current_Data, thisEquipments } = this.state;
 
-    this.props.navigation.navigate("AdvanceSettingDevice", { index: index }); // 'History' là tên của màn hình History trong định tuyến của bạn
+    if (Current_Data["sensor"]["sl_dht"] == 0 && Current_Data["sensor"]["sl_ph"] == 0) {
+      this.props.navigation.navigate("AdvanceSettingDevice", { index: index, Equipment: [] }); // 'History' là tên của màn hình History trong định tuyến của bạn
+
+    }
+    else if (thisEquipments.length != 0) {
+      this.props.navigation.navigate("AdvanceSettingDevice", { index: index, Equipment: thisEquipments[index] }); // 'History' là tên của màn hình History trong định tuyến của bạn
+
+    }
   };
 
   DateTimePage = () => {
@@ -188,13 +182,17 @@ export default class Details extends Component {
 
     this.getvalueequipment();
     this.connect();
-    
+
     // console.log("daaaaa2")
 
     // Gọi hàm push vào mảng khi component được mount
     this.intervalId = setInterval(() => {
+      const { Current_Data } = this.state
+      if (Current_Data["sensor"]["sl_dht"] != 0 && Current_Data["sensor"]["sl_ph"] != 0) {
+        this.getvalue();
+
+      }
       // console.log(dataArray[1])
-      this.getvalue();
     }, 3000);
   }
 
@@ -233,7 +231,6 @@ export default class Details extends Component {
         console.log(client.isConnected())
         console.log("_____----__________")
         client.connect({
-
           onSuccess: this.onConnect,
           useSSL: false,
           timeout: 3,
@@ -271,7 +268,7 @@ export default class Details extends Component {
       client.onConnectionLost = this.onConnectionLost;
       client.onMessageArrived = this.onMessageArrived;
     }
-    this.setState({topic_flag : 1});
+    this.setState({ topic_flag: 1 });
   };
 
   onConnectionLost = (responseObject) => {
@@ -489,13 +486,13 @@ export default class Details extends Component {
   };
   getvalue = async () => {
     isFunctionRunning = true;
-    const { dataArray } = this.context
-    const { datachart, id_esp, Current_Data } = this.state;
+    const { dataArray, addDataAtIndex } = this.context
+    const { id_esp, Current_Data } = this.state;
     let dataArray2 = Current_Data
 
     // console.log(dataArray2)
     const url = apiUrl + `getsensorvalue/${dataArray2["id_esp"]}`;
-
+    var thisEquipments = [];
     var newlegend = [];
     var newlabels = [];
     var id_check = [];
@@ -504,37 +501,82 @@ export default class Details extends Component {
 
     // console.log(dataArray[1])
     const response = await fetch(url);
+    // console.log(url)
+
+    // console.log(response)
     if (!response.ok) {
-      this.setState({ msg: "error" });
+      // this.setState({ msg: "error" });
+      Toast.show('NetWork Fail!', Toast.LONG)
       return;
     }
-
+    // console.log("cuongoo")
     const json = await response.json();
-    // console.log(id_esp)
+    console.log(json)
     // console.log(dataArray[1]["id_esp"])
-
     if (id_esp !== dataArray[1]["id_esp"]) {
-
-      // Nếu component đã bị hủy, dừng xử lý
       dataArray2 = Current_Data
-      // return;
+      addDataAtIndex(dataArray2, 1);
     }
-    // console.log(dataArray2)
+
     const keys = Object.keys(json[0]);
-
-
+    console.log(keys.length)
     if (keys.length === dataArray2["bc"]["sl"]) {
-
+      console.log("!")
+      var data_value = []
+      var datelist = [];
       for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
-        if (json[0]["combo" + i.toString()]["DHT"].hasOwnProperty("id") && json[0]["combo" + i.toString()]["DHT"] !== undefined) {
+        let valuehumid = [];
+        let valueph = [];
+        let valuetemp = [];
+        let thisEquipment = [];
+        if (json[0]["combo" + i.toString()].hasOwnProperty("DHT") && json[0]["combo" + i.toString()]["DHT"] !== undefined) {
           id_check.push(json[0]["combo" + i.toString()]["DHT"]["id"]);
-          id_check.push(json[0]["combo" + i.toString()]["PH"]["id"]);
-        }
-      }
-      // console.log(id_check)
+          thisEquipment.push(json[0]["combo" + i.toString()]["DHT"]["id"])
+          for (let j = 0; j < 6; j++) {
+            if (json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())) {
+              datelist.push(json[0]["combo" + i.toString()]["DHT"][j.toString()]["datetime"]);
+              valuehumid.push(json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_humid"]);
+              valuetemp.push(json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_temp"]);
+            }
+            else {
+              valuehumid.push(0);
 
-      let sum_sensor =
-        dataArray2["sensor"]["sl_dht"] + dataArray2["sensor"]["sl_ph"];
+              valuetemp.push(0);
+            }
+            if (j == 5) {
+              data_value.push(valuetemp)
+              data_value.push(valuehumid)
+            }
+          }
+        }
+
+        if (json[0]["combo" + i.toString()].hasOwnProperty("PH") && json[0]["combo" + i.toString()]["PH"] !== undefined) {
+          id_check.push(json[0]["combo" + i.toString()]["PH"]["id"]);
+          thisEquipment.push(json[0]["combo" + i.toString()]["PH"]["id"])
+          for (let j = 0; j < 6; j++) {
+
+            if (json[0]["combo" + i.toString()]["PH"].hasOwnProperty(j.toString())) {
+              datelist.push(json[0]["combo" + i.toString()]["PH"][j.toString()]["datetime"]);
+              valueph.push(json[0]["combo" + i.toString()]["PH"][j.toString()]["value"]);
+            }
+            else {
+              valueph.push(0);
+            }
+
+            if (j == 5) {
+              data_value.push(valueph)
+            }
+          }
+
+        }
+
+
+        thisEquipments.push(thisEquipment)
+        this.setState({ thisEquipments: thisEquipments })
+      }
+      // console.log("hehehe")
+
+      let sum_sensor = dataArray2["sensor"]["sl_dht"] + dataArray2["sensor"]["sl_ph"];
       let jsonObject = {};
       for (let i = 0; i < sum_sensor; i++) {
         if (dataArray2["sensor"][i].hasOwnProperty("name_dht")) {
@@ -547,58 +589,69 @@ export default class Details extends Component {
           jsonObject[key] = value;
         }
       }
-
       newlegend = id_check.filter(
         (item, index) => id_check.indexOf(item) === index
       );
 
       for (let i = 0; i < newlegend.length; i++) {
-        // Kiểm tra xem key trong jsonObject có tồn tại hay không
         if (jsonObject && jsonObject.hasOwnProperty(newlegend[i])) {
+          if (newlegend[i].match(/[a-zA-Z]+/)[0] === "DHT") {
+            newlegend.splice(i + 1, 0, jsonObject[newlegend[i]] + "_Humid", jsonObject[newlegend[i]] + "_Temp");
+          }
           newlegend[i] = jsonObject[newlegend[i]];
         }
+      }
 
-        // Kiểm tra xem index hiện tại là 0 hoặc 2 (0-based index)
-
-        if (i === 0 || i === 3) {
-          // Lưu phần tử hiện tại
-          const currentElement = newlegend[i];
-
-          // Thêm "_Humid" và "_Temp" vào sau phần tử hiện tại
-          newlegend.splice(
-            i + 1,
-            0,
-            currentElement + "_Humid",
-            currentElement + "_Temp"
-          );
-
-          // Xóa phần tử ban đầu tại vị trí hiện tại
-          newlegend.splice(i, 1);
-
-          // Sau khi thêm 2 phần tử mới vào mảng và xóa phần tử ban đầu, không cần tăng giá trị i lên thêm 2
-          // Vì phần tử hiện tại đã bị xóa và các phần tử mới đã được thêm vào, do đó `i` vẫn đúng.
+      // console.log(newlegend)
+      for (let i = 0; i < newlegend.length; i++) {
+        if (newlegend[i].includes("_Humid")) {
+          newlegend.splice((i - 1), 1);
         }
+      }
+
+      for (let i = 0; i < newlegend.length; i++) {
+        let color = colors[i] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
+        // console.log()
+        // Thêm đối tượng dataset vào mảng
+        newdatasets.push({
+          data: data_value[i],
+          color: (opacity = 1) => `rgba(${color}, ${opacity})`,
+          strokeWidth: 2, // optional
+        });
       }
       // console.log(newlegend)
       // console.log("_______________________________")
 
-      var datelist = [];
-      for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
-        for (let j = 0; j < 6; j++) {
-          if (
-            json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())
-            && json[0]["combo" + i.toString()]["DHT"] !== undefined
-          ) {
-            datelist.push(
-              json[0]["combo" + i.toString()]["DHT"][j.toString()]["datetime"]
-            );
-            datelist.push(
-              json[0]["combo" + i.toString()]["PH"][j.toString()]["datetime"]
-            );
-          }
-        }
-      }
 
+      // for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
+      //   for (let j = 0; j < 6; j++) {
+      //     if (json[0]["combo" + i.toString()].hasOwnProperty("DHT")) {
+      //       if (json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString()) && json[0]["combo" + i.toString()]["DHT"] !== undefined) {
+      //         datelist.push(json[0]["combo" + i.toString()]["DHT"][j.toString()]["datetime"]);
+      //         valuehumid.push(json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_humid"]);
+      //         valuetemp.push(json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_temp"]);
+      //       }
+      //       else 
+      //       {
+      //       valuehumid.push(0);
+
+      //         valuetemp.push(0);
+      //       }
+      //     }
+
+      //     if (json[0]["combo" + i.toString()].hasOwnProperty("PH")) {
+      //       if (json[0]["combo" + i.toString()]["PH"].hasOwnProperty(j.toString()) && json[0]["combo" + i.toString()]["PH"] !== undefined) {
+      //         datelist.push(json[0]["combo" + i.toString()]["PH"][j.toString()]["datetime"]);
+      //         valueph.push(json[0]["combo" + i.toString()]["PH"][j.toString()]["value"]);
+      //       }
+      //       else
+      //       {valueph.push(0);
+      //       }
+      //     }
+      //   }
+
+      // }
+      // console.log("cuong");
       // console.log(datelist)
       datelist.sort((a, b) => new Date(b) - new Date(a));
       let dateTimebegin = new Date(datelist[0]);
@@ -610,14 +663,14 @@ export default class Details extends Component {
       let secondsbe = dateTimebegin.getSeconds();
       let datebe = dateTimebegin.getDate();
       let monthbe = (dateTimebegin.getMonth() + 1).toString().padStart(2, "0");
-      let yearbe = dateTimebegin.getFullYear();
+      let yearbe = dateTimebegin.getFullYear() % 100;
 
       let hoursen = dateTimeend.getHours();
       let minutesen = dateTimeend.getMinutes();
       let secondsen = dateTimeend.getSeconds();
       let dateen = dateTimebegin.getDate();
       let monthen = (dateTimebegin.getMonth() + 1).toString().padStart(2, "0");
-      let yearen = dateTimebegin.getFullYear();
+      let yearen = dateTimebegin.getFullYear() % 100;
       // console.log(`Thời gian: ${hours}:${minutes}:${seconds}`);
 
       timeDuration.push(`${dateen}/${monthen}/${yearen}`);
@@ -635,61 +688,63 @@ export default class Details extends Component {
 
 
       // console.log(sum_sensor/2)
-      for (let i = 0; i < sum_sensor / 2; i++) {
-        let valuehumid = [];
-        let valueph = [];
-        let valuetemp = [];
-        // console.log()
-        // Sinh dữ liệu ngẫu nhiên cho mỗi dataset
-        for (let j = 0; j < 6; j++) {
-          // console.log(json[0]["combo"+i.toString()]["sensor"]["dht"+j.toString()])
+      // for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
+      //   let valuehumid = [];
+      //   let valueph = [];
+      //   let valuetemp = [];
+      //   // console.log()
+      //   // Sinh dữ liệu ngẫu nhiên cho mỗi dataset
+      //   for (let j = 0; j < 6; j++) {
+      //     // console.log(json[0]["combo"+i.toString()]["sensor"]["dht"+j.toString()])
+      //     if () {
+      //       if (
+      //         json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())
+      //         && json[0]["combo" + i.toString()]["DHT"] !== undefined
+      //       ) {
+      //         // console.log(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"])
+      //         valuehumid.push(
+      //           json[0]["combo" + i.toString()]["DHT"][j.toString()][
+      //           "value_humid"
+      //           ]
+      //         );
+      //         valueph.push(
+      //           json[0]["combo" + i.toString()]["PH"][j.toString()]["value"]
+      //         );
+      //         valuetemp.push(
+      //           json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_temp"]
+      //         );
+      //       } else {
+      //         valuehumid.push(0);
+      //         valueph.push(0);
+      //         valuetemp.push(0);
+      //       }
+      //     }
+      //   }
 
-          if (
-            json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())
-            && json[0]["combo" + i.toString()]["DHT"] !== undefined
-          ) {
-            // console.log(json[0]["combo"+i.toString()]["DHT"][j.toString()]["value"])
-            valuehumid.push(
-              json[0]["combo" + i.toString()]["DHT"][j.toString()][
-              "value_humid"
-              ]
-            );
-            valueph.push(
-              json[0]["combo" + i.toString()]["PH"][j.toString()]["value"]
-            );
-            valuetemp.push(
-              json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_temp"]
-            );
-          } else {
-            valuehumid.push(0);
-            valueph.push(0);
-            valuetemp.push(0);
-          }
-        }
+      //   // Chọn màu sắc từ mảng colors
+      //   let colorhumid = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
+      //   let colortemp = colors[i][1] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
+      //   let colorph = colors[i][2] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
 
-        // Chọn màu sắc từ mảng colors
-        let colorhumid = colors[i][0] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
-        let colortemp = colors[i][1] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
-        let colorph = colors[i][2] || "0, 0, 0"; // Màu mặc định nếu không có màu nào phù hợp
-
-        // Thêm đối tượng dataset vào mảng
-        newdatasets.push({
-          data: valuehumid,
-          color: (opacity = 1) => `rgba(${colorhumid}, ${opacity})`,
-          strokeWidth: 2, // optional
-        });
-        newdatasets.push({
-          data: valuetemp,
-          color: (opacity = 1) => `rgba(${colortemp}, ${opacity})`,
-          strokeWidth: 2, // optional
-        });
-        newdatasets.push({
-          data: valueph,
-          color: (opacity = 1) => `rgba(${colorph}, ${opacity})`,
-          strokeWidth: 2, // optional
-        });
-      }
-
+      //   // Thêm đối tượng dataset vào mảng
+      //   newdatasets.push({
+      //     data: valuehumid,
+      //     color: (opacity = 1) => `rgba(${colorhumid}, ${opacity})`,
+      //     strokeWidth: 2, // optional
+      //   });
+      //   newdatasets.push({
+      //     data: valuetemp,
+      //     color: (opacity = 1) => `rgba(${colortemp}, ${opacity})`,
+      //     strokeWidth: 2, // optional
+      //   });
+      //   newdatasets.push({
+      //     data: valueph,
+      //     color: (opacity = 1) => `rgba(${colorph}, ${opacity})`,
+      //     strokeWidth: 2, // optional
+      //   });
+      // }
+      console.log(newlegend)
+      console.log("_________________")
       var reversedArray = newlabels.reverse();
       if (
         reversedArray[0] === "NaN:NaN:NaN" &&
@@ -715,6 +770,7 @@ export default class Details extends Component {
         this.setState({ timeDuration: timeDuration });
 
         this.setState({ datachart: newData });
+        console.log(newData)
       }
 
       isFunctionRunning = false;
@@ -771,10 +827,26 @@ export default class Details extends Component {
       var message = new Paho.MQTT.Message(jsonString);
       message.destinationName = this.state.topic[0];
       client.send(message);
+      this.SendLastStatus(Data,dataArray[1]["id_esp"]);
       // console.log("oks")
     }
   };
-
+  SendLastStatus = async (Message,id_esp) => {
+    const url = apiUrl + "laststatus"
+    let result = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "id_esp": id_esp,
+        "json_esp": Message
+      }),
+    });
+    result = await result.json();
+    console.log(result)
+  }
   onMessageArrived = (message) => {
     const slidebarvalue = [];
     const { Current_Data } = this.state;
@@ -783,58 +855,58 @@ export default class Details extends Component {
     const value = [];
     const newSwitchStates = [];
     // console.log(topic)
-      
-      const jsonData = JSON.parse(message.payloadString);
 
-      if (
-        jsonData["id_esp"] == Current_Data["id_esp"] &&
-        client.isConnected() == true && message.topic === this.state.topic[1]
-      ) {
-        // console.log(message.payloadString)
-        let count = 0;
-        for (const key in jsonData) {
-          const SwitchStates = [];
-          if (key.startsWith("equipment")) {
-            const data = jsonData[key];
-            // console.log(data["equipment"+count.toString()]["expect_value"])
-            slidebarvalue.push(data["equipment"+count.toString()]["expect_value"]);
-            value.push(data["equipment"+count.toString()]["expect_value"]);
+    const jsonData = JSON.parse(message.payloadString);
 
-            if (data["equipment"+count.toString()]["automode"] === "0" && data["equipment"+count.toString()]["status"] === 1) {
-              SwitchStates.push(true);
-              SwitchStates.push(false);
-              SwitchStates.push(false);
-            } else if (data["equipment"+count.toString()]["automode"] === "1" && data["equipment"+count.toString()]["status"] === 1) {
-              SwitchStates.push(true);
-              SwitchStates.push(true);
-              SwitchStates.push(false);
-            } else if (data["equipment"+count.toString()]["automode"] === "2" && data["equipment"+count.toString()]["status"] === 1) {
-              SwitchStates.push(true);
-              SwitchStates.push(false);
-              SwitchStates.push(true);
-            } else if (data["equipment"+count.toString()]["automode"] === "0") {
-              SwitchStates.push(false);
-              SwitchStates.push(false);
-              SwitchStates.push(false);
-            } else if (data["equipment"+count.toString()]["automode"] === "1") {
-              SwitchStates.push(false);
-              SwitchStates.push(true);
-              SwitchStates.push(false);
-            } else if (data["equipment"+count.toString()]["automode"] === "2") {
-              SwitchStates.push(false);
-              SwitchStates.push(false);
-              SwitchStates.push(true);
-            }
-            newSwitchStates.push(SwitchStates);
+    if (
+      jsonData["id_esp"] == Current_Data["id_esp"] &&
+      client.isConnected() == true && message.topic === this.state.topic[1]
+    ) {
+      // console.log(message.payloadString)
+      let count = 0;
+      for (const key in jsonData) {
+        const SwitchStates = [];
+        if (key.startsWith("equipment")) {
+          const data = jsonData[key];
+          // console.log(data["equipment"+count.toString()]["expect_value"])
+          slidebarvalue.push(data["equipment" + count.toString()]["expect_value"]);
+          value.push(data["equipment" + count.toString()]["expect_value"]);
 
-            count++;
+          if (data["equipment" + count.toString()]["automode"] === "0" && data["equipment" + count.toString()]["status"] === 1) {
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+          } else if (data["equipment" + count.toString()]["automode"] === "1" && data["equipment" + count.toString()]["status"] === 1) {
+            SwitchStates.push(true);
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+          } else if (data["equipment" + count.toString()]["automode"] === "2" && data["equipment" + count.toString()]["status"] === 1) {
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+            SwitchStates.push(true);
+          } else if (data["equipment" + count.toString()]["automode"] === "0") {
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+          } else if (data["equipment" + count.toString()]["automode"] === "1") {
+            SwitchStates.push(false);
+            SwitchStates.push(true);
+            SwitchStates.push(false);
+          } else if (data["equipment" + count.toString()]["automode"] === "2") {
+            SwitchStates.push(false);
+            SwitchStates.push(false);
+            SwitchStates.push(true);
           }
+          newSwitchStates.push(SwitchStates);
+
+          count++;
         }
-        this.setState({ sliderValue: value });
-        this.setState({ slidebar: slidebarvalue });
-        this.setState({ switchStates: newSwitchStates });
       }
-    
+      this.setState({ sliderValue: value });
+      this.setState({ slidebar: slidebarvalue });
+      this.setState({ switchStates: newSwitchStates });
+    }
+
     // console.log(typeof message)
     // console.log(message.payloadString);
 
@@ -847,7 +919,7 @@ export default class Details extends Component {
 
     const response = await fetch(url);
     if (!response.ok) {
-      this.setState({ msg: "error" });
+      Toast.show('NetWork Fail!', Toast.SHORT)
       return;
     }
     const json = await response.json();
@@ -860,6 +932,7 @@ export default class Details extends Component {
 
     const buttonTime = [];
     const modalVisible = [];
+    console.log(dataArray[1])
     for (let i = 0; i < dataArray[1]["bc"]["sl"]; i++) {
       const newSwitchStates2 = [];
       const time = [];
@@ -898,8 +971,8 @@ export default class Details extends Component {
     this.setState({ timelist: gettimelist });
     this.setState({ sliderValue: value });
     this.setState({ slidebar: slidebarvalue });
-    // flag = true;
     this.setState({ switchStates: newSwitchStates });
+    console.log("get equipment ok")
   };
 
   //Picker
@@ -914,7 +987,11 @@ export default class Details extends Component {
     this.setState({ refresh: true });
     setTimeout(() => {
       this.setState({ refresh: false });
-      this.getvalue();
+      this.getvalueequipment();
+      const { Current_Data } = this.state
+      if (Current_Data["sensor"]["sl_dht"] != 0 && Current_Data["sensor"]["sl_ph"] != 0) {
+        this.getvalue();
+      }
     }, 1000);
   };
 
@@ -924,9 +1001,10 @@ export default class Details extends Component {
     const legends = this.state.datachart.legend;
 
     //Switch
-    const { switchStates, Current_Data,topic_flag } = this.state;
+    const { switchStates, Current_Data, topic_flag, thisEquipments } = this.state;
     const { datachart } = this.state;
-
+    let count = 0;
+    // console.log(thisEquipments)
     // ===== Setting Label Chart ===== //
     // Chia mảng legend thành các mảng con mỗi khi cần xuống dòng
     const chunkedLegends = [];
@@ -960,6 +1038,7 @@ export default class Details extends Component {
       switchStates.length !== 0 &&
       topic_flag !== 0
     ) {
+
       //   flag = false;
       [...Array(dataArray[1]["bc"]["sl"])].forEach((_, index) => {
         // console.log(showPicker)
@@ -1189,28 +1268,35 @@ export default class Details extends Component {
             <RefreshControl refreshing={refresh} onRefresh={this.pullMe} />
           }
         >
+
           <TouchableOpacity onPress={this.HistoryPage}>
-            {chunkedLegends.map((legendRow, rowIndex) => (
-              <View style={styles.flex} key={rowIndex}>
-                <View key={rowIndex} style={styles.legendWidth}>
-                  <View style={styles.legendSpace}>
-                    {legendRow.map((legend, legendIndex) => (
-                      <View style={styles.legendPart}>
-                        <View
-                          style={[
-                            styles.legendDot,
-                            { backgroundColor: `rgba(${colors[rowIndex][legendIndex]}, 1)` },
-                          ]}
-                        ></View>
-                        <Text style={styles.legendText} key={legendIndex}>
-                          {legend}
-                        </Text>
-                      </View>
-                    ))}
+            {chunkedLegends.map((legendRow, rowIndex) => {
+              return (
+                <View style={styles.flex} key={rowIndex}>
+                  <View key={rowIndex} style={styles.legendWidth}>
+                    <View style={styles.legendSpace}>
+                      {legendRow.map((legend, legendIndex) => {
+                        count++;
+                        return (
+                          <View style={styles.legendPart}>
+                            <View
+                              style={[
+                                styles.legendDot,
+                                { backgroundColor: `rgba(${colors[count - 1]}, 1)` },
+                              ]}
+                            ></View>
+                            <Text style={styles.legendText} key={legendIndex}>
+                              {legend}
+                            </Text>
+                          </View>
+                        )
+                      })}
+                    </View>
                   </View>
                 </View>
-              </View>
-            ))}
+              )
+              c
+            })}
             <View>
               <LineChart
                 data={{

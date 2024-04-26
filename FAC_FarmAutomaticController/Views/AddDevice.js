@@ -12,7 +12,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-
+import Toast from 'react-native-simple-toast';
 import { Picker } from "@react-native-picker/picker";
 import { LinearGradient } from "expo-linear-gradient";
 import i18next, { languageResources } from "../services/i18next";
@@ -34,26 +34,65 @@ export default class AddDevice extends Component {
     ph_name: "",
     bc_name: "",
     selectedLanguage: "",
+    index: "",
     category: [],
-    dht_id: "",
-    ph_id: "",
-    bc_id: "",
+    value: [],
+    key: [],
+    equipment_name: []
+    // dht_id: "",
+    // ph_id: "",
+    // bc_id: "",
   };
 
-  async onValueChangeCat(value) {
-    this.setState({ selecedCat: value });
+  async onValueChangeCat(value, index) {
+    this.setState({ selecedCat: value }, () => {
+      this.setState({ index: index }, () => {
+        this.getName();
+      });
+    });
   }
 
   static contextType = MyContext;
-
-  componentDidMount() {
+  async componentDidMount() {
     const { route } = this.props;
-    const { id_bc, id_dht, id_ph } = route.params || {};
-
-    this.setState({ bc_id: id_bc });
-    this.setState({ dht_id: id_dht });
-    this.setState({ ph_id: id_ph });
+    const { key, value } = route.params || {};
+    const { dataArray } = this.context;
+    this.setState({ selecedCat: dataArray[0]["equipment"]["0"]["name"] });
+    this.setState({ value: value });
+    this.setState({ key: key });
+    // Toast.show('This is a long toast.', Toast.LONG);
+    // this.setState({ ph_id: id_ph });
     this.getFarm();
+    this.getName();
+  }
+
+
+  getName = async () => {
+    const { key, value, index } = this.state;
+    const { dataArray } = this.context;
+    const equipment_name = [];
+    console.log(index)
+    if (dataArray.length > 0) {
+      for (let i = 1; i < key.length; i++) {
+        // console.log(key[i])
+        if (key[i] === "id_bc") {
+          // console.log("cuong")
+          const sl = dataArray[0]["equipment"][index.toString()]["bc"]["sl"]
+          equipment_name.push("Pump" + (sl + 1).toString())
+        }
+        else if (key[i] === "id_dht") {
+          // console.log("cuong")
+          const sl = dataArray[0]["equipment"][index.toString()]["sensor"]["sl_dht"]
+          equipment_name.push("DHT" + (sl + 1).toString())
+        }
+        else if (key[i] === "id_ph") {
+          // console.log("cuong")
+          const sl = dataArray[0]["equipment"][index.toString()]["sensor"]["sl_ph"]
+          equipment_name.push("PH" + (sl + 1).toString())
+        }
+      }
+    }
+    this.setState({ equipment_name: equipment_name })
   }
   getFarm = () => {
     const { dataArray } = this.context;
@@ -70,86 +109,98 @@ export default class AddDevice extends Component {
   // console.log(dataArray[0])
   createEquip = async () => {
     // Hiển thị loading
+    const { dataArray } = this.context;
+    const { value, selecedCat, key, index, equipment_name } = this.state;
+    let count = 0;
+    let id_sensorinbc = "";
+    // console.log(equipment_name)
+    for (let i = 0; i < equipment_name.length; i++) {
+      if (equipment_name[i] !== "") {
+        if (key[i + 1] === "id_dht" || key[i + 1] === "id_ph") {
+          id_sensorinbc += value[i+1];
+
+          // Kiểm tra nếu không phải phần tử cuối cùng thì thêm dấu '-'
+          if (i !== equipment_name.length - 1) {
+            id_sensorinbc += "-";
+          }
+        }
+        count++;
+      }
+      else {
+        if (key[i + 1] === "id_bc") {
+          Toast.show('Invalid Pump Name', Toast.LONG)
+        }
+        else if (key[i + 1] === "id_dht") {
+          Toast.show('Invalid DHT Name', Toast.LONG)
+        }
+        else if (key[i + 1] === "id_ph") {
+          Toast.show('Invalid PH Name', Toast.LONG)
+        }
+      }
+    }
     this.setState({ isLoading: true });
 
-    const { dataArray } = this.context;
-    const { dht_name, ph_name, bc_name, selecedCat, ph_id, dht_id, bc_id } =
-      this.state;
-    // console.log(selecedCat)
-    if (dht_id !== "") {
-      if (selecedCat !== "") {
-        this.setState({ msg: "" });
-        if (bc_name !== "") {
-          this.setState({ msg: "" });
-          if (dht_name !== "") {
-            this.setState({ msg: "" });
-            if (ph_name !== "") {
-              this.setState({ msg: "" });
-              var id_esp = "";
-              Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
-                const farm = {};
-                if (obj["name"] === selecedCat) {
-                  id_esp = obj["id_esp"];
-                }
-              });
-              const body = {
-                id_esp: id_esp,
-                id_sensor: dht_id,
-                name_sensor: dht_name,
-                expectedValues: 50.0,
-                min_max_values: "60/90",
-              };
-              var result_dht = await this.postfunction("sensormanager", body);
-              // console.log(result_dht)
-              if (result_dht === "success") {
-                const body_ph = {
-                  id_esp: id_esp,
-                  id_sensor: ph_id,
-                  name_sensor: ph_name,
-                  expectedValues: 50.0,
-                  min_max_values: "5/10",
-                };
-                var result_ph = await this.postfunction(
-                  "sensormanager",
-                  body_ph
-                );
-                console.log(result_ph);
-                if (result_ph === "success") {
-                  const body_bc = {
-                    id_esp: id_esp,
-                    id_equipment: bc_id,
-                    name_equipment: bc_name,
-                    automode: 0,
-                    id_sensor: dht_id + "-" + ph_id,
-                  };
-                  var result_bc = await this.postfunction(
-                    "equidmentmanager",
-                    body_bc
-                  );
-                  console.log(result_bc);
-                  if (result_bc === "success") {
-                    this.props.navigation.navigate("Home");
-                  }
-                }
-              }
-              // if (result) {
-              //   if (result == "Success") {
-              //     console.log("ok")
-              //
+    if (count === equipment_name.length) {
+      var id_esp = "";
 
-              //   } else if (result["Message"] == "sensor is already usee") {
-              //     this.setState({ msg: "this equipment is already use" });
-              //   } else this.setState({ msg: "some thing is wrong" });
-              // }
-
-              this.setState({ isLoading: false });
-            } else
-              this.setState({ msg: "The ph sensor has not yet been named" });
-          } else
-            this.setState({ msg: "The dht sensor has not yet been named" });
-        } else this.setState({ msg: "The pump has not yet been named" });
-      } else this.setState({ msg: "choose farm" });
-    } else this.setState({ msg: "scan qr code again" });
+      Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
+        const farm = {};
+        if (obj["name"] === selecedCat) {
+          id_esp = obj["id_esp"];
+        }
+      });
+      let  count_success = 0;
+      for (let i = 0; i < equipment_name.length; i++) {
+        if (key[i + 1] === "id_bc") {
+          const body_bc = {
+            id_esp: id_esp,
+            id_equipment: value[i + 1],
+            name_equipment: equipment_name[i],
+            automode: 0,
+            id_sensor: id_sensorinbc,
+          };
+          // console.log(body_bc)
+          var result_bc = await this.postfunction(
+            "equidmentmanager",
+            body_bc
+          );
+          if (result_bc === "success") {
+            count_success++;
+          }
+          else{
+          this.setState({ isLoading: false });
+          }
+        }
+        else if (key[i + 1] === "id_dht" || key[i + 1] === "id_ph") {
+          const body = {
+            id_esp: id_esp,
+            id_sensor: value[i+1],
+            name_sensor: equipment_name[i],
+            expectedValues: 50.0,
+            min_max_values: "60/90",
+            status: false,
+          };
+          console.log(body)
+          var result_sensor = await this.postfunction(
+            "sensormanager",
+            body
+          );
+          if (result_sensor === "success") {
+            count_success++;
+          }
+          else this.setState({ isLoading: false });
+        }
+      }
+      if (count_success === equipment_name.length)
+      {
+            this.props.navigation.navigate("Home");
+      }
+      else 
+      {
+        this.setState({ isLoading: false });
+        Toast.show('This QR code has already used', Toast.LONG)
+      }
+    }
   };
 
   postfunction = async (route, body) => {
@@ -173,10 +224,35 @@ export default class AddDevice extends Component {
 
     return result;
   };
-
+  onChange = (text, index) => {
+    this.setState(prevState => {
+      const updatedEquipmentName = [...prevState.equipment_name];
+      updatedEquipmentName[index] = text;
+      return { equipment_name: updatedEquipmentName };
+    });
+  }
   render() {
-    const { isLoading } = this.state;
+    const { isLoading, key, value, equipment_name } = this.state;
+    // const { dataArray } = this.context;
 
+    const equip = [];
+
+    if (key.length !== 0 && value.length !== 0 && equipment_name.length !== 0) {
+      [...Array(key.length - 1)].forEach((_, index) => {
+
+        equip.push(
+          <TextInput
+            key={index}
+            maxLength={19}
+            value={equipment_name[index]}
+            // placeholder={i18next.t((equipment_name[index]).toString())}
+            style={styles.input}
+            onChangeText={(text) => this.onChange(text, index)}
+          />
+        )
+      });
+
+    }
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#2BA84A" />
@@ -207,34 +283,19 @@ export default class AddDevice extends Component {
                 </TouchableOpacity>
               </View>
               <View style={styles.containerContent}>
-                <TextInput
-                  maxLength={19}
-                  placeholder={i18next.t("pump name")}
-                  style={styles.input}
-                  onChangeText={(text) => this.setState({ bc_name: text })}
-                />
-                <TextInput
-                  maxLength={19}
-                  placeholder={i18next.t("humid sensor name")}
-                  style={styles.input}
-                  onChangeText={(text) => this.setState({ dht_name: text })}
-                />
-                <TextInput
-                  maxLength={19}
-                  placeholder={i18next.t("ph sensor name")}
-                  style={styles.input}
-                  onChangeText={(text) => this.setState({ ph_name: text })}
-                />
-                <View style={styles.optionArea}>
+
+                {equip}
+                <View style={styles.optionArea} key="cuong">
                   <View>
-                    <Text style={{ color: "" }}>{i18next.t("Farm house")}</Text>
+                    <Text style={{ color: "#333" }}>{i18next.t("Farm house")}</Text>
                   </View>
                   <View>
                     <Picker
                       style={{ width: 220 }}
                       mode="dropdown"
                       selectedValue={this.state.selecedCat}
-                      onValueChange={this.onValueChangeCat.bind(this)}
+                      onValueChange={(value, index) => this.onValueChangeCat(value, index)}
+                    // onValueChange={this.onValueChangeCat.bind(this)}
                     >
                       {this.state.category.map((item, index) => (
                         <Picker.Item

@@ -25,6 +25,7 @@ import i18next from "../services/i18next";
 import * as Notifications from "expo-notifications";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
+import Toast from 'react-native-simple-toast';
 
 export default class AdvanceSettingDevice extends Component {
   constructor(props) {
@@ -33,11 +34,9 @@ export default class AdvanceSettingDevice extends Component {
       connect: "connected",
       showSetting: "Setting",
       showPicker: false,
-      offset :"",
-      name_equipment:"",
-      name_dht:"",
-      name_ph:"",
-      msg : "",
+      offset: "",
+      listEquipment: [],
+      msg: "",
       modalVisible: false,
       index: "",
       selectedFarm: "",
@@ -50,35 +49,62 @@ export default class AdvanceSettingDevice extends Component {
   // ============== Bottom Sheet ============== //
   // handleClosePress = () => this.bottomSheetRef.current?.close();
   // handleOpenPress = () => this.bottomSheetRef.current?.expand();
+
   static contextType = MyContext;
-  
-   async componentDidMount() {
+
+  async componentDidMount() {
     const { route } = this.props;
-    const { index} = route.params || {};
+    const { index,Equipment } = route.params || {};
     const { dataArray } = this.context;
+    const sensorArray = Object.values(dataArray[1]["sensor"]);
+  
+    const listEquipment = [];
+    console.log(Equipment)
+    console.log("___________________")
+
+    let flag_id = 0;
+    listEquipment.push(dataArray[1]["bc"][index]["name_bc"])
+    sensorArray.forEach(item => {
+      Object.keys(item).forEach(key => {
+        
+        if (flag_id == 1)
+        {
+          flag_id = 0;
+          listEquipment.push(item[key])
+        }
+        if (Equipment.includes(item[key])) {
+          // namesArray.push(item[key]);
+          flag_id = 1;
+          
+        }
+      });
+    });
+
+    // console.log(namesArray)
+
     const url = apiUrl + `getoffset/${dataArray[1]["bc"][index]["id_bc"]}`;
     const response = await fetch(url);
-    // console.log(url)
-    // console.log("ok")
+
     if (!response.ok) {
-      console.warn("network fail!");
+      Toast.show('NetWork Fail!', Toast.LONG)
+
       return;
     }
-    // console.log(url)
-    const json = await response.json();
-    if (dataArray[1]["bc"]["sl"] === 1)
-    {
-      this.setState({name_equipment : dataArray[1]["bc"][index]["name_bc"]})
-      this.setState({name_dht : dataArray[1]["sensor"][index]["name_dht"]})
-      this.setState({name_ph : dataArray[1]["sensor"][(parseInt(index, 10)+1).toString()]["name_ph"]})
-    }
-    else if (dataArray[1]["bc"]["sl"] === 2)
-    {
-      this.setState({name_equipment : dataArray[1]["bc"][index]["name_bc"]})
-      this.setState({name_dht : dataArray[1]["sensor"][index]["name_dht"]})
-      this.setState({name_ph : dataArray[1]["sensor"][(parseInt(index, 10)+2).toString()]["name_ph"]})
-    }
     
+    // console.log(dataArray[1])
+    const json = await response.json();
+    
+    // if (dataArray[1]["bc"]["sl"] === 1) {
+    //   this.setState({ name_equipment: dataArray[1]["bc"][index]["name_bc"] })
+    //   this.setState({ name_dht: dataArray[1]["sensor"][index]["name_dht"] })
+    //   this.setState({ name_ph: dataArray[1]["sensor"][(parseInt(index, 10) + 1).toString()]["name_ph"] })
+    // }
+    // else if (dataArray[1]["bc"]["sl"] === 2) {
+    //   this.setState({ name_equipment: dataArray[1]["bc"][index]["name_bc"] })
+    //   this.setState({ name_dht: dataArray[1]["sensor"][index]["name_dht"] })
+    //   this.setState({ name_ph: dataArray[1]["sensor"][(parseInt(index, 10) + 2).toString()]["name_ph"] })
+    // }
+
     const Farmlist = [];
     Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
       const farm = {};
@@ -87,6 +113,7 @@ export default class AdvanceSettingDevice extends Component {
       Farmlist.push(farm);
       // console.log(obj["name"])
     });
+    this.setState({ listEquipment: listEquipment });
     this.setState({ offset: (json["times_offset"]).toString() });
     this.setState({ index: index });
     this.setState({ selectedFarm: Farmlist[0].itemName });
@@ -117,45 +144,39 @@ export default class AdvanceSettingDevice extends Component {
   // ============== Flatlist Change Farm ============== //
   // Hàm xử lý khi chọn một farm
   handleFarmSelect = (farm) => {
-    this.setState({ selectedFarm: farm });  
+    this.setState({ selectedFarm: farm });
   };
 
   delay(ms) {
     return new Promise((resolve) => {
-        setTimeout(resolve, ms);
+      setTimeout(resolve, ms);
     });
-}
-  UpdateDevice = async () =>
-  {
-    const { dataArray ,addDataAtIndex} = this.context;
-    const {name_equipment, name_dht,name_ph,selectedFarm,index,Farm} = this.state
-    if (name_equipment !== "")
-    {
-      this.setState({msg:""})
-      if (name_dht !== "")
+  }
+  UpdateDevice = async () => {
+    const { route } = this.props;
+    const { Equipment } = route.params || {};
+    const { dataArray, addDataAtIndex } = this.context;
+    const { listEquipment, selectedFarm, index  } = this.state
+
+    let flag_update = 0
+  
+    listEquipment.forEach( async (value, index_e) => {
+      if(value !== "")
       {
-        this.setState({msg:""})
-        if (name_ph !== "")
+
+        flag_update ++;
+        // console.log(flag_update)
+        if (flag_update == listEquipment.length)
         {
-          this.setState({msg:""})
-          var id_ph = "";
-          if (dataArray[1]["bc"]["sl"] === 1)
-          {
-            id_ph = dataArray[1]["sensor"][(parseInt(index, 10)+1).toString()]["id_ph"]
-          }
-          else if (dataArray[1]["bc"]["sl"] === 2)
-          {
-             id_ph = dataArray[1]["sensor"][(parseInt(index, 10)+2).toString()]["id_ph"]
-          }
+        console.log("2")
+
           var id_esp = "";
-              Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
-                const farm = {};
-                if (obj["name"] === selectedFarm) {
-                  id_esp = obj["id_esp"];
-                }
-              });
-              console.log(id_ph)
-          const url = apiUrl + "updateequipmentsensor"
+          Object.values(dataArray[0]["equipment"]).forEach((obj, _) => {
+            if (obj["name"] === selectedFarm) {
+              id_esp = obj["id_esp"];
+            }
+          });
+          const url = apiUrl + "updateequipment"
           let result = await fetch(url, {
             method: 'PUT',
             headers: {
@@ -165,41 +186,123 @@ export default class AdvanceSettingDevice extends Component {
             body: JSON.stringify({
               "id_esp": id_esp,
               "id_equipment": dataArray[1]["bc"][index]["id_bc"],
-              "id_dht": dataArray[1]["sensor"][index]["id_dht"],
-              "id_ph": id_ph,
-              "name_equipment": name_equipment,
-              "name_dht": name_dht,
-              "name_ph": name_ph
+              "name_equipment": listEquipment[0]
+              
             }),
           });
           result = await result.json();
-          
-          if (result) {
-            if (result == "Update equipment/sensor success") {
-            const url_getfarm = apiUrl + `getfarm/${dataArray[0]["user"]["gmail"]}`;
-            const response = await fetch(url_getfarm);
-            if (!response.ok) {
-              this.setState({ msg: "Net work fail" });
-              return;
+          console.log(result)
+          if (result == "success")
+          {
+            let count_sensor = 0
+            if (Equipment.length !== 0)
+            {
+              Equipment.forEach(async (value,index_sensor) => {
+                const url_sensor = apiUrl + "updatesensor"
+                let result_sensor = await fetch(url_sensor, {
+                  method: 'PUT',
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    "id_esp": id_esp,
+                    "id_sensor": value,
+                    "name_sensor":  listEquipment[index_sensor+1]
+                  }),
+                });
+                result_sensor = await result_sensor.json();
+                if (result_sensor == "success")
+                {
+                  count_sensor++;
+                  if (count_sensor == Equipment.length)
+                  {
+                    Toast.show('Update Success', Toast.SHORT)
+                    this.props.navigation.navigate('Home');
+                  }
+                }
+                else Toast.show('NetWord Fail!', Toast.SHORT)
+              });
             }
-            // console.log(url)
-            const json = await response.json();
-            await this.delay(2000);
-            addDataAtIndex(json[0], 0)
-            this.props.navigation.navigate('Home');
+            else 
+            {
+              Toast.show('Update Success', Toast.SHORT)
+              this.props.navigation.navigate('Home');
             }
-            else if (result["Message"] == "Can't not update equipment/sensor") {
-              this.setState({ msg: "Can't not update equipment/sensor" });
-            }
-            else this.setState({ msg: "Net Work fail" });
           }
+          else Toast.show('NetWord Fail!', Toast.SHORT)
+        }
+      } 
+      else Toast.show('Invalid Name', Toast.SHORT)
+    });
 
-        }else this.setState({msg:"Invalid ph sensor name"})
+    // if (name_equipment !== "") {
+    //   this.setState({ msg: "" })
+    //   if (name_dht !== "") {
+    //     this.setState({ msg: "" })
+    //     if (name_ph !== "") {
+    //       this.setState({ msg: "" })
+    //       var id_ph = "";
+    //       if (dataArray[1]["bc"]["sl"] === 1) {
+    //         id_ph = dataArray[1]["sensor"][(parseInt(index, 10) + 1).toString()]["id_ph"]
+    //       }
+    //       else if (dataArray[1]["bc"]["sl"] === 2) {
+    //         id_ph = dataArray[1]["sensor"][(parseInt(index, 10) + 2).toString()]["id_ph"]
+    //       }
+    //       var id_esp = "";
+    //       Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
+    //         const farm = {};
+    //         if (obj["name"] === selectedFarm) {
+    //           id_esp = obj["id_esp"];
+    //         }
+    //       });
+    //       console.log(id_ph)
+    //       const url = apiUrl + "updateequipmentsensor"
+    //       let result = await fetch(url, {
+    //         method: 'PUT',
+    //         headers: {
+    //           Accept: 'application/json',
+    //           'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify({
+    //           "id_esp": id_esp,
+    //           "id_equipment": dataArray[1]["bc"][index]["id_bc"],
+    //           "id_dht": dataArray[1]["sensor"][index]["id_dht"],
+    //           "id_ph": id_ph,
+    //           "name_equipment": name_equipment,
+    //           "name_dht": name_dht,
+    //           "name_ph": name_ph
+    //         }),
+    //       });
+    //       result = await result.json();
 
-      }else this.setState({msg:"Invalid dht sensor name"})
+    //       if (result) {
+    //         if (result == "Update equipment/sensor success") {
+    //           const url_getfarm = apiUrl + `getfarm/${dataArray[0]["user"]["gmail"]}`;
+    //           const response = await fetch(url_getfarm);
+    //           if (!response.ok) {
+    //             Toast.show('NetWork Fail!', Toast.LONG)
+
+    //             return;
+    //           }
+    //           // console.log(url)
+    //           const json = await response.json();
+    //           await this.delay(2000);
+    //           addDataAtIndex(json[0], 0)
+    //           this.props.navigation.navigate('Home');
+    //         }
+    //         else if (result["Message"] == "Can't not update equipment/sensor") {
+    //           this.setState({ msg: "Can't not update equipment/sensor" });
+    //         }
+    //         else this.setState({ msg: "Net Work fail" });
+    //       }
+
+    //     } else this.setState({ msg: "Invalid ph sensor name" })
+
+    //   } else this.setState({ msg: "Invalid dht sensor name" })
 
 
-    }else this.setState({msg:"Invalid Pump name"})
+    // } else this.setState({ msg: "Invalid Pump name" })
 
   }
   // Render mỗi mục trong danh sách farm
@@ -215,43 +318,68 @@ export default class AdvanceSettingDevice extends Component {
   toggleSetting = (settingType) => {
     this.setState({ showSetting: settingType });
   };
-  UpdateDeviceOffset = async () =>{
-    const { dataArray} = this.context;
+  UpdateDeviceOffset = async () => {
+    const { dataArray } = this.context;
 
-    const {offset,index} = this.state;
+    const { offset, index } = this.state;
     const url = apiUrl + "schedules";
-        let result = await fetch(url, {
-          method: "PUT",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json", 
-          },
-          body: JSON.stringify({
-            id_equipment: dataArray[1]["bc"][index]["id_bc"],
-            times_offset: parseInt(offset, 10),
-          }),
-        });
-        result = await result.json();
-        if (result) {
-          flag = true;
-          if (result == "update time success") {
-            console.info("update time success");
-            this.props.navigation.navigate("Details");
-          } else if (result["Message"] == "can't add equipment") {
-            console.warn("Network fail!");
-          } else {
-            // console.warn("cuong");
-            console.warn("Network fail!");
-          }
-        }
+    let result = await fetch(url, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id_equipment: dataArray[1]["bc"][index]["id_bc"],
+        times_offset: parseInt(offset, 10),
+      }),
+    });
+    result = await result.json();
+    if (result) {
+      flag = true;
+      if (result == "update time success") {
+        console.info("update time success");
+        this.props.navigation.navigate("Details");
+      } else if (result["Message"] == "can't add equipment") {
+        console.warn("Network fail!");
+      } else {
+        // console.warn("cuong");
+        console.warn("Network fail!");
+      }
+    }
 
   }
-
+  onChange = (text, index) => {
+    this.setState(prevState => {
+      const updatedEquipmentName = [...prevState.listEquipment];
+      updatedEquipmentName[index] = text;
+      return { listEquipment: updatedEquipmentName };
+    });
+  }
   render() {
-    const { connect,msg } = this.state;
-    const { Farm, selectedFarm, name_dht ,offset,name_equipment,name_ph} = this.state;
-    const { showSetting } = this.state;
-
+    const { connect, msg } = this.state;
+    const { Farm, selectedFarm, offset } = this.state;
+    const { showSetting, listEquipment } = this.state;
+    const equip = [];
+    // console.log(listEquipment.length);
+    if (listEquipment.length !== 0) {
+      [...Array(listEquipment.length)].forEach((_, index) => {
+        equip.push(
+          <TextInput
+            key={index}
+            maxLength={19}
+            // placeholder={i18next.t("pump name")}
+            style={styles.input}
+            value={listEquipment[index]}
+            onChangeText={(text) =>
+              this.onChange(text,index)
+            }
+          />
+        )
+      });
+      
+    }
+    
     return (
       <View style={styles.container}>
         <GestureHandlerRootView style={styles.container}>
@@ -327,9 +455,9 @@ export default class AdvanceSettingDevice extends Component {
                               alignItems: "center",
                             }}
                           >
-                            
+
                             <Text style={styles.deviceName}>DEVICE NAME</Text>
-                      
+
                           </View>
                         </View>
                       </View>
@@ -344,33 +472,7 @@ export default class AdvanceSettingDevice extends Component {
                         </View>
                         <View style={styles.flex}>
                           <View style={{ width: "90%" }}>
-                            <TextInput
-                              maxLength={19}
-                              placeholder={i18next.t("pump name")}
-                              style={styles.input}
-                              value = {name_equipment}
-                              onChangeText={(text) =>
-                                this.setState({ name_equipment: text })
-                              }
-                            />
-                            <TextInput
-                              maxLength={19}
-                              placeholder={i18next.t("humid sensor name")}
-                              style={styles.input}
-                              value = {name_dht}
-                              onChangeText={(text) =>
-                                this.setState({ name_dht: text })
-                              }
-                            />
-                            <TextInput
-                              maxLength={19}
-                              placeholder={i18next.t("ph sensor name")}
-                              style={styles.input}
-                              value = {name_ph}
-                              onChangeText={(text) =>
-                                this.setState({ name_ph: text })
-                              }
-                            />
+                            {equip}
                           </View>
                         </View>
                         <View style={styles.flex}>
@@ -393,7 +495,7 @@ export default class AdvanceSettingDevice extends Component {
                                 >
                                   {this.state.Farm.map((item, index) => (
                                     <Picker.Item
-                                    key={index}
+                                      key={index}
                                       color="#333"
                                       label={item.itemName}
                                       value={item.itemName}
@@ -409,7 +511,7 @@ export default class AdvanceSettingDevice extends Component {
                                   onPress={this.toggleBottomSheet}
                                 >
                                   <Text style={styles.text}>
-                                    {selectedFarm }
+                                    {selectedFarm}
                                   </Text>
                                   <Image
                                     source={require("../assets/img/down.png")}
@@ -467,7 +569,7 @@ export default class AdvanceSettingDevice extends Component {
                               }
                               value={offset}
                             />
-                            <Text 
+                            <Text
                               style={{
                                 fontSize: 16,
                               }}
@@ -477,7 +579,7 @@ export default class AdvanceSettingDevice extends Component {
                             <TouchableOpacity style={[styles.btnSaveDuration]} onPress={this.UpdateDeviceOffset}>
                               <Image source={require('../assets/img/diskette.png')}
 
-                              style={{width: 14, height: 14, tintColor: 'white'}}/>
+                                style={{ width: 14, height: 14, tintColor: 'white' }} />
                             </TouchableOpacity>
                           </View>
                         </View>

@@ -22,20 +22,31 @@ export default function CameraConnectDevice() {
     // setScanned(true);
     const parts = data.split(',');
   // const part1 = parts[0].replace(/\n/g, '');
-  const partbc = parts[0].split(':')
-  const partdht = parts[1].split(':')
-  const partph = parts[2].split(':')
-
-    if (partbc[0] == "id_bc")
-    {
+  const value = []
+  const key = []
+  // console.log(parts.length);
+  for (let i = 0; i < parts.length;i++)
+  {
+    let part = parts[i].split(':')
+    key.push(part[0])
+    value.push(part[1])
+  }
+  // const partdht = 
+  // const partph = parts[2].split(':')
   
+    if (value[0] == "FAC")
+    {
+      // console.log(key)
+      // console.log(value)
       setScanned(false);
-      navigation.navigate('AddDevice',{ id_bc: partbc[1] , id_dht:partdht[1],id_ph:partph[1]});
+      navigation.navigate('AddDevice',{ key: key , value :value });
       
     }
     else
      {
       alert(i18next.t(`Invalide QR code`));
+      setScanned(false);
+
     }
     // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
   };
@@ -48,6 +59,7 @@ export default function CameraConnectDevice() {
   }
 
   return (
+
     <View style={styles.container}>
       <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}

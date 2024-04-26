@@ -187,7 +187,7 @@ DetailPage = (index) => {
                       </Text>
                     </>
                   )}
-                  {isConnect["esp" + index.toString()] === false && (
+                  {(isConnect["esp" + index.toString()] === false||isConnect["esp" + index.toString()] === null) && (
                     <>
                       <View
                         style={[styles.dot, { backgroundColor: "#E31C1C" }]}
