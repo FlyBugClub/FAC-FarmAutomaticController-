@@ -94,7 +94,8 @@ export default class Login extends Component {
       if (email != "" && password != "") {
         const response = await fetch(url);
         if (!response.ok) {
-          this.setState({ msg: "error" });
+          this.setState({  msg: i18next.t("Login error") });
+          this.setState({ isLoading: false });
           return;
         }
         const json = await response.json();
@@ -107,12 +108,15 @@ export default class Login extends Component {
           this.props.navigation.navigate("TabNavigator");
         } else {
           this.setState({ msg: i18next.t("Email or password are incorrect") });
+          this.setState({ isLoading: false });
         }
       } else
         this.setState({ msg: i18next.t("Email or password are incorrect") });
+        this.setState({ isLoading: false });
     } catch (error) {
       console.error("Error handling login:", error);
       this.setState({ msg: i18next.t("An error occurred") });
+      this.setState({ isLoading: false });
     }
 
     this.setState({ isLoading: false });
@@ -125,6 +129,8 @@ export default class Login extends Component {
     );
   };
 
+
+  // ========== Change Page ========== //
   HomePage = () => {
     this.props.navigation.navigate("Home");
   };
@@ -195,7 +201,9 @@ export default class Login extends Component {
                   />
                 </TouchableOpacity>
                 </View>
-                <Text>{i18next.t(msg)}</Text>
+                {msg && (
+                  <Text style={styles.msg}>{i18next.t(msg)}</Text>
+                )}
                 <View style={styles.functionArea}>
                   <View>
                     <TouchableOpacity
@@ -250,6 +258,11 @@ export default class Login extends Component {
 }
 
 const styles = StyleSheet.create({
+  msg: {
+    fontSize: 12,
+    color: "#E31C1C",
+    marginBottom: 10
+  },
   container: {
     width: "100%",
     flex: 1,

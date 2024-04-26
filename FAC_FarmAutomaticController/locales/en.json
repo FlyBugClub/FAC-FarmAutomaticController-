@@ -86,5 +86,14 @@
   "seconds": "seconds",
   "Duration": "Duration",
   "Password minimum 6 characters" : "Password minimum 6 characters",
-  "dateFormat": "en-EN"
+  "dateFormat": "en-EN",
+  "Thứ Hai" : "Mon",
+  "Thứ Ba" : "Tu",
+  "Thứ Tư" : "We",
+  "Thứ Năm" : "Thu",
+  "Thứ Sáu" : "Fri",
+  "Thứ Bảy" : "Sat",
+  "Chủ Nhật" : "Sun",
+  "error" : "error",
+  "Login error" : "Login error"
 }

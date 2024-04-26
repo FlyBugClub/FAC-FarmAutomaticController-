@@ -108,9 +108,9 @@ export default class User extends Component {
                 <Text style={styles.textInfo}>
                   Email: {dataArray[0]["user"]["gmail"]}
                 </Text>
-                <Text style={styles.textInfo}>
+                {/* <Text style={styles.textInfo}>
                   {i18next.t("Phone")}: {dataArray[0]["user"]["phone_no"]}
-                </Text>
+                </Text> */}
               </View>
             </View>
             <View>
@@ -255,8 +255,8 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   avatar: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     marginTop: 15,
     marginBottom: 15,
     marginLeft: 5,
@@ -264,9 +264,12 @@ const styles = StyleSheet.create({
     borderRadius: 120,
   },
   textInfo: {
+    width: "95%",
     marginTop: 3,
     marginBottom: 3,
+    // paddingRight: 50,
     fontSize: 15,
+    overflow: "hidden",
   },
   NavigationTop: {
     ...Platform.select({

@@ -251,7 +251,7 @@ export default class History extends Component {
       if (!groupedHistory[dateString]) {
         groupedHistory[dateString] = [];
       }
-
+      // console.log(time +" - " + dayOfWeek);
       // Thêm mục vào mảng tương ứng với ngày
       groupedHistory[dateString].push({ dayOfWeek, time, device, status });
     });
@@ -271,7 +271,7 @@ export default class History extends Component {
               <Text
                 style={{ marginRight: 10, fontSize: 16, fontWeight: "500" }}
               >
-                {devices[0].dayOfWeek}
+                {i18next.t(devices[0].dayOfWeek)}
               </Text>
             )}
           </View>
