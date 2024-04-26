@@ -30,6 +30,7 @@ export default class SignUp extends Component {
       verifypassword: "",
       msg: "",
       showPassword: false,
+      showPasswordHint: false,
     };
   }
 
@@ -90,6 +91,16 @@ export default class SignUp extends Component {
       (prevState) => ({ showPassword: !prevState.showPassword }),
       this.toggleVerifyPasswordVisibility
     );
+  };
+
+  // ========== Password Hint ========== //
+  handlePasswordChange = (text) => {
+    this.setState({ verifypassword: text });
+    if (text.length >= 6) {
+      this.setState({ passwordValid: true });
+    } else {
+      this.setState({ passwordValid: false });
+    }
   };
 
   render() {
@@ -157,7 +168,12 @@ export default class SignUp extends Component {
                 <TextInput
                   style={styles.inputAccount}
                   placeholder={i18next.t("Password")}
-                  onChangeText={(text) => this.setState({ password: text })}
+                  onChangeText={(text) => {
+                    this.handlePasswordChange(text);
+                    this.setState({ password: text });
+                  }}
+                  onFocus={() => this.setState({ showPasswordHint: true })}
+                  onBlur={() => this.setState({ showPasswordHint: false })}
                   secureTextEntry={true}
                 />
                 <TouchableOpacity onPress={this.togglePasswordVisibility}>
@@ -186,6 +202,8 @@ export default class SignUp extends Component {
                   onChangeText={(text) =>
                     this.setState({ verifypassword: text })
                   }
+                  onFocus={() => this.setState({ showPasswordHint: true })}
+                  onBlur={() => this.setState({ showPasswordHint: false })}
                   placeholder={i18next.t("Verify password")}
                   secureTextEntry={true}
                 />
@@ -200,6 +218,34 @@ export default class SignUp extends Component {
                   />
                 </TouchableOpacity>
               </View>
+              {this.state.showPasswordHint && (
+                <View
+                  style={{
+                    width: "65%",
+                    flexDirection: "row",
+                    gap: 5,
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: 10,
+                      backgroundColor: this.state.passwordValid
+                        ? "#2BA84A"
+                        : "#333",
+                    }}
+                  ></View>
+                  <Text
+                    style={{
+                      color: this.state.passwordValid ? "#2BA84A" : "#333",
+                    }}
+                  >
+                    {i18next.t("Password minimum 6 characters")}
+                  </Text>
+                </View>
+              )}
               <Text>{i18next.t(msg)}</Text>
               <TouchableOpacity
                 onPress={this.LoginPage}
@@ -249,7 +295,7 @@ const styles = StyleSheet.create({
   },
   imgShowPassword: {
     position: "absolute",
-    top: -12,
+    top: -14,
   },
   textLogin: {
     fontSize: 28,

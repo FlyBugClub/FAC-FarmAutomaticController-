@@ -7,11 +7,14 @@ import {
   SafeAreaView,
   ScrollView,
   Platform,
+  TouchableOpacity,
+  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import i18next from "../services/i18next";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
+import { index } from "d3";
 var flag = false;
 
 export default class History extends Component {
@@ -22,6 +25,15 @@ export default class History extends Component {
       historyList: [],
     };
   }
+
+  // ========== Change Page ========== //
+  DetailPage = () => {
+    console.log("Detail Page");
+    flag = true;
+    this.props.navigation.navigate("Details"); // 'History' là tên của màn hình History trong định tuyến của bạn
+  };
+
+  // ========== Context ========== //
   static contextType = MyContext;
   gethistory = async () => {
     // api/history/{id_esp}/{strtimebegin}/{strtimeend}
@@ -50,10 +62,24 @@ export default class History extends Component {
       return;
     }
     const json = await response.json();
+    // Chuyển đổi object equipment thành một mảng các cặp key-value
+    const equipmentArray = Object.entries(json[0]["equipment"]);
+
     Object.values(json[0]["schedule"]).forEach((obj, index) => {
       const history = [];
+      const idEquipment = obj["id_equipment"];
 
-      history.push(obj["id_equipment"]);
+      // Tìm thiết bị tương ứng trong bảng equipment
+      const equipment = equipmentArray.find(
+        ([key, value]) => value.id === idEquipment
+      );
+
+      // Nếu tìm thấy thiết bị, thêm tên của thiết bị vào lịch sử
+      if (equipment) {
+        history.push(equipment[1].name);
+      } else {
+        history.push("Unknown"); // Nếu không tìm thấy thiết bị
+      }
 
       // Tách chuỗi dựa trên ký tự 'T' để lấy phần ngày và thời gian
       const [datePart, timePart] = obj["datetime"].split("T");
@@ -70,18 +96,22 @@ export default class History extends Component {
       };
 
       // const weekday = date.toLocaleString('vi-VN', { weekday: 'long' });
-      const dateString = date.toLocaleDateString("vi-VN", options);
       const timeString = timePart;
 
-      history.push(dateString);
+      if (i18next.t("dateFormat") == "en-EN") {
+        const dateString = date.toLocaleDateString("en-EN", options);
+        history.push(dateString);
+      } else if (i18next.t("dateFormat") == "vi-VI") {
+        const dateString = date.toLocaleDateString("vi-VI", options);
+        history.push(dateString);
+      }
       // history.push()
       history.push(timeString);
-
+      history.push(obj["status"]);
       historyList.push(history);
     });
     // console.log(historyList)
-    // console.log(historyList)
-    flag = true;
+
     this.setState({ historyList: historyList });
   };
 
@@ -148,59 +178,135 @@ export default class History extends Component {
     // }
 
     // lịch sử version 2
-    const historyDate = [];
-    const historyTime = [];
-    [...Array(4)].forEach((_, indexDate) => {
-      historyDate.push(
-        <View key={indexDate}>
-          <View style={{}}>
-            <View
-              style={{
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text style={{ fontSize: 16, fontWeight: "500" }}>
-                1{indexDate}/04/2024
-              </Text>
+    // const historyDate = [];
+    // const historyTime = [];
+    // if (historyList.length != 0) {
+    //   [...Array(4)].forEach((_, indexDate) => {
+    //     const historyTimes = [];
+
+    //     [...Array(3)].forEach((_, indexTime) => {
+    //       historyTimes.push(
+    //         <View key={`${indexDate}-${indexTime}`} style={{ marginLeft: 16 }}>
+    //           <View style={{ flexDirection: "row" }}>
+    //             <View
+    //               style={[
+    //                 {
+    //                   flexDirection: "row",
+    //                   alignItems: "center",
+    //                   gap: 4,
+    //                   width: 140,
+    //                 },
+    //               ]}
+    //             >
+    //               <View style={styles.dot}></View>
+    //               <Text>{indexTime}/12/2024</Text>
+    //             </View>
+    //             <Text>TBC000{indexTime}: Đã mở</Text>
+    //           </View>
+
+    //           <View style={styles.verticalLine}></View>
+    //         </View>
+    //       );
+    //     });
+
+    //     historyDate.push(
+    //       <View key={indexDate}>
+    //         <View style={{}}>
+    //           <View
+    //             style={{
+    //               width: "100%",
+    //               flexDirection: "row",
+    //               justifyContent: "space-between",
+    //             }}
+    //           >
+    //             <Text style={{ fontSize: 16, fontWeight: "500" }}>
+    //               1{indexDate}/04/2024
+    //             </Text>
+    //             <Text
+    //               style={{ marginRight: 10, fontSize: 16, fontWeight: "500" }}
+    //             >
+    //               T4
+    //             </Text>
+    //           </View>
+    //           <View style={[styles.verticalLine, { marginLeft: 20 }]}></View>
+    //           <View>{historyTimes}</View>
+    //         </View>
+    //       </View>
+    //     );
+    //   });
+    // }
+
+    // Tạo một đối tượng để nhóm các mục theo ngày
+    const groupedHistory = {};
+    historyList.forEach((item) => {
+      const date = item[1]; // Lấy ngày từ mục
+      const time = item[2]; // Lấy thời gian từ mục
+      const device = item[0]; // Lấy hành động từ mục
+      const status = item[3]; // Lấy trạng thái từ mục
+
+      // Tách ngày thành "Thứ Tư" và "17/04/2024"
+      const [dayOfWeek, dateString] = date.split(", ");
+
+      // Nếu chưa có mục nào cho ngày này, tạo một mảng mới
+      if (!groupedHistory[dateString]) {
+        groupedHistory[dateString] = [];
+      }
+
+      // Thêm mục vào mảng tương ứng với ngày
+      groupedHistory[dateString].push({ dayOfWeek, time, device, status });
+    });
+
+    const renderedHistory = Object.entries(groupedHistory).map(
+      ([date, devices], index) => (
+        <View key={index}>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ marginLeft: 3, fontSize: 16, fontWeight: "500" }}>{date}</Text>
+            {devices.length > 0 && (
               <Text
                 style={{ marginRight: 10, fontSize: 16, fontWeight: "500" }}
               >
-                T4
+                {devices[0].dayOfWeek}
               </Text>
-            </View>
-            <View style={[styles.verticalLine, { marginLeft: 20 }]}></View>
-            <View>{historyTime}</View>
+            )}
+          </View>
+          <View style={[styles.verticalLine, { marginLeft: 20 }]}></View>
+          <View>
+            {devices.map((devices, index) => (
+              <View key={index} style={{ marginLeft: 16 }}>
+                <View style={{ flexDirection: "row" }}>
+                  <View
+                    style={[
+                      {
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 4,
+                        width: 140,
+                      },
+                    ]}
+                  >
+                    <View style={styles.dot}></View>
+                    <Text>{devices.time.substring(0, 8)}</Text>
+                  </View>
+                  {devices.status === 1 && (
+                    <Text>{devices.device}: {i18next.t("On")}</Text>
+                  )}
+                  {devices.status === 0 && (
+                    <Text>{devices.device}: {i18next.t("Off")}</Text>
+                  )}
+                </View>
+                <View style={styles.verticalLine}></View>
+              </View>
+            ))}
           </View>
         </View>
-      );
-
-      [...Array(3)].forEach((_, indexTime) => {
-        historyTime.push(
-          <View key={indexTime} style={{ marginLeft: 16 }}>
-            <View style={{flexDirection: 'row'}}>
-              <View
-                style={[
-                  {
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 4,
-                    width: 140,
-                  },
-                ]}
-              >
-                <View style={styles.dot}></View>
-                <Text>{indexTime}/12/2024</Text>
-              </View>
-              <Text>TBC000{indexDate}: Đã mở</Text>
-            </View>
-
-            <View style={styles.verticalLine}></View>
-          </View>
-        );
-      });
-    });
+      )
+    );
 
     return (
       <View style={styles.container}>
@@ -215,6 +321,17 @@ export default class History extends Component {
             }}
           >
             <Text style={styles.title}>{i18next.t("History")}</Text>
+          </SafeAreaView>
+          <SafeAreaView style={styles.btnSetting}>
+            <TouchableOpacity
+              style={{ marginLeft: 20 }}
+              onPress={this.DetailPage}
+            >
+              <Image
+                source={require("../assets/img/left-arrow.png")}
+                style={styles.imgSetting}
+              />
+            </TouchableOpacity>
           </SafeAreaView>
         </LinearGradient>
         <View style={styles.body}>
@@ -239,9 +356,12 @@ export default class History extends Component {
               <Text style={styles.device}>{i18next.t("Device")}</Text>
               <Text style={styles.time}>{i18next.t("Time")}</Text>
             </View> */}
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView 
+              style={{paddingTop: 26}}
+              showsVerticalScrollIndicator={false}
+            >
               {/* {history} */}
-              {historyDate}
+              {renderedHistory}
             </ScrollView>
           </View>
         </View>
@@ -291,10 +411,22 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  btnSetting: {
+    width: "100%",
+    position: "absolute",
+    top: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  imgSetting: {
+    width: 23,
+    height: 23,
+    tintColor: "white",
+  },
   body: {
     flex: 1,
     top: -23,
-    paddingTop: 23,
+    // paddingTop: 23,
     backgroundColor: "#fff",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,

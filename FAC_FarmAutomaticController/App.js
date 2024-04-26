@@ -109,7 +109,7 @@ function TabNavigator() {
                 style={{
                   color: focused ? "#2BA84A" : "#333",
                   fontSize: 12,
-                  width: 60,
+                  width: 70,
                   textAlign: "center",
                 }}
               >

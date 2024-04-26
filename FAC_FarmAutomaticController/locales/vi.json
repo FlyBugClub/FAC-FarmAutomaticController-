@@ -14,7 +14,7 @@
     "Show password": "Hiển thị mật khẩu",
     "Hide password": "Ẩn mật khẩu",
     "Forgot password": "Quên mật khẩu",
-    "Don't have account!": "Chưa có tài khoản!",
+    "Don't you have account!": "Bạn chưa có tài khoản!",
     "Send": "Gửi",
     "Verify password": "Xác nhận mật khâu",
     "Verify OTP!": "Mã xác thực OTP!",
@@ -84,5 +84,7 @@
     "Farm infomation": "Thông tin nông trại",
     "Save": "Lưu",
     "seconds": "giây",
-    "Duration": "Thời lượng bơm"
+    "Duration": "Thời lượng bơm",
+    "Password minimum 6 characters": "Mật khẩu có ít nhất 6 ký tự",
+    "dateFormat": "vi-VI"
   }

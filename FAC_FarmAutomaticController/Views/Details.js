@@ -55,7 +55,6 @@ var flag_mqtt = true;
 let isConnecting = false;
 let isDisconnecting = false;
 
-
 // Cấu hình cho biểu đồ
 const chartConfig = {
   backgroundGradientFrom: "#fff",
@@ -96,7 +95,7 @@ export default class Details extends Component {
         ],
         legend: ["Loading"], // optional
       },
-      timeDuration: ["________", "________", "________", "________"],
+      timeDuration: ["__", "_____", "__", "_____"],
       switchStates: [],
       slidebar: [],
       offset: "",
@@ -175,10 +174,16 @@ export default class Details extends Component {
     this.props.navigation.navigate("UpdateFarmForm"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
+  HomePage = () => {
+    console.log("Home Page");
+    flag = true;
+    this.props.navigation.navigate("Home"); // 'History' là tên của màn hình History trong định tuyến của bạn
+  };
+
   componentDidMount() {
     const { dataArray } = this.context;
-    this.setState({ id_esp: dataArray[1]["id_esp"] })
-    this.setState({ Current_Data: dataArray[1] })
+    this.setState({ id_esp: dataArray[1]["id_esp"] });
+    this.setState({ Current_Data: dataArray[1] });
 
     this.getvalueequipment();
     this.connect();
@@ -224,12 +229,11 @@ export default class Details extends Component {
       this.state.status_mqtt !== "connected" &&
       client.isConnected() == false &&
       !isConnecting
-
     ) {
       isConnecting = true;
       this.setState({ status_mqtt: "isFetching" }, () => {
-        console.log(client.isConnected())
-        console.log("_____----__________")
+        console.log(client.isConnected());
+        console.log("_____----__________");
         client.connect({
           onSuccess: this.onConnect,
           useSSL: false,
@@ -437,14 +441,15 @@ export default class Details extends Component {
         // console.log(dataArray[1]["bc"][index_time]["id_bc"]);
         const formattedTime = `${selectedTime.getHours()}:${selectedTime.getMinutes()}:${selectedTime.getSeconds()}.000`;
         if (offset === "") {
-          const url_offset = apiUrl + `getoffset/${dataArray[1]["bc"][index_time]["id_bc"]}`;
+          const url_offset =
+            apiUrl + `getoffset/${dataArray[1]["bc"][index_time]["id_bc"]}`;
           const response = await fetch(url_offset);
           if (!response.ok) {
             console.warn("network fail!");
             return;
           }
           const json = await response.json();
-          this.setState({ offset: (json["times_offset"]).toString() })
+          this.setState({ offset: json["times_offset"].toString() });
         }
         const url = apiUrl + "schedules";
         let result = await fetch(url, {
@@ -484,6 +489,7 @@ export default class Details extends Component {
       this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
     }
   };
+
   getvalue = async () => {
     isFunctionRunning = true;
     const { dataArray, addDataAtIndex } = this.context
@@ -519,7 +525,7 @@ export default class Details extends Component {
     }
 
     const keys = Object.keys(json[0]);
-    console.log(keys.length)
+
     if (keys.length === dataArray2["bc"]["sl"]) {
       console.log("!")
       var data_value = []
@@ -685,7 +691,6 @@ export default class Details extends Component {
       // console.log("@1")
 
       // console.log(newlabels)
-
 
       // console.log(sum_sensor/2)
       // for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
@@ -909,7 +914,6 @@ export default class Details extends Component {
 
     // console.log(typeof message)
     // console.log(message.payloadString);
-
   };
 
   getvalueequipment = async () => {
@@ -1012,6 +1016,7 @@ export default class Details extends Component {
     for (let i = 0; i < datachart.legend.length; i += chunkSize) {
       chunkedLegends.push(datachart.legend.slice(i, i + chunkSize));
     }
+
     //API
     const {
       name_bc,
@@ -1021,6 +1026,20 @@ export default class Details extends Component {
       timeDuration,
       buttonAdvance,
     } = this.state;
+
+    const dateStr1 = timeDuration[0];
+    const dateParts1 = dateStr1.split("/");
+    const formattedDateStr1 = `${dateParts1[1] || "__"}/${
+      dateParts1[0] || "__"
+    }/${dateParts1[2] || "____"}`;
+
+    // const formattedDateStr1 = `${dateParts1[1]}/${dateParts1[0]}/${dateParts1[2]}`;
+
+    const dateStr2 = timeDuration[2];
+    const dateParts2 = dateStr2.split("/");
+    const formattedDateStr2 = `${dateParts2[1] || "__"}/${
+      dateParts2[0] || "__"
+    }/${dateParts2[2] || "____"}`;
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
@@ -1251,15 +1270,26 @@ export default class Details extends Component {
               </Text>
             </View>
           </SafeAreaView>
-          <TouchableOpacity
-            style={styles.btnSetting}
-            onPress={this.UpdateFarmPage}
-          >
-            <Image
-              source={require("../assets/img/settings.png")}
-              style={styles.imgSetting}
-            />
-          </TouchableOpacity>
+          <SafeAreaView style={styles.btnSetting}>
+            <TouchableOpacity
+              style={{marginLeft: 20}}
+              onPress={this.HomePage}
+            >
+              <Image
+                source={require("../assets/img/left-arrow.png")}
+                style={styles.imgSetting}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{marginRight: 20}}
+              onPress={this.UpdateFarmPage}
+            >
+              <Image
+                source={require("../assets/img/settings.png")}
+                style={styles.imgSetting}
+              />
+            </TouchableOpacity>
+          </SafeAreaView>
         </LinearGradient>
         <ScrollView
           style={styles.body}
@@ -1317,7 +1347,6 @@ export default class Details extends Component {
               />
               <View style={styles.backgroundCover}></View>
             </View>
-
           </TouchableOpacity>
 
           <View style={styles.dateTimeArea}>
@@ -1327,7 +1356,12 @@ export default class Details extends Component {
                   source={require("../assets/img/calendar.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{ color: "white" }}>{timeDuration[0]}</Text>
+                {i18next.t("dateFormat") === "vi-VI" && (
+                  <Text style={{ color: "white" }}>{timeDuration[0]}</Text>
+                )}
+                {i18next.t("dateFormat") === "en-EN" && (
+                  <Text style={{ color: "white" }}>{formattedDateStr1}</Text>
+                )}
               </View>
               <View style={styles.flex}>
                 <Image
@@ -1343,7 +1377,12 @@ export default class Details extends Component {
                   source={require("../assets/img/calendar.png")}
                   style={styles.imgDateTimeNote}
                 />
-                <Text style={{ color: "white" }}>{timeDuration[2]}</Text>
+                {i18next.t("dateFormat") === "vi-VI" && (
+                  <Text style={{ color: "white" }}>{timeDuration[2]}</Text>
+                )}
+                {i18next.t("dateFormat") === "en-EN" && (
+                  <Text style={{ color: "white" }}>{formattedDateStr2}</Text>
+                )}
               </View>
               <View style={styles.flex}>
                 <Image
@@ -1467,8 +1506,8 @@ class BtnConnect extends Component {
             backgroundColor: isPressed
               ? "#2D314A"
               : disabled
-                ? "#F0F0F0"
-                : "#2D3A3A",
+              ? "#F0F0F0"
+              : "#2D3A3A",
             marginRight: 15,
           },
         ]}
@@ -1570,13 +1609,14 @@ const styles = StyleSheet.create({
   imgSetting: {
     width: 23,
     height: 23,
-
     tintColor: "white",
   },
   btnSetting: {
+    width: "100%",
     position: "absolute",
-    top: 20,
-    right: 20,
+    top: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   body: {
     flex: 1,
