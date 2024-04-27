@@ -53,6 +53,28 @@
   int minute;
   int second;
   int totalSeconds = hour * 3600 + minute * 60 + second;
+  const int buttonPin = 14; // GPIO pin where the button is connected
+     int count_interupt = 0;
+
+    void  myInterruptFunction() {
+      // has_interrupted = true;
+          Serial.println(count_interupt);
+
+      if (count_interupt == 0)
+      {
+          Serial.println("nut da an");
+          count_interupt  = 1;
+      }
+      else {
+        Serial.println("reset");
+          count_interupt  = 0;
+      } 
+      
+      delay(100);
+      
+      //  activateAPMode();
+    }
+
 
   const char* mqtt_server = "broker.emqx.io";
   const uint16_t mqtt_port = 1883;
@@ -102,16 +124,17 @@
   const long statusUpdateInterval = 10000;
 //region setup
   void setup() {
-    pinMode(pumpPin0, INPUT);
-    pinMode(pumpPin1, INPUT);
-    pinMode(pumpPin2, INPUT);
+    pinMode(pumpPin0, OUTPUT);
+    pinMode(pumpPin1, OUTPUT);
+    pinMode(pumpPin2, OUTPUT);
     pinMode(buttonAP, INPUT_PULLUP);
     pinMode(buttonReset, INPUT_PULLUP);
     Serial.begin(9600);
     delay(100);
+    attachInterrupt(digitalPinToInterrupt(buttonPin), myInterruptFunction, RISING); // Configure the interrupt
 
     // Connect to WiFi
-    connectToWiFi();
+    // connectToWiFi();
 
     // Initialize SHT31 sensor
     sht31.begin(0x44);
@@ -123,23 +146,23 @@
     client.setServer(mqtt_server, mqtt_port);
     
     client.setCallback(callback);
-    
+    pinMode(buttonPin, INPUT_PULLUP); // Configure the pin as an input with internal pull-up resistor
   }
   int soLan = 0;
 //region loop
   void loop() {
     //region config
-      if (!WiFi.isConnected()) {
-          connectToWiFi();
-        }
+      // if (!WiFi.isConnected()) {
+      //     connectToWiFi();
+      //   }
       if (!client.connected()) {
         reconnect();
         }
       String formattedDateTime;
       getCurrentDateTime(formattedDateTime);
-      if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
-        activateAPMode();
-        }
+      // if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
+       
+      //   }
       if (digitalRead(buttonReset) == LOW) { // Nếu nút được nhấn
           resetESP();
         }
@@ -675,6 +698,7 @@
         Serial.print("Chế độ tự động ");
         Serial.print("của thiết bị ");
         Serial.println(count);
+        Serial.print("Đang bật");
         switch (count) {
             case 0:
                 autoMode0 = 1;
@@ -699,6 +723,8 @@
         Serial.print("Chế độ thủ công ");
         Serial.print("của thiết bị ");
         Serial.println(count);
+        Serial.print("Đang bật");
+        
         switch (count) {
             case 0:
                 controlPump(0, status);
