@@ -237,26 +237,26 @@
     }
   }
   void handleSensorData(const String& idSensor, const String& formattedDateTime) {
-  int startIndex = 0;
-  int endIndex = 0;
+    int startIndex = 0;
+    int endIndex = 0;
 
-  while (endIndex != -1) {
-    endIndex = idSensor.indexOf('-', startIndex);
-    String part = idSensor.substring(startIndex, endIndex != -1 ? endIndex : idSensor.length());
-    startIndex = endIndex + 1;
+    while (endIndex != -1) {
+      endIndex = idSensor.indexOf('-', startIndex);
+      String part = idSensor.substring(startIndex, endIndex != -1 ? endIndex : idSensor.length());
+      startIndex = endIndex + 1;
 
-    Serial.print("Processing ID Part: ");
-    Serial.println(part);
+      Serial.print("Processing ID Part: ");
+      Serial.println(part);
 
-    if (!part.isEmpty()) {
-      if (part.startsWith("P")) {
-        postHumidityToAPI("/api/sensorvalues", formattedDateTime, part.c_str());
-      } else if (part.startsWith("D")) {
-        postHumidityAndTempToAPI("/api/sensorvalues", formattedDateTime, part.c_str());
+      if (!part.isEmpty()) {
+        if (part.startsWith("P")) {
+          postHumidityToAPI("/api/sensorvalues", formattedDateTime, part.c_str());
+        } else if (part.startsWith("D")) {
+          postHumidityAndTempToAPI("/api/sensorvalues", formattedDateTime, part.c_str());
+        }
       }
-    }
 
-  }
+    }
 
 
   }
@@ -290,7 +290,7 @@
     char currentTimeWithMilliseconds[35];
     snprintf(currentTimeWithMilliseconds, sizeof(currentTimeWithMilliseconds), "%s.%03ld", currentTime, milliseconds);
     formattedDateTime = String(currentTimeWithMilliseconds);
-  }
+    }
   int statusPump;
   void countPumpActivations(String formattedTime) {
     if (isNewDay(formattedTime, previousDate)) {
@@ -308,12 +308,12 @@
   }
 
   void checkPump(int pumpPin, int &activationCount, int &statusPump, String formattedTime, const char* id_bc) {
-  if (digitalRead(pumpPin) == HIGH) {
-    statusPump = HIGH;
-    activationCount++;
-    postCountPumpToAPI("/api/equipmentvalues", formattedTime, id_bc, activationCount, statusPump);
-  }
-  }
+    if (digitalRead(pumpPin) == HIGH) {
+      statusPump = HIGH;
+      activationCount++;
+      postCountPumpToAPI("/api/equipmentvalues", formattedTime, id_bc, activationCount, statusPump);
+    }
+    }
   void reconnect() {
     while (!client.connected()) {
       Serial.print("Attempting MQTT connection...");Serial.flush();
@@ -330,15 +330,15 @@
   }
 
   String getIdPart(const String& id_sensor, int partIndex) {
-  int dashIndex = id_sensor.indexOf('-');
-  if (dashIndex != -1) {
-    if (partIndex == 0)
-      return id_sensor.substring(0, dashIndex);  // Trả về phần trước dấu gạch ngang
-    else
-      return id_sensor.substring(dashIndex + 1); // Trả về phần sau dấu gạch ngang
-  }
-  return ""; // Trả về chuỗi rỗng nếu không tìm thấy dấu gạch ngang
-  }
+    int dashIndex = id_sensor.indexOf('-');
+    if (dashIndex != -1) {
+      if (partIndex == 0)
+        return id_sensor.substring(0, dashIndex);  // Trả về phần trước dấu gạch ngang
+      else
+        return id_sensor.substring(dashIndex + 1); // Trả về phần sau dấu gạch ngang
+    }
+    return ""; // Trả về chuỗi rỗng nếu không tìm thấy dấu gạch ngang
+    }
 //region POST
   void postHumidityAndTempToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
     WiFiClientSecure client;
@@ -352,9 +352,9 @@
     Serial.println(formattedDateTime);
     StaticJsonDocument<256> doc;
     doc["id_sensor"] = id_sensor;
-    doc["value_humid"] = temperature;
+    doc["value_humid"] = humidity;
     doc["datetime"] = formattedDateTime;
-    doc["value_temp"] = humidity;
+    doc["value_temp"] = temperature;
     String payload;
     serializeJson(doc, payload);
     Serial.print("temperature: ");
@@ -389,7 +389,7 @@
     Serial.println(formattedDateTime);
     StaticJsonDocument<256> doc;
     doc["id_sensor"] = id_sensor;
-    doc["value_humid"] = humidity;
+    doc["value_humid"] = 0;
     doc["datetime"] = formattedDateTime;
     doc["value_temp"] = 0;
     Serial.print("humidity: ");
