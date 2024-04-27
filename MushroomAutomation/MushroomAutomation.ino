@@ -64,6 +64,7 @@
   bool enableHeater = false;
   uint8_t loopCnt = 0;
   Adafruit_SHT31 sht31;
+  bool sensorConnected = false;
   WiFiUDP ntpUDP;
   NTPClient timeClient(ntpUDP, ntpServer, ntpPort);
   int autoMode0 = 0;
@@ -73,6 +74,10 @@
   float desiredHumidity0 = 60.0;
   float desiredHumidity1 = 60.0;
   float desiredHumidity2 = 60.0;
+
+  float temperature = 0;
+  float humidity = 0;
+
   unsigned long lastSprayTime[MAX_EQUIPMENTS] = {0};
   bool wifiConnected = false;
   int pumpActivationCount1 = 0;
@@ -125,19 +130,26 @@
   void loop() {
     //region config
       if (!WiFi.isConnected()) {
-        connectToWiFi();
-      }
+          connectToWiFi();
+        }
       if (!client.connected()) {
-      reconnect();
-      }
+        reconnect();
+        }
       String formattedDateTime;
       getCurrentDateTime(formattedDateTime);
       if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
-      activateAPMode();
-      }
+        activateAPMode();
+        }
       if (digitalRead(buttonReset) == LOW) { // Nếu nút được nhấn
-        resetESP();
-      }
+          resetESP();
+        }
+      if (sht31.begin(0x44)) {   // Set to 0x45 for alternate i2c addr
+        Serial.println("SHT31 connected successfully.");
+        sensorConnected = true; // Đặt cờ kết nối cảm biến thành công
+        } else {
+          Serial.println("Couldn't find SHT31. Check wiring!");
+          sensorConnected = false;
+        }
       client.loop();
     //endregion config
     
@@ -156,8 +168,10 @@
       for (int i = 0; i < num_equipments; i++) {
         Serial.print("ID Sensor: ");
         Serial.println(equipments[i].id_sensor);
-
+        temperature = sht31.readTemperature();
+        humidity = sht31.readHumidity();
         handleSensorData(equipments[i].id_sensor, formattedDateTime);
+         
       }
     //endregion handleSensorData
 
@@ -338,11 +352,15 @@
     Serial.println(formattedDateTime);
     StaticJsonDocument<256> doc;
     doc["id_sensor"] = id_sensor;
-    doc["value_humid"] = 88.0;
+    doc["value_humid"] = temperature;
     doc["datetime"] = formattedDateTime;
-    doc["value_temp"] = 30;
+    doc["value_temp"] = humidity;
     String payload;
     serializeJson(doc, payload);
+    Serial.print("temperature: ");
+    Serial.println(temperature);
+    Serial.print("humidity: ");
+    Serial.println(humidity);
 
     int httpCode = http.POST(payload);
     Serial.print("POST httpCode: ");Serial.flush();
@@ -371,9 +389,11 @@
     Serial.println(formattedDateTime);
     StaticJsonDocument<256> doc;
     doc["id_sensor"] = id_sensor;
-    doc["value_humid"] = 99.0;
+    doc["value_humid"] = humidity;
     doc["datetime"] = formattedDateTime;
     doc["value_temp"] = 0;
+    Serial.print("humidity: ");
+    Serial.println(humidity);
     String payload;
     serializeJson(doc, payload);
 
@@ -749,38 +769,49 @@
             resetESP(); // Gọi hàm reset
             return;
         }
-    }
+      }
     getWhenStart("/api/laststatus/esp0004");
     Serial.println("\nWiFi connection successful!");
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
-  }
+    }
 
 
   void activateAPMode() {
-  Serial.println("Chuyển sang AP Mode.");
-  WiFiManager wifiManager;
+    Serial.println("Chuyển sang AP Mode.");
+    WiFiManager wifiManager;
 
-  // Xóa cài đặt cũ
-  wifiManager.resetSettings();
+    // Xóa cài đặt cũ
+    wifiManager.resetSettings();
 
-  // Bắt đầu cổng cấu hình, "ESP8266_MODE_Access Point" là tên mạng WiFi cho AP Mode
-  // Hàm startConfigPortal() sẽ tự động ngắt khi kết nối WiFi được cấu hình xong và kết nối
-  if (wifiManager.startConfigPortal("ESP8266_MODE_Access Point")) {
-    Serial.println("Kết nối được cấu hình xong và đã kết nối!");
-  } else {
-    Serial.println("Không kết nối được sau cấu hình.");
-  }
+    // Bắt đầu cổng cấu hình, "ESP8266_MODE_Access Point" là tên mạng WiFi cho AP Mode
+    // Hàm startConfigPortal() sẽ tự động ngắt khi kết nối WiFi được cấu hình xong và kết nối
+    if (wifiManager.startConfigPortal("ESP8266_MODE_Access Point")) {
+      Serial.println("Kết nối được cấu hình xong và đã kết nối!");
+    } else {
+      Serial.println("Không kết nối được sau cấu hình.");
+    }
 
-  // Nếu bạn muốn tiếp tục chạy chương trình sau khi kết nối hoặc sau khi cấu hình thất bại, bạn có thể thực hiện các bước tiếp theo tại đây.
-  Serial.println("Tiếp tục chạy chương trình...");
-  }
+    // Nếu bạn muốn tiếp tục chạy chương trình sau khi kết nối hoặc sau khi cấu hình thất bại, bạn có thể thực hiện các bước tiếp theo tại đây.
+    Serial.println("Tiếp tục chạy chương trình...");
+    }
 
 
   void resetESP() {
-  Serial.println("Resetting ESP...");
-  ESP.restart(); // Lệnh reset ESP8266
-  }
+    Serial.println("Resetting ESP...");
+    ESP.restart(); // Lệnh reset ESP8266
+    }
+  void reconnectSensor() {
+    Serial.println("Attempting to reconnect sensor...");
+    if (sht31.begin(0x44)) {
+      Serial.println("Sensor reconnected successfully.");
+      sensorConnected = true;
+    } else {
+      Serial.println("Reconnection failed. Retrying...");
+      sensorConnected = false;
+      delay(1000);
+    }
+    }
 //region MQTTX POST
   void sendHelloMessage() {
     if (client.connected()) {
