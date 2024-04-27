@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
   btnSetting: {
     width: "100%",
     position: "absolute",
-    top: 0,
+    top: "5%",
     flexDirection: "row",
     justifyContent: "space-between",
   },
