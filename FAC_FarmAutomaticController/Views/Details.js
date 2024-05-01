@@ -933,7 +933,6 @@ export default class Details extends Component {
     const { datachart } = this.state;
     const { switchStates, Current_Data, topic_flag, thisEquipments } =
       this.state; //Switch
-    
 
     // Chia mảng legend thành các mảng con mỗi khi cần xuống dòng
     const chunkedLegends = [];
@@ -941,7 +940,6 @@ export default class Details extends Component {
     for (let i = 0; i < datachart.legend.length; i += chunkSize) {
       chunkedLegends.push(datachart.legend.slice(i, i + chunkSize));
     }
-
 
     //API
     const { name_bc, timelist, sliderValue, isEnabled, timeDuration } =
@@ -959,15 +957,12 @@ export default class Details extends Component {
       dateParts2[0] || "__"
     }/${dateParts2[2] || "____"}`;
 
-
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
-
 
     //DateTime
     const { dateTime, showPicker } = this.state;
 
-    
     if (
       name_bc !== 0 &&
       timelist.length !== 0 &&
@@ -1174,16 +1169,18 @@ export default class Details extends Component {
           <SafeAreaView>
             <View style={styles.TitleTopArea}>
               <Text style={styles.TitleTop}>{Current_Data["name"]}</Text>
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: "white",
-                  marginTop: -10,
-                  fontWeight: "500",
-                }}
-              >
-                {Current_Data["decription"]}
-              </Text>
+              {Current_Data["decription"] && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    marginTop: -10,
+                    fontWeight: "500",
+                  }}
+                >
+                  {Current_Data["decription"]}
+                </Text>
+              )}
             </View>
           </SafeAreaView>
           <SafeAreaView style={styles.btnSetting}>
@@ -1305,9 +1302,9 @@ export default class Details extends Component {
 
                 {this.state.selecedCat === "Independence" && (
                   <View>
-                    <Text style={styles.titleNote}>
+                    {/* <Text style={styles.titleNote}>
                       {i18next.t("Custom control")}
-                    </Text>
+                    </Text> */}
                     {deviceList}
                     {showPicker && Platform.OS === "android" && (
                       <DateTimePicker
@@ -1332,8 +1329,7 @@ export default class Details extends Component {
             }
           >
             <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <View style={styles.box}>
-                
+              {/* <View style={styles.box}> */}
                 <TouchableOpacity onPress={this.HistoryPage}>
                   {chunkedLegends.map((legendRow, rowIndex) => {
                     return (
@@ -1442,34 +1438,7 @@ export default class Details extends Component {
                     </View>
                   </View>
                 </View>
-              </View>
-              <View>
-                <VerticalBarGraph
-                  data={[20, 45, 28, 80, 99, 43, 50]}
-                  labels={["Mon", "Tue", "Wes", "Thu", "Fri", "Sat", "Sun"]}
-                  width={Dimensions.get("window").width - 20}
-                  height={200}
-                  barRadius={5}
-                  barWidthPercentage={0.65}
-                  barColor="#53ae31"
-                  baseConfig={{
-                    hasXAxisBackgroundLines: false,
-                    xAxisLabelStyle: {
-                      position: "right",
-                      suffix: "ml",
-                    },
-                  }}
-                  style={{
-                    marginTop: 20,
-                    marginBottom: 30,
-                    padding: 10,
-                    paddingTop: 20,
-                    borderRadius: 20,
-                    backgroundColor: `#dff4d7`,
-                    width: Dimensions.get("window").width - 10,
-                  }}
-                />
-              </View>
+              {/* </View> */}
             </View>
           </ScrollView>
         )}
@@ -1716,7 +1685,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
   dateTimePart: {
     backgroundColor: "#2BA84A",
