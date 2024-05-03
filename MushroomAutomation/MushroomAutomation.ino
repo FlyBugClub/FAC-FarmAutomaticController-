@@ -69,6 +69,7 @@
     buttonCount = 1;
     buttonFlag = false;
     delay(10);
+    activateAPMode();
   }
   else 
   {
@@ -801,17 +802,7 @@
         delay(100);
         Serial.print(".");
 
-        if (digitalRead(buttonAP) == LOW) {
-            Serial.println("\nButton AP is pressed. Activating AP Mode...");
-            activateAPMode(); // Gọi hàm kích hoạt AP Mode
-            return;
-        }
-
-        if (digitalRead(buttonReset) == LOW) {
-            Serial.println("\nButton Reset is pressed. Resetting ESP...");
-            resetESP(); // Gọi hàm reset
-            return;
-        }
+        
       }
     getWhenStart("/api/laststatus/esp0004");
     Serial.println("\nWiFi connection successful!");
