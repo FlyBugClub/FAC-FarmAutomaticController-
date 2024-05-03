@@ -279,7 +279,6 @@ const styles = StyleSheet.create({
     // paddingRight: 50,
     fontSize: 15,
     overflow: "hidden",
-    backgroundColor:'gray'
   },
   NavigationTop: {
     ...Platform.select({
