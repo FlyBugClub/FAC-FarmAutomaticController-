@@ -12,7 +12,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import Toast from 'react-native-simple-toast';
 import { Picker } from "@react-native-picker/picker";
 import { LinearGradient } from "expo-linear-gradient";
 import i18next, { languageResources } from "../services/i18next";
@@ -20,12 +19,30 @@ import { index } from "d3";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
 import AppLoader2 from "./AppLoader2.js";
+import Toast from "react-native-toast-message";
 
 export default class AddDevice extends Component {
   OpenCamera = () => {
     console.log("Open Camera");
     this.props.navigation.navigate("CameraConnectDevice");
   };
+
+  // ========== Toast ========== //
+  showSuccessToast(msg) {
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: msg,
+    });
+  }
+
+  showFailToast(msg) {
+    Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: msg,
+    });
+  }
 
   state = {
     msg: "",
@@ -38,7 +55,7 @@ export default class AddDevice extends Component {
     category: [],
     value: [],
     key: [],
-    equipment_name: []
+    equipment_name: [],
     // dht_id: "",
     // ph_id: "",
     // bc_id: "",
@@ -66,34 +83,33 @@ export default class AddDevice extends Component {
     this.getName();
   }
 
-
   getName = async () => {
     const { key, value, index } = this.state;
     const { dataArray } = this.context;
     const equipment_name = [];
-    console.log(index)
+    console.log(index);
     if (dataArray.length > 0) {
       for (let i = 1; i < key.length; i++) {
         // console.log(key[i])
         if (key[i] === "id_bc") {
           // console.log("cuong")
-          const sl = dataArray[0]["equipment"][index.toString()]["bc"]["sl"]
-          equipment_name.push("Pump" + (sl + 1).toString())
-        }
-        else if (key[i] === "id_dht") {
+          const sl = dataArray[0]["equipment"][index.toString()]["bc"]["sl"];
+          equipment_name.push("Pump" + (sl + 1).toString());
+        } else if (key[i] === "id_dht") {
           // console.log("cuong")
-          const sl = dataArray[0]["equipment"][index.toString()]["sensor"]["sl_dht"]
-          equipment_name.push("DHT" + (sl + 1).toString())
-        }
-        else if (key[i] === "id_ph") {
+          const sl =
+            dataArray[0]["equipment"][index.toString()]["sensor"]["sl_dht"];
+          equipment_name.push("DHT" + (sl + 1).toString());
+        } else if (key[i] === "id_ph") {
           // console.log("cuong")
-          const sl = dataArray[0]["equipment"][index.toString()]["sensor"]["sl_ph"]
-          equipment_name.push("PH" + (sl + 1).toString())
+          const sl =
+            dataArray[0]["equipment"][index.toString()]["sensor"]["sl_ph"];
+          equipment_name.push("PH" + (sl + 1).toString());
         }
       }
     }
-    this.setState({ equipment_name: equipment_name })
-  }
+    this.setState({ equipment_name: equipment_name });
+  };
   getFarm = () => {
     const { dataArray } = this.context;
     const Farmlist = [];
@@ -117,7 +133,7 @@ export default class AddDevice extends Component {
     for (let i = 0; i < equipment_name.length; i++) {
       if (equipment_name[i] !== "") {
         if (key[i + 1] === "id_dht" || key[i + 1] === "id_ph") {
-          id_sensorinbc += value[i+1];
+          id_sensorinbc += value[i + 1];
 
           // Kiểm tra nếu không phải phần tử cuối cùng thì thêm dấu '-'
           if (i !== equipment_name.length - 1) {
@@ -125,16 +141,13 @@ export default class AddDevice extends Component {
           }
         }
         count++;
-      }
-      else {
+      } else {
         if (key[i + 1] === "id_bc") {
-          Toast.show('Invalid Pump Name', Toast.LONG)
-        }
-        else if (key[i + 1] === "id_dht") {
-          Toast.show('Invalid DHT Name', Toast.LONG)
-        }
-        else if (key[i + 1] === "id_ph") {
-          Toast.show('Invalid PH Name', Toast.LONG)
+          this.showFailToast("Invalid Pump Name");
+        } else if (key[i + 1] === "id_dht") {
+          this.showFailToast("Invalid DHT Name");
+        } else if (key[i + 1] === "id_ph") {
+          this.showFailToast("Invalid PH Name");
         }
       }
     }
@@ -149,7 +162,7 @@ export default class AddDevice extends Component {
           id_esp = obj["id_esp"];
         }
       });
-      let  count_success = 0;
+      let count_success = 0;
       for (let i = 0; i < equipment_name.length; i++) {
         if (key[i + 1] === "id_bc") {
           const body_bc = {
@@ -160,45 +173,33 @@ export default class AddDevice extends Component {
             id_sensor: id_sensorinbc,
           };
           // console.log(body_bc)
-          var result_bc = await this.postfunction(
-            "equidmentmanager",
-            body_bc
-          );
+          var result_bc = await this.postfunction("equidmentmanager", body_bc);
           if (result_bc === "success") {
             count_success++;
+          } else {
+            this.setState({ isLoading: false });
           }
-          else{
-          this.setState({ isLoading: false });
-          }
-        }
-        else if (key[i + 1] === "id_dht" || key[i + 1] === "id_ph") {
+        } else if (key[i + 1] === "id_dht" || key[i + 1] === "id_ph") {
           const body = {
             id_esp: id_esp,
-            id_sensor: value[i+1],
+            id_sensor: value[i + 1],
             name_sensor: equipment_name[i],
             expectedValues: 50.0,
             min_max_values: "60/90",
             status: false,
           };
-          console.log(body)
-          var result_sensor = await this.postfunction(
-            "sensormanager",
-            body
-          );
+          console.log(body);
+          var result_sensor = await this.postfunction("sensormanager", body);
           if (result_sensor === "success") {
             count_success++;
-          }
-          else this.setState({ isLoading: false });
+          } else this.setState({ isLoading: false });
         }
       }
-      if (count_success === equipment_name.length)
-      {
-            this.props.navigation.navigate("Home");
-      }
-      else 
-      {
+      if (count_success === equipment_name.length) {
+        this.props.navigation.navigate("Home");
+      } else {
         this.setState({ isLoading: false });
-        Toast.show('This QR code has already used', Toast.LONG)
+        this.showFailToast("This QR code has already used");
       }
     }
   };
@@ -225,12 +226,13 @@ export default class AddDevice extends Component {
     return result;
   };
   onChange = (text, index) => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const updatedEquipmentName = [...prevState.equipment_name];
       updatedEquipmentName[index] = text;
       return { equipment_name: updatedEquipmentName };
     });
-  }
+  };
+
   render() {
     const { isLoading, key, value, equipment_name } = this.state;
     // const { dataArray } = this.context;
@@ -239,7 +241,6 @@ export default class AddDevice extends Component {
 
     if (key.length !== 0 && value.length !== 0 && equipment_name.length !== 0) {
       [...Array(key.length - 1)].forEach((_, index) => {
-
         equip.push(
           <TextInput
             key={index}
@@ -249,9 +250,8 @@ export default class AddDevice extends Component {
             style={styles.input}
             onChangeText={(text) => this.onChange(text, index)}
           />
-        )
+        );
       });
-
     }
     return (
       <View style={styles.container}>
@@ -283,19 +283,22 @@ export default class AddDevice extends Component {
                 </TouchableOpacity>
               </View>
               <View style={styles.containerContent}>
-
                 {equip}
                 <View style={styles.optionArea} key="cuong">
                   <View>
-                    <Text style={{ color: "#333" }}>{i18next.t("Farm house")}</Text>
+                    <Text style={{ color: "#333" }}>
+                      {i18next.t("Farm house")}
+                    </Text>
                   </View>
                   <View>
                     <Picker
                       style={{ width: 220 }}
                       mode="dropdown"
                       selectedValue={this.state.selecedCat}
-                      onValueChange={(value, index) => this.onValueChangeCat(value, index)}
-                    // onValueChange={this.onValueChangeCat.bind(this)}
+                      onValueChange={(value, index) =>
+                        this.onValueChangeCat(value, index)
+                      }
+                      // onValueChange={this.onValueChangeCat.bind(this)}
                     >
                       {this.state.category.map((item, index) => (
                         <Picker.Item

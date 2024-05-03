@@ -25,7 +25,7 @@ import i18next from "../services/i18next";
 import * as Notifications from "expo-notifications";
 import MyContext from "../DataContext.js";
 import apiUrl from "../apiURL.js";
-import Toast from 'react-native-simple-toast';
+import Toast from "react-native-toast-message";
 
 export default class AdvanceSettingDevice extends Component {
   constructor(props) {
@@ -42,8 +42,25 @@ export default class AdvanceSettingDevice extends Component {
       selectedFarm: "",
       Farm: [],
     };
-    this.snapPoint = ["25%", "50%", "75%"];
+    this.snapPoint = ["28%", "50%", "75%"];
     this.bottomSheetRef = React.createRef();
+  }
+
+  // ========== Toast ========== //
+  showSuccessToast(msg) {
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: msg,
+    });
+  }
+
+  showFailToast(msg) {
+    Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: msg,
+    });
   }
 
   // ============== Bottom Sheet ============== //
@@ -54,28 +71,25 @@ export default class AdvanceSettingDevice extends Component {
 
   async componentDidMount() {
     const { route } = this.props;
-    const { index,Equipment } = route.params || {};
+    const { index, Equipment } = route.params || {};
     const { dataArray } = this.context;
     const sensorArray = Object.values(dataArray[1]["sensor"]);
-  
+
     const listEquipment = [];
-    console.log(Equipment)
-    console.log("___________________")
+    console.log(Equipment);
+    console.log("___________________");
 
     let flag_id = 0;
-    listEquipment.push(dataArray[1]["bc"][index]["name_bc"])
-    sensorArray.forEach(item => {
-      Object.keys(item).forEach(key => {
-        
-        if (flag_id == 1)
-        {
+    listEquipment.push(dataArray[1]["bc"][index]["name_bc"]);
+    sensorArray.forEach((item) => {
+      Object.keys(item).forEach((key) => {
+        if (flag_id == 1) {
           flag_id = 0;
-          listEquipment.push(item[key])
+          listEquipment.push(item[key]);
         }
         if (Equipment.includes(item[key])) {
           // namesArray.push(item[key]);
           flag_id = 1;
-          
         }
       });
     });
@@ -86,14 +100,14 @@ export default class AdvanceSettingDevice extends Component {
     const response = await fetch(url);
 
     if (!response.ok) {
-      Toast.show('NetWork Fail!', Toast.LONG)
-
+      // Toast.show('NetWork Fail!', Toast.LONG)
+      this.showFailToast("NetWork Fail!");
       return;
     }
-    
+
     // console.log(dataArray[1])
     const json = await response.json();
-    
+
     // if (dataArray[1]["bc"]["sl"] === 1) {
     //   this.setState({ name_equipment: dataArray[1]["bc"][index]["name_bc"] })
     //   this.setState({ name_dht: dataArray[1]["sensor"][index]["name_dht"] })
@@ -114,7 +128,7 @@ export default class AdvanceSettingDevice extends Component {
       // console.log(obj["name"])
     });
     this.setState({ listEquipment: listEquipment });
-    this.setState({ offset: (json["times_offset"]).toString() });
+    this.setState({ offset: json["times_offset"].toString() });
     this.setState({ index: index });
     this.setState({ selectedFarm: Farmlist[0].itemName });
     this.setState({ Farm: Farmlist });
@@ -156,19 +170,16 @@ export default class AdvanceSettingDevice extends Component {
     const { route } = this.props;
     const { Equipment } = route.params || {};
     const { dataArray, addDataAtIndex } = this.context;
-    const { listEquipment, selectedFarm, index  } = this.state
+    const { listEquipment, selectedFarm, index } = this.state;
 
-    let flag_update = 0
-  
-    listEquipment.forEach( async (value, index_e) => {
-      if(value !== "")
-      {
+    let flag_update = 0;
 
-        flag_update ++;
+    listEquipment.forEach(async (value, index_e) => {
+      if (value !== "") {
+        flag_update++;
         // console.log(flag_update)
-        if (flag_update == listEquipment.length)
-        {
-        console.log("2")
+        if (flag_update == listEquipment.length) {
+          console.log("2");
 
           var id_esp = "";
           Object.values(dataArray[0]["equipment"]).forEach((obj, _) => {
@@ -176,64 +187,57 @@ export default class AdvanceSettingDevice extends Component {
               id_esp = obj["id_esp"];
             }
           });
-          const url = apiUrl + "updateequipment"
+          const url = apiUrl + "updateequipment";
           let result = await fetch(url, {
-            method: 'PUT',
+            method: "PUT",
             headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
+              Accept: "application/json",
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              "id_esp": id_esp,
-              "id_equipment": dataArray[1]["bc"][index]["id_bc"],
-              "name_equipment": listEquipment[0]
-              
+              id_esp: id_esp,
+              id_equipment: dataArray[1]["bc"][index]["id_bc"],
+              name_equipment: listEquipment[0],
             }),
           });
           result = await result.json();
-          console.log(result)
-          if (result == "success")
-          {
-            let count_sensor = 0
-            if (Equipment.length !== 0)
-            {
-              Equipment.forEach(async (value,index_sensor) => {
-                const url_sensor = apiUrl + "updatesensor"
+          console.log(result);
+          if (result == "success") {
+            let count_sensor = 0;
+            if (Equipment.length !== 0) {
+              Equipment.forEach(async (value, index_sensor) => {
+                const url_sensor = apiUrl + "updatesensor";
                 let result_sensor = await fetch(url_sensor, {
-                  method: 'PUT',
+                  method: "PUT",
                   headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
                   },
                   body: JSON.stringify({
-                    "id_esp": id_esp,
-                    "id_sensor": value,
-                    "name_sensor":  listEquipment[index_sensor+1]
+                    id_esp: id_esp,
+                    id_sensor: value,
+                    name_sensor: listEquipment[index_sensor + 1],
                   }),
                 });
                 result_sensor = await result_sensor.json();
-                if (result_sensor == "success")
-                {
+                if (result_sensor == "success") {
                   count_sensor++;
-                  if (count_sensor == Equipment.length)
-                  {
-                    Toast.show('Update Success', Toast.SHORT)
-                    this.props.navigation.navigate('Home');
+                  if (count_sensor == Equipment.length) {
+                    this.showSuccessToast("Update Success");
+                    this.props.navigation.navigate("Home");
                   }
                 }
-                else Toast.show('NetWord Fail!', Toast.SHORT)
+                this.showFailToast("NetWord Fail!");
               });
-            }
-            else 
-            {
-              Toast.show('Update Success', Toast.SHORT)
-              this.props.navigation.navigate('Home');
+            } else {
+              this.showSuccessToast("Update Success");
+              this.props.navigation.navigate("Home");
             }
           }
-          else Toast.show('NetWord Fail!', Toast.SHORT)
+          this.showFailToast("NetWord Fail!");
         }
-      } 
-      else Toast.show('Invalid Name', Toast.SHORT)
+      }
+      this.showFailToast("Invalid Name");
     });
 
     // if (name_equipment !== "") {
@@ -301,10 +305,8 @@ export default class AdvanceSettingDevice extends Component {
 
     //   } else this.setState({ msg: "Invalid dht sensor name" })
 
-
     // } else this.setState({ msg: "Invalid Pump name" })
-
-  }
+  };
   // Render mỗi mục trong danh sách farm
   // renderFarmItem = ({ item }) => (
   //   <TouchableOpacity onPress={() => this.handleFarmSelect(item.itemName)} key={index}>
@@ -347,15 +349,31 @@ export default class AdvanceSettingDevice extends Component {
         console.warn("Network fail!");
       }
     }
-
-  }
+  };
   onChange = (text, index) => {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const updatedEquipmentName = [...prevState.listEquipment];
       updatedEquipmentName[index] = text;
       return { listEquipment: updatedEquipmentName };
     });
-  }
+  };
+
+  // ========== BottomSheet ========== //
+  toggleBottomSheet = () => {
+    this.setState(
+      (prevState) => ({ isBottomSheetOpen: !prevState.isBottomSheetOpen }),
+      () => {
+        if (this.state.isBottomSheetOpen) {
+          this.bottomSheetRef.current.expand();
+        } else {
+          this.bottomSheetRef.current.close();
+        }
+      }
+    );
+  };
+
+  handleClosePress = () => this.bottomSheetRef.current?.close();
+
   render() {
     const { connect, msg } = this.state;
     const { Farm, selectedFarm, offset } = this.state;
@@ -371,15 +389,12 @@ export default class AdvanceSettingDevice extends Component {
             // placeholder={i18next.t("pump name")}
             style={styles.input}
             value={listEquipment[index]}
-            onChangeText={(text) =>
-              this.onChange(text,index)
-            }
+            onChangeText={(text) => this.onChange(text, index)}
           />
-        )
+        );
       });
-      
     }
-    
+
     return (
       <View style={styles.container}>
         <GestureHandlerRootView style={styles.container}>
@@ -410,7 +425,11 @@ export default class AdvanceSettingDevice extends Component {
                       onPress={() => this.toggleSetting("Setting")}
                       style={[
                         styles.btnOptionComponent,
-                        { borderRightWidth: 0.5 },
+                        {
+                          borderBottomColor:
+                            showSetting === "Setting" ? "#2BA84A" : "#DEDEDE",
+                          borderBottomWidth: showSetting === "Setting" ? 3 : 0.5,
+                        },
                       ]}
                     >
                       <Text
@@ -418,7 +437,7 @@ export default class AdvanceSettingDevice extends Component {
                           styles.optionComponentText,
                           {
                             color:
-                              showSetting === "Setting" ? "#333" : "#DEDEDE",
+                              showSetting === "Setting" ? "#2BA84A" : "#DEDEDE",
                           },
                         ]}
                       >
@@ -429,14 +448,19 @@ export default class AdvanceSettingDevice extends Component {
                       onPress={() => this.toggleSetting("Farm")}
                       style={[
                         styles.btnOptionComponent,
-                        { borderLefttWidth: 0.5 },
+                        {
+                          borderBottomColor:
+                            showSetting === "Farm" ? "#2BA84A" : "#DEDEDE",
+                          borderBottomWidth: showSetting === "Farm" ? 3 : 0.5,
+                        },
                       ]}
                     >
                       <Text
                         style={[
                           styles.optionComponentText,
                           {
-                            color: showSetting === "Farm" ? "#333" : "#DEDEDE",
+                            color:
+                              showSetting === "Farm" ? "#2BA84A" : "#DEDEDE",
                           },
                         ]}
                       >
@@ -455,9 +479,7 @@ export default class AdvanceSettingDevice extends Component {
                               alignItems: "center",
                             }}
                           >
-
-                            <Text style={styles.deviceName}>DEVICE NAME</Text>
-
+                            {/* <Text style={styles.deviceName}>{i18next.t("DEVICE NAME")}</Text> */}
                           </View>
                         </View>
                       </View>
@@ -471,9 +493,7 @@ export default class AdvanceSettingDevice extends Component {
                           </View>
                         </View>
                         <View style={styles.flex}>
-                          <View style={{ width: "90%" }}>
-                            {equip}
-                          </View>
+                          <View style={{ width: "90%" }}>{equip}</View>
                         </View>
                         <View style={styles.flex}>
                           <View style={styles.option}>
@@ -484,26 +504,27 @@ export default class AdvanceSettingDevice extends Component {
                               ]}
                             >
                               <Text>{i18next.t("Farm")}</Text>
-                              {Platform.OS === "android" && Farm.length !== 0 && (
-                                <Picker
-                                  style={{ width: 180 }}
-                                  mode="dropdown"
-                                  selectedValue={this.state.selectedFarm}
-                                  onValueChange={this.onValueChangeFarm.bind(
-                                    this
-                                  )}
-                                >
-                                  {this.state.Farm.map((item, index) => (
-                                    <Picker.Item
-                                      key={index}
-                                      color="#333"
-                                      label={item.itemName}
-                                      value={item.itemName}
-                                      index={index}
-                                    />
-                                  ))}
-                                </Picker>
-                              )}
+                              {Platform.OS === "android" &&
+                                Farm.length !== 0 && (
+                                  <Picker
+                                    style={{ width: 180 }}
+                                    mode="dropdown"
+                                    selectedValue={this.state.selectedFarm}
+                                    onValueChange={this.onValueChangeFarm.bind(
+                                      this
+                                    )}
+                                  >
+                                    {this.state.Farm.map((item, index) => (
+                                      <Picker.Item
+                                        key={index}
+                                        color="#333"
+                                        label={item.itemName}
+                                        value={item.itemName}
+                                        index={index}
+                                      />
+                                    ))}
+                                  </Picker>
+                                )}
                               {Platform.OS === "ios" && Farm.length !== 0 && (
                                 <TouchableOpacity
                                   style={styles.changeFarmArea}
@@ -529,7 +550,10 @@ export default class AdvanceSettingDevice extends Component {
                         </View>
                         <View style={styles.flex}>
                           <View style={{ width: "90%" }}>
-                            <TouchableOpacity style={styles.btnSave} onPress={this.UpdateDevice}>
+                            <TouchableOpacity
+                              style={styles.btnSave}
+                              onPress={this.UpdateDevice}
+                            >
                               <Text style={styles.btnSaveText}>Save</Text>
                             </TouchableOpacity>
                           </View>
@@ -576,10 +600,18 @@ export default class AdvanceSettingDevice extends Component {
                             >
                               {i18next.t("seconds")}
                             </Text>
-                            <TouchableOpacity style={[styles.btnSaveDuration]} onPress={this.UpdateDeviceOffset}>
-                              <Image source={require('../assets/img/diskette.png')}
-
-                                style={{ width: 14, height: 14, tintColor: 'white' }} />
+                            <TouchableOpacity
+                              style={[styles.btnSaveDuration]}
+                              onPress={this.UpdateDeviceOffset}
+                            >
+                              <Image
+                                source={require("../assets/img/diskette.png")}
+                                style={{
+                                  width: 14,
+                                  height: 14,
+                                  tintColor: "white",
+                                }}
+                              />
                             </TouchableOpacity>
                           </View>
                         </View>
@@ -603,7 +635,19 @@ export default class AdvanceSettingDevice extends Component {
                       <FlatList
                         style={{ marginBottom: 50 }}
                         data={Farm}
-                        renderItem={this.renderFarmItem}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            onPress={() => {
+                              this.onValueChangeFarm(item.itemName);
+                              this.handleClosePress(); // Đóng BottomSheet sau khi chọn
+                            }}
+                          >
+                            <Text style={styles.bottomSheetLngText}>
+                              {item.itemName}
+                            </Text>
+                            <View style={styles.line}></View>
+                          </TouchableOpacity>
+                        )}
                         keyExtractor={(item, index) => index.toString()}
                       />
                     </View>
@@ -622,6 +666,10 @@ const styles = StyleSheet.create({
   flex: {
     justifyContent: "center",
     alignItems: "center",
+  },
+  line: {
+    borderWidth: 0.5,
+    borderColor: "#DEDEDE",
   },
   switch: {
     ...Platform.select({
@@ -691,8 +739,8 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    borderBottomWidth: 0.5,
-    borderColor: "#DEDEDE",
+    // borderBottomWidth: 0.5,
+    // borderColor: "#DEDEDE",
   },
   optionComponentText: {
     textAlign: "center",
@@ -768,9 +816,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#edede9",
   },
   changeFarmArea: {
+    width: "70%",
     gap: 18,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-end",
     marginRight: 10,
   },
   btnSave: {
@@ -822,5 +872,12 @@ const styles = StyleSheet.create({
     fontSize: 23,
     fontWeight: "800",
     marginLeft: 20,
+  },
+  bottomSheetLngText: {
+    marginTop: 20,
+    marginBottom: 20,
+    marginLeft: 30,
+    marginRight: 30,
+    fontSize: 16,
   },
 });

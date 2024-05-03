@@ -13,7 +13,6 @@ import {
   Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-// import Toast from 'react-native-toast-message';
 import i18next, { languageResources } from "../services/i18next";
 import apiUrl from "../apiURL.js";
 import MyContext from "../DataContext.js";

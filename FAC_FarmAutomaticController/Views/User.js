@@ -52,6 +52,8 @@ export default class User extends Component {
     );
   };
 
+  handleClosePress = () => this.bottomSheetRef.current?.close();
+
   renderBackdrop = () => (
     <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} />
   );
@@ -62,7 +64,12 @@ export default class User extends Component {
   };
 
   renderLanguageItem = ({ item }) => (
-    <TouchableOpacity onPress={() => this.changeLng(item.key)}>
+    <TouchableOpacity
+      onPress={() => {
+        this.changeLng(item.key);
+        this.handleClosePress();
+      }}
+    >
       <Text style={styles.bottomSheetLngText}>
         {i18next.t(item.nativeName)}
       </Text>
@@ -75,9 +82,9 @@ export default class User extends Component {
     console.log("Pakage Premium Page");
     this.props.navigation.navigate("PremiumPakage");
   };
-  signout = () =>{
+  signout = () => {
     this.props.navigation.navigate("Login");
-  }
+  };
   render() {
     const { dataArray } = this.context;
     return (
@@ -88,7 +95,11 @@ export default class User extends Component {
             style={styles.NavigationTop}
           >
             <SafeAreaView
-              style={{ alignItems: "center", justifyContent: "center",height: 100 }}
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                height: 100,
+              }}
             >
               <Text style={styles.title}>{i18next.t("User information")}</Text>
             </SafeAreaView>
@@ -167,9 +178,7 @@ export default class User extends Component {
                   style={styles.btn}
                   onPress={this.PakagePremiumPage}
                 >
-                  <Text style={[styles.text]}>
-                    {i18next.t("Update")}
-                  </Text>
+                  <Text style={[styles.text]}>{i18next.t("Update")}</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.line}></View>
@@ -220,7 +229,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    marginRight: 10
+    marginRight: 10,
   },
   safeContainer: {
     width: "100%",
@@ -264,18 +273,19 @@ const styles = StyleSheet.create({
     borderRadius: 120,
   },
   textInfo: {
-    width: "95%",
+    width: "100%",
     marginTop: 3,
     marginBottom: 3,
     // paddingRight: 50,
     fontSize: 15,
     overflow: "hidden",
+    backgroundColor:'gray'
   },
   NavigationTop: {
     ...Platform.select({
       ios: {
         width: "100%",
-        height: '14%',
+        height: "14%",
         backgroundColor: "#73A942",
         borderBottomLeftRadius: 25,
         borderBottomRightRadius: 25,
@@ -299,7 +309,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 23,
     color: "#fff",
-    textAlignVertical: 'center'
+    textAlignVertical: "center",
   },
   titleText: {
     fontWeight: "bold",

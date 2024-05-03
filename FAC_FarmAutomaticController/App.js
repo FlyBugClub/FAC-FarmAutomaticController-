@@ -18,6 +18,7 @@ import "react-native-gesture-handler";
 import MyContext from "./DataContext.js";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import Toast from 'react-native-toast-message';
 
 import Login from "./Views/Login";
 import SignUp from "./Views/SignUp";
@@ -69,8 +70,8 @@ function StackNavigator() {
         name="AdvanceSettingDevice"
         component={AdvanceSettingDevice}
       />
-
       <Stack.Screen name="DateTime" component={DateTime} />
+      {/* <Toast/> */}
     </Stack.Navigator>
   );
 }
@@ -143,6 +144,7 @@ function TabNavigator() {
                     width: 30,
                     height: 30,
                     tintColor: "#fff",
+                    
                   }}
                 />
               </View>
@@ -223,6 +225,7 @@ export default RootComponent = function () {
     // Cập nhật mảng mới vào state
     setDataArray(newDataArray);
   };
+
   return (
     <MyContext.Provider value={{ dataArray, addDataAtIndex }}>
       <NavigationContainer>
@@ -236,6 +239,7 @@ export default RootComponent = function () {
           <Stack.Screen name="PremiumPakage" component={PremiumPakage} />
           <Stack.Screen name="CheckOut" component={CheckOut} />
         </Stack.Navigator>
+        <Toast/>
       </NavigationContainer>
     </MyContext.Provider>
   );

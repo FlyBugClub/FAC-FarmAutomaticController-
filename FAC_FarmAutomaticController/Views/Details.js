@@ -34,7 +34,7 @@ import * as Notifications from "expo-notifications";
 import { style, thresholdFreedmanDiaconis } from "d3";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import init from "react_native_mqtt";
-import Toast from "react-native-simple-toast";
+import Toast from 'react-native-toast-message';
 
 init({
   size: 10000,
@@ -233,6 +233,23 @@ export default class Details extends Component {
     clearInterval(this.intervalId);
     this.cancelled = true;
     console.log("ngatketnoi");
+  }
+
+  // ========== Toast ========== //
+  showSuccessToast(msg) {
+    Toast.show({
+      type: 'success',
+      text1: 'Success',
+      text2: msg
+    });
+  }
+
+  showFailToast(msg) {
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: msg
+    });
   }
 
   // ========== Notification ========== //
@@ -510,7 +527,7 @@ export default class Details extends Component {
     var newdatasets = [];
     const response = await fetch(url);
     if (!response.ok) {
-      Toast.show("NetWork Fail!", Toast.LONG);
+      this.showFailToast("NetWork Fail!");
       return;
     }
     const json = await response.json();
@@ -835,7 +852,7 @@ export default class Details extends Component {
 
     const response = await fetch(url);
     if (!response.ok) {
-      Toast.show("NetWork Fail!", Toast.SHORT);
+      // Toast.show("NetWork Fail!", Toast.SHORT);
       return;
     }
     const json = await response.json();
@@ -1162,6 +1179,7 @@ export default class Details extends Component {
     return (
       <GestureHandlerRootView style={styles.container}>
         <StatusBar backgroundColor="#2BA84A" />
+        
         <LinearGradient
           colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
           style={styles.BackDropTop}
