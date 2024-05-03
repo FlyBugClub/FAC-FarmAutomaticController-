@@ -3,7 +3,7 @@
     "welcome": "Chào mừng đến ứng dụng của tôi",
     "Language": "Ngôn ngữ",
     "User information": "Thông tin cá nhân",
-    "Username": "Tên người dùng",
+    "Username": "Người dùng",
     "Phone": "Điện thoại",
     "English": "Tiếng Anh",
     "Vietnamese": "Tiếng Việt",
@@ -86,5 +86,15 @@
     "seconds": "giây",
     "Duration": "Thời lượng bơm",
     "Password minimum 6 characters": "Mật khẩu có ít nhất 6 ký tự",
-    "dateFormat": "vi-VI"
+    "dateFormat": "vi-VI",
+    "Thứ Hai" : "T2",
+    "Thứ Ba" : "T3",
+    "Thứ Tư" : "T4",
+    "Thứ Năm" : "T5",
+    "Thứ Sáu" : "T6",
+    "Thứ Bảy" : "T7",
+    "Chủ Nhật" : "CN",
+    "error" : "Lỗi",
+    "Login error" : "Đăng nhập lỗi",
+    "Statistic" : "Thống kê"
   }

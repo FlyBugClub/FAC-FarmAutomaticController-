@@ -20,6 +20,9 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
 import { LineChart } from "react-native-chart-kit";
+import LineGraph from "@chartiful/react-native-line-graph";
+import VerticalBarGraph from "@chartiful/react-native-vertical-bar-graph";
+import HorizontalBarGraph from "@chartiful/react-native-horizontal-bar-graph";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -31,8 +34,7 @@ import * as Notifications from "expo-notifications";
 import { style, thresholdFreedmanDiaconis } from "d3";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import init from "react_native_mqtt";
-import Toast from 'react-native-simple-toast';
-
+import Toast from "react-native-simple-toast";
 
 init({
   size: 10000,
@@ -78,6 +80,7 @@ export default class Details extends Component {
     super(props);
     this.state = {
       status_mqtt: "disconnected",
+      showSetting: "Detail",
       statusManual: false,
       statusAuto: false,
       isEnabled: false,
@@ -143,6 +146,8 @@ export default class Details extends Component {
   cancelled = false;
 
   static contextType = MyContext;
+
+  // ========== Change Page ========== //
   HistoryPage = () => {
     // console.log("HistoryPage");
 
@@ -152,13 +157,19 @@ export default class Details extends Component {
   AdvanceSettingDevicePage = (index) => {
     const { Current_Data, thisEquipments } = this.state;
 
-    if (Current_Data["sensor"]["sl_dht"] == 0 && Current_Data["sensor"]["sl_ph"] == 0) {
-      this.props.navigation.navigate("AdvanceSettingDevice", { index: index, Equipment: [] }); // 'History' là tên của màn hình History trong định tuyến của bạn
-
-    }
-    else if (thisEquipments.length != 0) {
-      this.props.navigation.navigate("AdvanceSettingDevice", { index: index, Equipment: thisEquipments[index] }); // 'History' là tên của màn hình History trong định tuyến của bạn
-
+    if (
+      Current_Data["sensor"]["sl_dht"] == 0 &&
+      Current_Data["sensor"]["sl_ph"] == 0
+    ) {
+      this.props.navigation.navigate("AdvanceSettingDevice", {
+        index: index,
+        Equipment: [],
+      }); // 'History' là tên của màn hình History trong định tuyến của bạn
+    } else if (thisEquipments.length != 0) {
+      this.props.navigation.navigate("AdvanceSettingDevice", {
+        index: index,
+        Equipment: thisEquipments[index],
+      }); // 'History' là tên của màn hình History trong định tuyến của bạn
     }
   };
 
@@ -180,6 +191,7 @@ export default class Details extends Component {
     this.props.navigation.navigate("Home"); // 'History' là tên của màn hình History trong định tuyến của bạn
   };
 
+  // ========== Component ========== //
   componentDidMount() {
     const { dataArray } = this.context;
     this.setState({ id_esp: dataArray[1]["id_esp"] });
@@ -192,26 +204,15 @@ export default class Details extends Component {
 
     // Gọi hàm push vào mảng khi component được mount
     this.intervalId = setInterval(() => {
-      const { Current_Data } = this.state
-      if (Current_Data["sensor"]["sl_dht"] == 0 && Current_Data["sensor"]["sl_ph"] == 0) {
-        
-        console.log("ok")
-      }
-      else this.getvalue();
+      const { Current_Data } = this.state;
+      if (
+        Current_Data["sensor"]["sl_dht"] == 0 &&
+        Current_Data["sensor"]["sl_ph"] == 0
+      ) {
+        console.log("ok");
+      } else this.getvalue();
       // console.log(dataArray[1])
     }, 2000);
-  }
-
-  async schedulePushNotification() {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "fucking wow shit! 📬",
-        body: "Con me may :)))",
-        data: { data: "goes here" },
-      },
-      trigger: { seconds: 5 },
-    });
-    console.log("hello email");
   }
 
   componentWillUnmount() {
@@ -224,6 +225,20 @@ export default class Details extends Component {
     console.log("ngatketnoi");
   }
 
+  // ========== Notification ========== //
+  async schedulePushNotification() {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "fucking wow shit! 📬",
+        body: "Con me may :)))",
+        data: { data: "goes here" },
+      },
+      trigger: { seconds: 5 },
+    });
+    console.log("hello email");
+  }
+
+  // ========== Connect ========== //
   connect = () => {
     if (
       this.state.status_mqtt !== "isFetching" &&
@@ -249,15 +264,6 @@ export default class Details extends Component {
     isConnecting = false;
   };
 
-  onFailure = (err) => {
-    console.log(err);
-    this.setState({ status_mqtt: "fail" }, () => {
-      this.connect();
-    });
-
-    // this.setState({ status: '', subscribedTopic: '' });
-  };
-
   subscribeTopic = () => {
     client.subscribe(this.state.topic[0], { qos: 0 });
     client.subscribe(this.state.topic[1], { qos: 0 });
@@ -277,6 +283,17 @@ export default class Details extends Component {
     });
   };
 
+  // ========== MQTT ========== //
+  onFailure = (err) => {
+    console.log(err);
+    this.setState({ status_mqtt: "fail" }, () => {
+      this.connect();
+    });
+
+    // this.setState({ status: '', subscribedTopic: '' });
+  };
+
+  // ========== Switch Toggle ========== //
   toogle1in3 = (setIndex, buttonIndex) => {
     const { sliderValue } = this.state;
     this.setState(
@@ -308,6 +325,16 @@ export default class Details extends Component {
     });
   };
 
+  setbarvalue = (index) => {
+    this.setState((prevState) => {
+      const updatedButtons = prevState.switchAll.map((_, i) =>
+        i === index ? true : false
+      );
+      return { switchAll: updatedButtons };
+    });
+  };
+
+  // ========== Slider ========== //
   handleSliderChange = (index, value) => {
     flag = true;
     this.setState((prevState) => {
@@ -333,16 +360,7 @@ export default class Details extends Component {
     );
   };
 
-  setbarvalue = (index) => {
-    this.setState((prevState) => {
-      const updatedButtons = prevState.switchAll.map((_, i) =>
-        i === index ? true : false
-      );
-      return { switchAll: updatedButtons };
-    });
-  };
-
-  //Set Modal View
+  // ========== Set Modal View ========== //
   setModalVisible = (index) => {
     flag = true;
     // Tạo một bản sao của mảng switchStates để tránh thay đổi trực tiếp vào state
@@ -386,14 +404,14 @@ export default class Details extends Component {
     this.setState({ settingTimeModal: visible });
   };
 
-  //DateTime
+  // ========== DateTime ========== //
   toggleDatePicker = (index) => {
     flag = true;
     this.setState({ index_time: index });
     this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
   };
 
-  //DateTime IOS
+  // ========== DateTime IOS ========== //
   toggleDatePickerIOS = (index) => {
     this.setState({ index_time: index });
     this.setState((prevState) => ({ showPicker: !prevState.showPicker }));
@@ -467,11 +485,12 @@ export default class Details extends Component {
     }
   };
 
+  // ========== Get Value ========== //
   getvalue = async () => {
     isFunctionRunning = true;
-    const { dataArray, addDataAtIndex } = this.context
+    const { dataArray, addDataAtIndex } = this.context;
     const { id_esp, Current_Data } = this.state;
-    let dataArray2 = Current_Data
+    let dataArray2 = Current_Data;
     const url = apiUrl + `getsensorvalue/${dataArray2["id_esp"]}`;
     var thisEquipments = [];
     var newlegend = [];
@@ -481,72 +500,94 @@ export default class Details extends Component {
     var newdatasets = [];
     const response = await fetch(url);
     if (!response.ok) {
-      Toast.show('NetWork Fail!', Toast.LONG)
+      Toast.show("NetWork Fail!", Toast.LONG);
       return;
     }
     const json = await response.json();
     if (id_esp !== dataArray[1]["id_esp"]) {
-      dataArray2 = Current_Data
+      dataArray2 = Current_Data;
       addDataAtIndex(dataArray2, 1);
     }
 
     const keys = Object.keys(json[0]);
 
     if (keys.length === dataArray2["bc"]["sl"]) {
-      var data_value = []
+      var data_value = [];
       var datelist = [];
       for (let i = 0; i < dataArray2["bc"]["sl"]; i++) {
         let valuehumid = [];
         let valueph = [];
         let valuetemp = [];
         let thisEquipment = [];
-        if (json[0]["combo" + i.toString()].hasOwnProperty("DHT") && json[0]["combo" + i.toString()]["DHT"] !== undefined) {
+        if (
+          json[0]["combo" + i.toString()].hasOwnProperty("DHT") &&
+          json[0]["combo" + i.toString()]["DHT"] !== undefined
+        ) {
           id_check.push(json[0]["combo" + i.toString()]["DHT"]["id"]);
-          thisEquipment.push(json[0]["combo" + i.toString()]["DHT"]["id"])
+          thisEquipment.push(json[0]["combo" + i.toString()]["DHT"]["id"]);
           for (let j = 0; j < 6; j++) {
-            if (json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(j.toString())) {
-              datelist.push(json[0]["combo" + i.toString()]["DHT"][j.toString()]["datetime"]);
-              valuehumid.push(json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_humid"]);
-              valuetemp.push(json[0]["combo" + i.toString()]["DHT"][j.toString()]["value_temp"]);
-            }
-            else {
+            if (
+              json[0]["combo" + i.toString()]["DHT"].hasOwnProperty(
+                j.toString()
+              )
+            ) {
+              datelist.push(
+                json[0]["combo" + i.toString()]["DHT"][j.toString()]["datetime"]
+              );
+              valuehumid.push(
+                json[0]["combo" + i.toString()]["DHT"][j.toString()][
+                  "value_humid"
+                ]
+              );
+              valuetemp.push(
+                json[0]["combo" + i.toString()]["DHT"][j.toString()][
+                  "value_temp"
+                ]
+              );
+            } else {
               valuehumid.push(0);
 
               valuetemp.push(0);
             }
             if (j == 5) {
-              data_value.push(valuetemp)
-              data_value.push(valuehumid)
+              data_value.push(valuetemp);
+              data_value.push(valuehumid);
             }
           }
         }
 
-        if (json[0]["combo" + i.toString()].hasOwnProperty("PH") && json[0]["combo" + i.toString()]["PH"] !== undefined) {
+        if (
+          json[0]["combo" + i.toString()].hasOwnProperty("PH") &&
+          json[0]["combo" + i.toString()]["PH"] !== undefined
+        ) {
           id_check.push(json[0]["combo" + i.toString()]["PH"]["id"]);
-          thisEquipment.push(json[0]["combo" + i.toString()]["PH"]["id"])
+          thisEquipment.push(json[0]["combo" + i.toString()]["PH"]["id"]);
           for (let j = 0; j < 6; j++) {
-
-            if (json[0]["combo" + i.toString()]["PH"].hasOwnProperty(j.toString())) {
-              datelist.push(json[0]["combo" + i.toString()]["PH"][j.toString()]["datetime"]);
-              valueph.push(json[0]["combo" + i.toString()]["PH"][j.toString()]["value"]);
-            }
-            else {
+            if (
+              json[0]["combo" + i.toString()]["PH"].hasOwnProperty(j.toString())
+            ) {
+              datelist.push(
+                json[0]["combo" + i.toString()]["PH"][j.toString()]["datetime"]
+              );
+              valueph.push(
+                json[0]["combo" + i.toString()]["PH"][j.toString()]["value"]
+              );
+            } else {
               valueph.push(0);
             }
 
             if (j == 5) {
-              data_value.push(valueph)
+              data_value.push(valueph);
             }
           }
-
         }
 
-
-        thisEquipments.push(thisEquipment)
-        this.setState({ thisEquipments: thisEquipments })
+        thisEquipments.push(thisEquipment);
+        this.setState({ thisEquipments: thisEquipments });
       }
 
-      let sum_sensor = dataArray2["sensor"]["sl_dht"] + dataArray2["sensor"]["sl_ph"];
+      let sum_sensor =
+        dataArray2["sensor"]["sl_dht"] + dataArray2["sensor"]["sl_ph"];
       let jsonObject = {};
       for (let i = 0; i < sum_sensor; i++) {
         if (dataArray2["sensor"][i].hasOwnProperty("name_dht")) {
@@ -606,7 +647,6 @@ export default class Details extends Component {
       let monthen = (dateTimebegin.getMonth() + 1).toString().padStart(2, "0");
       let yearen = dateTimebegin.getFullYear() % 100;
 
-
       timeDuration.push(`${dateen}/${monthen}/${yearen}`);
       timeDuration.push(`${hoursen}:${minutesen}:${secondsen}`);
       timeDuration.push(`${datebe}/${monthbe}/${yearbe}`);
@@ -616,7 +656,7 @@ export default class Details extends Component {
       newlabels.push("");
       newlabels.push("");
       newlabels.push(`${hoursen}:${minutesen}:${secondsen}`);
-     
+
       var reversedArray = newlabels.reverse();
       if (
         reversedArray[0] === "NaN:NaN:NaN" &&
@@ -646,14 +686,6 @@ export default class Details extends Component {
 
       isFunctionRunning = false;
     }
-  };
-
-  handleOpenPress = () => this.bottomSheetRef.current?.expand();
-  handleClosePress = () => this.bottomSheetRef.current?.close();
-
-  handleCancelPress = () => {
-    this.setState({ showPicker: false }); // Đặt showPicker thành false để ẩn picker
-    this.toggleBottomSheet(); // Gọi hàm toggleBottomSheet để đóng bottomSheet
   };
 
   sendMessage = () => {
@@ -693,24 +725,24 @@ export default class Details extends Component {
       var message = new Paho.MQTT.Message(jsonString);
       message.destinationName = this.state.topic[0];
       client.send(message);
-      this.SendLastStatus(Data,dataArray[1]["id_esp"]);
+      this.SendLastStatus(Data, dataArray[1]["id_esp"]);
     }
   };
-  SendLastStatus = async (Message,id_esp) => {
-    const url = apiUrl + "laststatus"
+  SendLastStatus = async (Message, id_esp) => {
+    const url = apiUrl + "laststatus";
     let result = await fetch(url, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        "id_esp": id_esp,
-        "json_esp": Message
+        id_esp: id_esp,
+        json_esp: Message,
       }),
     });
     result = await result.json();
-  }
+  };
   onMessageArrived = (message) => {
     const slidebarvalue = [];
     const { Current_Data } = this.state;
@@ -723,25 +755,37 @@ export default class Details extends Component {
 
     if (
       jsonData["id_esp"] == Current_Data["id_esp"] &&
-      client.isConnected() == true && message.topic === this.state.topic[1]
+      client.isConnected() == true &&
+      message.topic === this.state.topic[1]
     ) {
       let count = 0;
       for (const key in jsonData) {
         const SwitchStates = [];
         if (key.startsWith("equipment")) {
           const data = jsonData[key];
-          slidebarvalue.push(data["equipment" + count.toString()]["expect_value"]);
+          slidebarvalue.push(
+            data["equipment" + count.toString()]["expect_value"]
+          );
           value.push(data["equipment" + count.toString()]["expect_value"]);
 
-          if (data["equipment" + count.toString()]["automode"] === "0" && data["equipment" + count.toString()]["status"] === 1) {
+          if (
+            data["equipment" + count.toString()]["automode"] === "0" &&
+            data["equipment" + count.toString()]["status"] === 1
+          ) {
             SwitchStates.push(true);
             SwitchStates.push(false);
             SwitchStates.push(false);
-          } else if (data["equipment" + count.toString()]["automode"] === "1" && data["equipment" + count.toString()]["status"] === 1) {
+          } else if (
+            data["equipment" + count.toString()]["automode"] === "1" &&
+            data["equipment" + count.toString()]["status"] === 1
+          ) {
             SwitchStates.push(true);
             SwitchStates.push(true);
             SwitchStates.push(false);
-          } else if (data["equipment" + count.toString()]["automode"] === "2" && data["equipment" + count.toString()]["status"] === 1) {
+          } else if (
+            data["equipment" + count.toString()]["automode"] === "2" &&
+            data["equipment" + count.toString()]["status"] === 1
+          ) {
             SwitchStates.push(true);
             SwitchStates.push(false);
             SwitchStates.push(true);
@@ -776,7 +820,7 @@ export default class Details extends Component {
 
     const response = await fetch(url);
     if (!response.ok) {
-      Toast.show('NetWork Fail!', Toast.SHORT)
+      Toast.show("NetWork Fail!", Toast.SHORT);
       return;
     }
     const json = await response.json();
@@ -829,11 +873,23 @@ export default class Details extends Component {
     this.setState({ switchStates: newSwitchStates });
   };
 
-  //Picker
+  // ========== Picker ========== //
   async onValueChangeCat(value) {
-
     this.setState({ selecedCat: value });
   }
+
+  handleOpenPress = () => this.bottomSheetRef.current?.expand();
+  handleClosePress = () => this.bottomSheetRef.current?.close();
+
+  handleCancelPress = () => {
+    this.setState({ showPicker: false }); // Đặt showPicker thành false để ẩn picker
+    this.toggleBottomSheet(); // Gọi hàm toggleBottomSheet để đóng bottomSheet
+  };
+
+  // ========== Choose option ========== //
+  toggleSetting = (settingType) => {
+    this.setState({ showSetting: settingType });
+  };
 
   // ========== Refresh ========== //
   pullMe = () => {
@@ -841,22 +897,28 @@ export default class Details extends Component {
     setTimeout(() => {
       this.setState({ refresh: false });
       this.getvalueequipment();
-      const { Current_Data } = this.state
-      if (Current_Data["sensor"]["sl_dht"] != 0 && Current_Data["sensor"]["sl_ph"] != 0) {
+      const { Current_Data } = this.state;
+      if (
+        Current_Data["sensor"]["sl_dht"] != 0 &&
+        Current_Data["sensor"]["sl_ph"] != 0
+      ) {
         this.getvalue();
       }
     }, 1000);
   };
 
   render() {
+    let count = 0;
+
+    const deviceList = [];
+    const legends = this.state.datachart.legend;
     const { refresh } = this.state; //Refresh
     const { dataArray } = this.context;
-    const legends = this.state.datachart.legend;
-
-    //Switch
-    const { switchStates, Current_Data, topic_flag, thisEquipments } = this.state;
+    const { showSetting } = this.state; //Show Option
     const { datachart } = this.state;
-    let count = 0;
+    const { switchStates, Current_Data, topic_flag, thisEquipments } =
+      this.state; //Switch
+
     // Chia mảng legend thành các mảng con mỗi khi cần xuống dòng
     const chunkedLegends = [];
     const chunkSize = 3; // Số lượng legend trên mỗi dòng
@@ -865,13 +927,8 @@ export default class Details extends Component {
     }
 
     //API
-    const {
-      name_bc,
-      timelist,
-      sliderValue,
-      isEnabled,
-      timeDuration,
-    } = this.state;
+    const { name_bc, timelist, sliderValue, isEnabled, timeDuration } =
+      this.state;
 
     const dateStr1 = timeDuration[0];
     const dateParts1 = dateStr1.split("/");
@@ -888,12 +945,9 @@ export default class Details extends Component {
 
     //Modal
     const { modalVisible, settingTimeModal } = this.state;
+
     //DateTime
     const { dateTime, showPicker } = this.state;
-
-    const deviceList = [];
-
-    // console.log(timelist)
 
     if (
       name_bc !== 0 &&
@@ -1101,21 +1155,23 @@ export default class Details extends Component {
           <SafeAreaView>
             <View style={styles.TitleTopArea}>
               <Text style={styles.TitleTop}>{Current_Data["name"]}</Text>
-              <Text
-                style={{
-                  textAlign: "center",
-                  color: "white",
-                  marginTop: -10,
-                  fontWeight: "500",
-                }}
-              >
-                {Current_Data["decription"]}
-              </Text>
+              {Current_Data["decription"] && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    marginTop: -10,
+                    fontWeight: "500",
+                  }}
+                >
+                  {Current_Data["decription"]}
+                </Text>
+              )}
             </View>
           </SafeAreaView>
           <SafeAreaView style={styles.btnSetting}>
             <TouchableOpacity
-              style={{marginLeft: 20}}
+              style={{ marginLeft: 20 }}
               onPress={this.HomePage}
             >
               <Image
@@ -1124,7 +1180,7 @@ export default class Details extends Component {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              style={{marginRight: 20}}
+              style={{ marginRight: 20 }}
               onPress={this.UpdateFarmPage}
             >
               <Image
@@ -1134,110 +1190,61 @@ export default class Details extends Component {
             </TouchableOpacity>
           </SafeAreaView>
         </LinearGradient>
-        <ScrollView
-          style={styles.body}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refresh} onRefresh={this.pullMe} />
-          }
-        >
-
-          <TouchableOpacity onPress={this.HistoryPage}>
-            {chunkedLegends.map((legendRow, rowIndex) => {
-              return (
-                <View style={styles.flex} key={rowIndex}>
-                  <View key={rowIndex} style={styles.legendWidth}>
-                    <View style={styles.legendSpace}>
-                      {legendRow.map((legend, legendIndex) => {
-                        count++;
-                        return (
-                          <View style={styles.legendPart}>
-                            <View
-                              style={[
-                                styles.legendDot,
-                                { backgroundColor: `rgba(${colors[count - 1]}, 1)` },
-                              ]}
-                            ></View>
-                            <Text style={styles.legendText} key={legendIndex}>
-                              {legend}
-                            </Text>
-                          </View>
-                        )
-                      })}
-                    </View>
-                  </View>
-                </View>
-              )
-              c
-            })}
-            <View>
-              <LineChart
-                data={{
-                  ...this.state.datachart,
-                  legend: Array(legends.length).fill(""), // Chuyển legend trên biểu đồ thành các legend rỗng
-                }}
-                width={screenWidth}
-                height={200}
-                fromZero={true}
-                verticalLabelRotation={0}
-                chartConfig={{
-                  ...chartConfig,
-                  withHorizontalLabels: false, // Ẩn legend ngang
-                  withVerticalLabels: false, // Ẩn legend dọc
-                }}
-                yAxisSuffix="%"
-                bezier
-              />
-              <View style={styles.backgroundCover}></View>
-            </View>
+        <View style={styles.optionComponent}>
+          <TouchableOpacity
+            onPress={() => this.toggleSetting("Detail")}
+            style={[
+              styles.btnOptionComponent,
+              {
+                borderBottomColor:
+                  showSetting === "Detail" ? "#2BA84A" : "#DEDEDE",
+                borderBottomWidth: showSetting === "Detail" ? 3 : 0.5,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.optionComponentText,
+                {
+                  color: showSetting === "Detail" ? "#2BA84A" : "#DEDEDE",
+                },
+              ]}
+            >
+              {i18next.t("Control")}
+            </Text>
           </TouchableOpacity>
-
-          <View style={styles.dateTimeArea}>
-            <View style={[styles.flex, styles.dateTimePart]}>
-              <View style={styles.flex}>
-                <Image
-                  source={require("../assets/img/calendar.png")}
-                  style={styles.imgDateTimeNote}
-                />
-                {i18next.t("dateFormat") === "vi-VI" && (
-                  <Text style={{ color: "white" }}>{timeDuration[0]}</Text>
-                )}
-                {i18next.t("dateFormat") === "en-EN" && (
-                  <Text style={{ color: "white" }}>{formattedDateStr1}</Text>
-                )}
-              </View>
-              <View style={styles.flex}>
-                <Image
-                  source={require("../assets/img/clock.png")}
-                  style={styles.imgDateTimeNote}
-                />
-                <Text style={{ color: "white" }}>{timeDuration[1]}</Text>
-              </View>
-            </View>
-            <View style={[styles.flex, styles.dateTimePart]}>
-              <View style={styles.flex}>
-                <Image
-                  source={require("../assets/img/calendar.png")}
-                  style={styles.imgDateTimeNote}
-                />
-                {i18next.t("dateFormat") === "vi-VI" && (
-                  <Text style={{ color: "white" }}>{timeDuration[2]}</Text>
-                )}
-                {i18next.t("dateFormat") === "en-EN" && (
-                  <Text style={{ color: "white" }}>{formattedDateStr2}</Text>
-                )}
-              </View>
-              <View style={styles.flex}>
-                <Image
-                  source={require("../assets/img/clock.png")}
-                  style={styles.imgDateTimeNote}
-                />
-                <Text style={{ color: "white" }}>{timeDuration[3]}</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* <View style={styles.midle}>
+          <TouchableOpacity
+            onPress={() => this.toggleSetting("Statistics")}
+            style={[
+              styles.btnOptionComponent,
+              {
+                borderBottomColor:
+                  showSetting === "Statistics" ? "#2BA84A" : "#DEDEDE",
+                borderBottomWidth: showSetting === "Statistics" ? 3 : 0.5,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.optionComponentText,
+                {
+                  color: showSetting === "Statistics" ? "#2BA84A" : "#DEDEDE",
+                },
+              ]}
+            >
+              {i18next.t("Statistic")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {showSetting === "Detail" && (
+          <ScrollView
+            style={styles.body}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refresh} onRefresh={this.pullMe} />
+            }
+          >
+            {/* <View style={styles.midle}>
             <View style={styles.alarm}>
               <Text style={{ color: "#F12525" }}>
                 <Text style={{ color: "#F12525", fontWeight: "bold" }}>
@@ -1248,9 +1255,9 @@ export default class Details extends Component {
               </Text>
             </View>
           </View> */}
-          <View style={styles.midle}>
-            <View style={{ width: "95%" }}>
-              {/* <View style={styles.dropdownOptionArea}>
+            <View style={styles.midle}>
+              <View style={{ width: "95%" }}>
+                {/* <View style={styles.dropdownOptionArea}>
                 <Text style={styles.dropdownOptionText}>Control</Text>
                 <View>
                   <Picker
@@ -1270,34 +1277,158 @@ export default class Details extends Component {
                   </Picker>
                 </View>
               </View> */}
-              {this.state.selecedCat === "All" && (
-                <View>
-                  <Text style={styles.titleNote}>
-                    {i18next.t("All control")}
-                  </Text>
-                  <View style={styles.optionArea}></View>
-                </View>
-              )}
+                {this.state.selecedCat === "All" && (
+                  <View>
+                    <Text style={styles.titleNote}>
+                      {i18next.t("All control")}
+                    </Text>
+                    <View style={styles.optionArea}></View>
+                  </View>
+                )}
 
-              {this.state.selecedCat === "Independence" && (
-                <View>
-                  <Text style={styles.titleNote}>
-                    {i18next.t("Custom control")}
-                  </Text>
-                  {deviceList}
-                  {showPicker && Platform.OS === "android" && (
-                    <DateTimePicker
-                      mode="time"
-                      display="spinner"
-                      value={dateTime}
-                      onChange={this.onChange}
-                    />
-                  )}
-                </View>
-              )}
+                {this.state.selecedCat === "Independence" && (
+                  <View>
+                    {/* <Text style={styles.titleNote}>
+                      {i18next.t("Custom control")}
+                    </Text> */}
+                    {deviceList}
+                    {showPicker && Platform.OS === "android" && (
+                      <DateTimePicker
+                        mode="time"
+                        display="spinner"
+                        value={dateTime}
+                        onChange={this.onChange}
+                      />
+                    )}
+                  </View>
+                )}
+              </View>
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        )}
+        {showSetting === "Statistics" && (
+          <ScrollView
+            style={styles.body}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refresh} onRefresh={this.pullMe} />
+            }
+          >
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              {/* <View style={styles.box}> */}
+                <TouchableOpacity onPress={this.HistoryPage}>
+                  {chunkedLegends.map((legendRow, rowIndex) => {
+                    return (
+                      <View style={styles.flex} key={rowIndex}>
+                        <View key={rowIndex} style={styles.legendWidth}>
+                          <View style={styles.legendSpace}>
+                            {legendRow.map((legend, legendIndex) => {
+                              count++;
+                              return (
+                                <View style={styles.legendPart}>
+                                  <View
+                                    style={[
+                                      styles.legendDot,
+                                      {
+                                        backgroundColor: `rgba(${
+                                          colors[count - 1]
+                                        }, 1)`,
+                                      },
+                                    ]}
+                                  ></View>
+                                  <Text
+                                    style={styles.legendText}
+                                    key={legendIndex}
+                                  >
+                                    {legend}
+                                  </Text>
+                                </View>
+                              );
+                            })}
+                          </View>
+                        </View>
+                      </View>
+                    );
+                    c;
+                  })}
+                  <View>
+                    <LineChart
+                      data={{
+                        ...this.state.datachart,
+                        legend: Array(legends.length).fill(""), // Chuyển legend trên biểu đồ thành các legend rỗng
+                      }}
+                      width={screenWidth}
+                      height={200}
+                      fromZero={true}
+                      verticalLabelRotation={0}
+                      chartConfig={{
+                        ...chartConfig,
+                        withHorizontalLabels: false, // Ẩn legend ngang
+                        withVerticalLabels: false, // Ẩn legend dọc
+                      }}
+                      yAxisSuffix="%"
+                      bezier
+                    />
+                    <View style={styles.backgroundCover}></View>
+                  </View>
+                </TouchableOpacity>
+                <View style={styles.dateTimeArea}>
+                  <View style={[styles.flex, styles.dateTimePart]}>
+                    <View style={styles.flex}>
+                      <Image
+                        source={require("../assets/img/calendar.png")}
+                        style={styles.imgDateTimeNote}
+                      />
+                      {i18next.t("dateFormat") === "vi-VI" && (
+                        <Text style={{ color: "white" }}>
+                          {timeDuration[0]}
+                        </Text>
+                      )}
+                      {i18next.t("dateFormat") === "en-EN" && (
+                        <Text style={{ color: "white" }}>
+                          {formattedDateStr1}
+                        </Text>
+                      )}
+                    </View>
+                    <View style={styles.flex}>
+                      <Image
+                        source={require("../assets/img/clock.png")}
+                        style={styles.imgDateTimeNote}
+                      />
+                      <Text style={{ color: "white" }}>{timeDuration[1]}</Text>
+                    </View>
+                  </View>
+                  <View style={[styles.flex, styles.dateTimePart]}>
+                    <View style={styles.flex}>
+                      <Image
+                        source={require("../assets/img/calendar.png")}
+                        style={styles.imgDateTimeNote}
+                      />
+                      {i18next.t("dateFormat") === "vi-VI" && (
+                        <Text style={{ color: "white" }}>
+                          {timeDuration[2]}
+                        </Text>
+                      )}
+                      {i18next.t("dateFormat") === "en-EN" && (
+                        <Text style={{ color: "white" }}>
+                          {formattedDateStr2}
+                        </Text>
+                      )}
+                    </View>
+                    <View style={styles.flex}>
+                      <Image
+                        source={require("../assets/img/clock.png")}
+                        style={styles.imgDateTimeNote}
+                      />
+                      <Text style={{ color: "white" }}>{timeDuration[3]}</Text>
+                    </View>
+                  </View>
+                </View>
+              {/* </View> */}
+            </View>
+          </ScrollView>
+        )}
+
         {/* DateTimePicker */}
         {showPicker && Platform.OS === "ios" && (
           <BottomSheet
@@ -1420,6 +1551,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  box: {
+    width: "95%",
+    backgroundColor: "white",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
   switch: {
     ...Platform.select({
       ios: {
@@ -1457,16 +1598,41 @@ const styles = StyleSheet.create({
   btnSetting: {
     width: "100%",
     position: "absolute",
-    top: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between'
+    top: "5%",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   body: {
     flex: 1,
-    top: -23,
+    top: -28,
     backgroundColor: "#fff",
+    // borderTopLeftRadius: 24,
+    // borderTopRightRadius: 24,
+  },
+  optionComponent: {
+    top: -23,
+    height: 58,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    marginBottom: 10,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    backgroundColor: "white",
+  },
+  btnOptionComponent: {
+    width: "50%",
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    // borderBottomWidth: 0.5,
+    // borderColor: "#DEDEDE",
+  },
+  optionComponentText: {
+    textAlign: "center",
+    textAlignVertical: "center",
+    fontSize: 18,
+    fontWeight: "500",
   },
   //Legend Chart
   legendWidth: {
@@ -1505,6 +1671,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+    marginBottom: 10,
   },
   dateTimePart: {
     backgroundColor: "#2BA84A",
