@@ -4,7 +4,7 @@
   #include <ESP8266HTTPClient.h>
   #include <WiFiManager.h> // Thêm khai báo thư viện WiFiManager
   #include <ArduinoJson.h>
-  #include "secret_pass.h"
+  // #include "secret_pass.h"
   #include <PubSubClient.h>
   #include <Wire.h>
   #include "Adafruit_SHT31.h"
@@ -18,7 +18,7 @@
   struct Equipment {
       char id_sensor[20];
       char id_bc[20];
-      char** schedule;
+      char** schedule;  
       size_t schedule_size;
   };
 
@@ -29,7 +29,7 @@
   int expect_values[MAX_EQUIPMENTS];
   int statuses[MAX_EQUIPMENTS];
   int count = 0;
-  
+  char id_sensor[20];
   size_t num_equipments = 0;
 //region Constants
   const char* ntpServer = "pool.ntp.org";
@@ -53,27 +53,35 @@
   int minute;
   int second;
   int totalSeconds = hour * 3600 + minute * 60 + second;
-  const int buttonPin = 14; // GPIO pin where the button is connected
-     int count_interupt = 0;
 
-    void  myInterruptFunction() {
-      // has_interrupted = true;
-          Serial.println(count_interupt);
+  int buttonCount = 0; // Biến lưu trữ số lần nhấn nút
+  volatile bool buttonFlag = true; // Biến cờ kiểm tra có ngắt xảy ra hay không
 
-      if (count_interupt == 0)
-      {
-          Serial.println("nut da an");
-          count_interupt  = 1;
-      }
-      else {
-        Serial.println("reset");
-          count_interupt  = 0;
-      } 
-      
-      delay(100);
-      
-      //  activateAPMode();
-    }
+
+
+    ICACHE_RAM_ATTR void buttonPressed() {
+  // Tăng biến đếm số lần nhấn nút
+  if (buttonCount == 0)
+  { 
+    digitalWrite(2,LOW);
+    digitalWrite(16,HIGH);
+    Serial.println("config wifi btton click");
+    buttonCount = 1;
+    buttonFlag = false;
+    delay(10);
+  }
+  else 
+  {
+    Serial.println("reset btton click");
+    buttonCount = 0;
+    resetESP();
+    buttonFlag = true;
+    delay(10);
+
+  }
+  // Đặt biến cờ thành true
+  
+}
 
 
   const char* mqtt_server = "broker.emqx.io";
@@ -131,10 +139,12 @@
     pinMode(buttonReset, INPUT_PULLUP);
     Serial.begin(9600);
     delay(100);
-    attachInterrupt(digitalPinToInterrupt(buttonPin), myInterruptFunction, RISING); // Configure the interrupt
-
+    pinMode (2,OUTPUT);
+    pinMode (16,OUTPUT);
+  // Đăng ký ngắt cho chân GPIO 0, gọi hàm buttonPressed khi có tín hiệu từ mức cao xuống thấp
+    attachInterrupt(0, buttonPressed, RISING);
     // Connect to WiFi
-    // connectToWiFi();
+    connectToWiFi();
 
     // Initialize SHT31 sensor
     sht31.begin(0x44);
@@ -146,18 +156,25 @@
     client.setServer(mqtt_server, mqtt_port);
     
     client.setCallback(callback);
-    pinMode(buttonPin, INPUT_PULLUP); // Configure the pin as an input with internal pull-up resistor
+    // digitalWrite(2,HIGH);
+    // digitalWrite(16,LOW);
+    // Configure the pin as an input with internal pull-up resistor
   }
   int soLan = 0;
 //region loop
   void loop() {
+    if (buttonFlag) {
+    
+    // Serial.println("heheeh");
     //region config
-      // if (!WiFi.isConnected()) {
-      //     connectToWiFi();
-      //   }
+      if (!WiFi.isConnected()) {
+          connectToWiFi();
+        }
       if (!client.connected()) {
         reconnect();
         }
+        digitalWrite(2,LOW);
+    digitalWrite(16,HIGH);
       String formattedDateTime;
       getCurrentDateTime(formattedDateTime);
       // if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
@@ -220,7 +237,7 @@
       Serial.println("=======================================");
       delay(10000);
     //endregion stuff
-
+    }
   }
 //region stuff
   void printValues() {
@@ -778,7 +795,7 @@
 //region connect wifi and sensor
   void connectToWiFi() {
     Serial.println("Starting connection to WiFi");
-    WiFi.begin(ssid, pass);
+    WiFi.begin("Basic Coffee", "");
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(100);
