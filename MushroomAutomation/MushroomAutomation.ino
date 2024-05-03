@@ -53,7 +53,7 @@
   int minute;
   int second;
   int totalSeconds = hour * 3600 + minute * 60 + second;
-
+//region interupt
   int buttonCount = 0; // Biến lưu trữ số lần nhấn nút
   volatile bool buttonFlag = true; // Biến cờ kiểm tra có ngắt xảy ra hay không
 
@@ -81,8 +81,8 @@
   }
   // Đặt biến cờ thành true
   
-}
-
+  }
+//endregion interupt
 
   const char* mqtt_server = "broker.emqx.io";
   const uint16_t mqtt_port = 1883;
