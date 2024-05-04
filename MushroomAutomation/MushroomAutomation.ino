@@ -796,7 +796,7 @@
 //region connect wifi and sensor
   void connectToWiFi() {
     Serial.println("Starting connection to WiFi");
-    WiFi.begin("Basic Coffee", "");
+    WiFi.begin(ssid, pass);
 
     while (WiFi.status() != WL_CONNECTED) {
         delay(100);
