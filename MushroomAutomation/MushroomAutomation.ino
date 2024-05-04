@@ -4,7 +4,7 @@
   #include <ESP8266HTTPClient.h>
   #include <WiFiManager.h> // Thêm khai báo thư viện WiFiManager
   #include <ArduinoJson.h>
-  // #include "secret_pass.h"
+  #include "secret_pass.h"
   #include <PubSubClient.h>
   #include <Wire.h>
   #include "Adafruit_SHT31.h"
