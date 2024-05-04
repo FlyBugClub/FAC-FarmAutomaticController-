@@ -106,5 +106,6 @@
     "This QR code has already used": "Mã QR này đã được sử dụng",
     "Update Success": "Cập nhật thành công",
     "Invalid Name": "Tên không khả dụng",
-    "update duration time success": "Cập nhật thời lượng bơm thành công"
+    "update duration time success": "Cập nhật thời lượng bơm thành công",
+    "langForecast": "vi"
   }

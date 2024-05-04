@@ -106,5 +106,6 @@
   "This QR code has already used": "This QR code has already used",
   "Update Success": "Update Success",
   "Invalid Name": "Invalid Name",
-  "update duration time success": "update duration time success"
+  "update duration time success": "update duration time success",
+  "langForecast": "en"
 }

@@ -1192,7 +1192,7 @@ export default class Details extends Component {
                   style={{
                     textAlign: "center",
                     color: "white",
-                    marginTop: -10,
+                    marginTop: 0,
                     fontWeight: "500",
                   }}
                 >

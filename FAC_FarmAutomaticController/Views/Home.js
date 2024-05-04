@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Location from "expo-location";
 import { Component, useState, useContext } from "react";
 import {
   StyleSheet,
@@ -8,17 +9,60 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  FlatList,
   StatusBar,
   Platform,
   RefreshControl,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import dayjs from "dayjs";
 import i18next, { languageResources } from "../services/i18next";
 import apiUrl from "../apiURL.js";
 import MyContext from "../DataContext.js";
 // import { index } from "d3-array";
 // import axios from "axios";
+
+const BASE_URL = `https://api.openweathermap.org/data/2.5`;
+const OPEN_WEATHER_KEY = "ca9bee4705e996061e20afbc2e5f96fa";
+
+let MainWeather = {
+  temp: 0,
+  feels_like: 0,
+  temp_min: 0,
+  temp_max: 0,
+  pressure: 0,
+  humidity: 0,
+};
+
+let Weather = {
+  name: "",
+  main: MainWeather,
+  weather: [
+    {
+      id: 0,
+      main: "",
+      description: "",
+      icon: "",
+    },
+  ],
+};
+
+let WeatherForecast = {
+  name: "",
+  main: MainWeather,
+  dt: 0,
+  weather: [
+    {
+      id: 0,
+      main: "",
+      description: "",
+      icon: "",
+    },
+  ],
+};
+
 const data = [];
 
 export default class Home extends Component {
@@ -30,6 +74,10 @@ export default class Home extends Component {
       listfarm: [],
       msg: "",
       isConnect: {},
+      weather: null,
+      forecast: [],
+      location: null,
+      errorMsg: "",
     };
   }
 
@@ -84,6 +132,43 @@ export default class Home extends Component {
     }
   };
 
+  // ========== Weather API ========== //
+  fetchWeather = async () => {
+    let location = await Location.getCurrentPositionAsync({});
+    let langForecast = i18next.t("langForecast");
+
+    if (!location) {
+      return;
+    }
+
+    const results = await fetch(
+      `${BASE_URL}/weather?lat=${location.coords.latitude}&lon=${location.coords.longitude}&appid=${OPEN_WEATHER_KEY}&units=metric&lang=${langForecast}`
+    );
+    const data = await results.json();
+    // console.log(JSON.stringify(data, null, 2));
+    Weather = data;
+    this.setState({ weather: Weather });
+  };
+
+  fetchForecast = async () => {
+    //api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+    let location = await Location.getCurrentPositionAsync({});
+    let langForecast = i18next.t("langForecast");
+
+    if (!location) {
+      return;
+    }
+
+    const results = await fetch(
+      `${BASE_URL}/forecast?lat=${location.coords.latitude}&lon=${location.coords.longitude}&appid=${OPEN_WEATHER_KEY}&units=metric&lang=${langForecast}`
+    );
+    const data = await results.json();
+    // console.log("fetchForecast: ", JSON.stringify(data, null, 2));
+    WeatherForecast = data;
+    this.setState({ forecast: WeatherForecast.list });
+  };
+
+  // ========== Component ========== //
   componentWillUnmount() {
     // Dừng vòng lặp khi trang được thoát
     clearInterval(this.intervalId);
@@ -91,6 +176,7 @@ export default class Home extends Component {
       this.focusListener();
     }
   }
+
   componentDidMount = async () => {
     this.fetchData();
     this.focusListener = this.props.navigation.addListener("focus", () => {
@@ -108,8 +194,36 @@ export default class Home extends Component {
         this.fetchIsConnect();
       } else this.fetchData();
     }, 3000);
+
+    // ===== Weather ===== //
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        this.setState({ errorMsg: "Permission to access location was denied" });
+        return;
+      }
+
+      try {
+        let location = await Location.getCurrentPositionAsync({});
+        // console.log("Location: ", JSON.stringify(location, null, 2));
+        this.setState({ location });
+      } catch (error) {
+        Alert.alert("Error", error.message);
+      }
+    })();
+
+    // this.fetchWeather();
+    // this.fetchForecast();
   };
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.location !== prevState.location && this.state.location) {
+      this.fetchWeather();
+      this.fetchForecast();
+    }
+  }
+
+  // ==========  ========== //
   static contextType = MyContext;
   GetEquidmentValues = async (index) => {
     const { addDataAtIndex } = this.context;
@@ -127,11 +241,18 @@ export default class Home extends Component {
 
   render() {
     const { height } = Dimensions.get("window");
-    const { refresh } = this.state;
-    const { connect } = this.state;
+    const {
+      refresh,
+      connect,
+      weather,
+      forecast,
+      location,
+      errorMsg,
+      listfarm,
+      isConnect,
+    } = this.state;
 
     const { dataArray } = this.context;
-    const { listfarm, isConnect } = this.state;
     const farmHouseList = [];
 
     var name_user = " ";
@@ -140,6 +261,20 @@ export default class Home extends Component {
     // console.log(listfarm)
     // console.log(isConnect)
 
+    // ========== Weather API ========== //
+    if (!weather) {
+      return <ActivityIndicator />;
+    }
+
+    const temperatureNumber = weather.main.temp; // Chuỗi cần cắt
+    const temperatureString = temperatureNumber.toString();
+
+    // Tách phần nguyên và phần thập phân
+    const temperatureParts = temperatureString.split(".");
+    const temperatureIntegerPart = temperatureParts[0];
+    const temperatureDecimalPart = temperatureParts[1];
+
+    // ==========  ========== //
     if (listfarm.length !== 0 && isConnect !== undefined) {
       name_user = listfarm["user"]["name"];
       for (const key in listfarm["equipment"]) {
@@ -235,7 +370,7 @@ export default class Home extends Component {
     }
     return (
       <View style={styles.safeContainer}>
-        <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
+        <StatusBar backgroundColor="#2BA84A" barStyle={"default"} />
 
         <View style={styles.container}>
           {/* <LinearGradient
@@ -259,24 +394,42 @@ export default class Home extends Component {
             />
             <SafeAreaView style={[styles.weatherView]}>
               <View style={styles.flex}>
-                <View>
+                <View style={{ width: "30%" }}>
                   <Image
-                    source={require("../assets/img_wearther/sunny.png")}
+                    source={
+                      weather.weather[0].main === "Rain"
+                        ? require("../assets/img_wearther/rainy.png")
+                        : weather.weather[0].main === "Clouds"
+                        ? require("../assets/img_wearther/cloudy-day.png")
+                        : weather.weather[0].main === "Clear"
+                        ? require("../assets/img_wearther/sunny.png")
+                        : require("../assets/img_wearther/windy1.png")
+                    }
                     style={{
                       width: 100,
                       height: 100,
                       justifyContent: "center",
+                      alignItems: "center",
+                      marginLeft: 5,
                     }}
                   />
-                  <Text style={styles.curentTemp}>23°</Text>
-                  <Text style={styles.curentTempText}>Parrly sunny</Text>
+                  <Text style={styles.curentTemp}>
+                    {temperatureIntegerPart}°
+                  </Text>
+                  <Text style={styles.curentTempText}>
+                    {weather.weather[0].description}
+                  </Text>
                 </View>
-                <View>
+                <View style={{ width: "68%" }}>
                   <View
                     style={[
                       styles.flex,
                       styles.windNotification,
-                      { justifyContent: "space-around" },
+                      {
+                        justifyContent: "space-around",
+                        alignItems: "center",
+                        width: "100%",
+                      },
                     ]}
                   >
                     <View style={[styles.flex, styles.windContent]}>
@@ -284,25 +437,22 @@ export default class Home extends Component {
                         source={require("../assets/img_wearther/wind.png")}
                         style={styles.windIcon}
                       />
-                      <Text style={styles.textInWind}>22km</Text>
+                      <Text style={styles.textInWind}>{weather.name}</Text>
                     </View>
                     <View style={[styles.flex, styles.windContent]}>
                       <Image
-                        source={require("../assets/img_wearther/wind.png")}
+                        source={require("../assets/img_wearther/humidity.png")}
                         style={styles.windIcon}
                       />
-                      <Text style={styles.textInWind}>18%</Text>
-                    </View>
-                    <View style={[styles.flex, styles.windContent]}>
-                      <Image
-                        source={require("../assets/img_wearther/wind.png")}
-                        style={styles.windIcon}
-                      />
-                      <Text style={styles.textInWind}>6:30 AM</Text>
+                      <Text style={styles.textInWind}>
+                        {weather.main.humidity}%
+                      </Text>
                     </View>
                   </View>
                   <View style={styles.forecastView}>
-                    <View style={{ flexDirection: "row", gap: 12 }}>
+                    <View
+                      style={{ flexDirection: "row", gap: 8, marginLeft: 10 }}
+                    >
                       <Image
                         source={require("../assets/img/calendar.png")}
                         style={{
@@ -313,12 +463,62 @@ export default class Home extends Component {
                       />
                       <Text style={[styles.color_w]}>Daily forecast</Text>
                     </View>
-                    <ScrollView
+                    <FlatList
+                      data={forecast}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{gap: 10}}
+                      renderItem={({ item }) => (
+                        <View
+                          style={[
+                            styles.bgWeatherForecast,
+                            { marginTop: 10},
+                          ]}
+                        >
+                          <Image
+                            source={
+                              item.weather[0].main === "Rain"
+                                ? require("../assets/img_wearther/rainy.png")
+                                : item.weather[0].main === "Clouds"
+                                ? require("../assets/img_wearther/cloudy-day.png")
+                                : item.weather[0].main === "Clear"
+                                ? require("../assets/img_wearther/sunny.png")
+                                : require("../assets/img_wearther/windy1.png")
+                            }
+                            style={{
+                              width: 50,
+                              height: 50,
+                            }}
+                          />
+                          <Text
+                            style={[
+                              styles.color_w,
+                              {
+                                fontSize: 12,
+                                fontWeight: "200",
+                                textAlign: "center",
+                              },
+                            ]}
+                          >
+                            {dayjs(item.dt * 1000).format("ddd ha")}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.color_w,
+                              { textAlign: "center", marginTop: 5 },
+                            ]}
+                          >
+                            {Math.round(item.main.temp)}°
+                          </Text>
+                        </View>
+                      )}
+                    />
+                    {/* <ScrollView
                       horizontal={true}
                       showsHorizontalScrollIndicator={false}
                       style={styles.dailyForecasrView}
                     >
-                      <View style={{ flexDirection: "row", gap: 15 }}>
+                      <View style={{ flexDirection: "row", gap: 8 }}>
                         <View
                           style={[styles.bgWeatherForecast, { marginTop: 10 }]}
                         >
@@ -339,7 +539,7 @@ export default class Home extends Component {
                               },
                             ]}
                           >
-                            Monday
+                            Mon
                           </Text>
                           <Text
                             style={[
@@ -370,7 +570,7 @@ export default class Home extends Component {
                               },
                             ]}
                           >
-                            Monday
+                            Tue
                           </Text>
                           <Text
                             style={[
@@ -401,7 +601,7 @@ export default class Home extends Component {
                               },
                             ]}
                           >
-                            Monday
+                            Wed
                           </Text>
                           <Text
                             style={[
@@ -432,7 +632,7 @@ export default class Home extends Component {
                               },
                             ]}
                           >
-                            Monday
+                            Thu
                           </Text>
                           <Text
                             style={[
@@ -463,7 +663,7 @@ export default class Home extends Component {
                               },
                             ]}
                           >
-                            Monday
+                            Fri
                           </Text>
                           <Text
                             style={[
@@ -494,7 +694,7 @@ export default class Home extends Component {
                               },
                             ]}
                           >
-                            Monday
+                            Sat
                           </Text>
                           <Text
                             style={[
@@ -525,7 +725,7 @@ export default class Home extends Component {
                               },
                             ]}
                           >
-                            Monday
+                            Sun
                           </Text>
                           <Text
                             style={[
@@ -537,7 +737,7 @@ export default class Home extends Component {
                           </Text>
                         </View>
                       </View>
-                    </ScrollView>
+                    </ScrollView> */}
                   </View>
                 </View>
               </View>
@@ -620,7 +820,7 @@ const styles = StyleSheet.create({
   },
   curentTemp: {
     color: "white",
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "800",
     textAlign: "center",
   },
@@ -646,8 +846,8 @@ const styles = StyleSheet.create({
     color: "white",
   },
   forecastView: {
-    backgroundColor: "gray",
-    width: 300,
+    // backgroundColor: "gray",
+    width: "100%",
     marginTop: 8,
   },
   dailyForecasrView: {
