@@ -31,7 +31,7 @@ export default class AddDevice extends Component {
   showSuccessToast(msg) {
     Toast.show({
       type: "success",
-      text1: "Success",
+      text1: i18next.t('Success'),
       text2: msg,
     });
   }
@@ -39,7 +39,7 @@ export default class AddDevice extends Component {
   showFailToast(msg) {
     Toast.show({
       type: "error",
-      text1: "Error",
+      text1: i18next.t('Error'),
       text2: msg,
     });
   }
@@ -143,11 +143,11 @@ export default class AddDevice extends Component {
         count++;
       } else {
         if (key[i + 1] === "id_bc") {
-          this.showFailToast("Invalid Pump Name");
+          this.showFailToast(i18next.t("Invalid Pump Name"));
         } else if (key[i + 1] === "id_dht") {
-          this.showFailToast("Invalid DHT Name");
+          this.showFailToast(i18next.t("Invalid DHT Name"));
         } else if (key[i + 1] === "id_ph") {
-          this.showFailToast("Invalid PH Name");
+          this.showFailToast(i18next.t("Invalid PH Name"));
         }
       }
     }

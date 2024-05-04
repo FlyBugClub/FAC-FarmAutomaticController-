@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   btnSave: {
     height: 36,
     backgroundColor: "#2BA84A",
-    borderRadius: 8,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
   },

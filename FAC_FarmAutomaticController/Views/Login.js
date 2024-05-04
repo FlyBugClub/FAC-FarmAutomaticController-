@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from "react-native";
 import MyContext from "../DataContext.js";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -44,7 +45,7 @@ export default class Login extends Component {
     }));
     const { isChecked } = this.state;
     if (isChecked) {
-      this.setState({ status:  "Show password" });
+      this.setState({ status: "Show password" });
       this.setState({ secureTextEntry: true });
     } else {
       this.setState({ status: "Hide password" });
@@ -80,29 +81,28 @@ export default class Login extends Component {
   //         });
 
   //   };
-  
+
   handleLogin = async () => {
     const { email, password } = this.state;
     const { addDataAtIndex } = this.context;
     const url = apiUrl + `login/${email}/${password}`;
-    console.log(url)
+    console.log(url);
     // Hiển thị loading
     this.setState({ isLoading: true });
 
     try {
-
       if (email != "" && password != "") {
         const response = await fetch(url);
         if (!response.ok) {
-          this.setState({  msg: i18next.t("Login error") });
+          this.setState({ msg: i18next.t("Login error") });
           this.setState({ isLoading: false });
           return;
         }
         const json = await response.json();
-      
+
         if (json === "Login_Success") {
           // const combinedJson = Object.assign({}, json[0], json[1],json[2]);
-          const email_json = {"user":{"gmail":email}}
+          const email_json = { user: { gmail: email } };
           addDataAtIndex(email_json, 0);
           this.setState({ msg: "" });
           this.props.navigation.navigate("TabNavigator");
@@ -112,7 +112,7 @@ export default class Login extends Component {
         }
       } else
         this.setState({ msg: i18next.t("Email or password are incorrect") });
-        this.setState({ isLoading: false });
+      this.setState({ isLoading: false });
     } catch (error) {
       console.error("Error handling login:", error);
       this.setState({ msg: i18next.t("An error occurred") });
@@ -128,7 +128,6 @@ export default class Login extends Component {
       this.toggleVerifyPasswordVisibility
     );
   };
-
 
   // ========== Change Page ========== //
   HomePage = () => {
@@ -190,36 +189,22 @@ export default class Login extends Component {
                     onChangeText={(text) => this.setState({ password: text })}
                     secureTextEntry={secureTextEntry}
                   />
-                  <TouchableOpacity onPress={this.togglePasswordVisibility}>
-                  <Image
-                    source={
-                      showPassword
-                        ? require("../assets/img/hidden.png")
-                        : require("../assets/img/eye.png")
-                    }
-                    style={[styles.imgShowPassword, styles.imgInput]}
-                  />
-                </TouchableOpacity>
+                  <TouchableOpacity onPress={() => {
+                    this.togglePasswordVisibility()
+                    this.toggleCheckbox()
+                    }}>
+                    <Image
+                      source={
+                        showPassword
+                          ? require("../assets/img/hidden.png")
+                          : require("../assets/img/eye.png")
+                      }
+                      style={[styles.imgShowPassword, styles.imgInput]}
+                    />
+                  </TouchableOpacity>
                 </View>
-                {msg && (
-                  <Text style={styles.msg}>{i18next.t(msg)}</Text>
-                )}
-                <View style={styles.functionArea}>
-                  <View>
-                    <TouchableOpacity
-                      onPress={this.toggleCheckbox}
-                      style={styles.checkboxArea}
-                    >
-                      <View
-                        style={[styles.checkbox, isChecked && styles.checked]}
-                      >
-                        {isChecked && (
-                          <Ionicons name="checkmark" size={14} color="white" />
-                        )}
-                      </View>
-                      <Text style={styles.label}>{i18next.t(status)}</Text>
-                    </TouchableOpacity>
-                  </View>
+                {msg && <Text style={styles.msg}>{i18next.t(msg)}</Text>}
+                <View style={[styles.functionArea, {justifyContent: "flex-end"}]}>
                   <View style={{ marginRight: 15 }}>
                     <TouchableOpacity onPress={this.ResetPasswordPage}>
                       <Text style={{ color: "#0077b6" }}>
@@ -243,8 +228,8 @@ export default class Login extends Component {
                     {i18next.t("Login")}
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={this.SignUpPage}>
-                  <Text style={styles.btnSignUp}>
+                <TouchableOpacity style={styles.btnSignUp} onPress={this.SignUpPage}>
+                  <Text style={styles.textSignUp}>
                     {i18next.t("Don't you have account!")}
                   </Text>
                 </TouchableOpacity>
@@ -261,7 +246,7 @@ const styles = StyleSheet.create({
   msg: {
     fontSize: 12,
     color: "#E31C1C",
-    marginBottom: 10
+    marginBottom: 10,
   },
   container: {
     width: "100%",
@@ -357,12 +342,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 24,
   },
-  btnSignUp: {
-    color: "#333", 
-    marginTop: 10, 
+  textSignUp: {
+    ...Platform.select({
+      android: {
+        borderBottomWidth: 1.2,
+        borderStyle: "dotted",
+      },
+    }),
+    color: "#333",
+    marginTop: 10,
     fontSize: 12,
-    borderBottomWidth: 1.2,
     borderColor: "#2BA84A",
-    borderStyle: "dotted"
   },
+  btnSignUp: {
+    ...Platform.select({
+      ios: {
+        borderBottomWidth: 1.2,
+        borderStyle: "dotted",
+        borderColor: "#2BA84A",
+      }
+    })
+  }
 });

@@ -96,5 +96,15 @@
   "Chủ Nhật" : "Sun",
   "error" : "error",
   "Login error" : "Login error",
-  "Statistic" : "Statistic"
+  "Statistic" : "Statistic",
+  "NetWork Fail": "NetWork Fail",
+  "Success": "Success",
+  "Error": "Error",
+  "Invalid Pump Name": "Invalid Pump Name",
+  "Invalid DHT Name": "Invalid DHT Name",
+  "Invalid PH Name": "Invalid PH Name",
+  "This QR code has already used": "This QR code has already used",
+  "Update Success": "Update Success",
+  "Invalid Name": "Invalid Name",
+  "update duration time success": "update duration time success"
 }

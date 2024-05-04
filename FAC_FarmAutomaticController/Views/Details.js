@@ -239,7 +239,7 @@ export default class Details extends Component {
   showSuccessToast(msg) {
     Toast.show({
       type: 'success',
-      text1: 'Success',
+      text1: i18next.t('Success'),
       text2: msg
     });
   }
@@ -247,7 +247,7 @@ export default class Details extends Component {
   showFailToast(msg) {
     Toast.show({
       type: 'error',
-      text1: 'Error',
+      text1: i18next.t('Error'),
       text2: msg
     });
   }
@@ -527,7 +527,7 @@ export default class Details extends Component {
     var newdatasets = [];
     const response = await fetch(url);
     if (!response.ok) {
-      this.showFailToast("NetWork Fail!");
+      this.showFailToast(i18next.t("NetWork Fail")+"!");
       return;
     }
     const json = await response.json();
@@ -1616,7 +1616,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   TitleTop: {
-    top: -15,
+    ...Platform.select({
+      ios: {
+        top: 0,
+      },
+      android: {
+        top: -15,
+      }
+    }),
     textAlign: "center",
     fontSize: 28,
     fontWeight: "bold",
@@ -1707,6 +1714,8 @@ const styles = StyleSheet.create({
   },
   dateTimePart: {
     backgroundColor: "#2BA84A",
+    marginLeft: 5,
+    marginRight: 5,
     paddingTop: 4,
     paddingBottom: 4,
     paddingRight: 4,

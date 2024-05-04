@@ -50,7 +50,7 @@ export default class AdvanceSettingDevice extends Component {
   showSuccessToast(msg) {
     Toast.show({
       type: "success",
-      text1: "Success",
+      text1: i18next.t('Success'),
       text2: msg,
     });
   }
@@ -58,7 +58,7 @@ export default class AdvanceSettingDevice extends Component {
   showFailToast(msg) {
     Toast.show({
       type: "error",
-      text1: "Error",
+      text1: i18next.t('Error'),
       text2: msg,
     });
   }
@@ -100,8 +100,7 @@ export default class AdvanceSettingDevice extends Component {
     const response = await fetch(url);
 
     if (!response.ok) {
-      // Toast.show('NetWork Fail!', Toast.LONG)
-      this.showFailToast("NetWork Fail!");
+      this.showFailToast(i18next.t("NetWork Fail")+"!");
       return;
     }
 
@@ -223,21 +222,21 @@ export default class AdvanceSettingDevice extends Component {
                 if (result_sensor == "success") {
                   count_sensor++;
                   if (count_sensor == Equipment.length) {
-                    this.showSuccessToast("Update Success");
+                    this.showSuccessToast(i18next.t("Update Success"));
                     this.props.navigation.navigate("Home");
                   }
                 }
-                this.showFailToast("NetWord Fail!");
+                this.showFailToast(i18next.t("NetWord Fail")+"!");
               });
             } else {
-              this.showSuccessToast("Update Success");
+              this.showSuccessToast(i18next.t("Update Success"));
               this.props.navigation.navigate("Home");
             }
           }
-          this.showFailToast("NetWord Fail!");
+          this.showFailToast(i18next.t("NetWord Fail")+"!");
         }
       }
-      this.showFailToast("Invalid Name");
+      this.showFailToast(i18next.t("Invalid Name"));
     });
 
     // if (name_equipment !== "") {
@@ -341,12 +340,15 @@ export default class AdvanceSettingDevice extends Component {
       flag = true;
       if (result == "update time success") {
         console.info("update time success");
+        this.showSuccessToast(i18next.t("update duration time success"));
         this.props.navigation.navigate("Details");
       } else if (result["Message"] == "can't add equipment") {
         console.warn("Network fail!");
+        this.showFailToast(i18next.t("Network fail")+"!");
       } else {
         // console.warn("cuong");
         console.warn("Network fail!");
+        this.showFailToast(i18next.t("Network fail")+"!");
       }
     }
   };
@@ -797,7 +799,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 26,
     marginLeft: 5,
-    borderRadius: 3,
+    borderRadius: 6,
     backgroundColor: "#2BA84A",
     justifyContent: "center",
     alignItems: "center",
@@ -827,7 +829,7 @@ const styles = StyleSheet.create({
     height: 36,
     marginTop: 5,
     backgroundColor: "#2BA84A",
-    borderRadius: 3,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
   },

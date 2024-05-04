@@ -96,5 +96,15 @@
     "Chủ Nhật" : "CN",
     "error" : "Lỗi",
     "Login error" : "Đăng nhập lỗi",
-    "Statistic" : "Thống kê"
+    "Statistic" : "Thống kê",
+    "NetWork Fail": "Lỗi kết nối mạng",
+    "Success": "Thành công",
+    "Error": "Lỗi",
+    "Invalid Pump Name": "Tên máy bơm không khả dụng",
+    "Invalid DHT Name": "Tên cảm biến nhiệt độ/độ ẩm không khả dụng",
+    "Invalid PH Name": "Tên cảm biến nồng độ pH không hả dụng",
+    "This QR code has already used": "Mã QR này đã được sử dụng",
+    "Update Success": "Cập nhật thành công",
+    "Invalid Name": "Tên không khả dụng",
+    "update duration time success": "Cập nhật thời lượng bơm thành công"
   }
