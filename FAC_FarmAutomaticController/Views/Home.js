@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
@@ -38,7 +39,7 @@ export default class Home extends Component {
     this.props.navigation.navigate("SignUp");
   };
 
-DetailPage = (index) => {
+  DetailPage = (index) => {
     // console.log(index)
     this.GetEquidmentValues(index);
   };
@@ -125,7 +126,7 @@ DetailPage = (index) => {
   };
 
   render() {
-    const { height } = Dimensions.get('window');
+    const { height } = Dimensions.get("window");
     const { refresh } = this.state;
     const { connect } = this.state;
 
@@ -186,7 +187,8 @@ DetailPage = (index) => {
                       </Text>
                     </>
                   )}
-                  {(isConnect["esp" + index.toString()] === false||isConnect["esp" + index.toString()] === null) && (
+                  {(isConnect["esp" + index.toString()] === false ||
+                    isConnect["esp" + index.toString()] === null) && (
                     <>
                       <View
                         style={[styles.dot, { backgroundColor: "#E31C1C" }]}
@@ -232,12 +234,11 @@ DetailPage = (index) => {
       });
     }
     return (
+      <View style={styles.safeContainer}>
+        <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
 
-        <View style={styles.safeContainer}>
-          <StatusBar backgroundColor="#2BA84A" barStyle={"dark-content"} />
-
-          <View style={styles.container}>
-            <LinearGradient
+        <View style={styles.container}>
+          {/* <LinearGradient
               colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
               style={styles.header}
             >
@@ -249,32 +250,332 @@ DetailPage = (index) => {
                   {i18next.t("Have a nice Day")}
                 </Text>
               </SafeAreaView>
-            </LinearGradient>
-
-            {farmHouseList.length !== 0 && (
-              <View style={styles.body}>
-                <Text style={styles.littleTitle}>Farm house</Text>
-                <ScrollView
-                  style={{ height: height>1000 ? "82%" : "70%" }}
-                  showsVerticalScrollIndicator={false}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={refresh}
-                      onRefresh={this.pullMe}
-                    />
-                  }
-                >
-                  <View style={{ marginTop: 8 }}>{farmHouseList}</View>
-                </ScrollView>
+            </LinearGradient> */}
+          <View style={styles.header}>
+            <Image
+              source={require("../assets/background/greenRoad.jpg")}
+              blurRadius={8}
+              style={[styles.header]}
+            />
+            <SafeAreaView style={[styles.weatherView]}>
+              <View style={styles.flex}>
+                <View>
+                  <Image
+                    source={require("../assets/img_wearther/sunny.png")}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      justifyContent: "center",
+                    }}
+                  />
+                  <Text style={styles.curentTemp}>23°</Text>
+                  <Text style={styles.curentTempText}>Parrly sunny</Text>
+                </View>
+                <View>
+                  <View
+                    style={[
+                      styles.flex,
+                      styles.windNotification,
+                      { justifyContent: "space-around" },
+                    ]}
+                  >
+                    <View style={[styles.flex, styles.windContent]}>
+                      <Image
+                        source={require("../assets/img_wearther/wind.png")}
+                        style={styles.windIcon}
+                      />
+                      <Text style={styles.textInWind}>22km</Text>
+                    </View>
+                    <View style={[styles.flex, styles.windContent]}>
+                      <Image
+                        source={require("../assets/img_wearther/wind.png")}
+                        style={styles.windIcon}
+                      />
+                      <Text style={styles.textInWind}>18%</Text>
+                    </View>
+                    <View style={[styles.flex, styles.windContent]}>
+                      <Image
+                        source={require("../assets/img_wearther/wind.png")}
+                        style={styles.windIcon}
+                      />
+                      <Text style={styles.textInWind}>6:30 AM</Text>
+                    </View>
+                  </View>
+                  <View style={styles.forecastView}>
+                    <View style={{ flexDirection: "row", gap: 12 }}>
+                      <Image
+                        source={require("../assets/img/calendar.png")}
+                        style={{
+                          width: 18,
+                          height: 18,
+                          tintColor: "white",
+                        }}
+                      />
+                      <Text style={[styles.color_w]}>Daily forecast</Text>
+                    </View>
+                    <ScrollView
+                      horizontal={true}
+                      showsHorizontalScrollIndicator={false}
+                      style={styles.dailyForecasrView}
+                    >
+                      <View style={{ flexDirection: "row", gap: 15 }}>
+                        <View
+                          style={[styles.bgWeatherForecast, { marginTop: 10 }]}
+                        >
+                          <Image
+                            source={require("../assets/img_wearther/rainy.png")}
+                            style={{
+                              width: 50,
+                              height: 50,
+                            }}
+                          />
+                          <Text
+                            style={[
+                              styles.color_w,
+                              {
+                                fontSize: 12,
+                                fontWeight: "200",
+                                textAlign: "center",
+                              },
+                            ]}
+                          >
+                            Monday
+                          </Text>
+                          <Text
+                            style={[
+                              styles.color_w,
+                              { textAlign: "center", marginTop: 5 },
+                            ]}
+                          >
+                            21°
+                          </Text>
+                        </View>
+                        <View
+                          style={[styles.bgWeatherForecast, { marginTop: 10 }]}
+                        >
+                          <Image
+                            source={require("../assets/img_wearther/rainy.png")}
+                            style={{
+                              width: 50,
+                              height: 50,
+                            }}
+                          />
+                          <Text
+                            style={[
+                              styles.color_w,
+                              {
+                                fontSize: 12,
+                                fontWeight: "200",
+                                textAlign: "center",
+                              },
+                            ]}
+                          >
+                            Monday
+                          </Text>
+                          <Text
+                            style={[
+                              styles.color_w,
+                              { textAlign: "center", marginTop: 5 },
+                            ]}
+                          >
+                            21°
+                          </Text>
+                        </View>
+                        <View
+                          style={[styles.bgWeatherForecast, { marginTop: 10 }]}
+                        >
+                          <Image
+                            source={require("../assets/img_wearther/rainy.png")}
+                            style={{
+                              width: 50,
+                              height: 50,
+                            }}
+                          />
+                          <Text
+                            style={[
+                              styles.color_w,
+                              {
+                                fontSize: 12,
+                                fontWeight: "200",
+                                textAlign: "center",
+                              },
+                            ]}
+                          >
+                            Monday
+                          </Text>
+                          <Text
+                            style={[
+                              styles.color_w,
+                              { textAlign: "center", marginTop: 5 },
+                            ]}
+                          >
+                            21°
+                          </Text>
+                        </View>
+                        <View
+                          style={[styles.bgWeatherForecast, { marginTop: 10 }]}
+                        >
+                          <Image
+                            source={require("../assets/img_wearther/rainy.png")}
+                            style={{
+                              width: 50,
+                              height: 50,
+                            }}
+                          />
+                          <Text
+                            style={[
+                              styles.color_w,
+                              {
+                                fontSize: 12,
+                                fontWeight: "200",
+                                textAlign: "center",
+                              },
+                            ]}
+                          >
+                            Monday
+                          </Text>
+                          <Text
+                            style={[
+                              styles.color_w,
+                              { textAlign: "center", marginTop: 5 },
+                            ]}
+                          >
+                            21°
+                          </Text>
+                        </View>
+                        <View
+                          style={[styles.bgWeatherForecast, { marginTop: 10 }]}
+                        >
+                          <Image
+                            source={require("../assets/img_wearther/rainy.png")}
+                            style={{
+                              width: 50,
+                              height: 50,
+                            }}
+                          />
+                          <Text
+                            style={[
+                              styles.color_w,
+                              {
+                                fontSize: 12,
+                                fontWeight: "200",
+                                textAlign: "center",
+                              },
+                            ]}
+                          >
+                            Monday
+                          </Text>
+                          <Text
+                            style={[
+                              styles.color_w,
+                              { textAlign: "center", marginTop: 5 },
+                            ]}
+                          >
+                            21°
+                          </Text>
+                        </View>
+                        <View
+                          style={[styles.bgWeatherForecast, { marginTop: 10 }]}
+                        >
+                          <Image
+                            source={require("../assets/img_wearther/rainy.png")}
+                            style={{
+                              width: 50,
+                              height: 50,
+                            }}
+                          />
+                          <Text
+                            style={[
+                              styles.color_w,
+                              {
+                                fontSize: 12,
+                                fontWeight: "200",
+                                textAlign: "center",
+                              },
+                            ]}
+                          >
+                            Monday
+                          </Text>
+                          <Text
+                            style={[
+                              styles.color_w,
+                              { textAlign: "center", marginTop: 5 },
+                            ]}
+                          >
+                            21°
+                          </Text>
+                        </View>
+                        <View
+                          style={[styles.bgWeatherForecast, { marginTop: 10 }]}
+                        >
+                          <Image
+                            source={require("../assets/img_wearther/rainy.png")}
+                            style={{
+                              width: 50,
+                              height: 50,
+                            }}
+                          />
+                          <Text
+                            style={[
+                              styles.color_w,
+                              {
+                                fontSize: 12,
+                                fontWeight: "200",
+                                textAlign: "center",
+                              },
+                            ]}
+                          >
+                            Monday
+                          </Text>
+                          <Text
+                            style={[
+                              styles.color_w,
+                              { textAlign: "center", marginTop: 5 },
+                            ]}
+                          >
+                            21°
+                          </Text>
+                        </View>
+                      </View>
+                    </ScrollView>
+                  </View>
+                </View>
               </View>
-            )}
+            </SafeAreaView>
           </View>
+
+          {farmHouseList.length !== 0 && (
+            <View style={styles.body}>
+              <Text style={styles.littleTitle}>Farm house</Text>
+              <ScrollView
+                style={{ height: height > 1000 ? "82%" : "70%" }}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refresh}
+                    onRefresh={this.pullMe}
+                  />
+                }
+              >
+                <View style={{ marginTop: 8 }}>{farmHouseList}</View>
+              </ScrollView>
+            </View>
+          )}
         </View>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  color_w: {
+    color: "white",
+  },
   safeContainer: {
     flex: 1,
     backgroundColor: "#fafafa",
@@ -286,13 +587,14 @@ const styles = StyleSheet.create({
   },
   header: {
     width: "100%",
-    height: 150,
+    height: 230,
     marginBottom: 6,
     justifyContent: "center",
     alignItems: "center",
     // backgroundColor: "#80b918",
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
+    zIndex: 0,
   },
   headerText: {
     ...Platform.select({
@@ -308,6 +610,58 @@ const styles = StyleSheet.create({
       },
     }),
   },
+
+  // ========== Weather ========== //
+  weatherView: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: 1,
+  },
+  curentTemp: {
+    color: "white",
+    fontSize: 28,
+    fontWeight: "800",
+    textAlign: "center",
+  },
+  curentTempText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "200",
+    textAlign: "center",
+  },
+  windNotification: {
+    width: "85%",
+    gap: 10,
+  },
+  windContent: {
+    gap: 5,
+  },
+  windIcon: {
+    width: 20,
+    height: 20,
+    tintColor: "white",
+  },
+  textInWind: {
+    color: "white",
+  },
+  forecastView: {
+    backgroundColor: "gray",
+    width: 300,
+    marginTop: 8,
+  },
+  dailyForecasrView: {
+    width: "100%",
+    flexDirection: "row",
+    // backgroundColor: "white"
+  },
+  bgWeatherForecast: {
+    backgroundColor: "rgba(255,255,255,0.20)",
+    padding: 6,
+    borderRadius: 12,
+  },
+
+  // ==========  ========== //
   body: {
     width: "90%",
     marginTop: 6,
