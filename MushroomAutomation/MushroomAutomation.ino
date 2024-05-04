@@ -181,9 +181,9 @@
       // if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
        
       //   }
-      if (digitalRead(buttonReset) == LOW) { // Nếu nút được nhấn
-          resetESP();
-        }
+      // if (digitalRead(buttonReset) == LOW) { // Nếu nút được nhấn
+      //     resetESP();
+      //   }
       if (sht31.begin(0x44)) {   // Set to 0x45 for alternate i2c addr
         Serial.println("SHT31 connected successfully.");
         sensorConnected = true; // Đặt cờ kết nối cảm biến thành công
