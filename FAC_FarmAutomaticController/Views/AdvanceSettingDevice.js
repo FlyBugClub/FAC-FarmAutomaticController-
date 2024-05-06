@@ -50,7 +50,7 @@ export default class AdvanceSettingDevice extends Component {
   showSuccessToast(msg) {
     Toast.show({
       type: "success",
-      text1: i18next.t('Success'),
+      text1: i18next.t("Success"),
       text2: msg,
     });
   }
@@ -58,7 +58,7 @@ export default class AdvanceSettingDevice extends Component {
   showFailToast(msg) {
     Toast.show({
       type: "error",
-      text1: i18next.t('Error'),
+      text1: i18next.t("Error"),
       text2: msg,
     });
   }
@@ -74,9 +74,10 @@ export default class AdvanceSettingDevice extends Component {
     const { index, Equipment } = route.params || {};
     const { dataArray } = this.context;
     const sensorArray = Object.values(dataArray[1]["sensor"]);
+    console.log(dataArray);
 
     const listEquipment = [];
-    console.log(Equipment);
+    // console.log(Equipment);
     console.log("___________________");
 
     let flag_id = 0;
@@ -94,13 +95,15 @@ export default class AdvanceSettingDevice extends Component {
       });
     });
 
+    
+
     // console.log(namesArray)
 
     const url = apiUrl + `getoffset/${dataArray[1]["bc"][index]["id_bc"]}`;
     const response = await fetch(url);
 
     if (!response.ok) {
-      this.showFailToast(i18next.t("NetWork Fail")+"!");
+      this.showFailToast(i18next.t("NetWork Fail") + "!");
       return;
     }
 
@@ -129,7 +132,7 @@ export default class AdvanceSettingDevice extends Component {
     this.setState({ listEquipment: listEquipment });
     this.setState({ offset: json["times_offset"].toString() });
     this.setState({ index: index });
-    this.setState({ selectedFarm: Farmlist[0].itemName });
+    this.setState({ selectedFarm: dataArray[1].name });
     this.setState({ Farm: Farmlist });
   }
 
@@ -165,6 +168,7 @@ export default class AdvanceSettingDevice extends Component {
       setTimeout(resolve, ms);
     });
   }
+
   UpdateDevice = async () => {
     const { route } = this.props;
     const { Equipment } = route.params || {};
@@ -226,14 +230,14 @@ export default class AdvanceSettingDevice extends Component {
                     this.props.navigation.navigate("Home");
                   }
                 }
-                this.showFailToast(i18next.t("NetWord Fail")+"!");
+                this.showFailToast(i18next.t("NetWord Fail") + "!");
               });
             } else {
               this.showSuccessToast(i18next.t("Update Success"));
               this.props.navigation.navigate("Home");
             }
           }
-          this.showFailToast(i18next.t("NetWord Fail")+"!");
+          this.showFailToast(i18next.t("NetWord Fail") + "!");
         }
       }
       this.showFailToast(i18next.t("Invalid Name"));
@@ -306,6 +310,7 @@ export default class AdvanceSettingDevice extends Component {
 
     // } else this.setState({ msg: "Invalid Pump name" })
   };
+
   // Render mỗi mục trong danh sách farm
   // renderFarmItem = ({ item }) => (
   //   <TouchableOpacity onPress={() => this.handleFarmSelect(item.itemName)} key={index}>
@@ -319,6 +324,7 @@ export default class AdvanceSettingDevice extends Component {
   toggleSetting = (settingType) => {
     this.setState({ showSetting: settingType });
   };
+
   UpdateDeviceOffset = async () => {
     const { dataArray } = this.context;
 
@@ -344,14 +350,15 @@ export default class AdvanceSettingDevice extends Component {
         this.props.navigation.navigate("Details");
       } else if (result["Message"] == "can't add equipment") {
         console.warn("Network fail!");
-        this.showFailToast(i18next.t("Network fail")+"!");
+        this.showFailToast(i18next.t("Network fail") + "!");
       } else {
         // console.warn("cuong");
         console.warn("Network fail!");
-        this.showFailToast(i18next.t("Network fail")+"!");
+        this.showFailToast(i18next.t("Network fail") + "!");
       }
     }
   };
+
   onChange = (text, index) => {
     this.setState((prevState) => {
       const updatedEquipmentName = [...prevState.listEquipment];
@@ -430,7 +437,8 @@ export default class AdvanceSettingDevice extends Component {
                         {
                           borderBottomColor:
                             showSetting === "Setting" ? "#2BA84A" : "#DEDEDE",
-                          borderBottomWidth: showSetting === "Setting" ? 3 : 0.5,
+                          borderBottomWidth:
+                            showSetting === "Setting" ? 3 : 0.5,
                         },
                       ]}
                     >
@@ -470,99 +478,6 @@ export default class AdvanceSettingDevice extends Component {
                       </Text>
                     </TouchableOpacity>
                   </View>
-                  {showSetting === "Farm" && (
-                    <>
-                      <View style={styles.flex}>
-                        <View style={styles.deviceNameArea}>
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                            }}
-                          >
-                            {/* <Text style={styles.deviceName}>{i18next.t("DEVICE NAME")}</Text> */}
-                          </View>
-                        </View>
-                      </View>
-
-                      <ScrollView>
-                        <View style={styles.flex}>
-                          <View style={styles.deviceNameArea}>
-                            <Text style={styles.titleSetting}>
-                              {i18next.t("Device")}
-                            </Text>
-                          </View>
-                        </View>
-                        <View style={styles.flex}>
-                          <View style={{ width: "90%" }}>{equip}</View>
-                        </View>
-                        <View style={styles.flex}>
-                          <View style={styles.option}>
-                            <View
-                              style={[
-                                styles.optionPart,
-                                { marginBottom: 6, marginTop: 6 },
-                              ]}
-                            >
-                              <Text>{i18next.t("Farm")}</Text>
-                              {Platform.OS === "android" &&
-                                Farm.length !== 0 && (
-                                  <Picker
-                                    style={{ width: 180 }}
-                                    mode="dropdown"
-                                    selectedValue={this.state.selectedFarm}
-                                    onValueChange={this.onValueChangeFarm.bind(
-                                      this
-                                    )}
-                                  >
-                                    {this.state.Farm.map((item, index) => (
-                                      <Picker.Item
-                                        key={index}
-                                        color="#333"
-                                        label={item.itemName}
-                                        value={item.itemName}
-                                        index={index}
-                                      />
-                                    ))}
-                                  </Picker>
-                                )}
-                              {Platform.OS === "ios" && Farm.length !== 0 && (
-                                <TouchableOpacity
-                                  style={styles.changeFarmArea}
-                                  // onPress={this.handleOpenPress}
-                                  onPress={this.toggleBottomSheet}
-                                >
-                                  <Text style={styles.text}>
-                                    {selectedFarm}
-                                  </Text>
-                                  <Image
-                                    source={require("../assets/img/down.png")}
-                                    style={{
-                                      width: 12,
-                                      height: 12,
-                                      tintColor: "#767577",
-                                    }}
-                                  />
-                                </TouchableOpacity>
-                              )}
-                            </View>
-                          </View>
-                          <Text>{msg}</Text>
-                        </View>
-                        <View style={styles.flex}>
-                          <View style={{ width: "90%" }}>
-                            <TouchableOpacity
-                              style={styles.btnSave}
-                              onPress={this.UpdateDevice}
-                            >
-                              <Text style={styles.btnSaveText}>Save</Text>
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </ScrollView>
-                    </>
-                  )}
                   {showSetting === "Setting" && (
                     <View style={styles.flex}>
                       <View style={styles.option}>
@@ -619,6 +534,99 @@ export default class AdvanceSettingDevice extends Component {
                         </View>
                       </View>
                     </View>
+                  )}
+                  {showSetting === "Farm" && (
+                    <>
+                      <View style={styles.flex}>
+                        <View style={styles.deviceNameArea}>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            {/* <Text style={styles.deviceName}>{i18next.t("DEVICE NAME")}</Text> */}
+                          </View>
+                        </View>
+                      </View>
+
+                      <ScrollView>
+                        <View style={styles.flex}>
+                          <View style={styles.deviceNameArea}>
+                            <Text style={styles.titleSetting}>
+                              {i18next.t("Device")}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={styles.flex}>
+                          <View style={{ width: "90%" }}>{equip}</View>
+                        </View>
+                        <View style={styles.flex}>
+                          <View style={styles.option}>
+                            <View
+                              style={[
+                                styles.optionPart,
+                                { marginBottom: 6, marginTop: 6 },
+                              ]}
+                            >
+                              <Text>{i18next.t("Farm")}</Text>
+                              {Platform.OS === "android" &&
+                                Farm.length !== 0 && (
+                                  <Picker
+                                    style={{ width: 180 }}
+                                    mode="dropdown"
+                                    selectedValue={selectedFarm}
+                                    onValueChange={this.onValueChangeFarm.bind(
+                                      this
+                                    )}
+                                  >
+                                    {this.state.Farm.map((item, index) => (
+                                      <Picker.Item
+                                        key={index}
+                                        color="#333"
+                                        label={item.itemName}
+                                        value={item.itemName}
+                                        index={index}
+                                      />
+                                    ))}
+                                  </Picker>
+                                )}
+                              {Platform.OS === "ios" && Farm.length !== 0 && (
+                                <TouchableOpacity
+                                  style={styles.changeFarmArea}
+                                  // onPress={this.handleOpenPress}
+                                  onPress={this.toggleBottomSheet}
+                                >
+                                  <Text style={styles.text}>
+                                    {selectedFarm}
+                                  </Text>
+                                  <Image
+                                    source={require("../assets/img/down.png")}
+                                    style={{
+                                      width: 12,
+                                      height: 12,
+                                      tintColor: "#767577",
+                                    }}
+                                  />
+                                </TouchableOpacity>
+                              )}
+                            </View>
+                          </View>
+                          <Text>{msg}</Text>
+                        </View>
+                        <View style={styles.flex}>
+                          <View style={{ width: "90%" }}>
+                            <TouchableOpacity
+                              style={styles.btnSave}
+                              onPress={this.UpdateDevice}
+                            >
+                              <Text style={styles.btnSaveText}>Save</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </ScrollView>
+                    </>
                   )}
                 </View>
                 {Platform.OS === "ios" && (
