@@ -72,17 +72,7 @@ const chartConfig = {
 };
 const screenWidth = Dimensions.get("window").width;
 
-const colors = [
-  "0, 119, 182",
-  "255, 0, 0",
-  "165, 99, 54",
-  "134, 65, 244",
-  "255, 0, 244",
-  "0, 255, 255",
-  "255, 0, 0",
-  "0, 255, 0",
-  "255, 0, 255",
-];
+const colors = ["255, 0, 0","0, 119, 182","165, 99, 54", "134, 65, 244", "255, 0, 244", "0, 255, 255", "255, 0, 0", "0, 255, 0", "255, 0, 255"]
 
 export default class Details extends Component {
   constructor(props) {
@@ -222,7 +212,7 @@ export default class Details extends Component {
         console.log("ok");
       } else this.getvalue();
       // console.log(dataArray[1])
-    }, 3000);
+    }, 2000);
   }
 
   componentWillUnmount() {
@@ -634,20 +624,15 @@ export default class Details extends Component {
       for (let i = 0; i < newlegend.length; i++) {
         if (jsonObject && jsonObject.hasOwnProperty(newlegend[i])) {
           if (newlegend[i].match(/[a-zA-Z]+/)[0] === "DHT") {
-            newlegend.splice(
-              i + 1,
-              0,
-              jsonObject[newlegend[i]] + "_Humid",
-              jsonObject[newlegend[i]] + "_Temp"
-            );
+            newlegend.splice(i + 1, 0, jsonObject[newlegend[i]] + "_Temp", jsonObject[newlegend[i]] + "_Humid");
           }
           newlegend[i] = jsonObject[newlegend[i]];
         }
       }
 
       for (let i = 0; i < newlegend.length; i++) {
-        if (newlegend[i].includes("_Humid")) {
-          newlegend.splice(i - 1, 1);
+        if (newlegend[i].includes("_Temp")) {
+          newlegend.splice((i - 1), 1);
         }
       }
 
@@ -971,6 +956,7 @@ export default class Details extends Component {
     const dateStr2 = timeDuration[2];
     const dateParts2 = dateStr2.split("/");
     const formattedDateStr2 = `${dateParts2[1] || "__"}/${
+
       dateParts2[0] || "__"
     }/${dateParts2[2] || "____"}`;
 
