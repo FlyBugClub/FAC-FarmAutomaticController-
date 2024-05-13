@@ -174,7 +174,7 @@
         reconnect();
         }
         digitalWrite(2,LOW);
-    digitalWrite(16,HIGH);
+      digitalWrite(16,HIGH);
       String formattedDateTime;
       getCurrentDateTime(formattedDateTime);
       // if (digitalRead(buttonAP) == LOW) { // Nếu nút được nhấn
@@ -208,9 +208,19 @@
       for (int i = 0; i < num_equipments; i++) {
         Serial.print("ID Sensor: ");
         Serial.println(equipments[i].id_sensor);
-        temperature = sht31.readTemperature();
-        humidity = sht31.readHumidity();
-        handleSensorData(equipments[i].id_sensor, formattedDateTime);
+        if (sensorConnected == true)
+        {
+          temperature = sht31.readTemperature();
+          humidity = sht31.readHumidity();
+          handleSensorData(equipments[i].id_sensor, formattedDateTime);
+        }
+        else
+        {
+          temperature = 0;
+          humidity = 0;
+          handleSensorData(equipments[i].id_sensor, formattedDateTime);
+        }
+        
          
       }
     //endregion handleSensorData
