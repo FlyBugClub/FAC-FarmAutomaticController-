@@ -812,22 +812,24 @@
 
   void activateAPMode() {
     Serial.println("Chuyển sang AP Mode.");
-    WiFiManager wifiManager;
+    ssid[] = "";
+    pass[] = "";
+    connectToWiFi();
+    if (!WiFi.isConnected()) {
+      // Thử kết nối WiFi hoặc chuyển sang chế độ điểm truy cập (AP) để cấu hình WiFi mới
+      if (!wifiManager.autoConnect("ESP8266_AP")) {
+        Serial.println("Failed to connect and hit timeout");
+        // Nếu kết nối thất bại sau một khoảng thời gian, reset thiết bị
+        ESP.reset();
+        delay(1000);
+      } else {
+        // In ra thông báo khi kết nối WiFi thành công
+        Serial.println("Connected to WiFi");
+        Serial.print("SSID: ");
+        Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
 
-    // Xóa cài đặt cũ
-    wifiManager.resetSettings();
-
-    // Bắt đầu cổng cấu hình, "ESP8266_MODE_Access Point" là tên mạng WiFi cho AP Mode
-    // Hàm startConfigPortal() sẽ tự động ngắt khi kết nối WiFi được cấu hình xong và kết nối
-    if (wifiManager.startConfigPortal("ESP8266_MODE_Access Point")) {
-      Serial.println("Kết nối được cấu hình xong và đã kết nối!");
-    } else {
-      Serial.println("Không kết nối được sau cấu hình.");
-    }
-
-    // Nếu bạn muốn tiếp tục chạy chương trình sau khi kết nối hoặc sau khi cấu hình thất bại, bạn có thể thực hiện các bước tiếp theo tại đây.
-    Serial.println("Tiếp tục chạy chương trình...");
-    }
+      }
+  }
 
 
   void resetESP() {
