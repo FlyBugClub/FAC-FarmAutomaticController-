@@ -203,7 +203,7 @@
     //endregion getWhenStart
 
     //region handleSensorData
-      getAndParseAPI("/api/getvalueesp/ESP0004");
+      getAndParseAPI("/api/getvalueesp/", id_sensor);
 
       for (int i = 0; i < num_equipments; i++) {
         Serial.print("ID Sensor: ");
@@ -543,12 +543,12 @@
 
     http.end();
   }
-  void getAndParseAPI(const char* url) {
+  void getAndParseAPI(const char* url, const char* id_sensor ) {
     num_equipments = 0;
     WiFiClientSecure client;
     HTTPClient http;
 
-    String api_url = "https://" + String(server_address) + url;
+    String api_url = "https://" + String(server_address) + url + id_sensor;
 
     http.begin(client, api_url);
     client.setInsecure();
