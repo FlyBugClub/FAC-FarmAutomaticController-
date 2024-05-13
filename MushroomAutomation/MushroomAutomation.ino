@@ -29,7 +29,6 @@
   int expect_values[MAX_EQUIPMENTS];
   int statuses[MAX_EQUIPMENTS];
   int count = 0;
-  char id_sensor[20];
   size_t num_equipments = 0;
 //region Constants
   const char* ntpServer = "pool.ntp.org";
@@ -199,7 +198,7 @@
 
       if (currentMillisForStatusUpdate - previousMillisForStatusUpdate >= statusUpdateInterval) {  // Kiểm tra nếu đã qua 10 giây
           previousMillisForStatusUpdate = currentMillisForStatusUpdate;  // Cập nhật thời gian trước đó
-          getWhenStart("/api/laststatus/esp0004");  // Gọi hàm
+          getWhenStart("/api/laststatus/", id_sensor);  // Gọi hàm
       }
     //endregion getWhenStart
 
@@ -488,11 +487,11 @@
     http.end();
   }
 //region GET
-  void getWhenStart(const char* url) {
+  void getWhenStart(const char* url, const char* id_sensor) {
     WiFiClientSecure client;
     HTTPClient http;
 
-    String api_url = "https://" + String(server_address) + url;
+    String api_url = "https://" + String(server_address) + url + id_sensor;
     http.begin(client, api_url);
     client.setInsecure();
     int httpCode = http.GET();
@@ -804,7 +803,7 @@
 
         
       }
-    getWhenStart("/api/laststatus/esp0004");
+    getWhenStart("/api/laststatus/", id_sensor);  // Gọi hàm
     Serial.println("\nWiFi connection successful!");
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
@@ -849,13 +848,8 @@
 //region MQTTX POST
   void sendHelloMessage() {
     if (client.connected()) {
-      // Tạo một bộ nhớ đệm để lưu trữ dữ liệu JSON
       StaticJsonDocument<1000> doc;
-
-
-      // Thiết lập các giá trị trong JSON
       doc["id_esp"] = "ESP0001";
-
       doc["equipment"]["equipment0"];
       doc["equipment"]["equipment0"]["id_bc"] = "BC0001";
       doc["equipment"]["equipment0"]["automode"] = "2";
@@ -868,15 +862,10 @@
       doc["equipment"]["equipment1"]["expect_value"] = 85;
       doc["equipment"]["equipment1"]["status"] = 1;
       
-
-      // Chuyển đổi JSON thành chuỗi
       char jsonBuffer[1000];
       serializeJson(doc, jsonBuffer);
-
-      // Gửi chuỗi JSON lên MQTT
       client.publish(mqtt_topic_hello, jsonBuffer);
       client.flush();
-      // Gửi thông báo đã được ký tự hóa JSON đến chủ đề MQTT
         bool messageSent = client.publish(mqtt_topic_hello, jsonBuffer);
         client.flush();
         if (messageSent) {
