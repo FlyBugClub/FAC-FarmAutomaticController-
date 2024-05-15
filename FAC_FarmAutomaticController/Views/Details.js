@@ -1262,39 +1262,8 @@ export default class Details extends Component {
               <RefreshControl refreshing={refresh} onRefresh={this.pullMe} />
             }
           >
-            {/* <View style={styles.midle}>
-            <View style={styles.alarm}>
-              <Text style={{ color: "#F12525" }}>
-                <Text style={{ color: "#F12525", fontWeight: "bold" }}>
-                  {i18next.t("Note")}:
-                </Text>
-                It is a long established fact that a reader will be distracted
-                by the readable content
-              </Text>
-            </View>
-          </View> */}
             <View style={styles.midle}>
               <View style={{ width: "95%" }}>
-                {/* <View style={styles.dropdownOptionArea}>
-                <Text style={styles.dropdownOptionText}>Control</Text>
-                <View>
-                  <Picker
-                    style={{ width: 180 }}
-                    mode="dropdown"
-                    selectedValue={this.state.selecedCat}
-                    onValueChange={this.onValueChangeCat.bind(this)}
-                  >
-                    {this.state.category.map((item, index) => (
-                      <Picker.Item
-                        color="#333"
-                        label={i18next.t(item.itemName)}
-                        value={item.itemName}
-                        index={index}
-                      />
-                    ))}
-                  </Picker>
-                </View>
-              </View> */}
                 {this.state.selecedCat === "All" && (
                   <View>
                     <Text style={styles.titleNote}>

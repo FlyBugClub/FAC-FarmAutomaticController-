@@ -304,13 +304,15 @@ export default class Home extends Component {
             >
               <View
                 style={{
+                  width: "100%",
                   flexDirection: "row",
                   justifyContent: "space-between",
                 }}
               >
                 <Text style={styles.titleItem} numberOfLines={1}>
                   {" "}
-                  Farm {index}: {data[index]["name"]}
+                  {/* Farm {index}:  */}
+                  {data[index]["name"]}
                 </Text>
                 <View style={styles.connectArea}>
                   {isConnect["esp" + index.toString()] === true && (
@@ -318,14 +320,7 @@ export default class Home extends Component {
                       <View
                         style={[styles.dot, { backgroundColor: "#80b918" }]}
                       ></View>
-                      <Text
-                        style={{
-                          fontWeight: "bold",
-                          marginLeft: 2,
-                          marginRight: 2,
-                          fontSize: 13,
-                        }}
-                      >
+                      <Text style={styles.statusConnetcText}>
                         {i18next.t("Connected")}
                       </Text>
                     </>
@@ -336,38 +331,37 @@ export default class Home extends Component {
                       <View
                         style={[styles.dot, { backgroundColor: "#E31C1C" }]}
                       ></View>
-                      <Text
-                        style={{
-                          fontWeight: "bold",
-                          marginLeft: 2,
-                          marginRight: 2,
-                          fontSize: 13,
-                        }}
-                      >
+                      <Text style={styles.statusConnetcText}>
                         {i18next.t("Disconnected")}
                       </Text>
                     </>
                   )}
                 </View>
               </View>
-              <Text style={{ fontSize: 13, marginTop: 5, marginLeft: 4 }}>
-                {data[index]["decription"]}
-              </Text>
+              {data[index]["decription"] == "" && (
+                <Text style={styles.description}>Farm {index}</Text>
+              )}
+              {data[index]["decription"] != "" && (
+                <Text style={styles.description}>
+                  {data[index]["decription"]}
+                </Text>
+              )}
+
               <View
                 style={{
                   flexDirection: "row",
                   gap: 18,
-                  marginTop: 5,
+                  marginTop: 12,
                   marginLeft: 4,
                 }}
               >
-                <Text style={{ fontSize: 13, color: "#777777" }}>
+                <Text style={styles.sensorText}>
                   {i18next.t("Humidity")}: {data[index]["sensor"]["sl_dht"]}
                 </Text>
-                <Text style={{ fontSize: 13, color: "#777777" }}>
+                <Text style={styles.sensorText}>
                   {i18next.t("pH")}: {data[index]["sensor"]["sl_ph"]}
                 </Text>
-                <Text style={{ fontSize: 13, color: "#777777" }}>
+                <Text style={styles.sensorText}>
                   {i18next.t("Water pump")}: {data[index]["bc"]["sl"]}
                 </Text>
               </View>
@@ -382,19 +376,6 @@ export default class Home extends Component {
         <StatusBar barStyle={"default"} />
 
         <View style={styles.container}>
-          {/* <LinearGradient
-              colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
-              style={styles.header}
-            >
-              <SafeAreaView style={styles.header}>
-                <Text style={styles.headerText}>
-                  {i18next.t("Hello")}! {name_user}
-                </Text>
-                <Text style={styles.headerText}>
-                  {i18next.t("Have a nice Day")}
-                </Text>
-              </SafeAreaView>
-            </LinearGradient> */}
           <View style={styles.header}>
             <Image
               source={require("../assets/background/greenRoad.jpg")}
@@ -540,7 +521,9 @@ export default class Home extends Component {
 
           {farmHouseList.length !== 0 && (
             <View style={styles.body}>
-              <Text style={styles.littleTitle}>Farm house</Text>
+              <Text style={[styles.littleTitle, { marginBottom: 5 }]}>
+                Farm house
+              </Text>
               <ScrollView
                 style={{ height: height > 1000 ? "82%" : "70%" }}
                 showsVerticalScrollIndicator={false}
@@ -658,14 +641,12 @@ const styles = StyleSheet.create({
     color: "white",
   },
   forecastView: {
-    // backgroundColor: "gray",
     width: "100%",
     marginTop: 8,
   },
   dailyForecasrView: {
     width: "100%",
     flexDirection: "row",
-    // backgroundColor: "white"
   },
   bgWeatherForecast: {
     width: 80,
@@ -702,11 +683,24 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  statusConnetcText: {
+    fontWeight: "400",
+    marginLeft: 2,
+    marginRight: 2,
+    fontSize: 12,
+  },
+  description: {
+    fontSize: 12,
+    marginTop: 5,
+    marginLeft: 4,
+    fontWeight: "200",
+  },
   titleItem: {
-    fontSize: 18,
+    width: "65%",
+    fontSize: 16,
     color: "#333",
-    fontWeight: "bold",
-    // overflow: "hidden",
+    fontWeight: "600",
+    overflow: "hidden",
   },
   connectArea: {
     flexDirection: "row",
@@ -715,6 +709,11 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     borderRadius: 12,
+  },
+  sensorText: {
+    fontWeight: "300",
+    fontSize: 12.5,
+    color: "#777777",
   },
   dot: {
     width: 7,

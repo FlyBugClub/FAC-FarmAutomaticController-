@@ -346,21 +346,17 @@ const styles = StyleSheet.create({
     ...Platform.select({
       android: {
         borderBottomWidth: 1.2,
-        borderStyle: "dotted",
+        borderColor: "#2BA84A",
       },
+      ios: {
+        borderBottomWidth: 1.2,
+        borderBottomColor: "#2BA84A",
+      }
     }),
+    borderStyle: "dotted",
     color: "#333",
     marginTop: 10,
     fontSize: 12,
-    borderColor: "#2BA84A",
+    
   },
-  btnSignUp: {
-    ...Platform.select({
-      ios: {
-        borderBottomWidth: 1.2,
-        borderStyle: "dotted",
-        borderColor: "#2BA84A",
-      }
-    })
-  }
 });
