@@ -65,7 +65,7 @@
       buttonCount = 1;
       buttonFlag = false;
       delay(10);
-      activateAPMode();
+      
     }
     else 
     {
@@ -159,6 +159,7 @@
 //region loop
   void loop() {
     if (buttonFlag) {
+    
     
     // Serial.println("heheeh");
     //region config
@@ -800,6 +801,7 @@
     while (WiFi.status() != WL_CONNECTED) {
         delay(100);
         Serial.print(".");
+        
       }
     getWhenStart("/api/laststatus/", id_sensor);  // Gọi hàm
     Serial.println("\nWiFi connection successful!");
@@ -809,24 +811,29 @@
 
 
   void activateAPMode() {
-    // Khởi tạo WiFiManager
+  Serial.println("Starting Access Point Mode");
+
+  // Ngắt kết nối WiFi nếu đang kết nối
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Disconnecting from WiFi");
+    WiFi.disconnect();
+    delay(1000); // Chờ một chút để đảm bảo WiFi đã ngắt kết nối
+  }
+
+  // Khởi tạo WiFiManager
   WiFiManager wifiManager;
 
-  // Kiểm tra xem ESP8266 có kết nối WiFi hay không
-  if (!WiFi.isConnected()) {
-    // Thử kết nối WiFi hoặc chuyển sang chế độ điểm truy cập (AP) để cấu hình WiFi mới
-    if (!wifiManager.autoConnect("ESP8266_AP")) {
-      Serial.println("Failed to connect and hit timeout");
-      // Nếu kết nối thất bại sau một khoảng thời gian, reset thiết bị
-      ESP.reset();
-      delay(1000);
-    } else {
-      // In ra thông báo khi kết nối WiFi thành công
-      Serial.println("Connected to WiFi");
-      Serial.print("SSID: ");
-      Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
-
-  }
+  // Chuyển ESP8266 vào chế độ điểm truy cập (AP) để cấu hình WiFi mới
+  if (!wifiManager.autoConnect("ESP8266_AP")) {
+    Serial.println("Failed to connect and hit timeout");
+    // Nếu kết nối thất bại sau một khoảng thời gian, reset thiết bị
+    ESP.reset();
+    delay(1);
+  } else {
+    // In ra thông báo khi kết nối WiFi thành công
+    Serial.println("Connected to WiFi");
+    Serial.print("SSID: ");
+    Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
   }
   }
 
