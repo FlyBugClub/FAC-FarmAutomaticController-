@@ -33,7 +33,7 @@
 //region Constants
   const char* ntpServer = "pool.ntp.org";
   const int ntpPort = 123;
-  const char* server_address = "http://103.130.211.141/:8080";
+  const char* server_address = "103.130.211.141:8080/fac_api";
   const int server_port = 443;
   const int pumpPin0 = D6;
   const int pumpPin1 = D7;
@@ -52,32 +52,32 @@
   int minute;
   int second;
   int totalSeconds = hour * 3600 + minute * 60 + second;
-// region interupt
-  //   int buttonCount = 0; // Biến lưu trữ số lần nhấn nút
-  //   volatile bool buttonFlag = true; // Biến cờ kiểm tra có ngắt xảy ra hay không
-  //   ICACHE_RAM_ATTR void buttonPressed() {
-  //   // Tăng biến đếm số lần nhấn nút
-  //   if (buttonCount == 0)
-  //   { 
-  //     digitalWrite(2,LOW);
-  //     digitalWrite(16,HIGH);
-  //     Serial.println("config wifi btton click");
-  //     buttonCount = 1;
-  //     buttonFlag = false;
-  //     delay(10);
-  //     activateAPMode();
-  //   }
-  //   else 
-  //   {
-  //     Serial.println("reset btton click");
-  //     buttonCount = 0;
-  //     ESP.reset();
-  //     buttonFlag = true;
-  //     delay(10);
+//region interupt
+    int buttonCount = 0; // Biến lưu trữ số lần nhấn nút
+    volatile bool buttonFlag = true; // Biến cờ kiểm tra có ngắt xảy ra hay không
+    ICACHE_RAM_ATTR void buttonPressed() {
+    // Tăng biến đếm số lần nhấn nút
+    if (buttonCount == 0)
+    { 
+      digitalWrite(2,LOW);
+      digitalWrite(16,HIGH);
+      Serial.println("config wifi btton click");
+      buttonCount = 1;
+      buttonFlag = false;
+      delay(10);
+      activateAPMode();
+    }
+    else 
+    {
+      Serial.println("reset btton click");
+      buttonCount = 0;
+      ESP.reset();
+      buttonFlag = true;
+      delay(10);
 
-  //   }
+    }
     
-  // }
+  }
 
   const char* mqtt_server = "broker.emqx.io";
   const uint16_t mqtt_port = 1883;
@@ -137,7 +137,7 @@
     pinMode (2,OUTPUT);
     pinMode (16,OUTPUT);
   // Đăng ký ngắt cho chân GPIO 0, gọi hàm buttonPressed khi có tín hiệu từ mức cao xuống thấp
-    // attachInterrupt(0, buttonPressed, RISING);
+    attachInterrupt(0, buttonPressed, RISING);
     // Connect to WiFi
     connectToWiFi();
 
@@ -158,7 +158,7 @@
   int soLan = 0;
 //region loop
   void loop() {
-    // if (buttonFlag) {
+    if (buttonFlag) {
     
     // Serial.println("heheeh");
     //region config
@@ -240,9 +240,9 @@
       Serial.println("Hehehihi");
       sendMQTTMessage();
       Serial.println("=======================================");
-      delay(10000);
+      // delay(10000);
     //endregion stuff
-    // }
+    }
   }
 //region stuff
   void printValues() {
@@ -386,12 +386,11 @@
     }
 //region POST
   void postHumidityAndTempToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
-    WiFiClientSecure client;
+    WiFiClient client;
     HTTPClient http;
-    String api_url = "https://" + String(server_address) + url;
+    String api_url = "http://" + String(server_address) + url;
 
     http.begin(client, api_url);
-    client.setInsecure();
 
     http.addHeader("Content-Type", "application/json");
     Serial.println(formattedDateTime);
@@ -423,12 +422,11 @@
     http.end();
   }
   void postHumidityToAPI(const char* url, String formattedDateTime, const char* id_sensor) {
-    WiFiClientSecure client;
+    WiFiClient client; 
     HTTPClient http;
-    String api_url = "https://" + String(server_address) + url;
+    String api_url = "http://" + String(server_address) + url;
 
     http.begin(client, api_url);
-    client.setInsecure();
 
     http.addHeader("Content-Type", "application/json");
     Serial.println(formattedDateTime);
@@ -459,12 +457,11 @@
   }
 
   void postCountPumpToAPI(const char* url, String formattedDateTime, const char* id_equipment, int count, int status) {
-    WiFiClientSecure client;
+    WiFiClient client;
     HTTPClient http;
-    String api_url = "https://" + String(server_address) + url;
+    String api_url = "http://" + String(server_address) + url;
 
     http.begin(client, api_url);
-    client.setInsecure();
 
     http.addHeader("Content-Type", "application/json");
 
@@ -493,12 +490,11 @@
   }
 //region GET
   void getWhenStart(const char* url, const char* id_sensor) {
-    WiFiClientSecure client;
+    WiFiClient client;
     HTTPClient http;
 
-    String api_url = "https://" + String(server_address) + url + id_sensor;
+    String api_url = "http://" + String(server_address) + url + id_sensor;
     http.begin(client, api_url);
-    client.setInsecure();
     int httpCode = http.GET();
     
     if (httpCode > 0) {
@@ -550,13 +546,12 @@
   }
   void getAndParseAPI(const char* url, const char* id_sensor ) {
     num_equipments = 0;
-    WiFiClientSecure client;
+    WiFiClient client;
     HTTPClient http;
-
-    String api_url = "https://" + String(server_address) + url + id_sensor;
+   
+    String api_url = "http://" + String(server_address) + url + id_sensor;
 
     http.begin(client, api_url);
-    client.setInsecure();
     int httpCode = http.GET();
     
     if (httpCode > 0) {
@@ -848,7 +843,7 @@
     } else {
       Serial.println("Reconnection failed. Retrying...");
       sensorConnected = false;
-      delay(1000);
+      // delay(1000);
     }
     }
 //region MQTTX POST
