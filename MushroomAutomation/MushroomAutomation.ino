@@ -33,7 +33,7 @@
 //region Constants
   const char* ntpServer = "pool.ntp.org";
   const int ntpPort = 123;
-  const char* server_address = "ngunemay123.bsite.net";
+  const char* server_address = "http://103.130.211.141/:8080";
   const int server_port = 443;
   const int pumpPin0 = D6;
   const int pumpPin1 = D7;
@@ -52,37 +52,32 @@
   int minute;
   int second;
   int totalSeconds = hour * 3600 + minute * 60 + second;
-//region interupt
-  int buttonCount = 0; // Biến lưu trữ số lần nhấn nút
-  volatile bool buttonFlag = true; // Biến cờ kiểm tra có ngắt xảy ra hay không
+// region interupt
+  //   int buttonCount = 0; // Biến lưu trữ số lần nhấn nút
+  //   volatile bool buttonFlag = true; // Biến cờ kiểm tra có ngắt xảy ra hay không
+  //   ICACHE_RAM_ATTR void buttonPressed() {
+  //   // Tăng biến đếm số lần nhấn nút
+  //   if (buttonCount == 0)
+  //   { 
+  //     digitalWrite(2,LOW);
+  //     digitalWrite(16,HIGH);
+  //     Serial.println("config wifi btton click");
+  //     buttonCount = 1;
+  //     buttonFlag = false;
+  //     delay(10);
+  //     activateAPMode();
+  //   }
+  //   else 
+  //   {
+  //     Serial.println("reset btton click");
+  //     buttonCount = 0;
+  //     ESP.reset();
+  //     buttonFlag = true;
+  //     delay(10);
 
-
-
-    ICACHE_RAM_ATTR void buttonPressed() {
-  // Tăng biến đếm số lần nhấn nút
-  if (buttonCount == 0)
-  { 
-    digitalWrite(2,LOW);
-    digitalWrite(16,HIGH);
-    Serial.println("config wifi btton click");
-    buttonCount = 1;
-    buttonFlag = false;
-    delay(10);
-    activateAPMode();
-  }
-  else 
-  {
-    Serial.println("reset btton click");
-    buttonCount = 0;
-    resetESP();
-    buttonFlag = true;
-    delay(10);
-
-  }
-  // Đặt biến cờ thành true
-  
-  }
-//endregion interupt
+  //   }
+    
+  // }
 
   const char* mqtt_server = "broker.emqx.io";
   const uint16_t mqtt_port = 1883;
@@ -142,7 +137,7 @@
     pinMode (2,OUTPUT);
     pinMode (16,OUTPUT);
   // Đăng ký ngắt cho chân GPIO 0, gọi hàm buttonPressed khi có tín hiệu từ mức cao xuống thấp
-    attachInterrupt(0, buttonPressed, RISING);
+    // attachInterrupt(0, buttonPressed, RISING);
     // Connect to WiFi
     connectToWiFi();
 
@@ -163,7 +158,7 @@
   int soLan = 0;
 //region loop
   void loop() {
-    if (buttonFlag) {
+    // if (buttonFlag) {
     
     // Serial.println("heheeh");
     //region config
@@ -247,7 +242,7 @@
       Serial.println("=======================================");
       delay(10000);
     //endregion stuff
-    }
+    // }
   }
 //region stuff
   void printValues() {
@@ -810,8 +805,6 @@
     while (WiFi.status() != WL_CONNECTED) {
         delay(100);
         Serial.print(".");
-
-        
       }
     getWhenStart("/api/laststatus/", id_sensor);  // Gọi hàm
     Serial.println("\nWiFi connection successful!");
@@ -821,24 +814,25 @@
 
 
   void activateAPMode() {
-    Serial.println("Chuyển sang AP Mode.");
-    ssid[] = "";
-    pass[] = "";
-    connectToWiFi();
-    if (!WiFi.isConnected()) {
-      // Thử kết nối WiFi hoặc chuyển sang chế độ điểm truy cập (AP) để cấu hình WiFi mới
-      if (!wifiManager.autoConnect("ESP8266_AP")) {
-        Serial.println("Failed to connect and hit timeout");
-        // Nếu kết nối thất bại sau một khoảng thời gian, reset thiết bị
-        ESP.reset();
-        delay(1000);
-      } else {
-        // In ra thông báo khi kết nối WiFi thành công
-        Serial.println("Connected to WiFi");
-        Serial.print("SSID: ");
-        Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
+    // Khởi tạo WiFiManager
+  WiFiManager wifiManager;
 
-      }
+  // Kiểm tra xem ESP8266 có kết nối WiFi hay không
+  if (!WiFi.isConnected()) {
+    // Thử kết nối WiFi hoặc chuyển sang chế độ điểm truy cập (AP) để cấu hình WiFi mới
+    if (!wifiManager.autoConnect("ESP8266_AP")) {
+      Serial.println("Failed to connect and hit timeout");
+      // Nếu kết nối thất bại sau một khoảng thời gian, reset thiết bị
+      ESP.reset();
+      delay(1000);
+    } else {
+      // In ra thông báo khi kết nối WiFi thành công
+      Serial.println("Connected to WiFi");
+      Serial.print("SSID: ");
+      Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
+
+  }
+  }
   }
 
 
