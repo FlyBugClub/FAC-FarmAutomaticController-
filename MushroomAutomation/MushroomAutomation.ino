@@ -138,6 +138,7 @@
     pinMode (16,OUTPUT);
   // Đăng ký ngắt cho chân GPIO 0, gọi hàm buttonPressed khi có tín hiệu từ mức cao xuống thấp
     attachInterrupt(0, buttonPressed, RISING);
+    activateAPMode();
     // Connect to WiFi
     connectToWiFi();
 
@@ -159,7 +160,8 @@
 //region loop
   void loop() {
     if (buttonFlag) {
-    
+    Serial.println(ssid); // In ra tên của mạng WiFi đã kết nối
+    Serial.println(pass);
     
     // Serial.println("heheeh");
     //region config
@@ -868,6 +870,12 @@
     Serial.println("Connected to WiFi");
     Serial.print("SSID: ");
     Serial.println(WiFi.SSID()); // In ra tên của mạng WiFi đã kết nối
+    Serial.println(WiFi.psk()); // In ra tên của mạng WiFi đã kết nối
+    ssid = WiFi.SSID();
+    pass = WiFi.psk();
+
+
+
   }
   }
 
