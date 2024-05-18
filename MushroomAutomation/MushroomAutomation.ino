@@ -13,7 +13,7 @@
   #include <WiFiUdp.h>
 //region Struct
   #define MAX_EQUIPMENTS 2
-  #define SCHEDULE_CAPACITY 6 
+  #define SCHEDULE_CAPACITY 2880
 
   struct Equipment {
       char id_sensor[20];
@@ -195,13 +195,7 @@
       if (currentMillisForStatusUpdate - previousMillisForStatusUpdate >= statusUpdateInterval) {  // Kiểm tra nếu đã qua 10 giây
           previousMillisForStatusUpdate = currentMillisForStatusUpdate;  // Cập nhật thời gian trước đó
           getWhenStart("/api/laststatus/", id_sensor);  // Gọi hàm
-      }
-    //endregion getWhenStart
-
-    //region handleSensorData
-      getAndParseAPI("/api/getvalueesp/", id_sensor);
-
-      for (int i = 0; i < num_equipments; i++) {
+          for (int i = 0; i < num_equipments; i++) {
         Serial.print("ID Sensor: ");
         Serial.println(equipments[i].id_sensor);
         if (sensorConnected == true)
@@ -219,6 +213,10 @@
         
          
       }
+      }
+    //endregion getWhenStart
+    //region handleSensorData
+      getAndParseAPI("/api/getvalueesp/", id_sensor);
     //endregion handleSensorData
 
     //region sendHelloMessage
@@ -237,7 +235,7 @@
     //endregion processAutoMode
 
     //region stuff
-      printValues();
+      // printValues();
       Serial.println("Hehehihi");
       sendMQTTMessage();
       Serial.println("=======================================");
@@ -317,7 +315,7 @@
     Serial.println(currentDate);Serial.flush();
     Serial.println("previousDate");Serial.flush();
     Serial.println(previousDate);Serial.flush();
-    // Kiểm tra xem ngày hiện tại có khác ngày trước đó không
+    // Kiểm tra xem ngày hiện tại có khác ngày trước đó không 
     if (currentDate != previousDate) {
         Serial.println("New day has begun");Serial.flush();
         previousDate = currentDate; // Cập nhật ngày trước đó thành ngày hiện tại
@@ -631,12 +629,21 @@
   }
 //region Mannual
   void controlPump(int pumpIndex, int status) {
+    Serial.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        Serial.println(pumpIndex);
+        Serial.println(status);
+        Serial.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     if (status == 0) {
         digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), LOW);
-        // Serial.println("Pump is OFF");
+        Serial.println("___________________________________________________________________________________");
+        Serial.println("Pump is OFF");
+        Serial.println("___________________________________________________________________________________");
     } else if (status == 1) {
         digitalWrite(pumpIndex == 0 ? pumpPin0 : (pumpIndex == 1 ? pumpPin1 : pumpPin2), HIGH);
-        // Serial.println("Pump is ON");
+        Serial.println("___________________________________________________________________________________");
+        Serial.println("Pump is ON");
+        Serial.println("___________________________________________________________________________________");
+
     } else {
         Serial.println("Invalid status");Serial.flush();
     }
@@ -644,8 +651,10 @@
 
 //region Schedule
   bool isPumpActive = false; // Biến kiểm tra xem bơm đã được kích hoạt để tưới cây hay chưa
-
+  bool isPumpActive_flag[5];
+  int isPumpActive_flag_time[5];
   void waterPlants(int count) {
+
      // Biến lưu thời điểm tưới cây cuối cùng
     currentEpochTime = timeClient.getEpochTime(); // Lấy thời gian Epoch
     time_t epochTime = (time_t)currentEpochTime; // Chuyển đổi sang dạng time_t
@@ -669,7 +678,7 @@
     
     Serial.println("-----------------------------------------");
     // Kiểm tra xem đã đến lúc tưới cây chưa và bơm chưa được kích hoạt
-    if (!isPumpActive && (totalSeconds - lastWateringTime >= 5000)) { // Chờ 5 giây giữa mỗi lần tưới
+    // if (!isPumpActive && (totalSeconds - lastWateringTime >= 5000)) { // Chờ 5 giây giữa mỗi lần tưới
         // Lấy lịch trình tưới cây cho thiết bị có chỉ số count
         Equipment equipment = equipments[count];
         char** schedule = equipment.schedule;
@@ -684,8 +693,13 @@
             sscanf(wateringTime, "%d:%d:%d", &hour, &minute, &second);
             int wateringTotalSeconds = hour * 3600 + minute * 60 + second;
             
+            //wateringTotalSeconds == 8000  + 60 = 8060
+            //totalSeconds == 8006
             // Nếu đã đến thời điểm tưới cây
-            if (totalSeconds >= wateringTotalSeconds && totalSeconds <= wateringTotalSeconds + 60) { // Chấp nhận một khoảng thời gian 60 giây cho phép trễ
+            if (totalSeconds >= wateringTotalSeconds && totalSeconds <= wateringTotalSeconds + 60 &&isPumpActive_flag[j] == true && isPumpActive == false ) { // Chấp nhận một khoảng thời gian 60 giây cho phép trễ
+                isPumpActive_flag[j] = false;
+                isPumpActive_flag_time[j] = totalSeconds;
+                
                 controlPump(count, HIGH); // Kích hoạt bơm tưới cây cho thiết bị tại chỉ số count
                 lastWateringTime = totalSeconds; // Lưu thời điểm tưới cây cuối cùng
                 isPumpActive = true; // Đánh dấu rằng bơm đã được kích hoạt
@@ -703,14 +717,30 @@
             Serial.print(remainingMinutes);Serial.flush();
             Serial.println(" phút nữa sẽ tưới cây");Serial.flush();
             Serial.println("-----------------------------------------");
+            if (isPumpActive_flag[j] == false && (totalSeconds - isPumpActive_flag_time[j]  >= 60)) {
+                isPumpActive_flag[j] = true;
+            }
         }
-    }
+    // }
 
+
+
+
+    Serial.println("_____________________aaaaaaaaaaaaaaaaaaaaaaaa___________________________________");
+        Serial.println(isPumpActive);
+        Serial.print("totalSeconds: ");
+        Serial.println(totalSeconds);
+        Serial.print("lastWateringTime: ");
+        Serial.println(lastWateringTime);
+
+      Serial.println("_____________________aaaaaaaaaaaaaaaaaaaaaaaa___________________________________");
     // Kiểm tra xem đã đủ thời gian để tắt bơm chưa
-    if (isPumpActive && (totalSeconds - lastWateringTime >= 5000)) {
+    if (isPumpActive == true && (totalSeconds - lastWateringTime >= 5)) {
+      
         controlPump(count, LOW); // Tắt bơm
         isPumpActive = false; // Đánh dấu rằng bơm đã được tắt
     }
+    
   }
 
 
