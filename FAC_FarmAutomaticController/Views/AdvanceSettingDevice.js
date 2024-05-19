@@ -95,8 +95,6 @@ export default class AdvanceSettingDevice extends Component {
       });
     });
 
-    
-
     // console.log(namesArray)
 
     const url = apiUrl + `getoffset/${dataArray[1]["bc"][index]["id_bc"]}`;
@@ -427,6 +425,17 @@ export default class AdvanceSettingDevice extends Component {
                       {i18next.t("Device infomation")}
                     </Text>
                   </SafeAreaView>
+                  <SafeAreaView style={styles.btnSetting}>
+                    <TouchableOpacity
+                      style={{ marginLeft: 20 }}
+                      onPress={this.DetailPage}
+                    >
+                      <Image
+                        source={require("../assets/img/left-arrow.png")}
+                        style={styles.imgSetting}
+                      />
+                    </TouchableOpacity>
+                  </SafeAreaView>
                 </LinearGradient>
                 <View style={styles.content}>
                   <View style={styles.optionComponent}>
@@ -727,6 +736,18 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
       },
     }),
+  },
+  btnSetting: {
+    width: "100%",
+    position: "absolute",
+    top: "5%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  imgSetting: {
+    width: 23,
+    height: 23,
+    tintColor: "white",
   },
   content: {
     flex: 1,

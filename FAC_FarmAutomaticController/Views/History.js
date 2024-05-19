@@ -124,7 +124,6 @@ export default class History extends Component {
   render() {
     const { historyList } = this.state;
     const history = [];
-    // lịch sử version 1
     // if (flag) {
     //   flag = false;
     //   // Sử dụng forEach để thêm các phần tử vào mảng items
