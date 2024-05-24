@@ -209,7 +209,6 @@ export default class Details extends Component {
         Current_Data["sensor"]["sl_dht"] == 0 &&
         Current_Data["sensor"]["sl_ph"] == 0
       ) {
-        console.log("ok");
       } else this.getvalue();
       // console.log(dataArray[1])
     }, 2000);
@@ -834,13 +833,16 @@ export default class Details extends Component {
     const { dataArray } = this.context;
 
     const url = apiUrl + `getvalueequipment/${dataArray[1]["id_esp"]}`;
-
+    const url_laststatus = apiUrl + `laststatus/${dataArray[1]["id_esp"]}`;
     const response = await fetch(url);
-    if (!response.ok) {
+    const response_laststatus = await fetch(url_laststatus);
+    if (!response.ok && !response_laststatus.ok) {
       // Toast.show("NetWork Fail!", Toast.SHORT);
       return;
     }
     const json = await response.json();
+    const json_laststatus = await response_laststatus.json();
+    console.log(json_laststatus)
     const value = [];
     const newSwitchStates = [];
     const gettimelist = [];
@@ -854,9 +856,43 @@ export default class Details extends Component {
       const newSwitchStates2 = [];
       const time = [];
       // Thêm giá trị false vào mảng newSwitchStates
-      newSwitchStates2.push(false);
-      newSwitchStates2.push(false);
-      newSwitchStates2.push(false);
+      if (
+        json_laststatus["equipment"]["equipment" + i.toString()]["automode"] === "0" &&
+        json_laststatus["equipment"]["equipment" + i.toString()]["status"] === 1
+          ) {
+            newSwitchStates2.push(true);
+            newSwitchStates2.push(false);
+            newSwitchStates2.push(false);
+          } else if (
+            json_laststatus["equipment"]["equipment" + i.toString()]["automode"] === "1" &&
+            json_laststatus["equipment"]["equipment" + i.toString()]["status"] === 1
+          ) {
+            newSwitchStates2.push(true);
+            newSwitchStates2.push(true);
+            newSwitchStates2.push(false);
+          } else if (
+            json_laststatus["equipment"]["equipment" + i.toString()]["automode"] === "2" &&
+            json_laststatus["equipment"]["equipment" + i.toString()]["status"] === 1
+          ) {
+            newSwitchStates2.push(true);
+            newSwitchStates2.push(false);
+            newSwitchStates2.push(true);  
+          } else if (json_laststatus["equipment"]["equipment" + i.toString()]["automode"] === "0") {
+            newSwitchStates2.push(false);
+            newSwitchStates2.push(false);
+            newSwitchStates2.push(false);
+          } else if (json_laststatus["equipment"]["equipment" + i.toString()]["automode"] === "1") {
+            newSwitchStates2.push(false);
+            newSwitchStates2.push(true);
+            newSwitchStates2.push(false);
+          } else if (json_laststatus["equipment"]["equipment" + i.toString()]["automode"] === "2") {
+            newSwitchStates2.push(false);
+            newSwitchStates2.push(false);
+            newSwitchStates2.push(true);
+          }
+      // newSwitchStates2.push(false);
+      // newSwitchStates2.push(false);
+      // newSwitchStates2.push(false);
       newSwitchStates.push(newSwitchStates2);
       if (Object.keys(json[0][i]["schedule"]).length === 0) {
         gettimelist.push([]);
@@ -876,8 +912,8 @@ export default class Details extends Component {
       buttonTime.push(false);
       modalVisible.push(false);
 
-      slidebarvalue.push(50);
-      value.push(50);
+      slidebarvalue.push(json_laststatus["equipment"]["equipment" + i.toString()]["expect_value"]);
+      value.push(json_laststatus["equipment"]["equipment" + i.toString()]["expect_value"]);
       name_bc.push(json[0][i]["name"]);
     }
 
