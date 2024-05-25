@@ -653,39 +653,39 @@
 
 //region Schedule
   bool isPumpActive = false; // Biến kiểm tra xem bơm đã được kích hoạt để tưới cây hay chưa
-  bool isPumpActive_flag[5];
-  int isPumpActive_flag_time[5];
+  bool *isPumpActive_flag;
+  int *isPumpActive_flag_time
   void waterPlants(int count) {
 
      // Biến lưu thời điểm tưới cây cuối cùng
-    currentEpochTime = timeClient.getEpochTime(); // Lấy thời gian Epoch
-    time_t epochTime = (time_t)currentEpochTime; // Chuyển đổi sang dạng time_t
-    struct tm *currentTimeStruct = localtime(&epochTime); // Chuyển đổi sang cấu trúc tm
+        currentEpochTime = timeClient.getEpochTime(); // Lấy thời gian Epoch
+        time_t epochTime = (time_t)currentEpochTime; // Chuyển đổi sang dạng time_t
+        struct tm *currentTimeStruct = localtime(&epochTime); // Chuyển đổi sang cấu trúc tm
 
-    // Lấy giờ, phút và giây từ cấu trúc tm
-    hour = currentTimeStruct->tm_hour;
-    minute = currentTimeStruct->tm_min;
-    second = currentTimeStruct->tm_sec;
-    totalSeconds = hour * 3600 + minute * 60 + second;
-    
-    // In ra giờ, phút và giây
-    Serial.println("waterPlants RUN: ");Serial.flush();
-    Serial.print("BÂY GIỜ LÀ : ");Serial.flush();
-    Serial.print(hour);Serial.flush();
-    Serial.print("Giờ: ");Serial.flush();
-    Serial.print(minute);Serial.flush();
-    Serial.print(" Phút: ");Serial.flush();
-    Serial.print(second);Serial.flush();
-    Serial.println(" Giây: ");Serial.flush();
-    
-    Serial.println("-----------------------------------------");
+        // Lấy giờ, phút và giây từ cấu trúc tm
+        hour = currentTimeStruct->tm_hour;
+        minute = currentTimeStruct->tm_min;
+        second = currentTimeStruct->tm_sec;
+        totalSeconds = hour * 3600 + minute * 60 + second;
+        
+        // In ra giờ, phút và giây
+        Serial.println("waterPlants RUN: ");Serial.flush();
+        Serial.print("BÂY GIỜ LÀ : ");Serial.flush();
+        Serial.print(hour);Serial.flush();
+        Serial.print("Giờ: ");Serial.flush();
+        Serial.print(minute);Serial.flush();
+        Serial.print(" Phút: ");Serial.flush();
+        Serial.print(second);Serial.flush();
+        Serial.println(" Giây: ");Serial.flush();
+        Serial.println("-----------------------------------------");
     // Kiểm tra xem đã đến lúc tưới cây chưa và bơm chưa được kích hoạt
     // if (!isPumpActive && (totalSeconds - lastWateringTime >= 5000)) { // Chờ 5 giây giữa mỗi lần tưới
         // Lấy lịch trình tưới cây cho thiết bị có chỉ số count
         Equipment equipment = equipments[count];
         char** schedule = equipment.schedule;
         size_t schedule_size = equipment.schedule_size;
-
+        isPumpActive_flag = new bool[schedule_size];
+        isPumpActive_flag_time = new int[schedule_size];
         // Lặp qua lịch trình để kiểm tra thời điểm tưới cây
         for (int j = 0; j < schedule_size; j++) {
             char* wateringTime = schedule[j]; // Lấy thời điểm tưới cây tại chỉ số j trong mảng
@@ -698,7 +698,7 @@
             //wateringTotalSeconds == 8000  + 60 = 8060
             //totalSeconds == 8006
             // Nếu đã đến thời điểm tưới cây
-            if (totalSeconds >= wateringTotalSeconds && totalSeconds <= wateringTotalSeconds + 60 &&isPumpActive_flag[j] == true && isPumpActive == false ) { // Chấp nhận một khoảng thời gian 60 giây cho phép trễ
+            if (totalSeconds >= wateringTotalSeconds && totalSeconds <= wateringTotalSeconds + 60 && isPumpActive_flag[j] == true && isPumpActive == false ) { // Chấp nhận một khoảng thời gian 60 giây cho phép trễ
                 isPumpActive_flag[j] = false;
                 isPumpActive_flag_time[j] = totalSeconds;
                 
