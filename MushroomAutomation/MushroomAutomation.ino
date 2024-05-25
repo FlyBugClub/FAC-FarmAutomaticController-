@@ -712,13 +712,13 @@
             int remainingTimeInSeconds = wateringTotalSeconds - totalSeconds; // Chuyển đổi thời gian còn lại sang giây
             int remainingHours = remainingTimeInSeconds / 3600; // Tính số giờ còn lại
             int remainingMinutes = (remainingTimeInSeconds % 3600) / 60; // Tính số phút còn lại
-
-            Serial.print("Còn ");Serial.flush();
-            Serial.print(remainingHours);Serial.flush();
-            Serial.print(" giờ ");Serial.flush();
-            Serial.print(remainingMinutes);Serial.flush();
-            Serial.println(" phút nữa sẽ tưới cây");Serial.flush();
-            Serial.println("-----------------------------------------");
+            // stuff
+              Serial.print("Còn ");Serial.flush();
+              Serial.print(remainingHours);Serial.flush();
+              Serial.print(" giờ ");Serial.flush();
+              Serial.print(remainingMinutes);Serial.flush();
+              Serial.println(" phút nữa sẽ tưới cây");Serial.flush();
+              Serial.println("-----------------------------------------");
             if (isPumpActive_flag[j] == false && (totalSeconds - isPumpActive_flag_time[j]  >= 60)) {
                 isPumpActive_flag[j] = true;
             }
@@ -1039,3 +1039,9 @@
     }
   }
   }
+
+//region cleanup
+void cleanup() {
+    delete[] isPumpActive_flag;
+    delete[] isPumpActive_flag_time;
+}
