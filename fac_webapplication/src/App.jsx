@@ -1,10 +1,9 @@
-
+import Login from "./components/Login/Login";
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <p>
-        </p>
+      <Login/>
         
       </header>
     </div>
