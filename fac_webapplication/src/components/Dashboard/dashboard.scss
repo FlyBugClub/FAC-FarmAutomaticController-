@@ -2,10 +2,12 @@
 {
     width: 100%;
     height: 100vh;
-    background-color: aqua;
+    white-space: nowrap; /* Đảm bảo các phần tử không xuống dòng */
+    
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     
     &_container
     {
@@ -24,12 +26,7 @@
         {
             margin-left: 1%;
             width: 100%;
-            &_Weather
-            {
-                width: 100%;
-                height: 20%;
-                background-color: bisque;
-            }
+            
             &_Dashboard
             {
                 margin-top: 1%;

@@ -28,6 +28,7 @@ const Menu = () => {
                 <FiUserMinus size={22}/>
                     <div style={{marginLeft:"10px"}}>Logout</div>
                 </div>
+                
             </div>
 
         </div>
