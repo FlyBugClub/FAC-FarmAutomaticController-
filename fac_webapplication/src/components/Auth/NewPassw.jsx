@@ -1,9 +1,12 @@
 import { BrowserView, MobileView } from "react-device-detect";
+import { useNavigate } from 'react-router-dom';
 import React from "react";
 import { FiEye, FiLock, FiUser } from "react-icons/fi";
 import "./Auth.scss";
 
 const NewPassw = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
@@ -37,13 +40,13 @@ const NewPassw = () => {
             <div>Lưu đăng nhập</div>
           </div>
           <div className="Auth_BrowserView_Region-NewPass_Button">
-            <button type="submit">Xác nhận</button>
+            <button type="submit" onClick={() => navigate("/login")}>Xác nhận</button>
           </div>
           <div className="Auth_BrowserView_Region-NewPass_Stuff">
-            <div>
+            <div onClick={() => {navigate("/login")}}>
                 Đăng nhập
             </div>
-            <div>
+            <div onClick={() => {navigate("/forgotpassword")}}>
                 Quên mật khẩu
             </div>
           </div>

@@ -1,9 +1,12 @@
 import { BrowserView, MobileView } from "react-device-detect";
+import { useNavigate } from 'react-router-dom';
 import React from "react";
 import { FiMail} from "react-icons/fi";
 import "./Auth.scss";
 
 const ForgotPassw = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
@@ -25,7 +28,7 @@ const ForgotPassw = () => {
             <input type="text" placeholder="Email"></input>
           </div>
           <div className="Auth_BrowserView_Region-Forgot_Button">
-            <button type="submit">Gửi</button>
+            <button type="submit"onClick={() => navigate('/newpassw')} >Gửi</button>
           </div>
         </div>
         </div>

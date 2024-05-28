@@ -1,9 +1,11 @@
 import { BrowserView, MobileView } from "react-device-detect";
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import { FiEye, FiLock, FiMail, FiUser } from "react-icons/fi";
 import "./Auth.scss";
 
 const Login = () => {
+  const navigate = useNavigate();
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
@@ -51,7 +53,7 @@ const Login = () => {
             <div>Lưu đăng nhập</div>
           </div>
           <div className="Auth_BrowserView_Region-Signup_Button">
-            <button type="submit">Đăng ký</button>
+            <button type="submit" onClick={() => navigate('/login')}>Đăng ký</button>
           </div>
           
         </div>
