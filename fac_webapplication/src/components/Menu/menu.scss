@@ -3,7 +3,7 @@
     width: 100%;
     height: 100%;
     background-color: #343434;
-    background: rgba(40, 40, 40, 0.6); /* Màu trắng với độ mờ */
+    background: rgba(40, 40, 40, 0.65); /* Màu trắng với độ mờ */
     mix-blend-mode: luminosity;
     border-radius: 20px;
     &_User
@@ -21,6 +21,8 @@
             width: 65%;
             height: 65%;
             border-radius: 50%;
+            cursor: pointer;
+
         }
         &_Name
         {

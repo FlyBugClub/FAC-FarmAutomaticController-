@@ -1,10 +1,11 @@
 .Fac_Weather
 {
-    width:80%;
-    height: 20%;
+    width:100%;
+    height: 17%;
     display: flex;
-    position: fixed;
-
+    position: absolute;
+    top: 0;
+    right: 0;
     &_MainBlock
     {
         height: 100%;
@@ -15,7 +16,7 @@
         {
             height: 100%;
             width: 230px;
-            background: rgba(40, 40, 40, 0.6); /* Màu trắng với độ mờ */
+            background: rgba(40, 40, 40, 0.65); /* Màu trắng với độ mờ */
             mix-blend-mode: luminosity;
             
             
@@ -34,7 +35,7 @@
             margin-left: 15px;
             height: 100%;
             width: 140px;
-            background: rgba(40, 40, 40, 0.6); /* Màu trắng với độ mờ */
+            background: rgba(40, 40, 40, 0.65); /* Màu trắng với độ mờ */
             mix-blend-mode: luminosity;
             flex-shrink: 0;
             border-radius: 20px;

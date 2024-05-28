@@ -2,13 +2,10 @@
 {
     width: 100%;
     height: 100vh;
-    white-space: nowrap; /* Đảm bảo các phần tử không xuống dòng */
-    
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    
     &_container
     {
         width: 98%;
@@ -16,6 +13,7 @@
         
         display: flex;
         z-index: 10;
+    
         &_Left
         {
             width: 20%;
@@ -26,14 +24,99 @@
         {
             margin-left: 1%;
             width: 100%;
-            
+            height: 100%;
+            position: relative;
             &_Dashboard
             {
-                margin-top: 1%;
+                
+                position: absolute;
+                bottom: 0;
+                right: 0;
                 width: 100%;
-                height: 78.1%;
-                background-color: bisque;
-                overflow: hidden;
+                border-radius: 20px;
+                height: 81%;
+                background: rgba(40, 40, 40, 0.65); /* Màu trắng với độ mờ */
+                mix-blend-mode: luminosity;
+                padding-left: 20px;
+                padding-top: 10px;
+                padding-right: 20px;
+                box-sizing: border-box;
+                &_Title
+                {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+
+                    &_Text
+                    {
+                        color: white;
+                        font-size: 40px;
+                        font-weight: bold;
+                    }
+                    &_Button
+                    {
+                        display: flex;
+                        cursor: pointer;
+                        height:40px;
+                        width: 120px;
+                        border-radius: 10px;
+                        align-items: center;
+                        justify-content: center;
+                        color: #0B0B0B;
+                        font-size: 17px;
+                        font-weight: 500;
+                        
+                    }
+                }
+                &_Farm
+                {
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 5px;
+                    margin-left: 5px;
+                    width: 100%;
+                    height: 80%;                 
+                    overflow-y: auto;
+                    
+                    &_Element
+                    {
+                        margin-top: 10px;
+                        width: 100%;
+                        cursor: pointer;
+                        background-color: white;
+                        border-radius: 15px;
+                        padding: 8px 8px;
+                        box-sizing: border-box;
+                        &_Header
+                        {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            color: #0B0B0B;
+                            font-size: 24px;
+                            
+                            font-weight: 500;
+                            
+                        }
+                        &_Description
+                        {
+                            word-wrap: break-word; 
+                            width: 100%;
+                            margin-top: 5px;
+                            color: #4B4B4B;
+                            font-size: 20px;
+                            height: 70px;
+                        }
+                    }
+
+                }
+                &_Farm::-webkit-scrollbar
+                {
+                    height: 1px;
+                    scrollbar-width: thin;
+                }
+            
+
             }
         }
     }

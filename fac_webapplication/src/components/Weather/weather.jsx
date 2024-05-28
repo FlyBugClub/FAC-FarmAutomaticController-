@@ -57,6 +57,12 @@ import './weather.scss'
                  <div className="Fac_Weather_Scroll_Block">
                     
                 </div>
+                <div className="Fac_Weather_Scroll_Block">
+                    
+                    </div> 
+                    <div className="Fac_Weather_Scroll_Block">
+                    
+                    </div>
             </div>
         </div>
     )
