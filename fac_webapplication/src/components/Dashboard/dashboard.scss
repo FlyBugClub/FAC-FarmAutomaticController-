@@ -1,0 +1,50 @@
+.Fac_dashboard
+{
+    width: 100%;
+    height: 100vh;
+    background-color: aqua;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &_container
+    {
+        width: 98%;
+        height: 95%;
+        
+        display: flex;
+        z-index: 10;
+        &_Left
+        {
+            width: 25%;
+            height: 100%;
+            &_Menu
+            {
+                backdrop-filter: blur(5px);
+                width: 100%;
+                height: 100%;
+                background-color: black;
+            }
+        }
+        &_Right
+        {
+            margin-left: 1%;
+            width: 100%;
+            &_Weather
+            {
+                width: 100%;
+                height: 20%;
+                background-color: bisque;
+            }
+            &_Dashboard
+            {
+                margin-top: 1%;
+                width: 100%;
+                height: 78.1%;
+                background-color: bisque;
+                overflow: hidden;
+            }
+        }
+    }
+    
+}
