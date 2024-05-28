@@ -7,6 +7,16 @@ const NewPassw = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
+      <div>
+      <div className="Auth_BrowserView_Logo">
+            <div className="Auth_BrowserView_Logo_Image">
+              <img src="/icons/Bug(Trắng).png" alt="" />
+            </div>
+            <div>
+              <div className="div1">Tưới tiêu tự động</div>
+              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+            </div>
+          </div>
         <div className="Auth_BrowserView_Region-NewPass">
           <div className="Auth_BrowserView_Region-NewPass_Input ">
             <div>
@@ -37,6 +47,7 @@ const NewPassw = () => {
                 Quên mật khẩu
             </div>
           </div>
+        </div>
         </div>
       </BrowserView>
 

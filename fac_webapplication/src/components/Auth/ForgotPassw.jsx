@@ -7,6 +7,16 @@ const ForgotPassw = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
+        <div>
+      <div className="Auth_BrowserView_Logo">
+            <div className="Auth_BrowserView_Logo_Image">
+              <img src="/icons/Bug(Trắng).png" alt="" />
+            </div>
+            <div>
+              <div className="div1">Tưới tiêu tự động</div>
+              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+            </div>
+          </div>
         <div className="Auth_BrowserView_Region-Forgot">
           <div className="Auth_BrowserView_Region-Forgot_Input ">
             <div>
@@ -17,6 +27,7 @@ const ForgotPassw = () => {
           <div className="Auth_BrowserView_Region-Forgot_Button">
             <button type="submit">Gửi</button>
           </div>
+        </div>
         </div>
       </BrowserView>
 
