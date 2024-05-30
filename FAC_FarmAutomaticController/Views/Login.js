@@ -31,8 +31,10 @@ export default class Login extends Component {
     super(props);
     this.state = {
       msg: "",
-      email: "admin@gmail.com",
-      password: "12345",
+      email: "",
+      password: "",
+      // email: "admin@gmail.com",
+      // password: "12345",
       isChecked: false,
       secureTextEntry: true,
       showPassword: false,
