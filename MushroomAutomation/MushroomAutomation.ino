@@ -969,7 +969,7 @@
       serializeJson(doc, jsonBuffer);
       Serial.println(jsonBuffer);
       Serial.flush();
-      bool messageSent = client.publish(mqtt_topic_send, jsonBuffer);
+      bool messageSent = client.publish(mqtt_topic_send, jsonBuffer, true);
       client.flush();
       if (messageSent) {
         Serial.println("Thành công khi gửi tin nhắn MQTT! ! ! !");
