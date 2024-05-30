@@ -18,8 +18,8 @@ import {
 import MyContext from "../DataContext.js";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import MIcon from "react-native-vector-icons/MaterialIcons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18next, { languageResources } from "../services/i18next";
-import { Ionicons } from "@expo/vector-icons";
 import apiUrl from "../apiURL.js";
 import AppLoader from "./AppLoader.js";
 
@@ -39,6 +39,35 @@ export default class Login extends Component {
       status: "Show password",
     };
   }
+
+  componentDidMount() {
+    this.loadUserCredentials();
+  }
+
+  loadUserCredentials = async () => {
+    try {
+      const email = await AsyncStorage.getItem('email');
+      const password = await AsyncStorage.getItem('password');
+      if (email !== null && password !== null) {
+        this.setState({ email, password });
+      }
+    } catch (error) {
+      console.error("Failed to load user credentials:", error);
+    }
+  };
+
+  saveUserCredentials = async () => {
+    const { email, password, isChecked } = this.state;
+    if (isChecked) {
+      try {
+        await AsyncStorage.setItem('email', email);
+        await AsyncStorage.setItem('password', password);
+      } catch (error) {
+        console.error("Failed to save user credentials:", error);
+      }
+    }
+  };
+
   toggleCheckbox = () => {
     this.setState((prevState) => ({
       isChecked: !prevState.isChecked,
@@ -105,6 +134,7 @@ export default class Login extends Component {
           const email_json = { user: { gmail: email } };
           addDataAtIndex(email_json, 0);
           this.setState({ msg: "" });
+          this.saveUserCredentials();
           this.props.navigation.navigate("TabNavigator");
         } else {
           this.setState({ msg: i18next.t("Email or password are incorrect") });

@@ -71,11 +71,11 @@ export default class AddFarmForm extends Component {
           if (result == "Success") {
             this.props.navigation.navigate("Home");
           } else if (result["Message"] == "esp is already use") {
-            this.setState({ msg: "This device is already use" });
-          } else this.setState({ msg: "Network connect fail" });
+            this.setState({ msg: i18next.t("This device is already use")});
+          } else this.setState({ msg: i18next.t("Network connect fail") });
         }
-      } else this.setState({ msg: "Name farm is null" });
-    } else this.setState({ msg: "Scan QR Code again" });
+      } else this.setState({ msg: i18next.t("Name farm is null") });
+    } else this.setState({ msg: i18next.t("Scan QR Code again") });
   };
   render() {
     const { msg } = this.state;

@@ -58,7 +58,7 @@ export default class History extends Component {
     // console.log(url)
     const response = await fetch(url);
     if (!response.ok) {
-      this.setState({ msg: "error" });
+      this.setState({ msg: i18next.t("Error") });
       return;
     }
     const json = await response.json();

@@ -78,10 +78,10 @@ export default class AdvanceSettingDevice extends Component {
         if (result == "Update Esp Success") {
           this.props.navigation.navigate("Home");
         } else if (result["Message"] == "Can't update esp") {
-          this.setState({ msg: "Update fail" });
-        } else this.setState({ msg: "Update fail" });
+          this.setState({ msg: i18next.t("Update fail") });
+        } else this.setState({ msg: i18next.t("Update fail") });
       }
-    } else this.setState({ msg: "Invalid farm name" });
+    } else this.setState({ msg: i18next.t("Invalid farm name") });
   };
 
   render() {

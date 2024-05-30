@@ -51,7 +51,7 @@ export default class ForgotPassword extends Component {
       this.setState({ msg: "" });
       this.props.navigation.navigate('ChangePassword');  
     }
-    else this.setState({ msg: "OTP are incorects" });
+    else this.setState({ msg: i18next.t("OTP are incorects") });
   };
    
   onSubmit = async () => { 

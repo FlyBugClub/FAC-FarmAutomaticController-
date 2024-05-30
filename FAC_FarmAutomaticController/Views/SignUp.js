@@ -67,17 +67,16 @@ export default class SignUp extends Component {
               if (result == "Added Success") {
                 this.props.navigation.navigate("Login");
               } else if (result["Message"] == "email is already use") {
-                this.setState({ msg: "Email is already use" });
-              } else this.setState({ msg: "Network connect fail" });
+                this.setState({ msg: i18next.t("Email is already use") });
+              } else this.setState({ msg: i18next.t("Network connect fail") });
             }
           } else
             this.setState({
-              msg: "Password and  verify password  do not match",
-            });
+              msg: i18next.t("Password and verify password do not match")});
         } else
-          this.setState({ msg: "Password must have at least 6 characters" });
-      } else this.setState({ msg: "Invalid email" });
-    } else this.setState({ msg: "Invalid username" });
+          this.setState({ msg: i18next.t("Password must have at least 6 characters") });
+      } else this.setState({ msg: i18next.t("Invalid email") });
+    } else this.setState({ msg: i18next.t("Invalid username") });
   };
 
   validateEmail = (email) => {

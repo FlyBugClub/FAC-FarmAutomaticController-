@@ -48,9 +48,9 @@ export default class ForgotPassword extends Component {
             this.setState({ msg: "" });
             addDataAtIndex(json[0], 0);
             this.props.navigation.navigate("OTP");
-          } else this.setState({ msg: "email isn't exist" });
+          } else this.setState({ msg: i18next.t("Email isn't exist") });
         });
-    } else this.setState({ msg: "invalid email" });
+    } else this.setState({ msg: i18next.t("Invalid email") });
   };
 
   validateEmail = (email) => {

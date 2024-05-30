@@ -65,12 +65,12 @@ export default class ChangePassword extends Component {
           if (result == "success") {
             this.props.navigation.navigate("Login");
           } else if (result["Message"] == "error") {
-            this.setState({ msg: "Chage password fail" });
-          } else this.setState({ msg: "some thing is wrong" });
+            this.setState({ msg: i18next.t("Chage password fail") });
+          } else this.setState({ msg: i18next.t("Some thing is wrong") });
         }
       } else
-        this.setState({ msg: "Password and  verify password  do not match" });
-    } else this.setState({ msg: "Password must have at least 6 characters" });
+        this.setState({ msg: i18next.t("Password and verify password do not match") });
+    } else this.setState({ msg: i18next.t("Password must have at least 6 characters") });
   };
 
   // ========== Password Hint ========== //

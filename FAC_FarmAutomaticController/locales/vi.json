@@ -107,5 +107,12 @@
     "Update Success": "Cập nhật thành công",
     "Invalid Name": "Tên không khả dụng",
     "update duration time success": "Cập nhật thời lượng bơm thành công",
-    "langForecast": "vi"
+    "langForecast": "vi",
+    "Chage password fail": "Thay đổi mật khẩu thất bại",
+    "Password and verify password do not match": "Mật khẩu không trùng nhau",
+    "Email isn't exist": "Email isn't exist",
+    "Permission to access location was denied": "Quyền truy cập vị trí đã bị từ chối",
+    "OTP are incorects": "Mã xác thực không chính xác",
+    "Update fail": "Cập nhật thất bại",
+    "Invalid farm name": "Tên nông trại không hợp lệ"
   }

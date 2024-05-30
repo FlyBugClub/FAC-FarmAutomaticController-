@@ -103,7 +103,7 @@ export default class Home extends Component {
     const response = await fetch(url);
     // console.log("ok")
     if (!response.ok) {
-      this.setState({ msg: "error" });
+      this.setState({ msg: i18next.t("Error") });
       return;
     }
 
@@ -122,7 +122,7 @@ export default class Home extends Component {
     const response = await fetch(url);
     // console.log("ok")
     if (!response.ok) {
-      this.setState({ msg: "error" });
+      this.setState({ msg: i18next.t("error") });
       return;
     }
     // console.log(url)
@@ -194,22 +194,22 @@ export default class Home extends Component {
       } else this.fetchData();
     }, 3000);
 
-    this.intervalId30s = setInterval(() => {
-      // Gọi lại fetchWeather và fetchForecast
-      Promise.all([this.fetchWeather(), this.fetchForecast()])
-        .then(() => {
-          console.log("Weather and forecast fetched successfully");
-        })
-        .catch((error) => {
-          console.error("Error fetching weather and forecast: ", error);
-        });
-    }, 30000);
+    // this.intervalId30s = setInterval(() => {
+    //   // Gọi lại fetchWeather và fetchForecast
+    //   Promise.all([this.fetchWeather(), this.fetchForecast()])
+    //     .then(() => {
+    //       console.log("Weather and forecast fetched successfully");
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error fetching weather and forecast: ", error);
+    //     });
+    // }, 30000);
 
     // ===== Weather ===== //
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        this.setState({ errorMsg: "Permission to access location was denied" });
+        this.setState({ errorMsg: i18next.t("Permission to access location was denied") });
         return;
       }
 
@@ -376,7 +376,21 @@ export default class Home extends Component {
         <StatusBar barStyle={"default"} />
 
         <View style={styles.container}>
-          <View style={styles.header}>
+          <LinearGradient
+            colors={["#2BA84A", "#2BA84A", "#2BA84A"]}
+            style={styles.header}
+          >
+            <SafeAreaView style={styles.header}>
+              <Text style={styles.headerText}>
+                {i18next.t("Hello")}! {name_user}
+              </Text>
+              <Text style={styles.headerText}>
+                {i18next.t("Have a nice Day")}
+              </Text>
+            </SafeAreaView>
+          </LinearGradient>
+
+          {/* <View style={styles.header}>
             <Image
               source={require("../assets/background/greenRoad.jpg")}
               blurRadius={8}
@@ -517,7 +531,7 @@ export default class Home extends Component {
                 </View>
               </View>
             </SafeAreaView>
-          </View>
+          </View> */}
 
           {farmHouseList.length !== 0 && (
             <View style={styles.body}>
@@ -562,17 +576,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#fafafa",
     alignItems: "center",
   },
+  // 
   header: {
     ...Platform.select({
       android: {
-        height: 200,
+        height: 120,
       },
       ios: {
-        height: 230,
+        height: 160,
       },
     }),
     width: "100%",
-
     marginBottom: 6,
     justifyContent: "center",
     alignItems: "center",
@@ -581,6 +595,25 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     zIndex: 0,
   },
+  //header for weather forecast
+  // header: {
+  //   ...Platform.select({
+  //     android: {
+  //       height: 200,
+  //     },
+  //     ios: {
+  //       height: 230,
+  //     },
+  //   }),
+  //   width: "100%",
+  //   marginBottom: 6,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   // backgroundColor: "#80b918",
+  //   borderBottomRightRadius: 30,
+  //   borderBottomLeftRadius: 30,
+  //   zIndex: 0,
+  // },
   headerText: {
     ...Platform.select({
       ios: {

@@ -107,5 +107,12 @@
   "Update Success": "Update Success",
   "Invalid Name": "Invalid Name",
   "update duration time success": "update duration time success",
-  "langForecast": "en"
+  "langForecast": "en",
+  "Chage password fail": "Chage password fail",
+  "Password and verify password do not match": "Password and verify password do not match",
+  "Email isn't exist": "Email isn't exist",
+  "Permission to access location was denied": "Permission to access location was denied",
+  "OTP are incorects": "OTP are incorects",
+  "Update fail": "Update fail",
+  "Invalid farm name": "Invalid farm name"
 }

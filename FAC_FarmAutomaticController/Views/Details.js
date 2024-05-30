@@ -492,7 +492,7 @@ export default class Details extends Component {
               showPicker: !prevState.showPicker,
             }));
           } else {
-            this.setState({ msg: "some thing is wrong" });
+            this.setState({ msg: i18next.t("Some thing is wrong") });
           }
         }
       }
