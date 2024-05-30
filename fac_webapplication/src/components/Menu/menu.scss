@@ -1,63 +1,134 @@
-.Fac_Menu
-{
+.Fac_Menu {
     width: 100%;
-    height: 100%;
-    background-color: #343434;
-    background: rgba(40, 40, 40, 0.65); /* Màu trắng với độ mờ */
-    mix-blend-mode: luminosity;
-    border-radius: 20px;
-    &_User
-    {
-        display: flex;
-        padding: 10%;
-        box-sizing: border-box;
-        align-items: center;
-        flex-direction: column;
-        border-bottom: 2px solid white;
-        margin-left: 6%;
-        margin-right: 6%;
-        &_Avartar
-        {
-            width: 65%;
-            height: 65%;
-            border-radius: 50%;
-            cursor: pointer;
-            &:hover
-            {
-                border: 4px solid white;
-            }
-        }
-        &_Name
-        {
-            margin-top: 10px;
-            color: white;
-            font-size: 22px;
-            font-weight: 500;
-        }
-    }
-    &_Options
-    {
-        margin-top: 6%;
-        padding-left: 5%;
-        padding-right: 5%;
-        box-sizing: border-box;
-        
-        &_Elements
-        {
-            display: flex;
-            padding: 8px 8px;
-            margin-top: 5%;
-            border-radius: 10px;
-            box-sizing: border-box;
-            align-items: center;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            &:hover
-            {
-                background: rgba(180, 180,180, 0.6); /* Màu trắng với độ mờ */
+    height: 13%;
 
+    &_Web {
+        width: 100%;
+        height: 80%;
+
+        &_Container {
+            background: rgba(40, 40, 40, 0.6);
+            /* Màu trắng với độ mờ */
+            // mix-blend-mode: luminosity;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1;
+
+            &_Logo {
+             
+                width: 5%;
+                height: 80%;
+                margin-left:20px;
+            }
+            &_Menu {
+
+                display: flex;
+                align-items: center;
+                &_Elements
+                {
+                    height: 50px;
+                    width: 50px;
+                    margin-right: 50px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                        &:hover
+                        {
+                            
+                            border-radius: 50%;
+                            background: rgba(40, 40, 40, 0.6);                        }
+                    &_Icon
+                    {
+                        color: white;
+                        
+                        
+                    }
+                }
+                
+                
+            }
+            &_Avartar {
+                width: 3.5%;
+                height: 70%;
+                border-radius: 50%;
+                cursor: pointer;
+                margin-right: 30px;
+                box-sizing: border-box;
+
+                &:hover {
+                    border: 2px solid white;
+                }
             }
         }
+
     }
 }
+
+
+// .Fac_Menu
+// {
+//     width: 100%;
+//     height: 100%;
+//     background-color: #343434;
+//     background: rgba(40, 40, 40, 0.65); /* Màu trắng với độ mờ */
+//     mix-blend-mode: luminosity;
+//     border-radius: 20px;
+//     &_User
+//     {
+//         display: flex;
+//         padding: 10%;
+//         box-sizing: border-box;
+//         align-items: center;
+//         flex-direction: column;
+//         border-bottom: 2px solid white;
+//         margin-left: 6%;
+//         margin-right: 6%;
+//         &_Avartar
+//         {
+//             width: 65%;
+//             height: 65%;
+//             border-radius: 50%;
+//             cursor: pointer;
+//             &:hover
+//             {
+//                 border: 4px solid white;
+//             }
+//         }
+//         &_Name
+//         {
+//             margin-top: 10px;
+//             color: white;
+//             font-size: 22px;
+//             font-weight: 500;
+//         }
+//     }
+//     &_Options
+//     {
+//         margin-top: 6%;
+//         padding-left: 5%;
+//         padding-right: 5%;
+//         box-sizing: border-box;
+
+//         &_Elements
+//         {
+//             display: flex;
+//             padding: 8px 8px;
+//             margin-top: 5%;
+//             border-radius: 10px;
+//             box-sizing: border-box;
+//             align-items: center;
+//             color: white;
+//             font-size: 20px;
+//             cursor: pointer;
+//             &:hover
+//             {
+//                 background: rgba(180, 180,180, 0.6); /* Màu trắng với độ mờ */
+
+//             }
+//         }
+//     }
+// }
