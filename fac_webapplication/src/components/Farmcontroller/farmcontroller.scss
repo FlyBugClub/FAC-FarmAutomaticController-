@@ -1,0 +1,128 @@
+.Fac_farmcontroller {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 20px;
+    height: 81%;
+    background: rgba(40, 40, 40, 0.65);
+    mix-blend-mode: luminosity;
+    padding-left: 5px;
+    padding-top: 10px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    &_Title {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 11%;
+        &_Back
+        {
+            
+            color:  rgb(238, 233, 233);
+            
+            
+            cursor: pointer;
+            &:hover
+            {
+                color: white;
+            }
+        }
+
+        &_Text {
+            color: white;
+            font-size: 35px;
+            margin-bottom: 5px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        &_Icon
+        {
+            color:  rgb(238, 233, 233);
+            margin-top: 4px;
+            margin-left: 10px;
+            cursor: pointer;
+            &:hover
+            {
+                color: white;
+            }
+
+        }
+
+        &_Button {
+            display: flex;
+            cursor: pointer;
+            margin-left: auto;
+            background-color: rgb(238, 233, 233);
+            border: none;
+            height: 100%;
+            width: 140px;
+            border-radius: 10px;
+            align-items: center;
+            justify-content: center;
+            color: #0B0B0B;
+            font-size: 17px;
+            font-weight: 500;
+            &:hover{
+                background-color: white;
+            }
+        }
+    }
+    &_Main
+    {
+        margin-top: 0.5%;
+        width: 100%;
+        height: 84%;
+        
+        &_Chartcontainer
+        {
+            display: flex;
+            width: 100%;
+            
+            height: 60%;
+            margin-top: 8px;
+            &_Chart
+            {
+                flex: 7;
+                height: 65%;
+                margin-bottom: 10px;
+                margin-right: 1%;
+                border-radius: 20px;
+            }
+            &_Annotation
+            {
+                flex: 3;      
+                height: 92%;
+                background-color: rgb(238, 233, 233);;
+                border-radius: 20px;
+            } 
+        }
+
+        &_Devicecontainer
+        {
+            width: 100%;
+            height: 40%;
+            padding-left: 1.4%;
+            box-sizing: border-box;
+            &_Device
+            {
+                width: 67%;
+                
+                height: 100%;
+                background-color: rgb(238, 233, 233);;
+                border-radius: 20px;
+                padding: 0 14px;
+                box-sizing: border-box;
+                &_Title
+                {
+                    font-size: 20px;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+            }
+        }
+          
+    }
+}

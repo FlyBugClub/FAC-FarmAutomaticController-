@@ -22,7 +22,10 @@
             height: 65%;
             border-radius: 50%;
             cursor: pointer;
-
+            &:hover
+            {
+                border: 4px solid white;
+            }
         }
         &_Name
         {
