@@ -134,6 +134,7 @@
     timeClient.setTimeOffset(timeZoneOffset);
     client.setServer(mqtt_server, mqtt_port);
     client.setCallback(callback);
+    Serial.println("+++++++++++++++++++++++++++++++++++++++++++++++++");
   }
   int soLan = 0;
 //region loop
@@ -190,13 +191,13 @@
       //region processAutoMode
       for (int i = 0; i < count; i++) {
         processAutoMode(automodes[i], expect_values[i], statuses[i], i);
+
       }
       //endregion processAutoMode
-
+      sendMQTTMessage();
       //region stuff
       // printValues();
       Serial.println("Hehehihi");
-      sendMQTTMessage();
       Serial.println("=======================================");
       // delay(10000);
       //endregion stuff
@@ -874,7 +875,7 @@
       sensorConnected = false;
     }
   }
-  //region MQTTX POST
+//region MQTTX POST
   void sendHelloMessage() {
     if (client.connected()) {
       StaticJsonDocument<1000> doc;
@@ -891,11 +892,26 @@
       doc["equipment"]["equipment1"]["expect_value"] = 85;
       doc["equipment"]["equipment1"]["status"] = 1;
 
+      doc["equipment"]["equipment3"];
+      doc["equipment"]["equipment2"]["id_bc"] = "BC0003";
+      doc["equipment"]["equipment2"]["automode"] = "2";
+      doc["equipment"]["equipment2"]["expect_value"] = 85;
+      doc["equipment"]["equipment2"]["status"] = 1;
+
+      doc["equipment"]["equipment3"];
+      doc["equipment"]["equipment3"]["id_bc"] = "BC0004";
+      doc["equipment"]["equipment3"]["automode"] = "2";
+      doc["equipment"]["equipment3"]["expect_value"] = 85;
+      doc["equipment"]["equipment3"]["status"] = 1;
+
+
       char jsonBuffer[1000];
       serializeJson(doc, jsonBuffer);
       client.publish(mqtt_topic_hello, jsonBuffer);
       client.flush();
       bool messageSent = client.publish(mqtt_topic_hello, jsonBuffer);
+      Serial.print("jsonBuffer:  ");
+      Serial.println(jsonBuffer);
       client.flush();
       if (messageSent) {
         Serial.println("Thành công khi gửi tin nhắn MQTT topic hello");
@@ -984,7 +1000,8 @@
 
     const char* id_esp = doc["id_esp"];
     if (strcmp(id_esp, id_sensor) == 0) {
-      Serial.println("correct id");
+      Serial.println("CORRECT ID");
+      Serial.println(id_esp);
       Serial.flush();
       JsonObject equipments = doc["equipment"];
       count = 0;
@@ -1008,6 +1025,9 @@
         Serial.flush();
         count++;
       }
+    }
+    else {
+      Serial.println("IN CORRECT ID");
     }
   }
 
