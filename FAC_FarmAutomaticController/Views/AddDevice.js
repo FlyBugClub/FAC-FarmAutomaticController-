@@ -51,7 +51,7 @@ export default class AddDevice extends Component {
     ph_name: "",
     bc_name: "",
     selectedLanguage: "",
-    index: "",
+    index: "0",
     category: [],
     value: [],
     key: [],
@@ -71,16 +71,23 @@ export default class AddDevice extends Component {
 
   static contextType = MyContext;
   async componentDidMount() {
+    
     const { route } = this.props;
     const { key, value } = route.params || {};
     const { dataArray } = this.context;
     this.setState({ selecedCat: dataArray[0]["equipment"]["0"]["name"] });
     this.setState({ value: value });
-    this.setState({ key: key });
+    this.setState({ key: key },()=>{this.getFarm();this.getName();});
     // Toast.show('This is a long toast.', Toast.LONG);
     // this.setState({ ph_id: id_ph });
-    this.getFarm();
-    this.getName();
+
+    console.log("___________________")
+    console.log(key)
+    console.log(value)
+    console.log("___________________")
+
+    
+    
   }
 
   getName = async () => {
@@ -88,36 +95,38 @@ export default class AddDevice extends Component {
     const { dataArray } = this.context;
     const equipment_name = [];
     console.log(index);
+    console.log(key);
+
     if (dataArray.length > 0) {
       for (let i = 1; i < key.length; i++) {
         // console.log(key[i])
         if (key[i] === "id_bc") {
-          // console.log("cuong")
+          console.log( dataArray[0])
           const sl = dataArray[0]["equipment"][index.toString()]["bc"]["sl"];
           equipment_name.push("Pump" + (sl + 1).toString());
         } else if (key[i] === "id_dht") {
           // console.log("cuong")
-          const sl =
-            dataArray[0]["equipment"][index.toString()]["sensor"]["sl_dht"];
+          const sl = dataArray[0]["equipment"][index.toString()]["sensor"]["sl_dht"];
           equipment_name.push("DHT" + (sl + 1).toString());
         } else if (key[i] === "id_ph") {
           // console.log("cuong")
-          const sl =
-            dataArray[0]["equipment"][index.toString()]["sensor"]["sl_ph"];
+          const sl = dataArray[0]["equipment"][index.toString()]["sensor"]["sl_ph"];
           equipment_name.push("PH" + (sl + 1).toString());
         }
       }
     }
     this.setState({ equipment_name: equipment_name });
   };
-  getFarm = () => {
+  getFarm = async () => {
     const { dataArray } = this.context;
     const Farmlist = [];
     Object.values(dataArray[0]["equipment"]).forEach((obj, index) => {
       const farm = {};
       // console.log(obj["name_esp"])
       farm["itemName"] = obj["name"];
+
       Farmlist.push(farm);
+      
       // console.log(obj["name"])
     });
     this.setState({ category: Farmlist });
@@ -238,7 +247,7 @@ export default class AddDevice extends Component {
     // const { dataArray } = this.context;
 
     const equip = [];
-
+    console.log(equipment_name)
     if (key.length !== 0 && value.length !== 0 && equipment_name.length !== 0) {
       [...Array(key.length - 1)].forEach((_, index) => {
         equip.push(

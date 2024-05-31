@@ -228,17 +228,17 @@ export default class AdvanceSettingDevice extends Component {
                     this.props.navigation.navigate("Home");
                   }
                 }
-                this.showFailToast(i18next.t("NetWord Fail") + "!");
+                else this.showFailToast(i18next.t("NetWord Fail") + "!");
               });
             } else {
               this.showSuccessToast(i18next.t("Update Success"));
               this.props.navigation.navigate("Home");
             }
           }
-          this.showFailToast(i18next.t("NetWord Fail") + "!");
+           else this.showFailToast(i18next.t("NetWord Fail") + "!");
         }
       }
-      this.showFailToast(i18next.t("Invalid Name"));
+      else this.showFailToast(i18next.t("Invalid Name"));
     });
 
     // if (name_equipment !== "") {

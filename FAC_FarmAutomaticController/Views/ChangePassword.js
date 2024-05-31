@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import apiUrl from "../apiURL";
 import MyContext from "../DataContext";
+import i18next, { languageResources } from "../services/i18next";
 
 const { height } = Dimensions.get("window");
 

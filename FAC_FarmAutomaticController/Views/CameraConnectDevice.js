@@ -33,7 +33,7 @@ export default function CameraConnectDevice() {
   }
   // const partdht = 
   // const partph = parts[2].split(':')
-  
+    
     if (value[0] == "FAC")
     {
       // console.log(key)

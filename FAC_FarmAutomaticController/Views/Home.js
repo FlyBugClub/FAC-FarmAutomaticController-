@@ -134,40 +134,40 @@ export default class Home extends Component {
   };
 
   // ========== Weather API ========== //
-  fetchWeather = async () => {
-    let location = await Location.getCurrentPositionAsync({});
-    let langForecast = i18next.t("langForecast");
+  // fetchWeather = async () => {
+  //   let location = await Location.getCurrentPositionAsync({});
+  //   let langForecast = i18next.t("langForecast");
 
-    if (!location) {
-      return;
-    }
+  //   if (!location) {
+  //     return;
+  //   }
 
-    const results = await fetch(
-      `${BASE_URL}/weather?lat=${location.coords.latitude}&lon=${location.coords.longitude}&appid=${OPEN_WEATHER_KEY}&units=metric&lang=${langForecast}`
-    );
-    const data = await results.json();
-    // console.log(JSON.stringify(data, null, 2));
-    Weather = data;
-    this.setState({ weather: Weather });
-  };
+  //   const results = await fetch(
+  //     `${BASE_URL}/weather?lat=${location.coords.latitude}&lon=${location.coords.longitude}&appid=${OPEN_WEATHER_KEY}&units=metric&lang=${langForecast}`
+  //   );
+  //   const data = await results.json();
+  //   // console.log(JSON.stringify(data, null, 2));
+  //   Weather = data;
+  //   this.setState({ weather: Weather });
+  // };
 
-  fetchForecast = async () => {
-    //api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
-    let location = await Location.getCurrentPositionAsync({});
-    let langForecast = i18next.t("langForecast");
+  // fetchForecast = async () => {
+  //   //api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+  //   let location = await Location.getCurrentPositionAsync({});
+  //   let langForecast = i18next.t("langForecast");
 
-    if (!location) {
-      return;
-    }
+  //   if (!location) {
+  //     return;
+  //   }
 
-    const results = await fetch(
-      `${BASE_URL}/forecast?lat=${location.coords.latitude}&lon=${location.coords.longitude}&appid=${OPEN_WEATHER_KEY}&units=metric&lang=${langForecast}`
-    );
-    const data = await results.json();
-    // console.log("fetchForecast: ", JSON.stringify(data, null, 2));
-    WeatherForecast = data;
-    this.setState({ forecast: WeatherForecast.list });
-  };
+  //   const results = await fetch(
+  //     `${BASE_URL}/forecast?lat=${location.coords.latitude}&lon=${location.coords.longitude}&appid=${OPEN_WEATHER_KEY}&units=metric&lang=${langForecast}`
+  //   );
+  //   const data = await results.json();
+  //   // console.log("fetchForecast: ", JSON.stringify(data, null, 2));
+  //   WeatherForecast = data;
+  //   this.setState({ forecast: WeatherForecast.list });
+  // };
 
   // ========== Component ========== //
   componentWillUnmount() {
@@ -223,12 +223,12 @@ export default class Home extends Component {
     // })();
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.location !== prevState.location && this.state.location) {
-      this.fetchWeather();
-      this.fetchForecast();
-    }
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (this.state.location !== prevState.location && this.state.location) {
+  //     this.fetchWeather();
+  //     this.fetchForecast();
+  //   }
+  // }
 
   // ========== Get Equidment Value ========== //
   static contextType = MyContext;
@@ -270,17 +270,17 @@ export default class Home extends Component {
     // console.log(isConnect)
 
     // ========== Weather API ========== //
-    if (!weather) {
-      return <ActivityIndicator />;
-    }
+    // if (!weather) {
+    //   return <ActivityIndicator />;
+    // }
 
-    const temperatureNumber = weather.main.temp; // Chuỗi cần cắt
-    const temperatureString = temperatureNumber.toString();
+    // const temperatureNumber = weather.main.temp; // Chuỗi cần cắt
+    // const temperatureString = temperatureNumber.toString();
 
-    // Tách phần nguyên và phần thập phân
-    const temperatureParts = temperatureString.split(".");
-    const temperatureIntegerPart = temperatureParts[0];
-    const temperatureDecimalPart = temperatureParts[1];
+    // // Tách phần nguyên và phần thập phân
+    // const temperatureParts = temperatureString.split(".");
+    // const temperatureIntegerPart = temperatureParts[0];
+    // const temperatureDecimalPart = temperatureParts[1];
 
     // ========== Farm List  ========== //
     if (listfarm.length !== 0 && isConnect !== undefined) {
