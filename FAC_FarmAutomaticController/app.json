@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FAC_FarmAutomaticController",
-    "slug": "FAC_FarmAutomaticController",
+    "slug": "farmpal",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/splash/icon.png",
@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash/splash2.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#2ba84a"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -30,7 +30,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "4d5129d4-7ccf-407e-ab8c-05d52eb50bbd"
+        "projectId": "ac97413a-a094-4a7e-a242-3c82deeb58b7"
       },
       "router": {
         "origin": false
@@ -39,6 +39,6 @@
     "plugins": [
       "expo-router"
     ],
-    "owner": "nqd2308"
+    "owner": "nqd0899"
   }
 }

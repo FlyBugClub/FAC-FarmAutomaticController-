@@ -29,8 +29,11 @@ export default class SignUp extends Component {
       password: "",
       verifypassword: "",
       msg: "",
+      isChecked: false,
       showPassword: false,
       showPasswordHint: false,
+      secureTextEntry: true,
+      status: "Show password",
     };
   }
 
@@ -92,6 +95,20 @@ export default class SignUp extends Component {
     );
   };
 
+  toggleCheckbox = () => {
+    this.setState((prevState) => ({
+      isChecked: !prevState.isChecked,
+    }));
+    const { isChecked } = this.state;
+    if (isChecked) {
+      this.setState({ status: "Show password" });
+      this.setState({ secureTextEntry: true });
+    } else {
+      this.setState({ status: "Hide password" });
+      this.setState({ secureTextEntry: false });
+    }
+  };
+
   // ========== Password Hint ========== //
   handlePasswordChange = (text) => {
     this.setState({ verifypassword: text });
@@ -103,7 +120,7 @@ export default class SignUp extends Component {
   };
 
   render() {
-    const { showPassword } = this.state;
+    const { showPassword, secureTextEntry } = this.state;
     const { msg } = this.state;
 
     return (
@@ -173,9 +190,12 @@ export default class SignUp extends Component {
                   }}
                   onFocus={() => this.setState({ showPasswordHint: true })}
                   onBlur={() => this.setState({ showPasswordHint: false })}
-                  secureTextEntry={true}
+                  secureTextEntry={secureTextEntry}
                 />
-                <TouchableOpacity onPress={this.togglePasswordVisibility}>
+                <TouchableOpacity onPress={() => {
+                    this.togglePasswordVisibility()
+                    this.toggleCheckbox()
+                    }}>
                   <Image
                     source={
                       showPassword
@@ -204,9 +224,12 @@ export default class SignUp extends Component {
                   onFocus={() => this.setState({ showPasswordHint: true })}
                   onBlur={() => this.setState({ showPasswordHint: false })}
                   placeholder={i18next.t("Verify password")}
-                  secureTextEntry={true}
+                  secureTextEntry={secureTextEntry}
                 />
-                <TouchableOpacity onPress={this.togglePasswordVisibility}>
+                <TouchableOpacity onPress={() => {
+                    this.togglePasswordVisibility()
+                    this.toggleCheckbox()
+                    }}>
                   <Image
                     source={
                       showPassword
