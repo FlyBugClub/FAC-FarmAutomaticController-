@@ -10,6 +10,21 @@ const Login = () => {
   const handleOpenEye = () => {
     setOpen(!open)
   }
+
+  const [check, setCheck ] = useState(true);
+  const checkLogin = () => {
+    const username = document.getElementById("username");
+    const password = document.getElementById("password");
+    if (username.value.trim() === "" || password.value.trim() === "") {
+    console.log("Vui long nhap day du thong tin");
+    setCheck(false);
+      
+    }else{
+      console.log(username.value);
+      console.log(password.value);
+      setCheck(true);
+    }
+  }
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
@@ -29,23 +44,27 @@ const Login = () => {
               <div>
                 <FiUser color="white" size={24} />
               </div>
-              <input type="text" placeholder="Tên tài khoản"></input>
+              <input id="username" type="text" placeholder="Tên tài khoản"></input>
             </div>
             <div className="Auth_BrowserView_Region-Login_Input">
               <div>
                 <FiLock color="white" size={24} />
               </div>
-              <input type={open ? "text" : "password"} placeholder="Mật khẩu"></input>
+              <input id="password" type={open ? "text" : "password"} placeholder="Mật khẩu"></input>
               <div onClick={() => handleOpenEye()}>
                 {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
               </div>
             </div>
+            {
+              check ? <div></div> : <div className="Auth_BrowserView_Region-Login_Error">Vui long nhap day du thong tin</div>
+              
+            }
             <div className="Auth_BrowserView_Region-Login_Save">
               <input type="checkbox" />
               <div>Lưu đăng nhập</div>
             </div>
             <div className="Auth_BrowserView_Region-Login_Button">
-              <button type="submit" >Đăng nhập</button>
+              <button type="submit" onClick={() => checkLogin()} >Đăng nhập</button>
             </div>
             <div className="Auth_BrowserView_Region-Login_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
@@ -72,13 +91,13 @@ const Login = () => {
               <div>
                 <FiUser color="white" size={24} />
               </div>
-              <input type="text" placeholder="Tên tài khoản"></input>
+              <input id="username" type="text" placeholder="Tên tài khoản"></input>
             </div>
             <div className="Auth_MobileView_Region-Login_Input">
               <div>
                 <FiLock color="white" size={24} />
               </div>
-              <input type={open ? "text" : "password"} placeholder="Mật khẩu"></input>
+              <input id="password" type={open ? "text" : "password"} placeholder="Mật khẩu"></input>
               <div onClick={() => handleOpenEye()}>
                 {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
               </div>
@@ -88,7 +107,7 @@ const Login = () => {
               <div>Lưu đăng nhập</div>
             </div>
             <div className="Auth_MobileView_Region-Login_Button">
-              <button type="submit" >Đăng nhập</button>
+              <button type="submit" onClick={() => checkLogin()}>Đăng nhập</button>
             </div>
             <div className="Auth_MobileView_Region-Login_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
