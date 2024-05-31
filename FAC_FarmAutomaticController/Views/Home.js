@@ -206,21 +206,21 @@ export default class Home extends Component {
     // }, 30000);
 
     // ===== Weather ===== //
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        this.setState({ errorMsg: i18next.t("Permission to access location was denied") });
-        return;
-      }
+    // (async () => {
+    //   let { status } = await Location.requestForegroundPermissionsAsync();
+    //   if (status !== "granted") {
+    //     this.setState({ errorMsg: i18next.t("Permission to access location was denied") });
+    //     return;
+    //   }
 
-      try {
-        let location = await Location.getCurrentPositionAsync({});
-        // console.log("Location: ", JSON.stringify(location, null, 2));
-        this.setState({ location });
-      } catch (error) {
-        Alert.alert("Error", error.message);
-      }
-    })();
+    //   try {
+    //     let location = await Location.getCurrentPositionAsync({});
+    //     // console.log("Location: ", JSON.stringify(location, null, 2));
+    //     this.setState({ location });
+    //   } catch (error) {
+    //     Alert.alert("Error", error.message);
+    //   }
+    // })();
   };
 
   componentDidUpdate(prevProps, prevState) {
