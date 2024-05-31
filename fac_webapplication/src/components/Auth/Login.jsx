@@ -89,7 +89,7 @@ const Login = () => {
         toast.success("Tên đăng nhập hoặc mật khẩu không đúng");
       }
       if (passwordError && !userNameError && !emptyName && !emptyPass) {
-        toast.success("Tên đăng nhập hoặc mật khẩu không đúng");
+        toast.error("Tên đăng nhập hoặc mật khẩu không đúng");
       }
       if (!passwordError && !userNameError && !emptyName && !emptyPass) {
         toast.success("Đăng nhập thành công");
