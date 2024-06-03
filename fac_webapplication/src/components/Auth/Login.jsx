@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff, FiLock, FiUser } from "react-icons/fi";
 import "./Auth.scss";
 import { motion } from "framer-motion";
+//
 import { loginUserName, loginPassword } from "../../validation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -62,7 +63,12 @@ const Login = () => {
       setPasswordError(false);
     }
 
-    setLogin(true);
+    if (!userNameError && !passwordError && !emptyName && !emptyPass) {
+      setLogin(true);
+    }
+    else {
+      setLogin(false);
+    }
   };
   const [count, setCount] = useState(0);
   useEffect(() => {
