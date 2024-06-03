@@ -10,6 +10,11 @@ const loginPassword = (loginPassword, dataPassword) => {
   return loginPassword === dataPassword;
 };
 
+const signUpPassword = (signUpPassword, dataPassword) => {
+  return signUpPassword === dataPassword; 
+}
+
+
 const checkEmail = (email) => {
   const reg =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -21,4 +26,4 @@ const checkPhone = (phone) => {
   return reg.test(String(phone).toLowerCase());
 };
 
-export { checkUserName, checkPassword, checkEmail, checkPhone, loginUserName, loginPassword };
+export {signUpPassword, checkUserName, checkPassword, checkEmail, checkPhone, loginUserName, loginPassword };
