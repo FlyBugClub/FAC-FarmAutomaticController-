@@ -3,8 +3,12 @@ import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { FiEye, FiEyeOff, FiLock, FiMail, FiUser } from "react-icons/fi";
 import "./Auth.scss";
+//
+import { signUpPassword, checkUserName, checkEmail } from "../../validation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const Login = () => {
+const Signup = () => {
 
   const navigate = useNavigate();
   const [open, setOpen ] = useState(false);
@@ -79,4 +83,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;
