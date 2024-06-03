@@ -1,5 +1,5 @@
 import { BrowserView, MobileView } from "react-device-detect";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff, FiLock, FiMail, FiUser } from "react-icons/fi";
 import "./Auth.scss";
@@ -19,6 +19,8 @@ const Signup = () => {
     setOpen1(!open1);
   };
   //
+  const [count, setCount] = useState(0);
+  //
   const [userNameError, setUserNameError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
   const [emptyName, setEmptyName] = useState(null);
@@ -30,6 +32,7 @@ const Signup = () => {
   const [signup, setSignup] = useState(null);
 
   const checkSignup = () => {
+    setCount(count + 1);
     const userName = document.getElementById("username");
     const password = document.getElementById("password");
     const confirmPassword = document.getElementById("confirmPassword");
@@ -82,9 +85,11 @@ const Signup = () => {
     } else {
       setSignup(false);
     }
-
-  
   };
+  useEffect(() => {
+    checkSignup();
+  }, [count]);
+
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
