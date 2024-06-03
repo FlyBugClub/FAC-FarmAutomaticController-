@@ -6,7 +6,7 @@ import "./Auth.scss";
 import { motion } from "framer-motion";
 //
 import { loginUserName, loginPassword } from "../../validation";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
