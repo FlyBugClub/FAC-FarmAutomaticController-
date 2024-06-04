@@ -52,7 +52,10 @@ const Signup = () => {
               <div>
                 <FiMail color="white" size={24} />
               </div>
-              <input id="email" type="text" placeholder="Email"></input>
+              <input id="email"
+               type="text"
+                placeholder="Email"
+                ></input>
             </div>
             <div className="Auth_BrowserView_Region-Signup_Input">
               <div>
@@ -75,6 +78,7 @@ const Signup = () => {
                 id="confirm_password"
                 type={open1 ? "text" : "password"}
                 placeholder="Xác nhận mật khẩu"
+
               ></input>
               <div onClick={() => handleOpenEye1()}>
                 {open1 ? <FiEye color="white" /> : <FiEyeOff color="white" />}
@@ -87,9 +91,8 @@ const Signup = () => {
             <div className="Auth_BrowserView_Region-Signup_Button">
               <button
                 type="submit"
-                onClick={() =>
-                  checkSignup()
-                } /*onClick={() => navigate('/login')} */
+                
+                 /*onClick={() => navigate('/login')} */
               >
                 Đăng ký
               </button>
