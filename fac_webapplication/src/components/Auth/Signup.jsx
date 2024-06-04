@@ -62,7 +62,21 @@ const Signup = () => {
     }
     return true;
   }
-
+  const handleChangeRePassword = (e) => {
+    const newRePassword = e.target.value;
+    setRePassword(newRePassword);
+  }
+  const validateRePassword = (password, rePassword) => {
+    if (rePassword.trim() === "") {
+      toast.error("Vui lòng xác nhận mật khẩu");
+      return false;
+    }
+    if (password !== rePassword) {
+      toast.error("Vui lòng nhập đúng mật khẩu");
+      return false;
+    }
+    return true;
+  }
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
@@ -120,7 +134,7 @@ const Signup = () => {
                 id="confirm_password"
                 type={open1 ? "text" : "password"}
                 placeholder="Xác nhận mật khẩu"
-
+                onChange={handleChangeRePassword}
               ></input>
               <div onClick={() => handleOpenEye1()}>
                 {open1 ? <FiEye color="white" /> : <FiEyeOff color="white" />}
