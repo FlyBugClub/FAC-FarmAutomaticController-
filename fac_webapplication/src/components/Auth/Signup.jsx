@@ -72,11 +72,33 @@ const Signup = () => {
       return false;
     }
     if (password !== rePassword) {
-      toast.error("Vui lòng nhập đúng mật khẩu");
+      toast.error("Vui lòng xác nhận đúng mật khẩu");
       return false;
     }
     return true;
   }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const isUsernameValid = validateUsername(username);
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+    const isRePasswordValid = validateRePassword(password, rePassword);
+    if (isUsernameValid && isEmailValid && isPasswordValid && isRePasswordValid) {
+      const checkApi = async () => {
+        let res = await callAPi(
+          "post",
+          `http://61.28.230.132:3004/auth/Login`,
+          {
+            username: "ndtt",
+            password: "abc123",
+          }
+        );
+
+        console.log(res);
+      };
+      checkApi();
+    }
+  };
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
@@ -90,7 +112,8 @@ const Signup = () => {
               <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
             </div>
           </div>
-          <form className="Auth_BrowserView_Region-Signup">
+          <form className="Auth_BrowserView_Region-Signup"
+            onSubmit={handleSubmit}>
             <div className="Auth_BrowserView_Region-Signup_Input ">
               <div>
                 <FiUser color="white" size={24} />
