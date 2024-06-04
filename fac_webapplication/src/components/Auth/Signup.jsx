@@ -18,10 +18,14 @@ const Signup = () => {
   const handleOpenEye1 = () => {
     setOpen1(!open1);
   };
+  //
+  const [username , setUsername] = useState('');
+  const [email , setEmail] = useState('');
+  const [password , setPassword] = useState('');
+  const [rePassword , setRePassword] = useState('');
 
-  const [signup, setSignup] = useState(null);
 
-  const checkSignup = () => {
+  const handleChangeUsername = (e) => {
 
   }
   return (
@@ -46,6 +50,7 @@ const Signup = () => {
                 id="username"
                 type="text"
                 placeholder="Tên tài khoản"
+                onChange={handleChangeUsername}
               ></input>
             </div>
             <div className="Auth_BrowserView_Region-Signup_Input">
