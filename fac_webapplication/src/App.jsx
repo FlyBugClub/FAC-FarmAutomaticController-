@@ -11,18 +11,18 @@ import { callAPi, host } from './services/UserService';
 function App() {
 
 
-  useEffect(() => {
-    const checkApi = async () => {
-        let res = await callAPi('post',`http://61.28.230.132:3004/auth/Login`, {
-            username: 'ndtt',
-            password: 'abc123'
-        })
+  // useEffect(() => {
+  //   const checkApi = async () => {
+  //       let res = await callAPi('post',`http://61.28.230.132:3004/auth/Login`, {
+  //           username: 'ndtt',
+  //           password: 'abc123'
+  //       })
 
-        console.log(res)
-    }
+  //       console.log(res)
+  //   }
 
-    checkApi()
-  },[])
+  //   checkApi()
+  // },[])
 
 
   return (

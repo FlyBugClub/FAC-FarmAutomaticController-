@@ -5,9 +5,11 @@ import { FiEye, FiEyeOff, FiLock, FiUser } from "react-icons/fi";
 import "./Auth.scss";
 import { motion } from "framer-motion";
 //
-import { loginUserName, loginPassword } from "../../validation";
+import { loginUserName, loginPassword, checkUserName } from "../../validation";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+//
+import { callAPi, fetchOneUser } from "../../services/UserService";
 
 const Login = () => {
   const [open, setOpen] = useState(false);
@@ -15,95 +17,52 @@ const Login = () => {
   const handleOpenEye = () => {
     setOpen(!open);
   };
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const notify = () => toast.success("Thông báo thành công!");
-  const [userNameError, setUserNameError] = useState(null);
-  const [passwordError, setPasswordError] = useState(null);
-  const [emptyName, setEmptyName] = useState(null);
-  const [emptyPass, setEmptyPass] = useState(null);
-  const [login, setLogin] = useState(null);
-
-  const data = {
-    username1: "admin",
-    password: "admin",
+  const validateUsername = (username) => {
+    if (username.trim() === "") {
+      toast.error("Tên đăng nhập không được để trống");
+      return false;
+    }
+    return true;
   };
-  const checkLogin = () => {
-    setCount(count + 1);
-    const data = {
-      username1: "admin",
-      password: "admin",
-    };
-    const username = document.getElementById("username");
-    const password = document.getElementById("password");
-    if (username.value.trim() === "") {
-      console.log("Username is empty");
-      setEmptyName(true);
-    } else {
-      setEmptyName(false);
+  const validatePassword = (password) => {
+    if (password.trim() === "") {
+      toast.error("Mật khẩu không được để trống");
+      return false;
     }
-
-    if (password.value.trim() === "") {
-      console.log("Password is empty");
-      setEmptyPass(true);
-    } else {
-      setEmptyPass(false);
-    }
-
-    if (!loginUserName(username.value, data.username1)) {
-      console.log("username false");
-      setUserNameError(true);
-    } else {
-      setUserNameError(false);
-    }
-
-    if (!loginPassword(password.value, data.password)) {
-      console.log("password false");
-      setPasswordError(true);
-    } else {
-      setPasswordError(false);
-    }
-
-    if (!userNameError && !passwordError && !emptyName && !emptyPass) {
-      setLogin(true);
-    }
-    else {
-      setLogin(false);
-    }
+    return true;
   };
-  const [count, setCount] = useState(0);
-  useEffect(() => {
+  const handleChangeUsername = (e) => {
+    const newUsername = e.target.value;
+    setUsername(newUsername);
+    validateUsername(newUsername);
+  };
+
+  const handleChangePassword = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    validatePassword(newPassword);
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const isUsernameValid = validateUsername(username);
+    const isPasswordValid = validatePassword(password);
+
+    if (isUsernameValid && isPasswordValid) {
+      const checkApi = async () => {
+        let res = await callAPi('post',`http://61.28.230.132:3004/auth/Login`, {
+            username: 'ndtt',
+            password: 'abc123'
+        })
+
+        console.log(res)
+    }
+    checkApi()
+    }
     
-  },[])
-  useEffect(() => {
-    if (count === 0){
-      setEmptyPass(null);
-      setEmptyName(null);
-      setPasswordError(null);
-      setUserNameError(null);
-    }else{
-      if (emptyName) {
-        toast.error("Tên đăng nhập không được để trống");
-      }
-      if (emptyPass) {
-        toast.error("Mật khẩu không được để trống");
-      }
-      if (!emptyName && userNameError) {
-        toast.error("Tên đăng nhập không hợp lệ");
-      }
-  
-      if (!passwordError && userNameError && !emptyName && !emptyPass) {
-        toast.success("Tên đăng nhập hoặc mật khẩu không đúng");
-      }
-      if (passwordError && !userNameError && !emptyName && !emptyPass) {
-        toast.error("Tên đăng nhập hoặc mật khẩu không đúng");
-      }
-      if (!passwordError && !userNameError && !emptyName && !emptyPass) {
-        toast.success("Đăng nhập thành công");
-      }
-      console.log(count);
-    }
-
-  }, [count]);
+  };
 
   return (
     <div className="Auth">
@@ -119,8 +78,11 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="Auth_BrowserView_Region-Login">
-            <div className="Auth_BrowserView_Region-Login_Input ">
+          <form
+            className="Auth_BrowserView_Region-Login"
+            onSubmit={handleSubmit}
+          >
+            <div className="Auth_BrowserView_Region-Login_Input">
               <div>
                 <FiUser color="white" size={24} />
               </div>
@@ -128,7 +90,9 @@ const Login = () => {
                 id="username"
                 type="text"
                 placeholder="Tên tài khoản"
-              ></input>
+                value={username}
+                onChange={handleChangeUsername}
+              />
             </div>
             <div className="Auth_BrowserView_Region-Login_Input">
               <div>
@@ -138,9 +102,10 @@ const Login = () => {
                 id="password"
                 type={open ? "text" : "password"}
                 placeholder="Mật khẩu"
-              ></input>
-
-              <div onClick={() => handleOpenEye()}>
+                value={password}
+                onChange={handleChangePassword}
+              />
+              <div onClick={handleOpenEye}>
                 {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
               </div>
             </div>
@@ -149,9 +114,7 @@ const Login = () => {
               <div>Lưu đăng nhập</div>
             </div>
             <div className="Auth_BrowserView_Region-Login_Button">
-              <button type="submit" onClick={() => checkLogin()}>
-                {login ? "Đăng nhận" : "Sai tài khoản hoặc mật khẩu"}
-              </button>
+              <button type="submit">Đăng nhập</button>
             </div>
             <div className="Auth_BrowserView_Region-Login_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
@@ -159,7 +122,7 @@ const Login = () => {
                 Quên mật khẩu
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </BrowserView>
 
@@ -175,8 +138,11 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="Auth_MobileView_Region-Login">
-            <div className="Auth_MobileView_Region-Login_Input ">
+          <form
+            className="Auth_BrowserView_Region-Login"
+            onSubmit={handleSubmit}
+          >
+            <div className="Auth_BrowserView_Region-Login_Input">
               <div>
                 <FiUser color="white" size={24} />
               </div>
@@ -184,9 +150,11 @@ const Login = () => {
                 id="username"
                 type="text"
                 placeholder="Tên tài khoản"
-              ></input>
+                value={username}
+                onChange={handleChangeUsername}
+              />
             </div>
-            <div className="Auth_MobileView_Region-Login_Input">
+            <div className="Auth_BrowserView_Region-Login_Input">
               <div>
                 <FiLock color="white" size={24} />
               </div>
@@ -194,27 +162,27 @@ const Login = () => {
                 id="password"
                 type={open ? "text" : "password"}
                 placeholder="Mật khẩu"
-              ></input>
-              <div onClick={() => handleOpenEye()}>
+                value={password}
+                onChange={handleChangePassword}
+              />
+              <div onClick={handleOpenEye}>
                 {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
               </div>
             </div>
-            <div className="Auth_MobileView_Region-Login_Save">
+            <div className="Auth_BrowserView_Region-Login_Save">
               <input type="checkbox" />
               <div>Lưu đăng nhập</div>
             </div>
-            <div className="Auth_MobileView_Region-Login_Button">
-              <button type="submit" onClick={() => checkLogin()}>
-                Đăng nhập
-              </button>
+            <div className="Auth_BrowserView_Region-Login_Button">
+              <button type="submit">Đăng nhập</button>
             </div>
-            <div className="Auth_MobileView_Region-Login_Stuff">
+            <div className="Auth_BrowserView_Region-Login_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
               <div onClick={() => navigate("/forgotpassword")}>
                 Quên mật khẩu
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </MobileView>
     </div>
