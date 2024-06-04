@@ -37,7 +37,7 @@ const Signup = () => {
               <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
             </div>
           </div>
-          <div className="Auth_BrowserView_Region-Signup">
+          <form className="Auth_BrowserView_Region-Signup">
             <div className="Auth_BrowserView_Region-Signup_Input ">
               <div>
                 <FiUser color="white" size={24} />
@@ -97,7 +97,7 @@ const Signup = () => {
                 Đăng ký
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </BrowserView>
 
