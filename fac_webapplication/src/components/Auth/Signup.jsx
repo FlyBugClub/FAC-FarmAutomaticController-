@@ -26,8 +26,17 @@ const Signup = () => {
 
 
   const handleChangeUsername = (e) => {
-
+    const newUsername = e.target.value;
+    setUsername(newUsername);
   }
+  const validateUsername = (username) => {
+    if (username.trim() === "") {
+      toast.error("Vui lòng nhập tên đăng nhập");
+      return false;
+    }
+    return true;
+  }
+ 
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
