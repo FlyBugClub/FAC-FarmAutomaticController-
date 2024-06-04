@@ -18,110 +18,12 @@ const Signup = () => {
   const handleOpenEye1 = () => {
     setOpen1(!open1);
   };
-  //
-  const [count, setCount] = useState(0);
-  //
-  const [userNameError, setUserNameError] = useState(null);
-  const [emptyName, setEmptyName] = useState(null);
-  const [emailError, setEmailError] = useState(null);
-  const [emptyEmail, setEmptyEmail] = useState(null);
-  const [emptyPass, setEmptyPass] = useState(null);
-  const [emptyConfPass, setEmptyConfPass] = useState(null);
-  const [checkPass, setCheckPass] = useState(null);
+
   const [signup, setSignup] = useState(null);
 
   const checkSignup = () => {
-    setCount(count + 1);
-    const userName = document.getElementById("username");
-    const password = document.getElementById("password");
-    const confirmPassword = document.getElementById("confirm_password");
-    const email = document.getElementById("email");
 
-    if (userName.value.trim() === "") {
-      console.log("Username is empty");
-      setEmptyName(true);
-    } else {
-      setEmptyName(false);
-    }
-
-    if (password.value.trim() === "") {
-      console.log("password is empty");
-      setEmptyPass(true);
-    } else {
-      setEmptyPass(false);
-    }
-
-    if (confirmPassword.value.trim() === "") {
-      console.log("confirmPassword is empty");
-
-      setEmptyConfPass(true);
-    } else {
-      setEmptyConfPass(false);
-    }
-
-    if (email.value.trim() === "") {
-      console.log("email is empty");
-
-      setEmptyEmail(true);
-    } else {
-      setEmptyEmail(false);
-    }
-
-    if (!emptyName) {
-      setUserNameError(!checkUserName(userName.value));
-    }
-
-    if (!emptyEmail) {
-      setEmailError(!checkEmail(email.value));
-    }
-    if (!emptyPass && !emptyConfPass) {
-      setCheckPass(signUpPassword(password.value, confirmPassword.value));
-    }
-
-    if (!userNameError && !emailError && checkPass) {
-      setSignup(true);
-    } else {
-      setSignup(false);
-    }
-  };
-  useEffect(() => {
-    setUserNameError(null);
-    setEmptyName(null);
-    setEmailError(null);
-    setEmptyEmail(null);
-    setEmptyPass(null);
-    setEmptyConfPass(null);
-    setCheckPass(null);
-  }, []);
-
-  useEffect(() => {
-      if (emptyName) {
-        toast.error("Tên đăng nhập không được để trống");
-      }
-      if (userNameError && !emptyName) {
-        toast.error("Tên đăng nhập không hợp lệ");
-      }
-      if (emptyEmail) {
-        toast.error("Email không được để trống");
-      }
-      if (!emptyEmail && emailError) {
-        toast.error("Email không đúng định dạng");
-      }
-      if (emptyPass) {
-        toast.error("Mật khẩu không được để trống");
-      }
-      if (emptyConfPass) {
-        toast.error("Xác nhận mật khẩu không được để trống");
-      }
-      if ( !emptyPass && !emptyConfPass && !checkPass ) {
-        toast.error("Mật khẩu không khớp");
-      }
-      if (signup) {
-        toast.success("Đăng ký thành công");
-      }
-    console.log(count);
-  }, [count]);
-
+  }
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
