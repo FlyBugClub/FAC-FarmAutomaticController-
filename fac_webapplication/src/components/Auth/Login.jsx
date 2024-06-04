@@ -37,13 +37,13 @@ const Login = () => {
   const handleChangeUsername = (e) => {
     const newUsername = e.target.value;
     setUsername(newUsername);
-    validateUsername(newUsername);
+    
   };
 
   const handleChangePassword = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-    validatePassword(newPassword);
+
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
