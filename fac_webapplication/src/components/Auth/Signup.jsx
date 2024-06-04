@@ -51,6 +51,18 @@ const Signup = () => {
     }
     return true;
   }
+  const handleChangePassword = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+  }
+  const validatePassword = (password) => {
+    if (password.trim() === "") {
+      toast.error("Vui lòng nhập mật khẩu");
+      return false;
+    }
+    return true;
+  }
+
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
@@ -94,6 +106,7 @@ const Signup = () => {
                 id="password"
                 type={open ? "text" : "password"}
                 placeholder="Mật khẩu"
+                onChange={handleChangePassword}
               ></input>
               <div onClick={() => handleOpenEye()}>
                 {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
