@@ -36,7 +36,21 @@ const Signup = () => {
     }
     return true;
   }
- 
+ const handleChangeEmail = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+  }
+  const validateEmail = (email) => {
+    if (email.trim() === "") {
+      toast.error("Vui lòng nhập email");
+      return false;
+    }
+    if (!checkEmail(email)) {
+      toast.error("Vui lòng nhập đúng định dạng email");
+      return false;
+    }
+    return true;
+  }
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
@@ -69,6 +83,7 @@ const Signup = () => {
               <input id="email"
                type="text"
                 placeholder="Email"
+                onChange={handleChangeEmail}
                 ></input>
             </div>
             <div className="Auth_BrowserView_Region-Signup_Input">
