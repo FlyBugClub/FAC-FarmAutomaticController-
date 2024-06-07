@@ -63,8 +63,6 @@ const Login = () => {
 
         console.log("RES OK")
         authContext.login(checkSavePassword);
-        
-        
 
     }
     checkApi()

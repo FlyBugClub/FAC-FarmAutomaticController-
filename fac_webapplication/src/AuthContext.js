@@ -1,14 +1,14 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 const  AuthContext = createContext();
 
 function AuthProvider({ children }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
-
+    const [loading, setLoading] = useState(true);
     const login = (check) => {
-        const newIsLoggedIn = !isLoggedIn;
-        setIsLoggedIn(newIsLoggedIn);
+        
+        setIsLoggedIn(true);
         if (check) {
             localStorage.setItem("user", JSON.stringify(true));
         } else {
@@ -16,6 +16,7 @@ function AuthProvider({ children }) {
         }
     };
     const logout = () => {
+        setIsLoggedIn(false);
         const storedSession = sessionStorage.getItem("user");
         const storedLocal = localStorage.getItem("user");
         if (storedSession || storedLocal) {
@@ -25,14 +26,29 @@ function AuthProvider({ children }) {
             Navigate("/login");
         }
     };
+    const  checkToken =  () => {
+        const token =  localStorage.getItem("user") || sessionStorage.getItem("user");
+        if (token) {
+            setIsLoggedIn(true);
+        }
+        setLoading(false);
+    }
     const value = {
         isLoggedIn,
-        login
-    }
+        login,
+        checkToken
+    }   
+    useEffect(  () => {
+        const a = () => {
+                 checkToken();
+            console.log(isLoggedIn)
+        }
+        a();
+    }, [isLoggedIn]);
 
     return (
         <AuthContext.Provider value={value}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
     )
 }
