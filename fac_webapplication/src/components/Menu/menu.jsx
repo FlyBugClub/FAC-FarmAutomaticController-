@@ -10,8 +10,12 @@ const Menu = ({ handleWeather,weatherState }) => {
     const navigate = useNavigate();
     const [menuState,setMenuState] = useState("dashboard")
     const [userState,setUserState] = useState("")
+
     const context = useContext(AuthContext);
-    
+    const handleLogout = () => {
+        context.logout();
+        navigate("/");
+    }
     const handleMenu = (key) => {
         if (key == userState)
         {
@@ -69,7 +73,7 @@ const Menu = ({ handleWeather,weatherState }) => {
                                 <FiSettings style={{marginRight:"10px"}}/>
                                 Account
                             </div>
-                            <div onClick={context.logout()} className="Fac_Menu_Web_Container_Dropbox_Options">
+                            <div onClick={handleLogout} className="Fac_Menu_Web_Container_Dropbox_Options">
                             <FiUserMinus  style={{marginRight:"10px"}}/>
                                 Log out
                             </div>
