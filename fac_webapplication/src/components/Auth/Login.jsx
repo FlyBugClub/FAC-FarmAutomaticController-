@@ -1,5 +1,5 @@
 import { BrowserView, MobileView } from "react-device-detect";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff, FiLock, FiUser } from "react-icons/fi";
 import "./Auth.scss";
@@ -8,8 +8,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //
 import { callAPi, fetchOneUser } from "../../services/UserService";
-
+import { AuthContext } from "../../AuthContext";
 const Login = () => {
+  const authContext = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const handleOpenEye = () => {
@@ -43,6 +44,11 @@ const Login = () => {
     setPassword(newPassword);
 
   };
+  const [checkSavePassword, setCheckSavePassword] = useState(false)
+  const handleCheckboxClick = (e) => {
+    const checkBox = e.target.checked;
+    setCheckSavePassword(checkBox)
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isUsernameValid = validateUsername(username);
@@ -56,6 +62,10 @@ const Login = () => {
         // })
 
         console.log("RES OK")
+        authContext.login(checkSavePassword);
+        
+        
+
     }
     checkApi()
     }
@@ -108,11 +118,11 @@ const Login = () => {
               </div>
             </div>
             <div className="Auth_BrowserView_Region-Login_Save">
-              <input type="checkbox" />
+              <input type="checkbox" onClick={handleCheckboxClick} />
               <div>Lưu đăng nhập</div>
             </div>
             <div className="Auth_BrowserView_Region-Login_Button">
-              <button type="submit">Đăng nhập</button>
+              <button type="submit" >Đăng nhập</button>
             </div>
             <div className="Auth_BrowserView_Region-Login_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
