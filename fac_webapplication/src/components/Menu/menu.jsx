@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext} from "react";
+import { AuthContext } from "../../AuthContext";
 import { FiGrid,FiBell ,FiSettings,FiUserMinus} from "react-icons/fi";
 import { WiDayCloudy } from "react-icons/wi";
 
@@ -7,10 +8,10 @@ import './menu.scss'
 import { useNavigate } from "react-router-dom";
 const Menu = ({ handleWeather,weatherState }) => {
     const navigate = useNavigate();
-
     const [menuState,setMenuState] = useState("dashboard")
     const [userState,setUserState] = useState("")
-
+    const context = useContext(AuthContext);
+    
     const handleMenu = (key) => {
         if (key == userState)
         {
@@ -68,8 +69,8 @@ const Menu = ({ handleWeather,weatherState }) => {
                                 <FiSettings style={{marginRight:"10px"}}/>
                                 Account
                             </div>
-                            <div className="Fac_Menu_Web_Container_Dropbox_Options">
-                            <FiUserMinus style={{marginRight:"10px"}}/>
+                            <div onClick={context.logout()} className="Fac_Menu_Web_Container_Dropbox_Options">
+                            <FiUserMinus  style={{marginRight:"10px"}}/>
                                 Log out
                             </div>
 
