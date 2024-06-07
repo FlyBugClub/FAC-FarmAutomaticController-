@@ -20,6 +20,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const validateUsername = (username) => {
+    
+
     if (username.trim() === "") {
       toast.error("Tên đăng nhập không được để trống");
       return false;

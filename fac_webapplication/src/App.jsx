@@ -16,6 +16,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { callAPi, host } from "./services/UserService";
 import { AuthContext } from "./AuthContext";
+import Menu from './components/Menu/menu';
+import Weather from './components/Weather/weather';
+import Farm from './components/Farm/farm';
   function App() {
   // const [user, setUser] = useState(false);
   // setUser(JSON.parse(localStorage.getItem("user")));
@@ -26,40 +29,75 @@ import { AuthContext } from "./AuthContext";
   //       password: "abc123",
   //     });
 
-  //     console.log(res);
-  //   };
-
-  //   checkApi();
-  // }, []);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const Context = useContext(AuthContext);
-  useEffect(() => {
-  setIsLoggedIn(Context.isLoggedIn);
-   
-  })
+  const [weatherState, setWeatherState] = useState(true);
+  const [loginState,setLoginState] = useState(false);
+  const handleWeather = () => {
+    setWeatherState(!weatherState);
+  }
   return (
-    
+
     <Router>
-      <div className="App">
-        { isLoggedIn ? 
+      <div className="App" >
         <header className="App-header">
-        <Routes>
-          <Route path="/" element={<Dashboard/>} />
-        </Routes>
-      </header> :
-        <Routes>
-         
-         <Route path="/" element={<Login />} />
-         <Route path="/signup" element={<Signup />} />
-          <Route path="/forgotpassword" element={<ForgotPassw />} />
-          <Route path="/newpassw" element={<NewPassw />} />
-          <Route path="/" element={<Navigate to="/signup" />} />
-         </Routes>
-         }
-        
+          {
+            loginState ?
+                <div style={{ position: "fixed", width: "100%", height: "100%" }}>
+                  <img src="/images/b3.jpg" alt="" style={{ position: "fixed", zIndex: "-1", width: "100%", height: "100%", filter: "brightness(0.9)" }} />
+                  <Menu handleWeather={handleWeather} weatherState={weatherState} />
+                  <div style={{ display: "flex", width: "100%", height: `calc(100vh - 50px)`, padding: "15px", boxSizing: "border-box" }}>
+                    <Weather weatherState={weatherState} />
+                    <Routes>
+                      <Route path="/dashboard" element={<Dashboard  weatherState={weatherState}/>} />
+                      <Route path="/farm" element={<Farm  weatherState={weatherState}/>} />
+
+                      <Route path="/" element={<Navigate to="/dashboard" />} />
+                      <Route path="/login" element={<Navigate to="/dashboard" />} />
+                    </Routes>
+                    
+                  </div>
+                </div>
+           
+            :
+            <Routes>
+
+            <Route path="/login" element={<Login handleLogin={handleLogin}/>} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgotpassword" element={<ForgotPassw />} />
+            <Route path="/newpassw" element={<NewPassw />} />
+            
+            {/* <Route
+              path="/home/dashboard"
+              element={
+              }
+            />
+              <Route
+              path="/home/farm"
+              element={
+                <div style={{ position: "fixed", width: "100%", height: "100%" }}>
+                  <img src="/images/b3.jpg" alt="" style={{ position: "fixed", zIndex: "-1", width: "100%", height: "100%", filter: "brightness(0.9)" }} />
+                  <Menu handleWeather={handleWeather} weatherState={weatherState} />
+                  <div style={{ display: "flex", width: "100%", height: `calc(100vh - 50px)`, padding: "15px", boxSizing: "border-box" }}>
+                    <Weather weatherState={weatherState} />
+                    
+                  </div>
+                </div>
+              }
+            /> */}
+
+            {/* <Route path="/home/*" element={<Navigate to="/home/dashboard" />} /> */}
+            {/* <Route path="/home" element={<Navigate to="/home/dashboard" />} /> */}
+
+            <Route path="/" element={<Navigate to="/login" />} />
+          </Routes>
+          }
+          
+        </header>
+
       </div>
       <ToastContainer />
     </Router>
+      
+
   );
 }
 
