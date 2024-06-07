@@ -181,8 +181,83 @@ const Signup = () => {
         </div>
       </BrowserView>
 
-      <MobileView>
-        <h1>This is rendered only on mobile</h1>
+      <MobileView className="Auth_MobileView">
+        <div style={{width: "100%", height: "100%"}}>
+          <div className="Auth_MobileView_Logo">
+            <div className="Auth_MobileView_Logo_Image">
+              <img src="/icons/Bug(Trắng).png" alt="" />
+            </div>
+            <div>
+              <div className="div1">Tưới tiêu tự động</div>
+              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+            </div>
+          </div>
+          <form className="Auth_MobileView_Region-Signup"
+            onSubmit={handleSubmit}>
+            <div className="Auth_MobileView_Region-Signup_Input ">
+              <div>
+                <FiUser color="white" size={24} />
+              </div>
+              <input
+                id="username"
+                type="text"
+                placeholder="Tên tài khoản"
+                onChange={handleChangeUsername}
+              ></input>
+            </div>
+            <div className="Auth_MobileView_Region-Signup_Input">
+              <div>
+                <FiMail color="white" size={24} />
+              </div>
+              <input id="email"
+               type="text"
+                placeholder="Email"
+                onChange={handleChangeEmail}
+                ></input>
+            </div>
+            <div className="Auth_MobileView_Region-Signup_Input">
+              <div>
+                <FiLock color="white" size={24} />
+              </div>
+              <input
+                id="password"
+                type={open ? "text" : "password"}
+                placeholder="Mật khẩu"
+                onChange={handleChangePassword}
+              ></input>
+              <div onClick={() => handleOpenEye()}>
+                {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
+              </div>
+            </div>
+            <div className="Auth_MobileView_Region-Signup_Input">
+              <div>
+                <FiLock color="white" size={24} />
+              </div>
+              <input
+                id="confirm_password"
+                type={open1 ? "text" : "password"}
+                placeholder="Xác nhận mật khẩu"
+                onChange={handleChangeRePassword}
+              ></input>
+              <div onClick={() => handleOpenEye1()}>
+                {open1 ? <FiEye color="white" /> : <FiEyeOff color="white" />}
+              </div>
+            </div>
+            <div className="Auth_MobileView_Region-Signup_Save">
+              <input type="checkbox" />
+              <div>Lưu đăng nhập</div>
+            </div>
+            <div className="Auth_MobileView_Region-Signup_Button">
+              <button
+                type="submit"
+                
+                 /*onClick={() => navigate('/login')} */
+              >
+                Đăng ký
+              </button>
+            </div>
+          </form>
+        </div>
       </MobileView>
     </div>
   );

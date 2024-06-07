@@ -85,8 +85,38 @@ const ForgotPassw = () => {
         </div>
       </BrowserView>
 
-      <MobileView>
-        <h1>This is rendered only on mobile</h1>
+      <MobileView className="Auth_MobileView">
+        <div style={{width: "100%", height: "100%"}}>
+          <div className="Auth_MobileView_Logo">
+            <div className="Auth_MobileView_Logo_Image">
+              <img src="/icons/Bug(Trắng).png" alt="" />
+            </div>
+            <div>
+              <div className="div1">Tưới tiêu tự động</div>
+              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+            </div>
+          </div>
+
+          <form
+            className="Auth_MobileView_Region-Forgot"
+            onSubmit={handleSubmit}
+          >
+            <div className="Auth_MobileView_Region-Forgot_Input ">
+              <div>
+                <FiMail color="white" size={24} />
+              </div>
+              <input
+                type="text"
+                placeholder="Email"
+                value={email}
+                onChange={handleChangEmail}
+              ></input>
+            </div>
+            <div className="Auth_MobileView_Region-Forgot_Button">
+              <button type="submit">Gửi</button>
+            </div>
+          </form>
+        </div>
       </MobileView>
     </div>
   );

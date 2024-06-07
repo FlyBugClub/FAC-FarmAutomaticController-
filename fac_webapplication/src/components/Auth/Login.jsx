@@ -132,8 +132,9 @@ const Login = () => {
         </div>
       </BrowserView>
 
+      
       <MobileView className="Auth_MobileView">
-        <div>
+        <div style={{width: "100%", height: "100%"}}>
           <div className="Auth_MobileView_Logo">
             <div className="Auth_MobileView_Logo_Image">
               <img src="/icons/Bug(Trắng).png" alt="" />
@@ -145,10 +146,10 @@ const Login = () => {
           </div>
 
           <form
-            className="Auth_BrowserView_Region-Login"
+            className="Auth_MobileView_Region-Login"
             onSubmit={handleSubmit}
           >
-            <div className="Auth_BrowserView_Region-Login_Input">
+            <div className="Auth_MobileView_Region-Login_Input">
               <div>
                 <FiUser color="white" size={24} />
               </div>
@@ -160,7 +161,7 @@ const Login = () => {
                 onChange={handleChangeUsername}
               />
             </div>
-            <div className="Auth_BrowserView_Region-Login_Input">
+            <div className="Auth_MobileView_Region-Login_Input">
               <div>
                 <FiLock color="white" size={24} />
               </div>
@@ -175,14 +176,14 @@ const Login = () => {
                 {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
               </div>
             </div>
-            <div className="Auth_BrowserView_Region-Login_Save">
-              <input type="checkbox" />
+            <div className="Auth_MobileView_Region-Login_Save">
+              <input type="checkbox" onClick={handleCheckboxClick} />
               <div>Lưu đăng nhập</div>
             </div>
-            <div className="Auth_BrowserView_Region-Login_Button">
-              <button type="submit">Đăng nhập</button>
+            <div className="Auth_MobileView_Region-Login_Button">
+              <button type="submit" >Đăng nhập</button>
             </div>
-            <div className="Auth_BrowserView_Region-Login_Stuff">
+            <div className="Auth_MobileView_Region-Login_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
               <div onClick={() => navigate("/forgotpassword")}>
                 Quên mật khẩu
