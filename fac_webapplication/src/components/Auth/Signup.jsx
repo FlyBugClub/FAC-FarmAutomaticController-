@@ -7,6 +7,7 @@ import "./Auth.scss";
 import { signUpPassword, checkUserName, checkEmail } from "../../validation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { callAPi, host } from '../../services/UserService';
 
 const Signup = () => {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { BrowserView, MobileView } from "react-device-detect";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff, FiLock, FiUser } from "react-icons/fi";
 import "./Auth.scss";
 import { motion } from "framer-motion";
@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 //
 import { callAPi, fetchOneUser } from "../../services/UserService";
 
-const Login = () => {
+const Login = ({handleLogin}) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const handleOpenEye = () => {
@@ -21,6 +21,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const validateUsername = (username) => {
+    
+
     if (username.trim() === "") {
       toast.error("Tên đăng nhập không được để trống");
       return false;
@@ -114,7 +116,7 @@ const Login = () => {
               <div>Lưu đăng nhập</div>
             </div>
             <div className="Auth_BrowserView_Region-Login_Button">
-              <button type="submit">Đăng nhập</button>
+              <button type="submit" onClick={() => handleLogin()}>Đăng nhập</button>
             </div>
             <div className="Auth_BrowserView_Region-Login_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
