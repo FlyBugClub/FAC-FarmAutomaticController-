@@ -30,17 +30,23 @@ import Farm from './components/Farm/farm';
   //     });
 
   const [weatherState, setWeatherState] = useState(true);
-  const [loginState,setLoginState] = useState(false);
   const handleWeather = () => {
     setWeatherState(!weatherState);
   }
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const Context = useContext(AuthContext);
+  useEffect(() => {
+    setIsLoggedIn(Context.isLoggedIn);
+    })  
+  
   return (
 
     <Router>
       <div className="App" >
         <header className="App-header">
           {
-            loginState ?
+            isLoggedIn ?
                 <div style={{ position: "fixed", width: "100%", height: "100%" }}>
                   <img src="/images/b3.jpg" alt="" style={{ position: "fixed", zIndex: "-1", width: "100%", height: "100%", filter: "brightness(0.9)" }} />
                   <Menu handleWeather={handleWeather} weatherState={weatherState} />
@@ -56,11 +62,9 @@ import Farm from './components/Farm/farm';
                     
                   </div>
                 </div>
-           
             :
             <Routes>
-
-            <Route path="/login" element={<Login handleLogin={handleLogin}/>} />
+            <Route path="/" element={<Login/>} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgotpassword" element={<ForgotPassw />} />
             <Route path="/newpassw" element={<NewPassw />} />
