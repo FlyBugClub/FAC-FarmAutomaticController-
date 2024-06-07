@@ -7,7 +7,8 @@ import "./Auth.scss";
 import { signUpPassword, checkUserName, checkEmail } from "../../validation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+//
+import { callAPi, fetchOneUser } from "../../services/UserService";
 const Signup = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -85,16 +86,16 @@ const Signup = () => {
     const isRePasswordValid = validateRePassword(password, rePassword);
     if (isUsernameValid && isEmailValid && isPasswordValid && isRePasswordValid) {
       const checkApi = async () => {
-        let res = await callAPi(
-          "post",
-          `http://61.28.230.132:3004/auth/Login`,
-          {
-            username: "ndtt",
-            password: "abc123",
-          }
-        );
+        // let res = await callAPi(
+        //   "post",
+        //   `http://61.28.230.132:3004/auth/Login`,
+        //   {
+        //     username: "ndtt",
+        //     password: "abc123",
+        //   }
+        // );
 
-        console.log(res);
+        console.log("RES OK");
       };
       checkApi();
     }

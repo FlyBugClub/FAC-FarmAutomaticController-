@@ -3,9 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff, FiLock, FiUser } from "react-icons/fi";
 import "./Auth.scss";
-import { motion } from "framer-motion";
 //
-import { loginUserName, loginPassword, checkUserName } from "../../validation";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //
@@ -52,12 +50,12 @@ const Login = () => {
 
     if (isUsernameValid && isPasswordValid) {
       const checkApi = async () => {
-        let res = await callAPi('post',`http://61.28.230.132:3004/auth/Login`, {
-            username: 'ndtt',
-            password: 'abc123'
-        })
+        // let res = await callAPi('post',`http://61.28.230.132:3004/auth/Login`, {
+        //     username: 'ndtt',
+        //     password: 'abc123'
+        // })
 
-        console.log(res)
+        console.log("RES OK")
     }
     checkApi()
     }
