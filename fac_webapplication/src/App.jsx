@@ -44,9 +44,6 @@ import { AuthContext } from "./AuthContext";
         { isLoggedIn ? 
         <header className="App-header">
         <Routes>
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgotpassword" element={<ForgotPassw />} />
-          <Route path="/newpassw" element={<NewPassw />} />
           <Route path="/" element={<Dashboard/>} />
         </Routes>
       </header> :
