@@ -7,8 +7,10 @@ app.use(bodyParser.json());
 //
 //
 // Import the API routes
-const apiRoutes = require('./routes/api');
-
+const apiRoutes = require('./src/routes/api');
+//
+const { connectToDatabase, queryDatabase } = require('./src/db');
+connectToDatabase();
 // Use the API routes
 app.use('/api', apiRoutes);
 //
