@@ -98,10 +98,10 @@ const ForgotPassw = () => {
           </div>
 
           <form
-            className="Auth_MobileView_Region-Forgot"
+            className="Auth_MobileView_Region"
             onSubmit={handleSubmit}
           >
-            <div className="Auth_MobileView_Region-Forgot_Input ">
+            <div className="Auth_MobileView_Region_Input ">
               <div>
                 <FiMail color="white" size={24} />
               </div>
@@ -112,7 +112,7 @@ const ForgotPassw = () => {
                 onChange={handleChangEmail}
               ></input>
             </div>
-            <div className="Auth_MobileView_Region-Forgot_Button">
+            <div className="Auth_MobileView_Region_Button">
               <button type="submit">Gửi</button>
             </div>
           </form>

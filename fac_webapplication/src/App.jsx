@@ -55,7 +55,7 @@ function App() {
                   filter: "brightness(0.9)",
                 }}
               />
-              <Menu />
+              <Menu handleWeather={handleWeather} weatherState={weatherState} />
               <div
                 style={{
                   display: "flex",

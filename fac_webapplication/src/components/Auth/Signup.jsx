@@ -192,9 +192,9 @@ const Signup = () => {
               <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
             </div>
           </div>
-          <form className="Auth_MobileView_Region-Signup"
+          <form className="Auth_MobileView_Region" 
             onSubmit={handleSubmit}>
-            <div className="Auth_MobileView_Region-Signup_Input ">
+            <div className="Auth_MobileView_Region_Input ">
               <div>
                 <FiUser color="white" size={24} />
               </div>
@@ -205,7 +205,7 @@ const Signup = () => {
                 onChange={handleChangeUsername}
               ></input>
             </div>
-            <div className="Auth_MobileView_Region-Signup_Input">
+            <div className="Auth_MobileView_Region_Input">
               <div>
                 <FiMail color="white" size={24} />
               </div>
@@ -215,7 +215,7 @@ const Signup = () => {
                 onChange={handleChangeEmail}
                 ></input>
             </div>
-            <div className="Auth_MobileView_Region-Signup_Input">
+            <div className="Auth_MobileView_Region_Input" >
               <div>
                 <FiLock color="white" size={24} />
               </div>
@@ -229,7 +229,7 @@ const Signup = () => {
                 {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
               </div>
             </div>
-            <div className="Auth_MobileView_Region-Signup_Input">
+            <div className="Auth_MobileView_Region_Input" >
               <div>
                 <FiLock color="white" size={24} />
               </div>
@@ -243,11 +243,11 @@ const Signup = () => {
                 {open1 ? <FiEye color="white" /> : <FiEyeOff color="white" />}
               </div>
             </div>
-            <div className="Auth_MobileView_Region-Signup_Save">
+            <div className="Auth_MobileView_Region_Save">
               <input type="checkbox" />
               <div>Lưu đăng nhập</div>
             </div>
-            <div className="Auth_MobileView_Region-Signup_Button">
+            <div className="Auth_MobileView_Region_Button">
               <button
                 type="submit"
                 
