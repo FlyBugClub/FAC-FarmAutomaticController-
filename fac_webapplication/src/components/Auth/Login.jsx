@@ -148,10 +148,10 @@ const Login = () => {
           </div>
 
           <form
-            className="Auth_MobileView_Region-Login"
+            className="Auth_MobileView_Region"
             onSubmit={handleSubmit}
           >
-            <div className="Auth_MobileView_Region-Login_Input">
+            <div className="Auth_MobileView_Region_Input">
               <div>
                 <FiUser color="white" size={24} />
               </div>
@@ -163,7 +163,7 @@ const Login = () => {
                 onChange={handleChangeUsername}
               />
             </div>
-            <div className="Auth_MobileView_Region-Login_Input">
+            <div className="Auth_MobileView_Region_Input">
               <div>
                 <FiLock color="white" size={24} />
               </div>
@@ -178,14 +178,14 @@ const Login = () => {
                 {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
               </div>
             </div>
-            <div className="Auth_MobileView_Region-Login_Save">
+            <div className="Auth_MobileView_Region_Save">
               <input type="checkbox" onClick={handleCheckboxClick} />
               <div>Lưu đăng nhập</div>
             </div>
-            <div className="Auth_MobileView_Region-Login_Button">
+            <div className="Auth_MobileView_Region_Button">
               <button type="submit" >Đăng nhập</button>
             </div>
-            <div className="Auth_MobileView_Region-Login_Stuff">
+            <div className="Auth_MobileView_Region_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
               <div onClick={() => navigate("/forgotpassword")}>
                 Quên mật khẩu

@@ -149,10 +149,10 @@ const NewPassw = () => {
             </div>
           </div>
         <form
-         className="Auth_MobileView_Region-NewPass"
+         className="Auth_MobileView_Region"
          onSubmit={handleSubmit}
          >
-          <div className="Auth_MobileView_Region-NewPass_Input ">
+          <div className="Auth_MobileView_Region_Input ">
             <div>
               <FiLock color="white" size={24} />
             </div>
@@ -166,7 +166,7 @@ const NewPassw = () => {
             </div>
           
           </div>
-          <div className="Auth_MobileView_Region-NewPass_Input">
+          <div className="Auth_MobileView_Region_Input">
             <div>
               <FiLock color="white"size={24} />
             </div>
@@ -179,14 +179,14 @@ const NewPassw = () => {
             { showPassword ? <FiEye color="white"  /> : <FiEyeOff color="white"  />}
             </div>
             </div>
-          <div className="Auth_MobileView_Region-NewPass_Save">
+          <div className="Auth_MobileView_Region_Save">
             <input type="checkbox"/>
             <div>Lưu đăng nhập</div>
           </div>
-          <div className="Auth_MobileView_Region-NewPass_Button">
+          <div className="Auth_MobileView_Region_Button">
             <button type="submit">Xác nhận</button>
           </div>
-          <div className="Auth_MobileView_Region-NewPass_Stuff">
+          <div className="Auth_MobileView_Region_Stuff">
             <div onClick={() => {navigate("/login")}}>
                 Đăng nhập
             </div>
