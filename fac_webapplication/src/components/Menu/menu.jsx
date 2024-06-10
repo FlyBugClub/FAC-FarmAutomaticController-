@@ -56,10 +56,10 @@ const Menu = ({ handleWeather,weatherState }) => {
                         </div>
 
                     </div>
-                    <div style={{position:"relative"}}>
+                    <div style={{position:"relative",zIndex:"10"}}>
                         <img className="Fac_Menu_Web_Container_Avartar" src="/icons/user.png" alt="" onClick={()=>handleMenu("user")}/>
                         {userState === "user" ?
-                        <div className="Fac_Menu_Web_Container_Dropbox">
+                        <div className="Fac_Menu_Web_Container_Dropbox" >
                             <div className="Fac_Menu_Web_Container_Dropbox_Header">
                                 <img className="Fac_Menu_Web_Container_Dropbox_Header_Avatar"src="/icons/user.png" alt=""/>
 
@@ -73,7 +73,7 @@ const Menu = ({ handleWeather,weatherState }) => {
                                 <FiSettings style={{marginRight:"10px"}}/>
                                 Account
                             </div>
-                            <div onClick={handleLogout} className="Fac_Menu_Web_Container_Dropbox_Options">
+                            <div onClick={()=>handleLogout()} className="Fac_Menu_Web_Container_Dropbox_Options">
                             <FiUserMinus  style={{marginRight:"10px"}}/>
                                 Log out
                             </div>

@@ -63,6 +63,8 @@ function App() {
                   height: `calc(100vh - 50px)`,
                   padding: "15px",
                   boxSizing: "border-box",
+                  position: "fixed",
+                  zIndex: "-1",
                 }}
               >
                 <Weather weatherState={weatherState} />

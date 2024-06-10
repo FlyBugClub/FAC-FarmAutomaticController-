@@ -16,7 +16,7 @@
         background: $background;
         backdrop-filter: blur(2px);
         box-shadow: rgba($box_shadow_color, 0.8) 0px 50px 100px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
-        z-index: 3;
+        
 
         &_Container {
             height: 100%;
