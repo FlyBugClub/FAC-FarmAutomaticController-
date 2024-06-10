@@ -37,7 +37,7 @@ const Menu = ({ handleWeather,weatherState }) => {
                             <WiDayCloudy className="Fac_Menu_Web_Container_Menu_Elements_Icon" size={35}/>
 
                         </div>
-                        <div className="Fac_Menu_Web_Container_Menu_Elements" onClick={()=>(handleMenu("dashboard"),navigate("/home/dashboard"))} style={ menuState == "dashboard" ? {backgroundColor:"rgba(200, 200, 200, 0.3)",borderRadius:"50%"} : {}}>
+                        <div className="Fac_Menu_Web_Container_Menu_Elements" onClick={()=>(handleMenu("dashboard"),navigate("/dashboard"))} style={ menuState == "dashboard" ? {backgroundColor:"rgba(200, 200, 200, 0.3)",borderRadius:"50%"} : {}}>
                             <FiGrid className="Fac_Menu_Web_Container_Menu_Elements_Icon" size={25} />
 
                         </div>
