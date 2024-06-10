@@ -4,7 +4,9 @@ const cors = require('cors');
 const bodyParser = require("body-parser");
 const data = require('./routes/data/data');
 const db = require('./models/mysql');
-db.connection.connect();
+
+db.connection();
+
 // connectToDatabase();
 
 const corsOptions = {

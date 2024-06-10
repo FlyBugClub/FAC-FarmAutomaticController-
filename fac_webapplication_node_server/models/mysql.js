@@ -1,53 +1,48 @@
-var Connection = require("tedious").Connection;
-var Request = require('tedious').Request;  
-var TYPES = require('tedious').TYPES;  
-var config = {
-  server: "NVTVNKCNTT2016\\SQLEXPRESS01",
-  authentication: {
-    type: "default",
-    options: {
-      userName: "sa",
-      password: "#FlyBugClub@hoasen.edu.vn",
-    },
+const sql = require("mssql");
+const sqlConfig = {
+  user: "sa",
+  password: "#FlyBugClub@hoasen.edu.vn",
+  database: "FAC_DB",
+  server: "10.101.172.53\\SQLEXPRESS01",
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000,
   },
   options: {
-    encrypt: true,
-    database: "FAC_DB",
+    trustServerCertificate: true, // change to true for local dev / self-signed certs
   },
 };
-var connection = new Connection(config);
-connection.on("connect", function (err) {
-  console.log("Connected");
-});
 
-const SELECT = (select, table, condition) => {
-  var request = new Request(
-    `SELECT * FROM Users;`,
-    function (err) {
-      if (err) {
-        console.log("haha",err);
-      }
-    }
-  );
-  var result = "";
-  request.on("row", function (columns) {
-    columns.forEach(function (column) {
-      if (column.value === null) {
-        console.log("NULL");
+const connection = async () => {
+  try {
+    // make sure that any items are correctly URL encoded in the connection string
+    await sql.connect(sqlConfig).then(function (result, err) {
+      if (err == undefined) {
+        console.log("connected");
       } else {
-        result += column.value + " ";
+        console.log("connection failed");
       }
     });
-    console.log(result);
-    result = "";
-  });
+  } catch (err) {
+    console.log("connection failed");
+  }
+};
 
-  console.log("x");
-  // Close the connection after the final event emitted by the request, after the callback passes
-  request.on("requestCompleted", function (rowCount, more) {
-    connection.close();
+const SELECT = async (select,table,condition) => {
+  return new Promise(async (resolve, reject) => {
+
+    let condition_ = ""
+    if(condition){
+        condition_ = condition
+    }else{
+      condition_ = ""
+    }
+
+    const result = await sql.query("select "+select+" from "+table+" "+condition_+"")
+
+    resolve(result);
   });
-  connection.execSql(request);
 };
 
 module.exports = { connection, SELECT };
