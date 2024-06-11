@@ -1,7 +1,5 @@
 import React, { useEffect, useState, PureComponent } from "react";
-import './dashboard.scss'
-import Menu from '../Menu/menu'
-import Weather from "../Weather/weather";
+import './home.scss'
 import { BrowserView, MobileView } from "react-device-detect";
 import { MdOutlineLibraryAdd } from "react-icons/md";
 import { MdCircle } from "react-icons/md";
@@ -53,36 +51,36 @@ export const Dashboard = ({ weatherState }) => {
         }
     ]
     return (
-        <div className="Fac_dashboard">
-            <BrowserView className="Fac_dashboard_Web" style={weatherState ? { marginLeft: "15px" } : { marginLeft: "0px" }} >
-                <div className="Fac_dashboard_Web_Container">
-                    <div className="Fac_dashboard_Web_Container_Header">
+        <div className="Fac_Home">
+            <BrowserView className="Fac_Home_Web" style={weatherState ? { paddingLeft: "15px" } : { paddingLeft: "0px" }} >
+                <div className="Fac_Home_Web_Dashboardcontainer">
+                    <div className="Fac_Home_Web_Dashboardcontainer_Header">
                         Farms
-                        <button className="Fac_dashboard_Web_Container_Header_Button">
+                        <button className="Fac_Home_Web_Dashboardcontainer_Header_Button" onClick={() => navigate("/addfarm")}>
                             <MdOutlineLibraryAdd size={28} style={{ marginRight: "10px" }} />  New farm
                         </button>
                     </div>
-                    <div className="Fac_dashboard_Web_Container_Farms">
+                    <div className="Fac_Home_Web_Dashboardcontainer_Farms">
                         {farms.map((item) => (
-                            <div className="Fac_dashboard_Web_Container_Farms_Item" key={item.id} onClick={() => navigate("/farm")}>
-                                <div className="Fac_dashboard_Web_Container_Farms_Item_Header">
+                            <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item" key={item.id} onClick={() => navigate("/farm")}>
+                                <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header">
                                     {item.name}
-                                    {item.state ? <div className="Fac_dashboard_Web_Container_Farms_Item_Header_State">
+                                    {item.state ? <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header_State">
                                         <MdCircle size={20} color="#8AFF02" style={{ marginTop: "1px", marginRight: "5px" }} />
                                         Connected
                                     </div> :
-                                        <div className="Fac_dashboard_Web_Container_Farms_Item_Header_State" style={{ width: "160px" }}>
+                                        <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header_State" style={{ width: "160px" }}>
                                             <MdCircle size={20} color="#FE0707" style={{ marginTop: "1px", marginRight: "5px" }} />
                                             Disconnected
                                         </div>
                                     }
 
                                 </div>
-                                <div className="Fac_dashboard_Web_Container_Farms_Item_Description">
+                                <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Description">
                                     {item.description}
 
                                 </div>
-                                <div className="Fac_dashboard_Web_Container_Farms_Item_Amount">
+                                <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Amount">
                                     <div >ph: {item.ph}</div>
                                     <div style={{ marginLeft: "10px" }}>sht: {item.sht}</div>
                                     <div style={{ marginLeft: "10px" }}>bump: {item.bump}</div>
