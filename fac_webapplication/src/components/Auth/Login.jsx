@@ -60,9 +60,10 @@ const Login = () => {
         };
         let res = await callAPi(
           "post",
-          `http://172.31.8.230:3001/data/getUser`,
+          `${authContext.apiURL}/getUser`,
           body
         );
+        console.log(res);
         if (res.data.length === 1) {
           console.log(res.data);
           authContext.login(true);

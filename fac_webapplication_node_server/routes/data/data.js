@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const data = require("./dataprocess");
+
+
 router.get("/getUser/:id", async (req, res) => {
   let result = await data.getUser(req.params.id);
   res.json(result);
@@ -10,8 +12,8 @@ router.post("/getUser", async (req, res) => {
   res.json(result);
 });
 
-router.post("/getUser", async (req, res) => {
-  let result = await data.getUser(req.body.id);
+router.post("/createUser", async (req, res) => {
+  let result = await data.createUser(req.body);
   res.json(result);
 });
 

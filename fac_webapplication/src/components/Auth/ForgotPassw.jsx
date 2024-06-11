@@ -10,9 +10,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { callAPi } from "../../services/UserService";
 //
 import { checkEmail } from "../../validation";
+import { CiBarcode } from "react-icons/ci";
 const ForgotPassw = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [OTP, setOTP] = useState("");
   const validateEmail = (email) => {
     if (email.trim() === "") {
       toast.error("Vui lòng nhập email");
@@ -27,6 +29,10 @@ const ForgotPassw = () => {
   const handleChangEmail = (e) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
+  };
+  const handleChangOTP = (e) => {
+    const newOTP = e.target.value;
+    setOTP(newOTP);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,7 +70,7 @@ const ForgotPassw = () => {
           </div>
 
           <form
-            className="Auth_BrowserView_Region-Forgot"
+            className="Auth_BrowserView_Region-Forgot"style={{height: "auto"}}
             onSubmit={handleSubmit}
           >
             <div className="Auth_BrowserView_Region-Forgot_Input ">
@@ -78,8 +84,24 @@ const ForgotPassw = () => {
                 onChange={handleChangEmail}
               ></input>
             </div>
+
+            <div className="Auth_BrowserView_Region-Forgot_Input ">
+              <div>
+                <CiBarcode  color="white" size={24} />
+              </div>
+              <input
+                type="text"
+                placeholder="OTP"
+                value={OTP}
+                onChange={handleChangOTP}
+              ></input>
+            </div>
+            <div style={{marginBottom: "10px",color: "white"}}>
+            Gửi mã otp
+            </div>
+           
             <div className="Auth_BrowserView_Region-Forgot_Button">
-              <button type="submit">Gửi</button>
+              <button type="submit">Tiếp theo</button>
             </div>
           </form>
         </div>

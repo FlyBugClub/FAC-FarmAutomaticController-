@@ -62,14 +62,14 @@ const UPDATE = async (table_name, update_values, condition) => {
   });
 };
 
-const EDIT = async (table_name, update_values, condition) => {
-  let condition_ = "";
-  if (condition) {
-    condition_ = condition;
-  }
-
+const INSERT = async (table_name, insert_values) => {
+  const columns = Object.keys(insert_values).join(', ');
+  const values = Object.values(insert_values)
+      .map(value => `'${value}'`)
+      .join(', ');
+  console.log(`INSERT INTO ${table_name} (${columns}) VALUES (${values})`);
   const result = await sql.query(
-    `update ${table_name} set ${update_values} ${condition_}`
+    `INSERT INTO ${table_name} (${columns}) VALUES (${values})`
   );
 
   return result;
@@ -88,4 +88,4 @@ const DELETE = async (table_name, condition) => {
   return result;
 };
 
-module.exports = { connection, SELECT };
+module.exports = { connection, SELECT, UPDATE, INSERT, DELETE };

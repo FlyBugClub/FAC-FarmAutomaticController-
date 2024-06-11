@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 const AuthContext = createContext();
-
+const apiURL = "http://172.31.8.230:3001/data";
 function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,9 @@ function AuthProvider({ children }) {
     }
     setLoading(false);
   };
+  
   const value = {
+    apiURL,
     isLoggedIn,
     login,
     checkToken,
