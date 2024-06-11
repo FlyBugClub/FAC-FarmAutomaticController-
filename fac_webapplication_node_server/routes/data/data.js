@@ -6,8 +6,14 @@ router.get("/getUser/:id", async (req, res) => {
 });
 
 router.post("/getUser", async (req, res) => {
+  let result = await data.getUser(req.body.username, req.body.password);
+  res.json(result);
+});
+
+router.post("/getUser", async (req, res) => {
   let result = await data.getUser(req.body.id);
   res.json(result);
 });
+
 
 module.exports = router;

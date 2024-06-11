@@ -20,8 +20,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const validateUsername = (username) => {
-    
-
     if (username.trim() === "") {
       toast.error("Tên đăng nhập không được để trống");
       return false;
@@ -38,19 +36,17 @@ const Login = () => {
   const handleChangeUsername = (e) => {
     const newUsername = e.target.value;
     setUsername(newUsername);
-    
   };
 
   const handleChangePassword = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-
   };
-  const [checkSavePassword, setCheckSavePassword] = useState(false)
+  const [checkSavePassword, setCheckSavePassword] = useState(false);
   const handleCheckboxClick = (e) => {
     const checkBox = e.target.checked;
-    setCheckSavePassword(checkBox)
-  }
+    setCheckSavePassword(checkBox);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isUsernameValid = validateUsername(username);
@@ -58,18 +54,24 @@ const Login = () => {
 
     if (isUsernameValid && isPasswordValid) {
       const checkApi = async () => {
-        // let res = await callAPi('post',`http://61.28.230.132:3004/auth/Login`, {
-        //     username: 'ndtt',
-        //     password: 'abc123'
-        // })
-
-        console.log("RES OK")
-        authContext.login(checkSavePassword);
-
+        let body = {
+          username: username,
+          password: password,
+        };
+        let res = await callAPi(
+          "post",
+          `http://172.31.8.230:3001/data/getUser`,
+          body
+        );
+        if (res.data.length === 1) {
+          console.log(res.data);
+          authContext.login(true);
+        } else {
+          alert("Khong tim thay nguoi dung");
+        }
+      };
+      checkApi();
     }
-    checkApi()
-    }
-    
   };
 
   return (
@@ -122,7 +124,7 @@ const Login = () => {
               <div>Lưu đăng nhập</div>
             </div>
             <div className="Auth_BrowserView_Region-Login_Button">
-              <button type="submit" >Đăng nhập</button>
+              <button type="submit">Đăng nhập</button>
             </div>
             <div className="Auth_BrowserView_Region-Login_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
@@ -134,9 +136,8 @@ const Login = () => {
         </div>
       </BrowserView>
 
-      
       <MobileView className="Auth_MobileView">
-        <div style={{width: "100%", height: "100%"}}>
+        <div style={{ width: "100%", height: "100%" }}>
           <div className="Auth_MobileView_Logo">
             <div className="Auth_MobileView_Logo_Image">
               <img src="/icons/Bug(Trắng).png" alt="" />
@@ -147,10 +148,7 @@ const Login = () => {
             </div>
           </div>
 
-          <form
-            className="Auth_MobileView_Region"
-            onSubmit={handleSubmit}
-          >
+          <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
             <div className="Auth_MobileView_Region_Input">
               <div>
                 <FiUser color="white" size={24} />
@@ -183,7 +181,7 @@ const Login = () => {
               <div>Lưu đăng nhập</div>
             </div>
             <div className="Auth_MobileView_Region_Button">
-              <button type="submit" >Đăng nhập</button>
+              <button type="submit">Đăng nhập</button>
             </div>
             <div className="Auth_MobileView_Region_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
