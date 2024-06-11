@@ -37,25 +37,7 @@ const getUser = async (usr, pass, name) => {
 const createUser = async (body) => {
   return new Promise(async (resolve, reject) => {
     const { username, email } = body;
-    // const usernameExists = await checkUsernameExists(username);
-    // const emailExists = await checkEmailExists(email);
-    // try {
-    //   if (usernameExists) {
-    //     console.log("Username already exists");
-    //     return resolve({ status: false, message: "Username already exists" });
-    //   }
-    // } catch (error) {
-    //   resolve({ status: false, code: 255, message: "Error System" });
-    // }
-    // try {
-    //   if (emailExists) {
-    //     console.log("Email already exists");
-    //     return resolve({ status: false, message: "Email already exists" });
-    //   }
-    // } catch (error) {
-    //   resolve({ status: false, code: 255, message: "Error System" });
-    // }
-
+    
     try {
       let res = await db.INSERT("Users", body);
       console.log(res);
@@ -66,19 +48,5 @@ const createUser = async (body) => {
   });
 };
 
-// const checkUsernameExists = async (username) => {
-//   const [rows] = await pool.query("SELECT * FROM Users WHERE username = ?", [
-//     username,
-//   ]);
-//   return rows.length > 0;
-// };
 
-// const checkEmailExists = async (email) => {
-//   const [rows] = await pool.query("SELECT * FROM Users WHERE email = ?", [
-//     email,
-//   ]);
-//   return rows.length > 0;
-// };
 module.exports = { getUser, createUser };
-
-// select * from Customer_Occupation("18")
