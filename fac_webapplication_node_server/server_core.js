@@ -9,12 +9,15 @@ db.connection();
 
 // connectToDatabase();
 
-const corsOptions = {
-  origin: 'http://192.168.1.39:3000',//(https://your-client-app.com)
-};
+const host = ['http://172.31.8.230:3000']
 
 
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: host,
+  credentials: true,
+  optionsSuccessStatus: 200,
+
+}));
 app.use(bodyParser.json());
 
 app.use('/data', data);
