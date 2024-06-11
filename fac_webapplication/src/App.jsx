@@ -10,7 +10,7 @@ import {
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import ForgotPassw from "./components/Auth/ForgotPassw";
-import { Dashboard } from "./components/Dashboard/dashboard";
+import { Dashboard } from "./components/Home/dashboard";
 import NewPassw from "./components/Auth/NewPassw";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,7 +18,8 @@ import { callAPi, host } from "./services/UserService";
 import { AuthContext } from "./AuthContext";
 import Menu from "./components/Menu/menu";
 import Weather from "./components/Weather/weather";
-import Farm from "./components/Farm/farm";
+import Farm from "./components/Home/farm";
+import Addfarm from "./components/Home/newfarm";
 function App() {
   // const [user, setUser] = useState(false);
   // setUser(JSON.parse(localStorage.getItem("user")));
@@ -28,7 +29,6 @@ function App() {
   //       username: "ndtt",
   //       password: "abc123",
   //     });
-
   const [weatherState, setWeatherState] = useState(true);
   const handleWeather = () => {
     setWeatherState(!weatherState);
@@ -77,9 +77,12 @@ function App() {
                     path="/farm"
                     element={<Farm weatherState={weatherState} />}
                   />
+                  <Route
+                    path="/addfarm"
+                    element={<Addfarm weatherState={weatherState} />}
+                  />
 
-                  <Route path="/" element={<Navigate to="/dashboard" />} />
-                  <Route path="/login" element={<Navigate to="/dashboard" />} />
+                  <Route path="*" element={<Navigate to="/dashboard" />} />
                 </Routes>
               </div>
             </div>
