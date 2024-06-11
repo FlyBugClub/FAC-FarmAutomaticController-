@@ -20,76 +20,382 @@
         &_Container {
             height: 100%;
             width: 100%;
-            // background-color: #fff;
-            padding: 10px 15px;
+            padding: 15px 15px;
             box-sizing: border-box;
-            display: flex;
-            &_Left
+            &_Chart
             {
-                width: calc(100% - 185px);
-                height: 65%;
                 display: flex;
-                justify-content: space-between;
-                &_Title
+                width: 100%;
+                height: 70%;
+                &_Left
                 {
-                    display: flex;
-                    font-size: 29px;
-                    font-weight: 500;
-                }
-                &_Status
-                {
-                    margin-top: 8px;
-                    width: 150px;
-                    height: 40px;
-                    background: $background_element;
-                    backdrop-filter: blur(4px);
-                    box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
-                    border-radius: 8px;
-                    font-size: 20px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: 500;
-                    outline: 2px solid $outline_color;
-                    
-                }
-            
-                // background-color: $color_text;
-            }
-            &_Right
-            {
-                width: 200px;
-                height: 65%;
-                margin-left: 20px;
-                &_Button
-                {
-                    margin-top: 8px;
-                    width: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    height: 40px;
-                    font-size: 22px;
-                    font-weight: 500;
-                    border-radius: 8px;
-                    border: none;
-                    outline: 2px solid $outline_color;
-                    background: $background_element;
-                    backdrop-filter: blur(4px);
-                    box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
-                    color: $color_text;
-                    cursor: pointer;
-                    &:hover
+                    width: calc(100% - 185px);
+                    height: 100%;
+                  
+                    &_Title
                     {
-                        background: rgba(255, 255, 255, 0.2);
+                        display: flex;
+                        font-size: 28px;
+                        padding-bottom: 8px;
+                        box-sizing: border-box;
+                        font-weight: 500;
+                        
+                    }
+                    &_Status
+                    {
+                       
+                        width: 150px;
+                        height: 40px;
+                        background: $background_element;
+                        backdrop-filter: blur(4px);
+                        box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
+                        border-radius: 8px;
+                        font-size: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: 500;
+                        outline: 2px solid $outline_color;
+                        
+                    }
+                    &_Chart
+                    {
+                        margin-top: 7px;
+                        width: 100%;
+                        height: calc(100% - 40px - 30px + 2px);
+                        background: $background_element;
+                        backdrop-filter: blur(4px);
+                        box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
+                        border-radius: 8px;
+                        outline: 2px solid $outline_color;
+                        display: flex;
+                        padding: 10px 20px;
+                        
+                        box-sizing: border-box;
+                        
+                    }
+                    // background-color: $color_text;
+                }
+                &_Right
+                {
+                    width: 200px;
+                    height: 100%;
+                    margin-left: 15px;
+                    &_Button
+                    {
+                      
+                        width: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 40px;
+                        font-size: 22px;
+                        font-weight: 500;
+                        border-radius: 8px;
+                        border: none;
+                        outline: 2px solid $outline_color;
+                        background: $background_element;
+                        backdrop-filter: blur(4px);
+                        box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
+                        color: $color_text;
+                        cursor: pointer;
+                        &:hover
+                        {
+                            background: rgba(255, 255, 255, 0.2);
+                        }
+    
+                    }
+                    // background-color: $color_text;
+                    &_Annotation
+                    {
+                        margin-top: 12px;
+                        width: 100%;
+                        position: relative;
+                        height: calc(100% - 40px - 30px );
+                        background: $background_element;
+                        backdrop-filter: blur(4px);
+                        box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
+                        border-radius: 8px;
+                        outline: 2px solid $outline_color;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        padding: 15px 10px;
+                        box-sizing: border-box;
+                        &_Header
+                        {
+                            display: flex;
+                            width: 80%;
+                            height: 30px;
+                            justify-content: center;
+                            align-items: center;
+                            user-select: none; 
+                            font-size: 20px;
+                            font-weight: 500;
+                            background-color: rgba(255, 255, 255, 0.5);
+                            border-radius: 8px;
+                            cursor: pointer;
+                            &:hover
+                            {
+                                background-color: rgba(255, 255, 255, 0.6);
+                            }
+                            
+                        }
+                        &_Dropbox
+                        {
+                            position: absolute;
+                            width: 100%;                        user-select: none; 
+                            user-select: none; 
+    
+                            height: calc(100% - 60px - 10px + 2px);
+                            right: 0;
+                            top: 0;
+                            margin-top: 60px;
+                            
+                            overflow-y: auto;
+                            animation: fadeup_listequipment 0.3s ease-in-out ;
+    
+                            border-bottom-left-radius: 8px;
+                            border-bottom-right-radius: 8px;
+                            background: rgba(0, 0, 0, 0.85);
+                            backdrop-filter: blur(5px);
+                            box-shadow: rgba(0, 0, 0, 0.8) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+                            &_Item
+                            {
+                                width: 100%;
+                                height: 30px;
+                                padding: 5px 10px;
+                                box-sizing: border-box;
+                                margin-top: 10px;
+                                display: flex;
+                                align-items: center;
+                                font-size: 20px;
+                                font-weight: 500;
+                                cursor: pointer;
+    
+                                &:hover
+                                {
+                                    background-color: rgba(255, 255, 255, 0.75);
+                                }
+                            }
+                            &::-webkit-scrollbar
+                            {
+    
+                                height: 1px;
+                                scrollbar-width: thin;
+                            }
+                        }
+                        &_Date
+                        {
+                            margin-top: 2px;
+                            font-size: 20px;
+                            font-weight: 500;
+                        }
+                        &_Content
+                        {
+                            margin-top: 5px;
+                            font-size: 20px;
+    
+                            text-align: left;
+                        }
+                    }
+                }
+            }
+            
+            
+            &_Controller
+            {
+               
+                height: 30%;
+                width: 40%;
+                background: $background_element;
+                backdrop-filter: blur(4px);
+                box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
+                border-radius: 8px;
+                padding: 0px 10px 5px 10px;
+                box-sizing: border-box;
+                outline: 2px solid $outline_color;
+                overflow: hidden;
+                font-size: 22px;
+                &_Header
+                {
+                    width: 100%;
+                    height: 30px;
+                    display: flex;
+                    position: relative;
+                    align-items: center;
+                    justify-content: space-between;
+                    &_Mode
+                    {
+                        display: flex;
+                        align-items: center;
+                        user-select: none; 
+                        font-size: 20px;
+                        font-weight: 500;
+                        &_State
+                        {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-top: 5px;
+                            padding: 0px 10px;
+                            margin-left: 10px;
+                            background-color: rgba(255, 255, 255, 0.5);
+                            border-radius: 8px;
+                            
+                            cursor: pointer;
+                            &:hover
+                            {
+                                background-color: rgba(255, 255, 255, 0.6);
+                            }
+                            
+                            &_Dropbox
+                            {
+                                position: absolute;
+                                top: 0;
+                                right: 0;
+                                margin-top: 40px;
+                                
+                                width: 140px;
+                                height: 90px;
+                                animation: fadeup_listequipment 0.3s ease-in-out ;
+                                overflow-y: auto;
+                                
+                                border-radius: 8px;
+                                background: rgba(0, 0, 0, 0.85);
+                                backdrop-filter: blur(5px);
+                                box-shadow: rgba(0, 0, 0, 0.8) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+                                &_Item
+                                {
+                                    width: 100%;
+                                    height: 30px;
+                                    padding: 5px 10px;
+                                    box-sizing: border-box;
+                                    margin-top: 10px;
+                                    display: flex;
+                                    align-items: center;
+                                    font-size: 18px;
+                                    font-weight: 500;
+                                    cursor: pointer;
+                                    // user-select: none; 
+        
+                                    &:hover
+                                    {
+                                        background-color: rgba(255, 255, 255, 0.75);
+                                    }
+                                }
+                                &::-webkit-scrollbar
+                                {
+        
+                                    height: 1px;
+                                    scrollbar-width: thin;
+                                }
+                            }
+                                                             
+                        }
                     }
 
                 }
-                // background-color: $color_text;
+                &_Body
+                {
+                    width: 100%;
+                    height: calc(100% - 30px);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 0 70px;
+                    box-sizing: border-box;
+                    &_switch
+                    {
+                        position: relative;
+                        display: inline-block;
+                            width: 80px;
+                            height: 40px;
+                        &_input { 
+                            opacity: 0;
+                            width: 0;
+                            height: 0;
+                          }
+                          
+                          .slider {
+                            position: absolute;
+                            cursor: pointer;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-color: #fb3131;
+                            -webkit-transition: .2s;
+                            transition: .2s;
+                          }
+                          
+                          .slider:before {
+                            position: absolute;
+                            content: "";
+                            height: 32px;
+                            width: 32px;
+                            left: 4px;
+                            bottom: 4px;
+                            background-color: white;
+                            -webkit-transition: .2s;
+                            transition: .2s;
+                          }
+                          
+                          input:checked + .slider {
+                            background-color: #b0f364;
+                          }
+                          
+                          input:focus + .slider {
+                            box-shadow: 0 0 1px #b0f364;
+                          }
+                          
+                          input:checked + .slider:before {
+                            -webkit-transform: translateX(40px);
+                            -ms-transform: translateX(40px);
+                            transform: translateX(40px);
+                          }
+                          
+                          /* Rounded sliders */
+                          .slider.round {
+                            border-radius: 40px;
+                          }
+                          
+                          .slider.round:before {
+                            border-radius: 50%;
+                          }
+                        
 
+                    }
+                    &_Statecontainer
+                    {
+                        display: flex;
+                        align-items: center;
+                        &_State
+                        {
+                            margin-top: 5px;
+                            font-size: 20px;
+                            margin-left: 10px;
+                        }
+                    }
+
+                }
             }
             
         }
     }
 
+}
+
+  
+  
+
+@keyframes fadeup_listequipment {
+    0% {
+        opacity: 0;
+        transform: translateY(-0.35rem);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
