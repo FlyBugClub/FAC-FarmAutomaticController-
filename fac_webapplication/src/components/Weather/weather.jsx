@@ -24,11 +24,11 @@ const Weather = ({ weatherState }) => {
     }
     ]
     return (
-        <div className="Fac_Weather" style={weatherState ? { width: "15%" } : { width: "0" }}>
+        <div className="Fac_Weather" style={weatherState ? {width: '13rem',boxShadow: '0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15)', animation: 'SlideMenuLeft 0.2s ease-in-out' }: {width: '0rem',boxShadow: 'none', animation: 'SlideMenuRight 0.2s ease-in-out'}}>
             <BrowserView className="Fac_Weather_Web">
-                {
-                    weatherState ?
-                        <div className="Fac_Weather_Web_Container"  >
+                
+           
+                        <div className="Fac_Weather_Web_Container" style={weatherState ? {padding: '0 15px'} : {padding: '0'}} >
                             {weatherdata.map((item) => (
                                 <div className="Fac_Weather_Web_Container_Elements" key={item.id}>
                                     <img className="Fac_Weather_Web_Container_Elements_Icon" src={item.img} alt="" ></img>
@@ -37,8 +37,8 @@ const Weather = ({ weatherState }) => {
                                 </div>
                             ))}
                         </div>
-                        : <></>
-                }
+                        
+                
             </BrowserView>
 
 
