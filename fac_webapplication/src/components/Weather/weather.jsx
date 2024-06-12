@@ -24,9 +24,7 @@ const Weather = ({ weatherState }) => {
     }
     ]
     return (
-
         <div className="Fac_Weather" style={weatherState ? { width: "15%" } : { width: "0" }}>
-
             <BrowserView className="Fac_Weather_Web">
                 {
                     weatherState ?
@@ -38,7 +36,6 @@ const Weather = ({ weatherState }) => {
                                     <div style={{ fontSize: "19px" }}>{item.temperature}°</div>
                                 </div>
                             ))}
-
                         </div>
                         : <></>
                 }
