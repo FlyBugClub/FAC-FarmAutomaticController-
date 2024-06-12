@@ -2,7 +2,8 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const bodyParser = require("body-parser");
-const data = require('./routes/data/data');
+const auth = require('./routes/auth/auth');
+
 const db = require('./models/mysql');
 
 db.connection();
@@ -20,7 +21,8 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
-app.use('/data', data);
+app.use('/auth', auth);
+
 
 app.listen((process.env.PORT || 3001), () => {
   console.log(`Example app listening at http://localhost:${process.env.PORT || 3001}`);
