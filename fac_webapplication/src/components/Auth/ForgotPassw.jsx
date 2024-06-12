@@ -1,6 +1,6 @@
 import { BrowserView, MobileView } from "react-device-detect";
 import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FiMail } from "react-icons/fi";
 import "./Auth.scss";
 //
@@ -11,7 +11,9 @@ import { callAPi } from "../../services/UserService";
 //
 import { checkEmail } from "../../validation";
 import { CiBarcode } from "react-icons/ci";
+import { AuthContext } from "../../AuthContext";
 const ForgotPassw = () => {
+  const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [OTP, setOTP] = useState("");
@@ -40,16 +42,15 @@ const ForgotPassw = () => {
 
     if (isEmailValid) {
       const checkApi = async () => {
-        // let res = await callAPi(
-        //   "post",
-        //   `http://61.28.230.132:3004/auth/Login`,
-        //   {
-        //     username: "ndtt",
-        //     password: "abc123",
-        //   }
-        // );
+        let res = await callAPi(
+          "post",
+          `${authContext.apiURL}/auth/request-otp`,
+          {
+            email: email,
+          }
+        );
 
-        console.log('RES OK');
+        console.log(res);
       };
       checkApi();
       

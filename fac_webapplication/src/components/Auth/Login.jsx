@@ -60,7 +60,7 @@ const Login = () => {
         };
         let res = await callAPi(
           "post",
-          `${authContext.apiURL}/data/getUser`,
+          `${authContext.apiURL}/auth/getUser`,
           body
         );
         console.log(res);

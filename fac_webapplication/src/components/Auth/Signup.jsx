@@ -114,7 +114,7 @@ const Signup = () => {
       
         let res = await callAPi(
           "post",
-          `${authContext.apiURL}/data/createUser`,
+          `${authContext.apiURL}/auth/createUser`,
           body
         );
         console.log(res.data);
