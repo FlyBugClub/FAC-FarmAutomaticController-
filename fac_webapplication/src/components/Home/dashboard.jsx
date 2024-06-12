@@ -5,7 +5,7 @@ import { MdOutlineLibraryAdd } from "react-icons/md";
 import { MdCircle } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
 
-export const Dashboard = ({ weatherState }) => {
+export const Dashboard = ({ weatherState,handleAddDevice }) => {
     const navigate = useNavigate();
     const farms = [
         {
@@ -56,7 +56,7 @@ export const Dashboard = ({ weatherState }) => {
                 <div className="Fac_Home_Web_Dashboardcontainer">
                     <div className="Fac_Home_Web_Dashboardcontainer_Header">
                         Farms
-                        <button className="Fac_Home_Web_Dashboardcontainer_Header_Button" onClick={() => navigate("/addfarm")}>
+                        <button className="Fac_Home_Web_Dashboardcontainer_Header_Button" onClick={() => {handleAddDevice("farm");navigate("/addfarm")}}>
                             <MdOutlineLibraryAdd size={28} style={{ marginRight: "10px" }} />  New farm
                         </button>
                     </div>

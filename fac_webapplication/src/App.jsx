@@ -30,14 +30,15 @@ function App() {
   //       password: "abc123",
   //     });
   const [weatherState, setWeatherState] = useState(true);
+  const [addDeviceState,setAddDeviceState] = useState("")
   const handleWeather = () => {
     setWeatherState(!weatherState);
   };
-
+  const handleAddDevice = (key) => {
+    setAddDeviceState(key);
+  };
 
   const Context = useContext(AuthContext);
-  
-
   return (
     <Router>
       <div className="App">
@@ -71,15 +72,15 @@ function App() {
                 <Routes>
                   <Route
                     path="/dashboard"
-                    element={<Dashboard weatherState={weatherState} />}
+                    element={<Dashboard weatherState={weatherState} handleAddDevice={handleAddDevice} />}
                   />
                   <Route
                     path="/farm"
-                    element={<Farm weatherState={weatherState} />}
+                    element={<Farm weatherState={weatherState} handleAddDevice={handleAddDevice}/>}
                   />
                   <Route
                     path="/addfarm"
-                    element={<Addfarm weatherState={weatherState} />}
+                    element={<Addfarm weatherState={weatherState} addDeviceState={addDeviceState} />}
                   />
 
                   <Route path="*" element={<Navigate to="/dashboard" />} />

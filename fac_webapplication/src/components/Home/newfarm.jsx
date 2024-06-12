@@ -6,24 +6,23 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { BsQrCode } from "react-icons/bs";
 import { PiPlusBold } from "react-icons/pi";
 import { AiOutlinePlusCircle } from "react-icons/ai";
+import { hover } from "@testing-library/user-event/dist/hover";
 
-const AddFarm = ({ weatherState }) => {
+const AddFarm = ({ weatherState,addDeviceState }) => {
+    const farm = ["farm1","farm2","farm3","farm1","farm2","farm3"]
     const [qrcodeState, setQrcodeState] = useState(false)
     const [authQrState, setAuthQrState] = useState(false)
+    const [farmSeleted, setFarmSelected] = useState(farm[0])
+    const [farmSeletedState, setFarmSelectedState] = useState(false)
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
-    useEffect(() => {
-        console.log(authQrState)
-    }, [authQrState])
-
+    
     const handleButtonClick = () => {
         // fileInputRef.current.click(); // Kích hoạt hộp thoại chọn file
         setQrcodeState(true)
     };
 
-
-    // Hàm xử lý khi file được chọn
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         // setAuthQrState(!authQrState)
@@ -39,9 +38,10 @@ const AddFarm = ({ weatherState }) => {
                             Add farm
                         </div>
 
+
                     </div>
                     {
-                        qrcodeState ?
+                        (qrcodeState && addDeviceState == "farm") ?
                             <div className="Fac_Home_Web_Addfarmcontainer_Body" style={{justifyContent:"space-between"}}>
                                 <div className="Fac_Home_Web_Addfarmcontainer_Body_Left">
                                     <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items">
@@ -69,6 +69,57 @@ const AddFarm = ({ weatherState }) => {
                                         <button className="Fac_Home_Web_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => navigate('/dashboard')}>
                                             <AiOutlinePlusCircle size={20} style={{marginRight:"10px"}}/>
                                             Add farm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            : (qrcodeState && addDeviceState == "equipment") ? 
+                            <div className="Fac_Home_Web_Addfarmcontainer_Body" style={{justifyContent:"space-between"}}>
+                                <div className="Fac_Home_Web_Addfarmcontainer_Body_Left">
+                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items">
+                                        Bump name: 
+                                        <textarea className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input" maxLength="30"></textarea>
+                                    </div>
+                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{marginTop:"15px"}} maxLength="30">
+                                        SHT name:
+                                        <textarea className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input"></textarea>
+                                    </div>
+                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items"  style={{marginTop:"15px"}} maxLength="30">
+                                        Ph name: 
+                                        <textarea className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input"></textarea>
+                                    </div>
+                                </div>
+                                <div className="Fac_Home_Web_Addfarmcontainer_Body_Right">
+                                    
+                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Farmselection">
+                                        Farm selection:
+                                        <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Farmselection_Input " onClick={() => setFarmSelectedState(!farmSeletedState)} style={{cursor:"pointer"}}>
+                                            {farmSeleted}
+                                        </div>
+                                        {
+                                            farmSeletedState ?
+                                            <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Farmselection_Dropbox">
+                                                {
+                                                    farm.map((item, index) => {
+                                                        return (
+                                                            <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Farmselection_Dropbox_Items" key={index} onClick={() => {setFarmSelected(item);setFarmSelectedState(false)}}>
+                                                                {item}
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                            :<></>
+                                        }
+                                    </div>
+                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Buttons">
+                                        <button className="Fac_Home_Web_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{marginRight:"20px"}}>
+                                            <BsQrCode size={20} style={{marginRight:"10px"}}/>
+                                            Add QR code again
+                                        </button>
+                                        <button className="Fac_Home_Web_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => navigate('/farm')}>
+                                            <AiOutlinePlusCircle size={20} style={{marginRight:"10px"}}/>
+                                            Add equipment
                                         </button>
                                     </div>
                                 </div>

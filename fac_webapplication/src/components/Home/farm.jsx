@@ -8,7 +8,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { MdCircle } from "react-icons/md";
 
-const Farm = ({ weatherState }) => {
+const Farm = ({ weatherState,handleAddDevice }) => {
     const navigate = useNavigate();
     const [listEquipmentState, setListEquipmentState] = useState(false);
     const [equipment, setEquipment] = useState("Equipment 1");
@@ -109,7 +109,7 @@ const Farm = ({ weatherState }) => {
                         <div className="Fac_Home_Web_Farmcontainer_Chart_Left">
                             <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
                                 <div className="Fac_Home_Web_Farmcontainer_Chart_Left_Title">
-                                    <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => navigate(-1)} />
+                                    <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => navigate("/dashboard")} />
                                     <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                         Farm name
                                     </div>
@@ -179,7 +179,7 @@ const Farm = ({ weatherState }) => {
                         <div className="Fac_Home_Web_Farmcontainer_Chart_Right">
 
 
-                            <button className="Fac_Home_Web_Farmcontainer_Chart_Right_Button" >
+                            <button className="Fac_Home_Web_Farmcontainer_Chart_Right_Button" onClick={() => {handleAddDevice("equipment");navigate("/addfarm")}} >
                                 <IoIosAddCircleOutline size={30} style={{ marginRight: "15px" }} />
                                 Add device
                             </button>
@@ -275,7 +275,7 @@ const Farm = ({ weatherState }) => {
                         {
                             mode == "Manual" ?
                                 <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
-                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "30px" }}>
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "30px" }}>
                                         <label className="Fac_Home_Web_Farmcontainer_Controller_Body_switch">
                                             <input className="Fac_Home_Web_Farmcontainer_Controller_Body_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
                                             <span className="slider round"></span>
@@ -297,9 +297,10 @@ const Farm = ({ weatherState }) => {
                                         </div>
                                     </div>
                                 </div>
+                                
                                 : mode == "Automatic" ?
                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "14px" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "14px" }}>
                                             <label className="Fac_Home_Web_Farmcontainer_Controller_Body_switch">
                                                 <input className="Fac_Home_Web_Farmcontainer_Controller_Body_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
                                                 <span className="slider round"></span>
@@ -337,7 +338,7 @@ const Farm = ({ weatherState }) => {
                                     </div>
                                     :
                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "10px" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "10px" }}>
                                             <label className="Fac_Home_Web_Farmcontainer_Controller_Body_switch">
                                                 <input className="Fac_Home_Web_Farmcontainer_Controller_Body_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
                                                 <span className="slider round"></span>
