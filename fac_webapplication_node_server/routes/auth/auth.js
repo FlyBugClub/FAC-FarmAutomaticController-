@@ -22,4 +22,15 @@ router.post("/createUser", async (req, res) => {
   res.json(result);
 });
 
+router.post("/updateUser", async (req, res) => {
+  let result = await auth.updateUser(req.body);
+  res.json(result);
+});
+
+router.get("/deleteUser/:name", async (req, res) => {
+  let result = await auth.deleteUser(req.params.name);
+  res.json(result);
+});
+
+
 module.exports = router;

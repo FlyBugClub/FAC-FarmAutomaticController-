@@ -85,4 +85,16 @@ const createUser = async (body) => {
     }
   });
 };
-module.exports = { requestOTP, getUser, createUser };
+
+const deleteUser = async (name) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await db.DELETE("Users", "where name = '" + name + "'");
+      console.log(res);
+      resolve({ status: true, data: res.rowsAffected[0]});
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  });
+};
+module.exports = { requestOTP, getUser, createUser, deleteUser };

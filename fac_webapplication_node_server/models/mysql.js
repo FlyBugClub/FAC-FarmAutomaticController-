@@ -82,7 +82,7 @@ const DELETE = async (table_name, condition) => {
   }
 
   const result = await sql.query(
-    `delete from ${table_name} where ${condition_}`
+    `delete from ${table_name} ${condition_}`
   );
 
   return result;
