@@ -4,6 +4,26 @@ import { Navigate } from "react-router-dom";
 const AuthContext = createContext();
 const apiURL = "http://172.31.8.230:3001";
 function AuthProvider({ children }) {
+  const [user_info, setUserInfo] = useState({
+    id_user: "",
+    gmail: "",
+    name: "",
+    phone_no: "",
+    membership: "",
+  });
+
+  const setdata = (data) => {
+    setUserInfo((prev) => {
+      return {
+        ...prev,
+        id_user: data.id_user,
+        gmail: data.gmail,
+        name: data.name,
+        phone_no: data.phone_no,
+        membership: data.membership,
+      };
+    });
+  }
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const login = (check) => {
@@ -36,9 +56,11 @@ function AuthProvider({ children }) {
   const value = {
     apiURL,
     isLoggedIn,
+    user_info,
     login,
     checkToken,
     logout,
+    setdata,
   };
   useEffect(() => {
     checkToken();

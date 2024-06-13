@@ -92,11 +92,29 @@ const Login = () => {
         );
 
         // console.log(res.data[0].status_);
-
+        
     
         if (res.data[0].status_ === 200) {
           console.log('thanh cong');
-          authContext.login(true);
+          // authContext.login(true);
+          console.log(res.data[0].id_user_);
+          
+          let res_ = await callAPi(
+            "get",
+            `${authContext.apiURL}/auth/getUser/${res.data[0].id_user_}`,
+          );
+          // console.log(res_.data[0].id_user_);
+          // console.log(res_.data[0].name_);
+          authContext.setdata({
+            id_user: res_.data[0].id_user_,
+            name: res_.data[0].name_,
+            gmail: res_.data[0].gmail_,
+            phone_no: res_.data[0].phone_no_,
+            membership: res_.data[0].membership_,
+          })
+          // console.log(authContext.user_info.name);
+          
+
         } else {
           alert("Khong tim thay nguoi dung");
         }

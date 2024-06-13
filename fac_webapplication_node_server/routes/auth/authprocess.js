@@ -43,7 +43,7 @@ const getUserByID = async (usr) => {
     try {
       let res = await db.SELECT(
         "*",
-        "get_user_by_id('+" + usr + "')",
+        "get_user_by_id('" + usr + "')",
         
       );
       resolve({ status: true, data: res.recordsets[0] });
