@@ -47,7 +47,34 @@ const Login = () => {
     const checkBox = e.target.checked;
     setCheckSavePassword(checkBox);
   };
+  const handleEditUser = async () => {
+    const checkApi = async () => {
+      let body = 
+        [
+          '1',
+          'New Name',
+          'new.email@example.com',
+          '123456789',
+          'Premium'
+        ]
+      
+      let res = await callAPi(
+        "post",
+        `${authContext.apiURL}/auth/editUser`,
+        body
+      );
+      console.log(res);
+      if (res.data) {
+        console.log(res.data);
+        authContext.login(true);
+      } else {
+        alert("sua khong thanh cong");
+      }
+    };
+    checkApi();
+  }
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
@@ -131,6 +158,9 @@ const Login = () => {
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
               <div onClick={() => navigate("/forgotpassword")}>
                 Quên mật khẩu
+              </div>
+              <div onClick={handleEditUser}>
+               edit
               </div>
             </div>
           </form>

@@ -100,20 +100,13 @@ const deleteUser = async (name) => {
 const editUser = async (body) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let res = await db.executeProcedure("dbo.edit_user_pro",[
-        '1',
-        'New Name',
-        'new.email@example.com',
-        '123456789',
-        'Premium'
-      ]);
+      let res = await db.executeProcedure("dbo.edit_user_pro",body);
       console.log(res);
-      resolve({ status: true, data: res.rowsAffected[0]});
+      resolve({ status: true, data: res.recordset[0]});
     } catch (error) {
       resolve({ status: false, code: 255, message: "Error System" });
     }
   });
-
 };
 
 
