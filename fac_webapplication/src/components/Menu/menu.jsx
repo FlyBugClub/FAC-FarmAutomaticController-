@@ -61,15 +61,13 @@ const Menu = ({ handleWeather,weatherState }) => {
                         {userState === "user" ?
                         <div className="Fac_Menu_Web_Container_Dropbox" >
                             <div className="Fac_Menu_Web_Container_Dropbox_Header">
-                                <img className="Fac_Menu_Web_Container_Dropbox_Header_Avatar"src="/icons/user.png" alt=""/>
-
                                 <div className="Fac_Menu_Web_Container_Dropbox_Header_Info">
                                     User name
                                     <div style={{fontSize:"12px",fontWeight:"400"}}>cuong.dq12897@sinhvien.hoasen.edu.vn</div>
                                 </div>
                                 
                             </div>
-                            <div className="Fac_Menu_Web_Container_Dropbox_Options">
+                            <div className="Fac_Menu_Web_Container_Dropbox_Options" onClick={()=>{navigate("/usersetting");setUserState("")}}>
                                 <FiSettings style={{marginRight:"10px"}}/>
                                 Account
                             </div>

@@ -37,8 +37,6 @@ const AddFarm = ({ weatherState,addDeviceState }) => {
                         <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                             Add farm
                         </div>
-
-
                     </div>
                     {
                         (qrcodeState && addDeviceState == "farm") ?
@@ -147,7 +145,6 @@ const AddFarm = ({ weatherState,addDeviceState }) => {
 
 
                             </div>
-
                     }
 
                 </div>
