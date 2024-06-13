@@ -8,12 +8,12 @@ router.post("/request-otp", async (req, res) => {
 
 
 router.get("/getUser/:id", async (req, res) => {
-  let result = await auth.getUser(req.params.id);
+  let result = await auth.getUserByID(req.params.id);
   res.json(result);
 });
 
-router.post("/getUser", async (req, res) => {
-  let result = await auth.getUser(req.body.username, req.body.password);
+router.post("/checkValidUser", async (req, res) => {
+  let result = await auth.checkValidUser(req.body.username, req.body.password);
   res.json(result);
 });
 

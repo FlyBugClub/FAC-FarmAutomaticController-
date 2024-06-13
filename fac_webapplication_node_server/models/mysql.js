@@ -29,17 +29,12 @@ const connection = async () => {
   }
 };
 
-const SELECT = async (select, table, condition) => {
+const SELECT = async (select, table) => {
   return new Promise(async (resolve, reject) => {
-    let condition_ = "";
-    if (condition) {
-      condition_ = condition;
-    } else {
-      condition_ = "";
-    }
+    
 
     const result = await sql.query(
-      "select " + select + " from " + table + " " + condition_ + ""
+      "select " + select + " from " + table + " "
     );
 
     resolve(result);

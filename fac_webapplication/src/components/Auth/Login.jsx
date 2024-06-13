@@ -87,12 +87,15 @@ const Login = () => {
         };
         let res = await callAPi(
           "post",
-          `${authContext.apiURL}/auth/getUser`,
+          `${authContext.apiURL}/auth/checkValidUser`,
           body
         );
-        console.log(res);
-        if (res.data.length === 1) {
-          console.log(res.data);
+
+        // console.log(res.data[0].status_);
+
+    
+        if (res.data[0].status_ === 200) {
+          console.log('thanh cong');
           authContext.login(true);
         } else {
           alert("Khong tim thay nguoi dung");

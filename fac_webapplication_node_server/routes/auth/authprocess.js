@@ -38,37 +38,39 @@ console.log("hehe");
   });
 };
 
-const getUser = async (usr, pass, name) => {
+const getUserByID = async (usr) => {
   return new Promise(async (resolve, reject) => {
-    if (pass === undefined) {
-      try {
-        let res = await db.SELECT(
-          "id_user, name, phone_no, gmail",
-          "Users",
-          "where id_user = '" + usr + "'"
-        );
-        resolve({ status: true, data: res.recordsets[0] });
-      } catch (error) {
-        // reject(error);
-        resolve({ status: false, code: 255, message: "Error System" });
-      }
-    } else {
-      try {
-        let res = await db.SELECT(
-          "id_user, name, phone_no, gmail",
-          "Users",
-          "where name = '" + usr + "' and password = '" + pass + "'"
-        );
-        if (res.recordsets[0].length > 0) {
-          delete res.recordsets[0][0].password;
-        }
-        resolve({ status: true, data: res.recordsets[0] });
-      } catch (error) {
-        // reject(error);
-        resolve({ status: false, code: 255, message: "Error System" });
-      }
+    try {
+      let res = await db.SELECT(
+        "*",
+        "get_user_by_id('+" + usr + "')",
+        
+      );
+      resolve({ status: true, data: res.recordsets[0] });
+    } catch (error) {
+      // reject(error);
+      resolve({ status: false, code: 255, message: "Error System" });
     }
-    //await ...TestAPI
+  });
+};
+
+const checkValidUser = async (name, pass) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await db.SELECT(
+        "*",
+        "check_valid_user('" + name + "', '" + pass + "')",
+        
+      );
+      if (res.recordsets[0].length > 0) {
+        delete res.recordsets[0][0].password;
+      }
+      console.log(res);
+      resolve({ status: true, data: res.recordsets[0] });
+    } catch (error) {
+      // reject(error);
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
   });
 };
 
@@ -110,4 +112,4 @@ const editUser = async (body) => {
 };
 
 
-module.exports = { requestOTP, getUser, createUser, deleteUser, editUser};
+module.exports = { requestOTP, getUserByID, createUser, deleteUser, editUser, checkValidUser};
