@@ -97,4 +97,24 @@ const deleteUser = async (name) => {
     }
   });
 };
-module.exports = { requestOTP, getUser, createUser, deleteUser };
+const editUser = async (body) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await db.executeProcedure("dbo.edit_user_pro",[
+        '1',
+        'New Name',
+        'new.email@example.com',
+        '123456789',
+        'Premium'
+      ]);
+      console.log(res);
+      resolve({ status: true, data: res.rowsAffected[0]});
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  });
+
+};
+
+
+module.exports = { requestOTP, getUser, createUser, deleteUser, editUser};

@@ -87,5 +87,21 @@ const DELETE = async (table_name, condition) => {
 
   return result;
 };
+const executeProcedure = async (pro_name, params) => {
+  try {
+    // Tạo chuỗi tham số từ đối số 'params'
+    let paramStr = '';
+    if (params && params.length > 0) {
+      paramStr = params.map(param => `'${param}'`).join(', ');
+    }
 
-module.exports = { connection, SELECT, UPDATE, INSERT, DELETE };
+    // Gọi stored procedure và trả về kết quả
+    const result = await sql.query(`EXEC ${pro_name} ${paramStr}`);
+    return result;
+  } catch (error) {
+    console.error('Error executing stored procedure:', error);
+    throw error; // Ném lỗi để xử lý ở phía gọi hàm
+  }
+};
+
+module.exports = { connection, SELECT, UPDATE, INSERT, DELETE, executeProcedure};

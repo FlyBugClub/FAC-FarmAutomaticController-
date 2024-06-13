@@ -22,8 +22,8 @@ router.post("/createUser", async (req, res) => {
   res.json(result);
 });
 
-router.post("/updateUser", async (req, res) => {
-  let result = await auth.updateUser(req.body);
+router.post("/editUser", async (req, res) => {
+  let result = await auth.editUser(req.body);
   res.json(result);
 });
 
