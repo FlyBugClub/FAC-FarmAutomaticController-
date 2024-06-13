@@ -275,21 +275,21 @@ const Farm = ({ weatherState,handleAddDevice }) => {
                         {
                             mode == "Manual" ?
                                 <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
-                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "30px" }}>
-                                        <label className="Fac_Home_Web_Farmcontainer_Controller_Body_switch">
-                                            <input className="Fac_Home_Web_Farmcontainer_Controller_Body_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
+                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
+                                        <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
+                                            <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
                                             <span className="slider round"></span>
                                         </label>
 
-                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Statecontainer">
+                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
                                             State:
                                             {modeState ?
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Statecontainer_State">
+                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                     ON
                                                     <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
                                                 </div>
                                                 :
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Statecontainer_State">
+                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                     OFF
                                                     <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
                                                 </div>
@@ -300,22 +300,22 @@ const Farm = ({ weatherState,handleAddDevice }) => {
                                 
                                 : mode == "Automatic" ?
                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "14px" }}>
-                                            <label className="Fac_Home_Web_Farmcontainer_Controller_Body_switch">
-                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
+                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
+                                            <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
+                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
                                                 <span className="slider round"></span>
                                             </label>
 
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Statecontainer">
+                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
                                                 State:
                                                 {modeState ?
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Statecontainer_State">
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                         ON
                                                         <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
 
                                                     </div>
                                                     :
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Statecontainer_State">
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                         OFF
                                                         <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
 
@@ -323,7 +323,7 @@ const Farm = ({ weatherState,handleAddDevice }) => {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Slidecontainer">
+                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Slidecontainer">
                                             <input
                                                 type="range"
                                                 min="60"
@@ -331,29 +331,29 @@ const Farm = ({ weatherState,handleAddDevice }) => {
                                                 value={value}
                                                 onChange={handleChange}
                                                 ref={sliderRef} // Sử dụng ref ở đây
-                                                className="Fac_Home_Web_Farmcontainer_Controller_Body_Slidecontainer_Slider"
+                                                className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Slidecontainer_Slider"
                                             />
                                             <div style={{ marginLeft: "10px", fontSize: "20px" }}>{value}</div>
                                         </div>
                                     </div>
                                     :
                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "10px" }}>
-                                            <label className="Fac_Home_Web_Farmcontainer_Controller_Body_switch">
-                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
+                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
+                                            <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
+                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
                                                 <span className="slider round"></span>
                                             </label>
 
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Statecontainer">
+                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
                                                 State:
                                                 {modeState ?
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Statecontainer_State">
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                         ON
                                                         <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
 
                                                     </div>
                                                     :
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Statecontainer_State">
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                         OFF
                                                         <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
 
@@ -361,20 +361,20 @@ const Farm = ({ weatherState,handleAddDevice }) => {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Timecontainer">
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Timecontainer_Times">
+                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer">
+                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
                                                 12:08
                                             </div>
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Timecontainer_Times">
+                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
                                                 12:08
                                             </div>
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Timecontainer_Times">
+                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
                                                 12:08
                                             </div>
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Timecontainer_Times">
+                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
                                                 12:08
                                             </div>
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Timecontainer_Times">
+                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
                                                 12:08
                                             </div>
                                         </div>
