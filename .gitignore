@@ -5,3 +5,5 @@ MushroomAutomation/secret_pass.h
 PYHTON_API/.idea/
 
 fac_webapplication/package-lock.json
+
+fac_webapplication_node_server/.env
