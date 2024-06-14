@@ -14,12 +14,12 @@ export const Dashboard = ({ weatherState,handleAddDevice }) => {
         getDashboard()
     }, [])
     const getDashboard = async () => {
-       
+        console.log(authContext.user_info)
         // let res = await callAPi(
         //   "get",
         //   `${authContext.apiURL}/data/getDashboard/${authContext.user_info.id_user}`,
         // );
-        console.log(authContext.user_info)
+        // console.log(authContext.user_info)
         // console.log(res.data);
 
     }

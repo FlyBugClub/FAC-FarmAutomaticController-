@@ -12,8 +12,6 @@ function AuthProvider({ children }) {
   });
 
   
-  
-  
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const login = (check) => {
@@ -42,9 +40,8 @@ function AuthProvider({ children }) {
     if (token) {
       setIsLoggedIn(true);
       const user = localStorage.getItem("user_id");
-      console.log("user");
-      console.log(user);
-      setUserInfo({ id_user: user });
+
+      
     }
     setLoading(false);
   };
@@ -62,7 +59,6 @@ function AuthProvider({ children }) {
   useEffect(() => {
     checkToken();
     console.log(isLoggedIn);
-    console.log(user_info);
   }, [isLoggedIn]);
 
   return (

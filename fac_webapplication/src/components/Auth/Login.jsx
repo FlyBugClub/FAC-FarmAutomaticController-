@@ -65,7 +65,7 @@ const Login = () => {
       console.log(res);
       if (res.data) {
         console.log(res.data);
-        authContext.login(true);
+        alert("sua thanh cong");
       } else {
         alert("sua khong thanh cong");
       }
@@ -92,21 +92,24 @@ const Login = () => {
         // console.log(res.data[0].status_);
 
         if (res.data[0].status_ === 200) {
-          console.log("thanh cong");
+          // console.log("thanh cong");
           authContext.login(checkSavePassword);
-          console.log(res.data[0].id_user_);
-
+          console.log(res.data[0]);
+          
           let res_ = await callAPi(
             "get",
             `${authContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
           );
-          // console.log(res_.data[0].id_user_);
-          // console.log(res_.data[0].name_);
-          authContext.setUserInfo({
-            id_user: "1",
-          }
-            
-          )
+          const newUserInfo = {
+            id_user: res_.data[0].id_user_,
+            gmail:   res_.data[0].gmail_,
+            name: res_.data[0].name_,
+            phone_no: res_.data[0].phone_no_,
+            membership: res_.data[0].membership_
+          };
+          authContext.setUserInfo(newUserInfo);
+          
+         
           // console.log(authContext.user_info.name);
         } else {
           alert("Khong tim thay nguoi dung");
