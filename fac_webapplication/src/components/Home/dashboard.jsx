@@ -6,23 +6,33 @@ import { MdCircle } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
 
 import { callAPi } from "../../services/UserService";
+import { AuthContext } from "../../AuthContext";
 
 export const Dashboard = ({ weatherState,handleAddDevice }) => {
+    const authContext = useContext(AuthContext)
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
-  
+    const [user, setUser] = useState([])
     
     const getDashboard = async () => {
-        // console.log(authContext.user_info)
-        // let res = await callAPi(
-        //   "get",
-        //   `${authContext.apiURL}/data/getDashboard/${authContext.user_info.id_user}`,
-        // );
-        // console.log(res.data)
-        // setFarms(res.data)
+
+        let json = sessionStorage.getItem('user_info');
+        json = JSON.parse(json);
+        setUser(json)
+        // console.log(user)
+        console.log(user.id_user_)
+
+        let res = await callAPi(
+          "get",
+          `${authContext.apiURL}/data/getDashboard/${user.id_user_}`,
+        );
+        console.log(res)
+        setFarms(res.data)
+        
     }
     const handlethisbuttonclick = () => {
-        console.log()
+       
+        getDashboard()
        
     }
     

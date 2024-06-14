@@ -101,11 +101,11 @@ const Login = () => {
             `${authContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
           );
             if(checkSavePassword){
-              localStorage.setItem("user_info", JSON.stringify(res.data[0]));
+              localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
               
             }
             else{
-              sessionStorage.setItem("user_info", JSON.stringify(res.data[0]));
+              sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
              
             }
         
