@@ -1,6 +1,6 @@
 import { BrowserView, MobileView } from "react-device-detect";
 import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FiMail } from "react-icons/fi";
 import "./Auth.scss";
 //
@@ -10,9 +10,13 @@ import "react-toastify/dist/ReactToastify.css";
 import { callAPi } from "../../services/UserService";
 //
 import { checkEmail } from "../../validation";
+import { CiBarcode } from "react-icons/ci";
+import { AuthContext } from "../../AuthContext";
 const ForgotPassw = () => {
+  const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [OTP, setOTP] = useState("");
   const validateEmail = (email) => {
     if (email.trim() === "") {
       toast.error("Vui lòng nhập email");
@@ -28,22 +32,25 @@ const ForgotPassw = () => {
     const newEmail = e.target.value;
     setEmail(newEmail);
   };
+  const handleChangOTP = (e) => {
+    const newOTP = e.target.value;
+    setOTP(newOTP);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isEmailValid = validateEmail(email);
 
     if (isEmailValid) {
       const checkApi = async () => {
-        // let res = await callAPi(
-        //   "post",
-        //   `http://61.28.230.132:3004/auth/Login`,
-        //   {
-        //     username: "ndtt",
-        //     password: "abc123",
-        //   }
-        // );
+        let res = await callAPi(
+          "post",
+          `${authContext.apiURL}/auth/request-otp`,
+          {
+            email: email,
+          }
+        );
 
-        console.log('RES OK');
+        console.log(res);
       };
       checkApi();
       
@@ -64,7 +71,7 @@ const ForgotPassw = () => {
           </div>
 
           <form
-            className="Auth_BrowserView_Region-Forgot"
+            className="Auth_BrowserView_Region-Forgot"style={{height: "auto"}}
             onSubmit={handleSubmit}
           >
             <div className="Auth_BrowserView_Region-Forgot_Input ">
@@ -78,15 +85,61 @@ const ForgotPassw = () => {
                 onChange={handleChangEmail}
               ></input>
             </div>
+
+            <div className="Auth_BrowserView_Region-Forgot_Input ">
+              <div>
+                <CiBarcode  color="white" size={24} />
+              </div>
+              <input
+                type="text"
+                placeholder="OTP"
+                value={OTP}
+                onChange={handleChangOTP}
+              ></input>
+            </div>
+            <div style={{marginBottom: "10px",color: "white"}}>
+            Gửi mã otp
+            </div>
+           
             <div className="Auth_BrowserView_Region-Forgot_Button">
-              <button type="submit">Gửi</button>
+              <button type="submit">Tiếp theo</button>
             </div>
           </form>
         </div>
       </BrowserView>
 
-      <MobileView>
-        <h1>This is rendered only on mobile</h1>
+      <MobileView className="Auth_MobileView">
+        <div style={{width: "100%", height: "100%"}}>
+          <div className="Auth_MobileView_Logo">
+            <div className="Auth_MobileView_Logo_Image">
+              <img src="/icons/Bug(Trắng).png" alt="" />
+            </div>
+            <div>
+              <div className="div1">Tưới tiêu tự động</div>
+              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+            </div>
+          </div>
+
+          <form
+            className="Auth_MobileView_Region"
+            onSubmit={handleSubmit}
+          >
+            <div className="Auth_MobileView_Region_Input ">
+              <div>
+                <FiMail color="white" size={24} />
+              </div>
+              <input
+                type="text"
+                placeholder="Email"
+                value={email}
+                onChange={handleChangEmail}
+              ></input>
+            </div>
+            <div className="Auth_MobileView_Region_Button">
+              <button type="submit">Gửi</button>
+            </div>
+          </form>
+        </div>
       </MobileView>
     </div>
   );

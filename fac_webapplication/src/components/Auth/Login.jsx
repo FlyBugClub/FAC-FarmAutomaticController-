@@ -36,19 +36,42 @@ const Login = () => {
   const handleChangeUsername = (e) => {
     const newUsername = e.target.value;
     setUsername(newUsername);
-    
   };
 
   const handleChangePassword = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-
   };
-  const [checkSavePassword, setCheckSavePassword] = useState(false)
+  const [checkSavePassword, setCheckSavePassword] = useState(false);
   const handleCheckboxClick = (e) => {
     const checkBox = e.target.checked;
-    setCheckSavePassword(checkBox)
-  }
+    setCheckSavePassword(checkBox);
+  };
+  const handleEditUser = async () => {
+    const checkApi = async () => {
+      let body = [
+        "1", // id
+        "new.email@example.com", // gmail
+        "1234", //pass
+        "123456789", //phone
+        "Premium", //member
+      ];
+
+      let res = await callAPi(
+        "post",
+        `${authContext.apiURL}/auth/editUser`,
+        body
+      );
+      console.log(res);
+      if (res.data) {
+        console.log(res.data);
+        alert("sua thanh cong");
+      } else {
+        alert("sua khong thanh cong");
+      }
+    };
+    checkApi();
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isUsernameValid = validateUsername(username);
@@ -56,18 +79,44 @@ const Login = () => {
 
     if (isUsernameValid && isPasswordValid) {
       const checkApi = async () => {
-        // let res = await callAPi('post',`http://61.28.230.132:3004/auth/Login`, {
-        //     username: 'ndtt',
-        //     password: 'abc123'
-        // })
+        let body = {
+          username: username,
+          password: password,
+        };
+        let res = await callAPi(
+          "post",
+          `${authContext.apiURL}/auth/checkValidUser`,
+          body
+        );
 
-        console.log("RES OK")
-        authContext.login(checkSavePassword);
+        // console.log(res.data[0].status_);
 
+        if (res.data[0].status_ === 200) {
+          // console.log("thanh cong");
+          authContext.login(checkSavePassword);
+          console.log(res.data[0]);
+          
+          let res_ = await callAPi(
+            "get",
+            `${authContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
+          );
+          const newUserInfo = {
+            id_user: res_.data[0].id_user_,
+            gmail:   res_.data[0].gmail_,
+            name: res_.data[0].name_,
+            phone_no: res_.data[0].phone_no_,
+            membership: res_.data[0].membership_
+          };
+          authContext.setUserInfo(newUserInfo);
+          
+         
+          // console.log(authContext.user_info.name);
+        } else {
+          alert("Khong tim thay nguoi dung");
+        }
+      };
+      checkApi();
     }
-    checkApi()
-    }
-    
   };
 
   return (
@@ -120,20 +169,21 @@ const Login = () => {
               <div>Lưu đăng nhập</div>
             </div>
             <div className="Auth_BrowserView_Region-Login_Button">
-              <button type="submit" >Đăng nhập</button>
+              <button type="submit">Đăng nhập</button>
             </div>
             <div className="Auth_BrowserView_Region-Login_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
               <div onClick={() => navigate("/forgotpassword")}>
                 Quên mật khẩu
               </div>
+              <div onClick={handleEditUser}>edit</div>
             </div>
           </form>
         </div>
       </BrowserView>
 
       <MobileView className="Auth_MobileView">
-        <div>
+        <div style={{ width: "100%", height: "100%" }}>
           <div className="Auth_MobileView_Logo">
             <div className="Auth_MobileView_Logo_Image">
               <img src="/icons/Bug(Trắng).png" alt="" />
@@ -144,11 +194,8 @@ const Login = () => {
             </div>
           </div>
 
-          <form
-            className="Auth_BrowserView_Region-Login"
-            onSubmit={handleSubmit}
-          >
-            <div className="Auth_BrowserView_Region-Login_Input">
+          <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
+            <div className="Auth_MobileView_Region_Input">
               <div>
                 <FiUser color="white" size={24} />
               </div>
@@ -160,7 +207,7 @@ const Login = () => {
                 onChange={handleChangeUsername}
               />
             </div>
-            <div className="Auth_BrowserView_Region-Login_Input">
+            <div className="Auth_MobileView_Region_Input">
               <div>
                 <FiLock color="white" size={24} />
               </div>
@@ -175,14 +222,14 @@ const Login = () => {
                 {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
               </div>
             </div>
-            <div className="Auth_BrowserView_Region-Login_Save">
-              <input type="checkbox" />
+            <div className="Auth_MobileView_Region_Save">
+              <input type="checkbox" onClick={handleCheckboxClick} />
               <div>Lưu đăng nhập</div>
             </div>
-            <div className="Auth_BrowserView_Region-Login_Button">
+            <div className="Auth_MobileView_Region_Button">
               <button type="submit">Đăng nhập</button>
             </div>
-            <div className="Auth_BrowserView_Region-Login_Stuff">
+            <div className="Auth_MobileView_Region_Stuff">
               <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
               <div onClick={() => navigate("/forgotpassword")}>
                 Quên mật khẩu
