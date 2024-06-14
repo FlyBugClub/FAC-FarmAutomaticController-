@@ -10,7 +10,12 @@ db.connection();
 
 // connectToDatabase();
 
-const host = ['http://172.31.8.230:3000']
+const host = [
+  'http://172.31.8.230:3000',
+  'http://10.101.172.53:3000',
+  "http://10.101.172.53:8080"
+
+]
 
 
 app.use(cors({

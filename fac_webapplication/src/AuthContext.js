@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
-const apiURL = "http://172.31.8.230:3001";
+const apiURL = "http://10.101.172.53:8080";
 function AuthProvider({ children }) {
 
   
