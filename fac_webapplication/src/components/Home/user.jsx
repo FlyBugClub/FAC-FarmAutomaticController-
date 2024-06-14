@@ -1,4 +1,4 @@
-import react, { useState } from "react";
+import react, { useContext, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -6,12 +6,16 @@ import { TbMessageLanguage } from "react-icons/tb";
 import { FiSettings, FiUserMinus } from "react-icons/fi";
 import { BiCheckShield } from "react-icons/bi";
 import { RiVipCrownLine, RiArrowDownSFill } from "react-icons/ri";
-
+import { AuthContext } from "../../AuthContext";
 const User = ({ weatherState }) => {
+    const authContext = useContext(AuthContext);
     const navigate = useNavigate();
     const [language, setlanguage] = useState("English");
     const [languageState, setlanguageState] = useState(false);
-
+    const handleLogout = () => {
+        authContext.logout();
+        navigate("/");
+    }
     return (
 
         <div className="Fac_Home">
@@ -64,8 +68,8 @@ const User = ({ weatherState }) => {
                         <div className="Fac_Home_Web_Usercontainer_Body_Items">
                             <BiCheckShield size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Change password
                         </div>
-                        <div className="Fac_Home_Web_Usercontainer_Body_Items">
-                            <FiUserMinus size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Log out
+                        <div className="Fac_Home_Web_Usercontainer_Body_Items" onClick={()=>handleLogout()} >
+                            <FiUserMinus  size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Log out
                         </div>
 
                     </div>
