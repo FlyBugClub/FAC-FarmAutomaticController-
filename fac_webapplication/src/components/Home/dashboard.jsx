@@ -4,13 +4,13 @@ import { BrowserView, MobileView } from "react-device-detect";
 import { MdOutlineLibraryAdd } from "react-icons/md";
 import { MdCircle } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../AuthContext";
+
 import { callAPi } from "../../services/UserService";
 
 export const Dashboard = ({ weatherState,handleAddDevice }) => {
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
-    const authContext = useContext(AuthContext);
+  
     
     const getDashboard = async () => {
         // console.log(authContext.user_info)
@@ -22,7 +22,7 @@ export const Dashboard = ({ weatherState,handleAddDevice }) => {
         // setFarms(res.data)
     }
     const handlethisbuttonclick = () => {
-        console.log(authContext.user_info)
+        console.log()
        
     }
     
