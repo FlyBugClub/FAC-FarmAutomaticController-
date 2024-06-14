@@ -52,8 +52,8 @@ const Login = () => {
       let body = 
         [
           '1',
-          'New Name',
           'new.email@example.com',
+          '1234',
           '123456789',
           'Premium'
         ]
@@ -96,7 +96,7 @@ const Login = () => {
     
         if (res.data[0].status_ === 200) {
           console.log('thanh cong');
-          // authContext.login(true);
+          authContext.login(true);
           console.log(res.data[0].id_user_);
           
           let res_ = await callAPi(
