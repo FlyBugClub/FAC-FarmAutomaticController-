@@ -41,7 +41,7 @@ function App() {
     if (!Context.isLoggedIn) {
       navigate("/login");
     }
-  }, [Context.isLoggedIn, navigate]);
+  }, [Context.isLoggedIn]);
 
   return (
     <div className="App">

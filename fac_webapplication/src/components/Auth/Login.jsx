@@ -49,15 +49,14 @@ const Login = () => {
   };
   const handleEditUser = async () => {
     const checkApi = async () => {
-      let body = 
-        [
-          '1',
-          'new.email@example.com',
-          '1234',
-          '123456789',
-          'Premium'
-        ]
-      
+      let body = [
+        "1", // id
+        "new.email@example.com", // gmail
+        "1234", //pass
+        "123456789", //phone
+        "Premium", //member
+      ];
+
       let res = await callAPi(
         "post",
         `${authContext.apiURL}/auth/editUser`,
@@ -72,9 +71,8 @@ const Login = () => {
       }
     };
     checkApi();
-  }
+  };
   const handleSubmit = async (e) => {
-
     e.preventDefault();
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
@@ -92,29 +90,24 @@ const Login = () => {
         );
 
         // console.log(res.data[0].status_);
-        
-    
+
         if (res.data[0].status_ === 200) {
-          console.log('thanh cong');
-          authContext.login(true);
+          console.log("thanh cong");
+          authContext.login(checkSavePassword);
           console.log(res.data[0].id_user_);
-          
+
           let res_ = await callAPi(
             "get",
-            `${authContext.apiURL}/auth/getUser/${res.data[0].id_user_}`,
+            `${authContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
           );
           // console.log(res_.data[0].id_user_);
           // console.log(res_.data[0].name_);
-          authContext.setdata({
-            id_user: res_.data[0].id_user_,
-            name: res_.data[0].name_,
-            gmail: res_.data[0].gmail_,
-            phone_no: res_.data[0].phone_no_,
-            membership: res_.data[0].membership_,
-          })
+          authContext.setUserInfo({
+            id_user: "1",
+          }
+            
+          )
           // console.log(authContext.user_info.name);
-          
-
         } else {
           alert("Khong tim thay nguoi dung");
         }
@@ -180,9 +173,7 @@ const Login = () => {
               <div onClick={() => navigate("/forgotpassword")}>
                 Quên mật khẩu
               </div>
-              <div onClick={handleEditUser}>
-               edit
-              </div>
+              <div onClick={handleEditUser}>edit</div>
             </div>
           </form>
         </div>

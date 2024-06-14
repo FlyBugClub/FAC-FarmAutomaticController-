@@ -1,12 +1,29 @@
-import React, { useEffect, useState, PureComponent } from "react";
+import React, { useEffect, useState, PureComponent, useContext } from "react";
 import './home.scss'
 import { BrowserView, MobileView } from "react-device-detect";
 import { MdOutlineLibraryAdd } from "react-icons/md";
 import { MdCircle } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../AuthContext";
+import { callAPi } from "../../services/UserService";
 
 export const Dashboard = ({ weatherState,handleAddDevice }) => {
     const navigate = useNavigate();
+    const authContext = useContext(AuthContext);
+    useEffect(() => {
+        getDashboard()
+    }, [])
+    const getDashboard = async () => {
+       
+        // let res = await callAPi(
+        //   "get",
+        //   `${authContext.apiURL}/data/getDashboard/${authContext.user_info.id_user}`,
+        // );
+        console.log(authContext.user_info)
+        // console.log(res.data);
+
+    }
+        
     const farms = [
         {
             id: 1,

@@ -11,26 +11,19 @@ function AuthProvider({ children }) {
     membership: "",
   });
 
-  const setdata = (data) => {
-    setUserInfo((prev) => {
-      return {
-        ...prev,
-        id_user: data.id_user,
-        gmail: data.gmail,
-        name: data.name,
-        phone_no: data.phone_no,
-        membership: data.membership,
-      };
-    });
-  }
+  
+  
+  
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const login = (check) => {
     setIsLoggedIn(true);
     if (check) {
       localStorage.setItem("user", JSON.stringify(true));
+      localStorage.setItem("user_id", "1");
     } else {
       sessionStorage.setItem("user", JSON.stringify(true));
+      sessionStorage.setItem("user_id", "1");
     }
   };
   const logout = () => {
@@ -48,6 +41,10 @@ function AuthProvider({ children }) {
       localStorage.getItem("user") || sessionStorage.getItem("user");
     if (token) {
       setIsLoggedIn(true);
+      const user = localStorage.getItem("user_id");
+      console.log("user");
+      console.log(user);
+      setUserInfo({ id_user: user });
     }
     setLoading(false);
   };
@@ -56,14 +53,16 @@ function AuthProvider({ children }) {
     apiURL,
     isLoggedIn,
     user_info,
+    setUserInfo,
     login,
     checkToken,
     logout,
-    setdata,
+   
   };
   useEffect(() => {
     checkToken();
     console.log(isLoggedIn);
+    console.log(user_info);
   }, [isLoggedIn]);
 
   return (
