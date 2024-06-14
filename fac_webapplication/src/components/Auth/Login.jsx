@@ -100,17 +100,15 @@ const Login = () => {
             "get",
             `${authContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
           );
-          const newUserInfo = {
-            id_user: res_.data[0].id_user_,
-            gmail:   res_.data[0].gmail_,
-            name: res_.data[0].name_,
-            phone_no: res_.data[0].phone_no_,
-            membership: res_.data[0].membership_
-          };
-          authContext.setUserInfo(newUserInfo);
-          
-         
-          // console.log(authContext.user_info.name);
+            if(checkSavePassword){
+              localStorage.setItem("user_info", JSON.stringify(res.data[0]));
+              
+            }
+            else{
+              sessionStorage.setItem("user_info", JSON.stringify(res.data[0]));
+             
+            }
+        
         } else {
           alert("Khong tim thay nguoi dung");
         }

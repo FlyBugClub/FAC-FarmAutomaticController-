@@ -9,66 +9,27 @@ import { callAPi } from "../../services/UserService";
 
 export const Dashboard = ({ weatherState,handleAddDevice }) => {
     const navigate = useNavigate();
+    const [farms, setFarms] = useState([]);
     const authContext = useContext(AuthContext);
-    useEffect(() => {
-        getDashboard()
-    }, [])
+    
     const getDashboard = async () => {
-        console.log(authContext.user_info)
+        // console.log(authContext.user_info)
         // let res = await callAPi(
         //   "get",
         //   `${authContext.apiURL}/data/getDashboard/${authContext.user_info.id_user}`,
         // );
-        // console.log(authContext.user_info)
-        // console.log(res.data);
-
+        // console.log(res.data)
+        // setFarms(res.data)
     }
-        
-    const farms = [
-        {
-            id: 1,
-            name: "Farm của Cường",
-            state: true,
-            description: "Farm trồng nấm bào ngư xám",
-            ph: 1,
-            sht: 1,
-            bump: 1
+    const handlethisbuttonclick = () => {
+        console.log(authContext.user_info)
+       
+    }
+    
 
-        },
-        {
-            id: 2,
-            name: "Farm của Cường 2",
-            state: false,
-            description: "Farm trồng nấm bào ngư",
-            ph: 0,
-            sht: 1,
-            bump: 1
-
-        },
-        {
-            id: 3,
-            name: "Farm của Cường 3",
-            state: false,
-            description: "Farm trồng nấm bào ngư",
-            ph: 0,
-            sht: 0,
-            bump: 0
-
-        }
-        ,
-        {
-            id: 4,
-            name: "Farm của Cường 3",
-            state: false,
-            description: "Farm trồng nấm bào ngư",
-            ph: 0,
-            sht: 0,
-            bump: 0
-
-        }
-    ]
     return (
         <div className="Fac_Home">
+            <button onClick={handlethisbuttonclick}>click this button</button>
             <BrowserView className="Fac_Home_Web" style={weatherState ? { paddingLeft: "15px" } : { paddingLeft: "0px" }} >
                 <div className="Fac_Home_Web_Dashboardcontainer">
                     <div className="Fac_Home_Web_Dashboardcontainer_Header">

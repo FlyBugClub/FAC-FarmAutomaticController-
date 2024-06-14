@@ -3,13 +3,6 @@ import { createContext, useEffect, useState } from "react";
 const AuthContext = createContext();
 const apiURL = "http://172.31.8.230:3001";
 function AuthProvider({ children }) {
-  const [user_info, setUserInfo] = useState({
-    id_user: "",
-    gmail: "",
-    name: "",
-    phone_no: "",
-    membership: "",
-  });
 
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -17,20 +10,20 @@ function AuthProvider({ children }) {
   const login = (check) => {
     setIsLoggedIn(true);
     if (check) {
-      localStorage.setItem("user", JSON.stringify(true));
-      localStorage.setItem("user_id", "1");
+      localStorage.setItem("token", JSON.stringify(true));
+
     } else {
-      sessionStorage.setItem("user", JSON.stringify(true));
-      sessionStorage.setItem("user_id", "1");
+      sessionStorage.setItem("token", JSON.stringify(true));
+     
     }
   };
   const logout = () => {
     setIsLoggedIn(false);
-    const storedSession = sessionStorage.getItem("user");
-    const storedLocal = localStorage.getItem("user");
+    const storedSession = sessionStorage.getItem("token");
+    const storedLocal = localStorage.getItem("token");
     if (storedSession || storedLocal) {
-      sessionStorage.removeItem("user");
-      localStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
       setIsLoggedIn(false);
     }
   };
@@ -38,9 +31,7 @@ function AuthProvider({ children }) {
     const token =
       localStorage.getItem("user") || sessionStorage.getItem("user");
     if (token) {
-      setIsLoggedIn(true);
-      const user = localStorage.getItem("user_id");
-
+      setIsLoggedIn(true);   
       
     }
     setLoading(false);
@@ -49,12 +40,9 @@ function AuthProvider({ children }) {
   const value = {
     apiURL,
     isLoggedIn,
-    user_info,
-    setUserInfo,
     login,
     checkToken,
     logout,
-   
   };
   useEffect(() => {
     checkToken();
