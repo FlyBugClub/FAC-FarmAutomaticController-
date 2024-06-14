@@ -20,6 +20,7 @@ import Menu from "./components/Menu/menu";
 import Weather from "./components/Weather/weather";
 import Farm from "./components/Home/farm";
 import Addfarm from "./components/Home/newfarm";
+import User from "./components/Home/user";
 function App() {
   // const [user, setUser] = useState(false);
   // setUser(JSON.parse(localStorage.getItem("user")));
@@ -82,7 +83,10 @@ function App() {
                     path="/addfarm"
                     element={<Addfarm weatherState={weatherState} addDeviceState={addDeviceState} />}
                   />
-
+                  <Route
+                    path="/usersetting"
+                    element={<User weatherState={weatherState} />}
+                  />
                   <Route path="*" element={<Navigate to="/dashboard" />} />
                 </Routes>
               </div>

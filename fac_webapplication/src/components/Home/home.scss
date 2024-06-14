@@ -64,7 +64,8 @@
                 margin-left: 5px;
                 width: 100%;
                 height: calc(100% - 54px);
-
+                white-space: nowrap;
+                            text-overflow: ellipsis;
                 &_Item {
                     margin-top: 18px;
                     height: 150px;
@@ -75,6 +76,7 @@
                     border-radius: 8px;
                     outline: 2px solid $outline_color;
                     padding: 5px 15px;
+                    overflow: hidden;
                     box-sizing: border-box;
                     cursor: pointer;
 
@@ -254,6 +256,10 @@
                             font-weight: 500;
                             background-color: rgba(255, 255, 255, 0.5);
                             border-radius: 8px;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
+                           
+                    
                             cursor: pointer;
 
                             &:hover {
@@ -265,7 +271,7 @@
                         &_Dropbox {
                             position: absolute;
                             width: 100%;
-                            user-select: none;
+                            
                             user-select: none;
 
                             height: calc(100% - 60px - 10px + 2px);
@@ -309,6 +315,9 @@
                         &_Date {
                             margin-top: 2px;
                             font-size: 20px;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
+                            // overflow: hidden;
                             font-weight: 500;
                         }
 
@@ -342,7 +351,8 @@
                 overflow: auto;
                 font-size: 22px;
                 user-select: none;
-
+                white-space: nowrap;
+                text-overflow: ellipsis;
                 &_Header {
                     width: 100%;
                     height: 30px;
@@ -427,153 +437,163 @@
 
                     padding: 0 15%;
                     box-sizing: border-box;
-
-                    &_switch {
-                        position: relative;
-                        display: inline-block;
-                        width: 80px;
-                        height: 40px;
-
-                        &_input {
-                            opacity: 0;
-                            width: 0;
-                            height: 0;
-                        }
-
-                        .slider {
-                            width: 80px;
-                            position: absolute;
-                            cursor: pointer;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            background-color: #fb3131;
-                            -webkit-transition: .2s;
-                            transition: .2s;
-                        }
-
-                        .slider:before {
-                            position: absolute;
-                            content: "";
-                            height: 32px;
-                            width: 32px;
-                            left: 4px;
-                            bottom: 4px;
-                            background-color: white;
-                            -webkit-transition: .2s;
-                            transition: .2s;
-                        }
-
-                        input:checked+.slider {
-                            background-color: #b0f364;
-                        }
-
-                        input:focus+.slider {
-                            box-shadow: 0 0 1px #b0f364;
-                        }
-
-                        input:checked+.slider:before {
-                            -webkit-transform: translateX(40px);
-                            -ms-transform: translateX(40px);
-                            transform: translateX(40px);
-                        }
-
-                        /* Rounded sliders */
-                        .slider.round {
-                            border-radius: 40px;
-                        }
-
-                        .slider.round:before {
-                            border-radius: 50%;
-                        }
-
-
-                    }
-
-                    &_Statecontainer {
-                        display: flex;
-                        align-items: center;
-
-                        &_State {
-                            margin-top: 5px;
-                            font-size: 20px;
-                            margin-left: 10px;
-                        }
-                    }
-
-                    &_Slidecontainer {
+                    display: flex;
+                    align-items: center;
+                    flex-direction: column;
+                    justify-content: center;
+                    &_Control {
                         width: 100%;
-                        margin-top: 10px;
                         display: flex;
                         align-items: center;
                         justify-content: space-between;
-
-                        &_Slider {
-                            -webkit-appearance: none;
-                            /* Override default CSS styles */
-                            appearance: none;
-                            width: 80%;
-                            /* Full-width */
-                            height: 5px;
-                            /* Specified height */
-                            background: #ffffff;
-                            /* Grey background */
-                            outline: none;
-                            /* Remove outline */
-                            opacity: 1;
-                            /* Set transparency (for mouse-over effects on hover) */
-                            -webkit-transition: .2s;
-                            /* 0.2 seconds transition on hover */
-                            transition: opacity .2s;
-
-                            &::-webkit-slider-thumb {
-                                -webkit-appearance: none;
-                                /* Override default look */
-                                appearance: none;
-                                width: 20px;
-                                /* Set a specific slider handle width */
-                                height: 20px;
-                                /* Slider handle height */
-                                background: #ffffff;
-                                /* Green background */
+                        &_switch {
+                            position: relative;
+                            display: inline-block;
+                            width: 80px;
+                            height: 40px;
+    
+                            &_input {
+                                opacity: 0;
+                                width: 0;
+                                height: 0;
+                            }
+    
+                            .slider {
+                                width: 80px;
+                                position: absolute;
                                 cursor: pointer;
-                                /* Cursor on hover */
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                outline: 2px solid $outline_color;
+                                background-color: #000000;
+                                -webkit-transition: .2s;
+                                transition: .2s;
+                            }
+    
+                            .slider:before {
+                                position: absolute;
+                                content: "";
+                                height: 32px;
+                                width: 32px;
+                                left: 4px;
+                                bottom: 4px;
+                                background-color: rgb(255, 0, 0);
+                                -webkit-transition: .2s;
+                                transition: .2s;
+                            }
+                           
+                            input:checked+.slider {
+                                background-color: #000000;
+                            }
+    
+                           
+    
+                            input:checked+.slider:before {
+                                -webkit-transform: translateX(40px);
+                                -ms-transform: translateX(40px);
+                                transform: translateX(40px);
+                                background-color: rgb(10, 255, 27);
+                            }
+    
+                            /* Rounded sliders */
+                            .slider.round {
+                                border-radius: 40px;
+                            }
+    
+                            .slider.round:before {
                                 border-radius: 50%;
+                               
                             }
-
-                            &::-moz-range-thumb {
-                                width: 25px;
-                                /* Set a specific slider handle width */
-                                height: 25px;
-                                /* Slider handle height */
+    
+    
+                        }
+    
+                        &_Statecontainer {
+                            display: flex;
+                            align-items: center;
+    
+                            &_State {
+                                margin-top: 5px;
+                                font-size: 20px;
+                                margin-left: 10px;
+                            }
+                        }
+    
+                        &_Slidecontainer {
+                            width: 100%;
+                            margin-top: 10px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+    
+                            &_Slider {
+                                -webkit-appearance: none;
+                                /* Override default CSS styles */
+                                appearance: none;
+                                width: 80%;
+                                /* Full-width */
+                                height: 5px;
+                                /* Specified height */
                                 background: #ffffff;
-                                /* Green background */
-                                cursor: pointer;
-                                /* Cursor on hover */
+                                /* Grey background */
+                                outline: none;
+                                /* Remove outline */
+                                opacity: 1;
+                                /* Set transparency (for mouse-over effects on hover) */
+                                -webkit-transition: .2s;
+                                /* 0.2 seconds transition on hover */
+                                transition: opacity .2s;
+    
+                                &::-webkit-slider-thumb {
+                                    -webkit-appearance: none;
+                                    /* Override default look */
+                                    appearance: none;
+                                    width: 20px;
+                                    /* Set a specific slider handle width */
+                                    height: 20px;
+                                    /* Slider handle height */
+                                    background: #ffffff;
+                                    /* Green background */
+                                    cursor: pointer;
+                                    /* Cursor on hover */
+                                    border-radius: 50%;
+                                }
+    
+                                &::-moz-range-thumb {
+                                    width: 25px;
+                                    /* Set a specific slider handle width */
+                                    height: 25px;
+                                    /* Slider handle height */
+                                    background: #ffffff;
+                                    /* Green background */
+                                    cursor: pointer;
+                                    /* Cursor on hover */
+                                }
                             }
                         }
-                    }
-
-                    &_Timecontainer {
-                        width: 100%;
-                        height: 30px;
-                        margin-top: 10px;
-
-                        background-color: rgba(255, 255, 255, 0.5);
-                        border-radius: 8px;
-                        display: flex;
-                        align-items: center;
-                        overflow: hidden;
-                        cursor: pointer;
-
-                        &:hover {
-                            background-color: rgba(255, 255, 255, 0.6);
-                        }
-
-                        &_Times {
-                            font-size: 20px;
-                            margin-left: 6px
+    
+                        &_Timecontainer {
+                            width: 100%;
+                            height: 30px;
+                            margin-top: 10px;
+    
+                            background-color: rgba(255, 255, 255, 0.5);
+                            border-radius: 8px;
+                            display: flex;
+                            align-items: center;
+                            overflow: hidden;
+                            cursor: pointer;
+    
+                            &:hover {
+                                background-color: rgba(255, 255, 255, 0.6);
+                            }
+    
+                            &_Times {
+                                font-size: 20px;
+                                margin-left: 6px
+                            }
                         }
                     }
                 }
@@ -745,7 +765,7 @@
                         display: flex;
                         justify-content: flex-end;
                         align-items: center;
-
+                        
                         &_Items {
                             display: flex;
                             justify-content: center;
@@ -761,6 +781,8 @@
                             border: 2px solid transparent;
                             border-radius: 8px;
                             overflow: hidden;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
 
                             &:hover {
                                 background: rgba(255, 255, 255, 0.9);
@@ -810,6 +832,143 @@
                 }
             }
 
+        }
+        &_Usercontainer
+        {
+            height: 100%;
+            width: 100%;
+            background: $background;
+            border-radius: 8px;
+            backdrop-filter: blur(2px);
+            box-shadow: rgba($box_shadow_color, 0.8) 0px 50px 100px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
+            will-change: width;
+            padding: 15px 15px;
+            box-sizing: border-box;
+
+            &_Body
+            {
+                width: 100%;
+                height: calc(100% - 60px);
+                background: $background_element;
+                backdrop-filter: blur(4px);
+                box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
+                border-radius: 8px;
+                padding: 25px 25px 15px 30px;
+                box-sizing: border-box;
+                outline: 2px solid $outline_color;
+                display: flex;
+                flex-direction: column;
+                overflow: auto;
+                font-size:20px;
+                &_Userinfo
+                {
+                    width: 100%;
+                    height: 80px;
+                    display: flex;
+                    &_Image
+                    {
+                        width: 80px;
+                        height: 80px;
+                        border-radius: 50%;
+                    }
+                    &_Name
+                    {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        width: 100%;
+                        margin-left: 30px;
+                        border-left: 2px solid #d4dae3;
+                        padding : 10px 20px;
+                        box-sizing: border-box;
+
+                    }
+                }
+                &_Language
+                {
+                    margin-top: 50px;
+                    width: 100%;
+                    padding-left: 10px;
+                    box-sizing: border-box;
+                    display: flex;
+                    align-items: center;
+                    &_Options
+                    {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        font-size:20px;
+                        margin-left: 20px;
+                        padding: 0px 15px;
+                        border-radius: 8px;
+                        margin-top: 4px;
+                        cursor: pointer;
+                        background-color: rgba(255, 255, 255, 0.5);
+                        box-sizing: border-box;
+                        &_Dropbox
+                        {
+                            position: absolute;
+                            height: 130px;
+                            width: 150px;
+                            right: 0;
+                            top: 0;
+                            margin-top: 35px;
+                            overflow-y: auto;
+                            animation: fadeup_listequipment 0.3s ease-in-out;
+                            outline: 2px solid $outline_color;
+                            border-radius: 8px;
+                            background: rgba(0, 0, 0, 0.85);
+                            backdrop-filter: blur(5px);
+                            box-shadow: rgba(0, 0, 0, 0.8) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+                            &_Items {
+                                width: 100%;
+                                height: 30px;
+                                padding: 5px 10px;
+                                box-sizing: border-box;
+                                margin-top: 10px;
+                                display: flex;
+                                align-items: center;
+                                font-size: 18px;
+                                font-weight: 500;
+                                cursor: pointer;
+                                // user-select: none; 
+
+                                &:hover {
+                                    background-color: rgba(255, 255, 255, 0.75);
+                                }
+                            }
+                        }
+                        &:hover
+                        {
+                        background-color: rgba(255, 255, 255, 0.7);
+                        border-radius: 8px;
+                         }
+
+                    }
+
+
+                }
+
+                &_Items
+                {
+                    margin-top: 10px;
+                    width: 100%;
+                    height: 40px;
+                    padding-left: 10px;
+                    box-sizing: border-box;
+                    display: flex;
+                 
+                    align-items: center;   
+                    cursor: pointer;
+                    &:hover
+                    {
+                        background-color: rgba(255, 255, 255, 0.5);
+                        border-radius: 8px;
+                    }
+                }
+            }
+
+            
         }
     }
 
