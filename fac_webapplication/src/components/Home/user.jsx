@@ -1,4 +1,4 @@
-import react, { useContext, useState } from "react";
+import react, { useContext, useEffect, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -16,6 +16,13 @@ const User = ({ weatherState }) => {
         authContext.logout();
         navigate("/");
     }
+    const [user, setUser] = useState([])
+    useEffect(() => {
+        let json = sessionStorage.getItem('user_info');
+        json = JSON.parse(json);
+        setUser(json)
+        console.log(json)
+    }, [])
     return (
 
         <div className="Fac_Home">
@@ -33,12 +40,16 @@ const User = ({ weatherState }) => {
                             <div className="Fac_Home_Web_Usercontainer_Body_Userinfo_Name">
                                 <div style={{ display: "flex", alignItems: "center" }}>
 
-                                    Name: Đinh Quốc Cường
+                                    Name: {user.name_}
                                     <FiSettings size={20} style={{ marginLeft: "15px", paddingTop: "5px", cursor: "pointer" }} />
                                 </div>
-                                <div style={{ marginTop: "5px" }}>
-                                    Email: tr6r20@gmail.com
-                                </div>
+                                    <div style={{ marginTop: "5px" }}>
+                                        Email: {user.gmail_}
+                                    </div>
+                                    <div style={{ marginTop: "5px" }}>
+                                        SDT: {user.phone_no_}
+                                    </div>
+                                    
                             </div>
                         </div>
                         <div className="Fac_Home_Web_Usercontainer_Body_Language">
