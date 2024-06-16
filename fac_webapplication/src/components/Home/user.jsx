@@ -43,13 +43,13 @@ const User = ({ weatherState }) => {
                                     Name: {user.name_}
                                     <FiSettings size={20} style={{ marginLeft: "15px", paddingTop: "5px", cursor: "pointer" }} />
                                 </div>
-                                    <div style={{ marginTop: "5px" }}>
-                                        Email: {user.gmail_}
-                                    </div>
-                                    <div style={{ marginTop: "5px" }}>
-                                        SDT: {user.phone_no_}
-                                    </div>
-                                    
+                                <div style={{ marginTop: "5px" }}>
+                                    Email: {user.gmail_}
+                                </div>
+                                <div style={{ marginTop: "5px" }}>
+                                    SDT: {user.phone_no_}
+                                </div>
+
                             </div>
                         </div>
                         <div className="Fac_Home_Web_Usercontainer_Body_Language">
@@ -79,8 +79,8 @@ const User = ({ weatherState }) => {
                         <div className="Fac_Home_Web_Usercontainer_Body_Items">
                             <BiCheckShield size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Change password
                         </div>
-                        <div className="Fac_Home_Web_Usercontainer_Body_Items" onClick={()=>handleLogout()} >
-                            <FiUserMinus  size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Log out
+                        <div className="Fac_Home_Web_Usercontainer_Body_Items" onClick={() => handleLogout()} >
+                            <FiUserMinus size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Log out
                         </div>
 
                     </div>

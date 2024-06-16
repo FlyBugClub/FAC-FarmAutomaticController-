@@ -93,22 +93,23 @@ const Login = () => {
 
         if (res.data[0].status_ === 200) {
           // console.log("thanh cong");
-          authContext.login(checkSavePassword);
+        
           console.log(res.data[0]);
-          
+
           let res_ = await callAPi(
             "get",
             `${authContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
           );
-            if(checkSavePassword){
-              localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-              
-            }
-            else{
-              sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-             
-            }
-        
+          if (checkSavePassword) {
+            localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+            sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+            authContext.login(checkSavePassword);
+          }
+          else {
+            sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+            authContext.login(checkSavePassword);
+          }
+
         } else {
           alert("Khong tim thay nguoi dung");
         }

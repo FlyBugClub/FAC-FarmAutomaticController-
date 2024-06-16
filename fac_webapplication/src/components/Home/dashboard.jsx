@@ -12,26 +12,21 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
     const authContext = useContext(AuthContext)
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
-    const [user, setUser] = useState([])
+    
     const [loadingState, setLoadingState] = useState(true)
 
-    useEffect(() => {
-        let json = sessionStorage.getItem('user_info');
-        json = JSON.parse(json);
-        setUser(json)
-    }, [])
+    
 
     useEffect(() => {
-        if (user.id_user_ != undefined) {
-            getDashboard()
-
-        }
-    }, [user])
+        if(authContext.isLoggedIn === true) 
+        { getDashboard()}
+        
+    }, [authContext.isLoggedIn])
 
     const getDashboard = async () => {
         let res = await callAPi(
             "get",
-            `${authContext.apiURL}/data/getDashboard/${user.id_user_}`,
+            `${authContext.apiURL}/data/getDashboard/${authContext.user.id_user_}`,
         );
 
         setLoadingState(false)
