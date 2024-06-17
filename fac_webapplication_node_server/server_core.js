@@ -7,6 +7,7 @@ const data = require('./routes/data/data');
 const db = require('./models/mysql');
 require('dotenv').config();
 
+
 db.connection();
 
 // connectToDatabase();

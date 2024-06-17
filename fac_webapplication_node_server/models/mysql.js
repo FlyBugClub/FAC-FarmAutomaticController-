@@ -29,17 +29,7 @@ const connection = async () => {
   }
 };
 
-const SELECT = async (select, table) => {
-  return new Promise(async (resolve, reject) => {
-    
 
-    const result = await sql.query(
-      "select " + select + " from " + table + " "
-    );
-
-    resolve(result);
-  });
-};
 const UPDATE = async (table_name, update_values, condition) => {
   return new Promise(async (resolve, reject) => {
     let condition_ = "";
@@ -82,6 +72,20 @@ const DELETE = async (table_name, condition) => {
 
   return result;
 };
+
+const SELECT = async (select, table) => {
+  return new Promise(async (resolve, reject) => {
+    
+
+    const result = await sql.query(
+      "select " + select + " from " + table + " "
+    );
+
+    resolve(result);
+  });
+};
+
+
 const executeProcedure = async (pro_name, params) => {
   try {
     // Tạo chuỗi tham số từ đối số 'params'
