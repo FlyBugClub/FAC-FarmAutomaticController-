@@ -17,6 +17,7 @@ const ForgotPassw = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [OTP, setOTP] = useState("");
+  const [checkOTP, setCheckOTP] = useState("");
   const validateEmail = (email) => {
     if (email.trim() === "") {
       toast.error("Vui lòng nhập email");
@@ -35,6 +36,24 @@ const ForgotPassw = () => {
   const handleChangOTP = (e) => {
     const newOTP = e.target.value;
     setOTP(newOTP);
+  };
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    const isEmailValid = validateEmail(email);
+    if (isEmailValid) {
+      const checkApi = async () => {
+        let res = await callAPi(
+          "post",
+          `${authContext.apiURL}/auth/request-otp`,
+          {
+            email: email,
+          }
+        );
+        setCheckOTP(res.data);
+        console.log(res);
+      };
+      checkApi();
+    }
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -97,8 +116,8 @@ const ForgotPassw = () => {
                 onChange={handleChangOTP}
               ></input>
             </div>
-            <div style={{marginBottom: "10px",color: "white"}}>
-            Gửi mã otp
+            <div  onClick={handleSendOtp} className="Auth_BrowserView_Region-Forgot_Otp">
+            <button>Gửi mã otp</button>
             </div>
            
             <div className="Auth_BrowserView_Region-Forgot_Button">

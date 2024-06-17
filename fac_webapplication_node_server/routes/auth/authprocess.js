@@ -1,6 +1,8 @@
+require('dotenv').config();
 const db = require("../../models/mysql");
-const EMAIL_ACCOUNT = "flybug@hoasen.edu.vn";
-const EMAIL_PASSWORD = "ieeapapxxiwpksex";
+
+const EMAIL_ACCOUNT = process.env.EMAIL_ACCOUNT;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const nodemailer = require('nodemailer');
 const { options } = require('./auth');
 const otpStore = {}; 

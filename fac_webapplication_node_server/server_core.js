@@ -5,7 +5,6 @@ const bodyParser = require("body-parser");
 const auth = require('./routes/auth/auth');
 const data = require('./routes/data/data');
 const db = require('./models/mysql');
-require('dotenv').config();
 
 
 db.connection();
