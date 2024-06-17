@@ -1,10 +1,44 @@
-
-
-
-
 const db = require("../../models/mysql");
+const EMAIL_ACCOUNT = "flybug@hoasen.edu.vn";
+const EMAIL_PASSWORD = "ieeapapxxiwpksex";
+const nodemailer = require('nodemailer');
+const { options } = require('./auth');
+const otpStore = {}; 
 
 
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  host: 'smtp.hoasen.edu.vn',
+  port: 465,
+  secure: true,
+  auth: {
+    user: EMAIL_ACCOUNT,
+    pass: EMAIL_PASSWORD,
+  },
+});
+const requestOTP = async (email) => {
+console.log(EMAIL_ACCOUNT);
+console.log(EMAIL_PASSWORD);
+console.log(email);
+  const otp = generateOTP();
+  otpStore[email] = otp;
+  const mailOptions = {
+    from: EMAIL_ACCOUNT,
+    to: email,
+    subject: 'OTP Verification',
+    text: `Your OTP is ${otp}`,
+  };
+  return new Promise(async (resolve, reject) => {
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        resolve(error);
+      } else {
+        resolve({ status: true, data: otp });
+      }
+    });
+  });
+};
 const getUserByID = async (usr) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -79,4 +113,4 @@ const editUser = async (body) => {
 };
 
 
-module.exports = {getUserByID, createUser, deleteUser, editUser, checkValidUser};
+module.exports = {getUserByID, createUser, deleteUser, editUser, checkValidUser, requestOTP};
