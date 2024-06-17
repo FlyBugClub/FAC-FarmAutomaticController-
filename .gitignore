@@ -7,3 +7,7 @@ PYHTON_API/.idea/
 fac_webapplication/package-lock.json
 
 fac_webapplication_node_server/.env
+
+fac_webapplication/.env
+
+fac_webapplication/src/AuthContext.js

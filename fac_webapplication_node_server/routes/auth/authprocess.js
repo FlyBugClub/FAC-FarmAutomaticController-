@@ -1,42 +1,9 @@
 
-const EMAIL_ACCOUNT = process.env.EMAIL_ACCOUNT;
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
-const nodemailer = require('nodemailer');
+
+
 
 const db = require("../../models/mysql");
 
-const otpStore = {}; // Lưu trữ tạm thời các OTP
-
-const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  
-  auth: {
-    user: EMAIL_ACCOUNT,
-    pass: EMAIL_PASSWORD,
-  },
-});
-const requestOTP = async (email) => {
-console.log("hehe");
-  const otp = generateOTP();
-  otpStore[email] = otp;
-  const mailOptions = {
-    from: EMAIL_ACCOUNT,
-    to: email,
-    subject: 'OTP Verification',
-    text: `Your OTP is ${otp}`,
-  };
-  console.log("hehe");
-  return new Promise(async (resolve, reject) => {
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        reject(error);
-      } else {
-        resolve('Email sent: ' + info.response);
-      }
-    });
-  });
-};
 
 const getUserByID = async (usr) => {
   return new Promise(async (resolve, reject) => {
@@ -112,4 +79,4 @@ const editUser = async (body) => {
 };
 
 
-module.exports = { requestOTP, getUserByID, createUser, deleteUser, editUser, checkValidUser};
+module.exports = {getUserByID, createUser, deleteUser, editUser, checkValidUser};

@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const auth = require("./authprocess");
+const sendmail = require("./sendmailprocess")
 
 router.post("/request-otp", async (req, res) => {
-  let result = await auth.requestOTP(req.body.email);
+  let result = await sendmail.requestOTP(req.body.email);
   res.json(result);
 });
 
