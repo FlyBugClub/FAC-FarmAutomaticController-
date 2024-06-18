@@ -6,10 +6,10 @@ import { MdCircle } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
 
 import { callAPi } from "../../services/UserService";
-import { AuthContext } from "../../AuthContext";
+import { HandleLoginContext } from "../Context/HandleLoginContext";
 import Loading from "./loading";
 export const Dashboard = ({ weatherState, handleAddDevice }) => {
-    const authContext = useContext(AuthContext)
+    const loginContext = useContext(HandleLoginContext);
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
     
@@ -18,15 +18,15 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
     
 
     useEffect(() => {
-        if(authContext.isLoggedIn === true) 
+        if(loginContext.isLoggedIn === true) 
         { getDashboard()}
         
-    }, [authContext.isLoggedIn])
+    }, [loginContext.isLoggedIn])
 
     const getDashboard = async () => {
         let res = await callAPi(
             "get",
-            `${authContext.apiURL}/data/getDashboard/${authContext.user.id_user_}`,
+            `${loginContext.apiURL}/data/getDashboard/${loginContext.user.id_user_}`,
         );
 
         setLoadingState(false)

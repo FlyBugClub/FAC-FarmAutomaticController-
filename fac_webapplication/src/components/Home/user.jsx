@@ -6,14 +6,14 @@ import { TbMessageLanguage } from "react-icons/tb";
 import { FiSettings, FiUserMinus } from "react-icons/fi";
 import { BiCheckShield } from "react-icons/bi";
 import { RiVipCrownLine, RiArrowDownSFill } from "react-icons/ri";
-import { AuthContext } from "../../AuthContext";
+import { HandleLoginContext } from "../Context/HandleLoginContext";
 const User = ({ weatherState }) => {
-    const authContext = useContext(AuthContext);
+    const loginContext = useContext(HandleLoginContext);
     const navigate = useNavigate();
     const [language, setlanguage] = useState("English");
     const [languageState, setlanguageState] = useState(false);
     const handleLogout = () => {
-        authContext.logout();
+        loginContext.logout();
         navigate("/");
     }
     const [user, setUser] = useState([])

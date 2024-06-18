@@ -1,24 +1,24 @@
 import React, { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../../AuthContext";
 import { FiGrid, FiBell, FiSettings, FiUserMinus } from "react-icons/fi";
 import { WiDayCloudy } from "react-icons/wi";
 
 import { BrowserView, MobileView } from "react-device-detect";
 import './menu.scss'
 import { useNavigate } from "react-router-dom";
+import { HandleLoginContext } from "../Context/HandleLoginContext";
 const Menu = ({ handleWeather, weatherState }) => {
-    const context = useContext(AuthContext);
+    const loginContext = useContext(HandleLoginContext);
     const navigate = useNavigate();
     const [menuState, setMenuState] = useState("dashboard")
     const [userState, setUserState] = useState("")
    
     useEffect(() => {
-        if(context.isLoggedIn === true) 
-        { console.log(context.user.name_)}
+        if(loginContext.isLoggedIn === true) 
+        { console.log(loginContext.user.name_)}
         
-    }, [context.isLoggedIn])
+    }, [loginContext.isLoggedIn])
     const handleLogout = () => {
-        context.logout();
+        loginContext.logout();
         navigate("/");
     }
     const handleMenu = (key) => {
@@ -57,8 +57,8 @@ const Menu = ({ handleWeather, weatherState }) => {
                             <div className="Fac_Menu_Web_Container_Dropbox" >
                                 <div className="Fac_Menu_Web_Container_Dropbox_Header">
                                     <div className="Fac_Menu_Web_Container_Dropbox_Header_Info">
-                                        {context.user.name_}
-                                        <div style={{ fontSize: "12px", fontWeight: "400" }}>{context.user.gmail_}</div>
+                                        {loginContext.user.name_}
+                                        <div style={{ fontSize: "12px", fontWeight: "400" }}>{loginContext.user.gmail_}</div>
                                     </div>
 
                                 </div>

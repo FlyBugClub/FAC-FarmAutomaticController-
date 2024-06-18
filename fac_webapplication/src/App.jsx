@@ -16,7 +16,7 @@ import NewPassw from "./components/Auth/NewPassw";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { callAPi, host } from "./services/UserService";
-import { AuthContext } from "./AuthContext";
+import { HandleLoginContext } from "./components/Context/HandleLoginContext";
 import Menu from "./components/Menu/menu";
 import Weather from "./components/Weather/weather";
 import Farm from "./components/Home/farm";
@@ -35,18 +35,18 @@ function App() {
     setAddDeviceState(key);
   };
 
-  const Context = useContext(AuthContext);
+  const loginContext = useContext(HandleLoginContext);
 
   useEffect(() => {
-    if (!Context.isLoggedIn) {
+    if (!loginContext.isLoggedIn) {
       navigate("/login");
     }
-  }, [Context.isLoggedIn]);
+  }, [loginContext.isLoggedIn]);
 
   return (
     <div className="App">
       <header className="App-header">
-        {Context.isLoggedIn ? (
+        {loginContext.isLoggedIn ? (
           <div style={{ position: "fixed", width: "100%", height: "100%" }}>
             <img
               src="/images/b3.jpg"

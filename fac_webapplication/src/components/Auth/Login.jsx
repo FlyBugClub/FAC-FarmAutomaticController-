@@ -9,33 +9,20 @@ import "react-toastify/dist/ReactToastify.css";
 //
 import { callAPi, fetchOneUser } from "../../services/UserService";
 
-import { AuthContext } from "../context/AuthContext";
+import { HandleLoginContext } from "../Context/HandleLoginContext";
+// import { AuthContext } from "../Context/AuthContext";
 import { INITIAL_STATE } from "../Context/AuthReducer";
 const Login = () => {
-
-  const [state, authDispatch, apiURL] = useContext(AuthContext, INITIAL_STATE);
+  // const [state, authDispatch, apiURL] = useContext(AuthContext, INITIAL_STATE);
   const [open, setOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
-
-  const login = (check) => {
-    setIsLoggedIn(true);
-    if (check) {
-      localStorage.setItem("token", JSON.stringify(true));
-
-    } else {
-      sessionStorage.setItem("token", JSON.stringify(true));
-     
-    }
-  };
-
+  const loginContext = useContext(HandleLoginContext);
 
   const handleOpenEye = () => {
     setOpen(!open);
   };
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const validateUsername = (username) => {
     if (username.trim() === "") {
       toast.error("Tên đăng nhập không được để trống");
@@ -54,7 +41,6 @@ const Login = () => {
     const newUsername = e.target.value;
     setUsername(newUsername);
   };
-
   const handleChangePassword = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
@@ -74,11 +60,7 @@ const Login = () => {
         "Premium", //member
       ];
 
-      let res = await callAPi(
-        "post",
-        `${apiURL}/auth/editUser`,
-        body
-      );
+      let res = await callAPi("post", `${loginContext.apiURL}/auth/editUser`, body);
       console.log(res);
       if (res.data) {
         console.log(res.data);
@@ -102,7 +84,7 @@ const Login = () => {
         };
         let res = await callAPi(
           "post",
-          `${apiURL}/auth/checkValidUser`,
+          `${loginContext.apiURL}/auth/checkValidUser`,
           body
         );
 
@@ -110,23 +92,21 @@ const Login = () => {
 
         if (res.data[0].status_ === 200) {
           // console.log("thanh cong");
-        
+
           console.log(res.data[0]);
 
           let res_ = await callAPi(
             "get",
-            `${apiURL}/auth/getUser/${res.data[0].id_user_}`
+            `${loginContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
           );
           if (checkSavePassword) {
             localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
             sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-            login(checkSavePassword);
-          }
-          else {
+            loginContext.login(checkSavePassword);
+          } else {
             sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-            login(checkSavePassword);
+            loginContext.login(checkSavePassword);
           }
-
         } else {
           alert("Khong tim thay nguoi dung");
         }
