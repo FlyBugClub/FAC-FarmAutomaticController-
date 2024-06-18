@@ -43,13 +43,9 @@ const ForgotPassw = () => {
     const isEmailValid = validateEmail(email);
     if (isEmailValid) {
       const checkApi = async () => {
-        let res = await callAPi(
-          "post",
-          `${URL}/auth/request-otp`,
-          {
-            email: email,
-          }
-        );
+        let res = await callAPi("post", `${URL}/auth/request-otp`, {
+          email: email,
+        });
         console.log(res);
       };
       checkApi();
@@ -61,16 +57,17 @@ const ForgotPassw = () => {
 
     if (isEmailValid) {
       const checkApi = async () => {
-        let res = await callAPi(
-          "post",
-          `${URL}/auth/verify-otp`,
-          {
-            email: email,
-            otp: OTP
-          }
-        );
+        let res = await callAPi("post", `${URL}/auth/verify-otp`, {
+          email: email,
+          otp: OTP,
+        });
 
         console.log(res);
+        if (!res.status) { // TODO replace ! by '' when complete newpassw
+          navigate("/newpassw", { state: { email: email } });
+        } else {
+          toast.error(res.message);
+        }
       };
       checkApi();
     }
@@ -90,7 +87,8 @@ const ForgotPassw = () => {
           </div>
 
           <form
-            className="Auth_BrowserView_Region-Forgot"style={{height: "auto"}}
+            className="Auth_BrowserView_Region-Forgot"
+            style={{ height: "auto" }}
             onSubmit={handleSubmit}
           >
             <div className="Auth_BrowserView_Region-Forgot_Input ">
@@ -107,7 +105,7 @@ const ForgotPassw = () => {
 
             <div className="Auth_BrowserView_Region-Forgot_Input ">
               <div>
-                <CiBarcode  color="white" size={24} />
+                <CiBarcode color="white" size={24} />
               </div>
               <input
                 type="text"
@@ -116,10 +114,13 @@ const ForgotPassw = () => {
                 onChange={handleChangOTP}
               ></input>
             </div>
-            <div  onClick={handleSendOtp} className="Auth_BrowserView_Region-Forgot_Otp">
-            <button>Gửi mã otp</button>
+            <div
+              onClick={handleSendOtp}
+              className="Auth_BrowserView_Region-Forgot_Otp"
+            >
+              <button>Gửi mã otp</button>
             </div>
-           
+
             <div className="Auth_BrowserView_Region-Forgot_Button">
               <button type="submit">Tiếp theo</button>
             </div>
@@ -128,7 +129,7 @@ const ForgotPassw = () => {
       </BrowserView>
 
       <MobileView className="Auth_MobileView">
-        <div style={{width: "100%", height: "100%"}}>
+        <div style={{ width: "100%", height: "100%" }}>
           <div className="Auth_MobileView_Logo">
             <div className="Auth_MobileView_Logo_Image">
               <img src="/icons/Bug(Trắng).png" alt="" />
@@ -139,10 +140,7 @@ const ForgotPassw = () => {
             </div>
           </div>
 
-          <form
-            className="Auth_MobileView_Region"
-            onSubmit={handleSubmit}
-          >
+          <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
             <div className="Auth_MobileView_Region_Input ">
               <div>
                 <FiMail color="white" size={24} />
