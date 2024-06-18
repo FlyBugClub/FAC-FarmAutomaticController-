@@ -72,6 +72,7 @@ const Login = () => {
     // };
     // checkApi();
     console.log(login);
+    console.log(user)
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,30 +86,28 @@ const Login = () => {
         };
         let res = await callAPi("post", `${URL}/auth/checkValidUser`, body);
         // console.log(res.data[0].status_);
+        console.log(res.data[0]);
         if (res.data[0].status_ === 200) {
           // console.log("thanh cong");
           // console.log(res.data[0]);
-          let res_ = await callAPi(
-            "get",
-            `${URL}/auth/getUser/${res.data[0].id_user_}`
-          );
+          
           if (checkSavePassword) {
-            localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+            localStorage.setItem("user_info", JSON.stringify(res.data[0]));
             authDispatch({
               type: "SET_LOGIN",
               payload: { status: 200, isSave: checkSavePassword },
             });
             authDispatch({
-              type: "SET_USERS",
-              payload: res_.data[0],
+              type: "SET_USER",
+              payload: res.data[0],
             })
             // loginContext.login(checkSavePassword);
           } else {
             authDispatch({
-              type: "SET_USERS",
-              payload: res_.data[0],
+              type: "SET_USER",
+              payload: res.data[0],
             })
-            sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+            sessionStorage.setItem("user_info", JSON.stringify(res.data[0]));
             authDispatch({
               type: "SET_LOGIN",
               payload: { status: 200, isSave: checkSavePassword },
