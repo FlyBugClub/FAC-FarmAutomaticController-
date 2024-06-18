@@ -18,15 +18,15 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
     const [loadingState, setLoadingState] = useState(true)
 
     useEffect(() => {
-        if(loginContext.isLoggedIn === true) 
+        if(login.status === true) 
         { getDashboard()}
         
-    }, [loginContext.isLoggedIn])
+    }, [login.status])
 
     const getDashboard = async () => {
         let res = await callAPi(
             "get",
-            `${loginContext.apiURL}/data/getDashboard/${loginContext.user.id_user_}`,
+            `${URL}/data/getDashboard/${user.id_user_}`,
         );
 
         setLoadingState(false)
