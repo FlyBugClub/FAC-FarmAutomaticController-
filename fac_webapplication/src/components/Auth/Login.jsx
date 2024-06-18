@@ -8,11 +8,28 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //
 import { callAPi, fetchOneUser } from "../../services/UserService";
-import { AuthContext } from "../../AuthContext";
+
+import { AuthContext } from "../context/AuthContext";
+import { INITIAL_STATE } from "../Context/AuthReducer";
 const Login = () => {
-  const authContext = useContext(AuthContext);
+
+  const [state, authDispatch, apiURL] = useContext(AuthContext, INITIAL_STATE);
   const [open, setOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+
+  const login = (check) => {
+    setIsLoggedIn(true);
+    if (check) {
+      localStorage.setItem("token", JSON.stringify(true));
+
+    } else {
+      sessionStorage.setItem("token", JSON.stringify(true));
+     
+    }
+  };
+
+
   const handleOpenEye = () => {
     setOpen(!open);
   };
@@ -59,7 +76,7 @@ const Login = () => {
 
       let res = await callAPi(
         "post",
-        `${authContext.apiURL}/auth/editUser`,
+        `${apiURL}/auth/editUser`,
         body
       );
       console.log(res);
@@ -85,7 +102,7 @@ const Login = () => {
         };
         let res = await callAPi(
           "post",
-          `${authContext.apiURL}/auth/checkValidUser`,
+          `${apiURL}/auth/checkValidUser`,
           body
         );
 
@@ -98,16 +115,16 @@ const Login = () => {
 
           let res_ = await callAPi(
             "get",
-            `${authContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
+            `${apiURL}/auth/getUser/${res.data[0].id_user_}`
           );
           if (checkSavePassword) {
             localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
             sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-            authContext.login(checkSavePassword);
+            login(checkSavePassword);
           }
           else {
             sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-            authContext.login(checkSavePassword);
+            login(checkSavePassword);
           }
 
         } else {

@@ -1,51 +1,18 @@
 const INITIAL_STATE = {
-  lastid: {},
-  setting: {},
-  visual: {},
-  config: {},
-  name: {},
-  control: {},
+    
+  users: {},
 };
 
-const ToolReducer = (state, action) => {
+const AuthReducer = (state, action) => {
+  //action = {type, payload: {tab, visual, setting, lastid, name, control}}
   // var x,y,z,t,n,c;
   switch (action.type) {
-    case "LOAD_DEVICE":
-      // x = state.config
-      // x[action.payload.tab] = { stt: false }
-
+    case "LOAD_USERS":
       return {
         ...state,
-        config: {
-          ...state.config,
-          [action.payload.tab]: { stt: false },
-        },
-        visual: {
-          ...state.visual,
-          [action.payload.tab]: action.payload.visual,
-        },
-        setting: {
-          ...state.setting,
-          [action.payload.tab]: action.payload.setting,
-        },
-        lastid: {
-          ...state.lastid,
-          [action.payload.tab]: action.payload.lastid,
-        },
-        name: {
-          ...state.name,
-          [action.payload.tab]: action.payload.name,
-        },
-        control: {
-          ...state.control,
-          [action.payload.tab]: {
-            stt: false,
-            type: "",
-            cal: "0",
-            id: 0,
-            w: "",
-            h: "",
-          },
+        users: {
+          ...state.users,
+          [action.payload]: action.payload,
         },
       };
     case "SET_CONFIG":
@@ -113,4 +80,4 @@ const ToolReducer = (state, action) => {
 };
 
 export { INITIAL_STATE };
-export default ToolReducer;
+export default AuthReducer;

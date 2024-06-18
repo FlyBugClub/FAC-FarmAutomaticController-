@@ -11,7 +11,7 @@ import { callAPi } from "../../services/UserService";
 //
 import { checkEmail } from "../../validation";
 import { CiBarcode } from "react-icons/ci";
-import { AuthContext } from "../../AuthContext";
+import { AuthContext } from "../../AuthContext1";
 const ForgotPassw = () => {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
