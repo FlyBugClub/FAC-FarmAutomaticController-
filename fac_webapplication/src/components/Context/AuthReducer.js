@@ -1,8 +1,6 @@
 const INITIAL_STATE = {
-    
   users: {},
 };
-
 const AuthReducer = (state, action) => {
   //action = {type, payload: {tab, visual, setting, lastid, name, control}}
   // var x,y,z,t,n,c;
@@ -25,7 +23,6 @@ const AuthReducer = (state, action) => {
         ...state,
         control: action.payload,
       };
-
     case "SET_STATUS":
       return {
         ...state,
@@ -78,6 +75,5 @@ const AuthReducer = (state, action) => {
       return state;
   }
 };
-
 export { INITIAL_STATE };
 export default AuthReducer;
