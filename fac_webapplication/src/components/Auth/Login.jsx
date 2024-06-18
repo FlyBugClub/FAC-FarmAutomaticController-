@@ -60,7 +60,11 @@ const Login = () => {
         "Premium", //member
       ];
 
-      let res = await callAPi("post", `${loginContext.apiURL}/auth/editUser`, body);
+      let res = await callAPi(
+        "post",
+        `${loginContext.apiURL}/auth/editUser`,
+        body
+      );
       console.log(res);
       if (res.data) {
         console.log(res.data);
@@ -75,7 +79,6 @@ const Login = () => {
     e.preventDefault();
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
-
     if (isUsernameValid && isPasswordValid) {
       const checkApi = async () => {
         let body = {
@@ -87,14 +90,10 @@ const Login = () => {
           `${loginContext.apiURL}/auth/checkValidUser`,
           body
         );
-
         // console.log(res.data[0].status_);
-
         if (res.data[0].status_ === 200) {
           // console.log("thanh cong");
-
           console.log(res.data[0]);
-
           let res_ = await callAPi(
             "get",
             `${loginContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
