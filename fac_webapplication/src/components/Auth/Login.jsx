@@ -11,10 +11,11 @@ import { callAPi, fetchOneUser } from "../../services/UserService";
 
 import { AuthContext } from "../Context/AuthContext";
 import { INITIAL_STATE } from "../Context/AuthReducer";
+import { type } from "@testing-library/user-event/dist/type";
 const Login = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { URL, login, users, authDispatch } = useContext(AuthContext);
+  const { URL, login, user, authDispatch } = useContext(AuthContext);
   const handleOpenEye = () => {
     setOpen(!open);
   };
@@ -70,60 +71,55 @@ const Login = () => {
     //   }
     // };
     // checkApi();
+    console.log(login);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(users);
-    authDispatch({
-      type: "SET_LOGIN",
-      payload: { username: "exampleUser", token: "exampleToken" },
-    });
-    console.log(users);
-
-    // const isUsernameValid = validateUsername(username);
-    // const isPasswordValid = validatePassword(password);
-    // if (isUsernameValid && isPasswordValid) {
-    //   const checkApi = async () => {
-    //     let body = {
-    //       username: username,
-    //       password: password,
-    //     };
-    //     let res = await callAPi(
-    //       "post",
-    //       `${URL}/auth/checkValidUser`,
-    //       body
-    //     );
-    //     // console.log(res.data[0].status_);
-    //     if (res.data[0].status_ === 200) {
-    //       // console.log("thanh cong");
-    //       // console.log(res.data[0]);
-    //       let res_ = await callAPi(
-    //         "get",
-    //         `${URL}/auth/getUser/${res.data[0].id_user_}`
-    //       );
-    //       if (checkSavePassword) {
-    //         localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-    //         sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-
-    //         authDispatch({ type: "SET_LOGIN", payload: "Dang nhap thanh cong" });
-
-    //         console.log(login)
-
-    //         // loginContext.login(checkSavePassword);
-    //       } else {
-    //         sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-    //         // loginContext.login(checkSavePassword);
-    //         // authDispatch({ type: "SET_LOGIN", payload: "Da dang nhap khong luu mat khau" });
-    //         authDispatch({ type: "SET_LOGIN", payload: { username: "exampleUser", token: "exampleToken" } });
-    //         console.log(login)
-    //         console.log(users)
-    //       }
-    //     } else {
-    //       alert("Khong tim thay nguoi dung");
-    //     }
-    //   };
-    //   checkApi();
-    // }
+    const isUsernameValid = validateUsername(username);
+    const isPasswordValid = validatePassword(password);
+    if (isUsernameValid && isPasswordValid) {
+      const checkApi = async () => {
+        let body = {
+          username: username,
+          password: password,
+        };
+        let res = await callAPi("post", `${URL}/auth/checkValidUser`, body);
+        // console.log(res.data[0].status_);
+        if (res.data[0].status_ === 200) {
+          // console.log("thanh cong");
+          // console.log(res.data[0]);
+          let res_ = await callAPi(
+            "get",
+            `${URL}/auth/getUser/${res.data[0].id_user_}`
+          );
+          if (checkSavePassword) {
+            localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+            authDispatch({
+              type: "SET_LOGIN",
+              payload: { status: 200, isSave: checkSavePassword },
+            });
+            authDispatch({
+              type: "SET_USERS",
+              payload: res_.data[0],
+            })
+            // loginContext.login(checkSavePassword);
+          } else {
+            authDispatch({
+              type: "SET_USERS",
+              payload: res_.data[0],
+            })
+            sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+            authDispatch({
+              type: "SET_LOGIN",
+              payload: { status: 200, isSave: checkSavePassword },
+            });
+          }
+        } else {
+          alert("Khong tim thay nguoi dung");
+        }
+      };
+      checkApi();
+    }
   };
 
   return (
