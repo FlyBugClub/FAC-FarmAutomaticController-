@@ -20,7 +20,7 @@ const AuthReducer = (state, action) => {
     case "SET_USER":
       return {
         ...state,
-        users: action.payload,
+        user: action.payload,
       }
     case "LOAD_USERS":
       return {
