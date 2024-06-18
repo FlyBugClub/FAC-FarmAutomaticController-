@@ -6,12 +6,10 @@ import { MdCircle } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
 
 import { callAPi } from "../../services/UserService";
-import { HandleLoginContext } from "../Context/HandleLoginContext";
 import Loading from "./loading";
 import { AuthContext } from "../Context/AuthContext";
 export const Dashboard = ({ weatherState, handleAddDevice }) => {
     const { URL, login, user, authDispatch } = useContext(AuthContext);
-    const loginContext = useContext(HandleLoginContext);
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
     

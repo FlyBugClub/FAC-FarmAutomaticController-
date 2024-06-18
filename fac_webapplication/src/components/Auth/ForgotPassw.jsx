@@ -11,9 +11,10 @@ import { callAPi } from "../../services/UserService";
 //
 import { checkEmail } from "../../validation";
 import { CiBarcode } from "react-icons/ci";
-import {HandleLoginContext} from "../Context/HandleLoginContext";
+//
+import { AuthContext } from "../Context/AuthContext";
 const ForgotPassw = () => {
-  const loginContext = useContext(HandleLoginContext);
+  const { URL, login, user, authDispatch } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [OTP, setOTP] = useState("");
@@ -44,7 +45,7 @@ const ForgotPassw = () => {
       const checkApi = async () => {
         let res = await callAPi(
           "post",
-          `${loginContext.apiURL}/auth/request-otp`,
+          `${URL}/auth/request-otp`,
           {
             email: email,
           }
@@ -63,7 +64,7 @@ const ForgotPassw = () => {
       const checkApi = async () => {
         let res = await callAPi(
           "post",
-          `${loginContext.apiURL}/auth/request-otp`,
+          `${URL}/auth/request-otp`,
           {
             email: email,
           }
