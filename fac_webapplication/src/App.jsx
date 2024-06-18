@@ -16,37 +16,34 @@ import NewPassw from "./components/Auth/NewPassw";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { callAPi, host } from "./services/UserService";
-import { HandleLoginContext } from "./components/Context/HandleLoginContext";
 import Menu from "./components/Menu/menu";
 import Weather from "./components/Weather/weather";
 import Farm from "./components/Home/farm";
 import Addfarm from "./components/Home/newfarm";
 import User from "./components/Home/user";
-
+//
+import { AuthContext } from "./components/Context/AuthContext";
 function App() {
   const navigate = useNavigate();
   const [weatherState, setWeatherState] = useState(true);
   const [addDeviceState, setAddDeviceState] = useState("");
-  
+  const { URL, login, user, authDispatch } = useContext(AuthContext);
   const handleWeather = () => {
     setWeatherState(!weatherState);
   };
   const handleAddDevice = (key) => {
     setAddDeviceState(key);
   };
-
-  const loginContext = useContext(HandleLoginContext);
-
   useEffect(() => {
-    if (!loginContext.isLoggedIn) {
+    if (!login.status) {
       navigate("/login");
     }
-  }, [loginContext.isLoggedIn]);
+  }, [login.status]);
 
   return (
     <div className="App">
       <header className="App-header">
-        {loginContext.isLoggedIn ? (
+        {login.status ? (
           <div style={{ position: "fixed", width: "100%", height: "100%" }}>
             <img
               src="/images/b3.jpg"
