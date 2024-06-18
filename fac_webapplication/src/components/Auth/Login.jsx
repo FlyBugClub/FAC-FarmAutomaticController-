@@ -8,10 +8,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //
 import { callAPi, fetchOneUser } from "../../services/UserService";
-
 import { AuthContext } from "../Context/AuthContext";
-import { INITIAL_STATE } from "../Context/AuthReducer";
-import { type } from "@testing-library/user-event/dist/type";
 const Login = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -71,8 +68,15 @@ const Login = () => {
     //   }
     // };
     // checkApi();
-    console.log(login);
-    console.log(user)
+    console.log(login.status);
+    console.log(user.id_user_)
+  };
+  const sendToken = (check) => {
+    if (check) {
+      localStorage.setItem("token", JSON.stringify(true));
+    } else {
+      sessionStorage.setItem("token", JSON.stringify(true));
+    }
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,30 +92,29 @@ const Login = () => {
         // console.log(res.data[0].status_);
         console.log(res.data[0]);
         if (res.data[0].status_ === 200) {
-          // console.log("thanh cong");
-          // console.log(res.data[0]);
-          
           if (checkSavePassword) {
-            localStorage.setItem("user_info", JSON.stringify(res.data[0]));
+            sendToken(checkSavePassword);
             authDispatch({
               type: "SET_LOGIN",
-              payload: { status: 200, isSave: checkSavePassword },
+              payload: { status: true, isSave: checkSavePassword },
             });
             authDispatch({
               type: "SET_USER",
               payload: res.data[0],
             })
             // loginContext.login(checkSavePassword);
+            console.log(login);
           } else {
+            sendToken(checkSavePassword);
             authDispatch({
               type: "SET_USER",
               payload: res.data[0],
-            })
-            sessionStorage.setItem("user_info", JSON.stringify(res.data[0]));
+            }) 
             authDispatch({
               type: "SET_LOGIN",
-              payload: { status: 200, isSave: checkSavePassword },
+              payload: { status: true, isSave: checkSavePassword },
             });
+            console.log(login);
           }
         } else {
           alert("Khong tim thay nguoi dung");
