@@ -5,20 +5,20 @@ import { WiDayCloudy } from "react-icons/wi";
 import { BrowserView, MobileView } from "react-device-detect";
 import './menu.scss'
 import { useNavigate } from "react-router-dom";
-import { HandleLoginContext } from "../Context/HandleLoginContext";
+
+import { AuthContext } from "../Context/AuthContext";
 const Menu = ({ handleWeather, weatherState }) => {
-    const loginContext = useContext(HandleLoginContext);
+    const { URL, login, user, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
     const [menuState, setMenuState] = useState("dashboard")
     const [userState, setUserState] = useState("")
-   
-    useEffect(() => {
-        if(loginContext.isLoggedIn === true) 
-        { console.log(loginContext.user.name_)}
-        
-    }, [loginContext.isLoggedIn])
+ 
     const handleLogout = () => {
-        loginContext.logout();
+        authDispatch({
+            type: "SET_LOGIN",
+            payload: { status: false, isSave: '' },
+          })
+        console.log(login.status)
         navigate("/");
     }
     const handleMenu = (key) => {
@@ -57,8 +57,8 @@ const Menu = ({ handleWeather, weatherState }) => {
                             <div className="Fac_Menu_Web_Container_Dropbox" >
                                 <div className="Fac_Menu_Web_Container_Dropbox_Header">
                                     <div className="Fac_Menu_Web_Container_Dropbox_Header_Info">
-                                        {loginContext.user.name_}
-                                        <div style={{ fontSize: "12px", fontWeight: "400" }}>{loginContext.user.gmail_}</div>
+                                        {user.user_name_}
+                                        <div style={{ fontSize: "12px", fontWeight: "400" }}>{user.gmail_}</div>
                                     </div>
 
                                 </div>
