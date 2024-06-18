@@ -6,23 +6,25 @@ import { TbMessageLanguage } from "react-icons/tb";
 import { FiSettings, FiUserMinus } from "react-icons/fi";
 import { BiCheckShield } from "react-icons/bi";
 import { RiVipCrownLine, RiArrowDownSFill } from "react-icons/ri";
-import { HandleLoginContext } from "../Context/HandleLoginContext";
+import { AuthContext } from "../Context/AuthContext";
 const User = ({ weatherState }) => {
-    const loginContext = useContext(HandleLoginContext);
+    const { URL, login, user, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
     const [language, setlanguage] = useState("English");
     const [languageState, setlanguageState] = useState(false);
+
     const handleLogout = () => {
-        loginContext.logout();
+        logout();
         navigate("/");
     }
-    const [user, setUser] = useState([])
-    useEffect(() => {
-        let json = sessionStorage.getItem('user_info');
-        json = JSON.parse(json);
-        setUser(json)
-        console.log(json)
-    }, [])
+    const logout = () => {
+        authDispatch({
+            type: "SET_LOGIN",
+            payload: { status: false, isSave: '' },
+        })
+        localStorage.clear();
+        sessionStorage.clear();
+      };
     return (
 
         <div className="Fac_Home">
@@ -40,7 +42,7 @@ const User = ({ weatherState }) => {
                             <div className="Fac_Home_Web_Usercontainer_Body_Userinfo_Name">
                                 <div style={{ display: "flex", alignItems: "center" }}>
 
-                                    Name: {user.name_}
+                                    Name: {user.user_name_}
                                     <FiSettings size={20} style={{ marginLeft: "15px", paddingTop: "5px", cursor: "pointer" }} />
                                 </div>
                                 <div style={{ marginTop: "5px" }}>
