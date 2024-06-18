@@ -4,7 +4,6 @@ const db = require("../../models/mysql");
 const EMAIL_ACCOUNT = process.env.EMAIL_ACCOUNT;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const nodemailer = require('nodemailer');
-const { options } = require('./auth');
 const otpStore = {}; 
 
 
@@ -24,7 +23,8 @@ console.log(EMAIL_ACCOUNT);
 console.log(EMAIL_PASSWORD);
 console.log(email);
   const otp = generateOTP();
-  otpStore[email] = otp;
+  const currentTime = Date.now();
+  otpStore[email] = { otp, time: currentTime, used: false };
   const mailOptions = {
     from: EMAIL_ACCOUNT,
     to: email,
@@ -36,10 +36,63 @@ console.log(email);
       if (error) {
         resolve(error);
       } else {
-        resolve({ status: true, data: otp });
+        resolve({ status: true, message: 'OTP has been sent to your email' });
       }
     });
   });
+};
+
+const validateOTP = async (email, otp) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const otpData = await getOtpData(email);
+
+      if (!otpData) {
+        resolve({ status: false, message: 'OTP not found' });
+        return;
+      }
+
+      if (otpData.used) {
+        resolve({ status: false, message: 'OTP has already been used' });
+        return;
+      }
+
+      const currentTime = Date.now();
+      const otpAge = (currentTime - otpData.time) / 1000 / 60; // Tính tuổi của OTP tính bằng phút
+
+      if (otpAge > 5) {
+        await deleteOtpData(email); // Xóa OTP đã hết hạn
+        resolve({ status: false, message: 'OTP has expired' });
+        return;
+      }
+
+      if (otpData.otp === otp) {
+        await markOtpAsUsed(email); // Đánh dấu OTP đã được sử dụng
+        resolve({ status: true, message: 'OTP is valid' });
+      } else {
+        resolve({ status: false, message: 'Invalid OTP' });
+      }
+    } catch (error) {
+      resolve({ status: false, code: 255, message: 'Error System' });
+    }
+  });
+};
+// Giả định các hàm này là bất đồng bộ và sử dụng await khi gọi chúng
+const getOtpData = async (email) => {
+  // Thực hiện truy xuất otpData từ otpStore
+  return otpStore[email];
+};
+
+const deleteOtpData = async (email) => {
+  // Thực hiện xóa otpData khỏi otpStore
+  delete otpStore[email];
+};
+
+const markOtpAsUsed = async (email) => {
+  // Đánh dấu otpData là đã sử dụng
+  if (otpStore[email]) {
+    otpStore[email].used = true;
+  }
 };
 const getUserByID = async (usr) => {
   return new Promise(async (resolve, reject) => {
@@ -115,4 +168,4 @@ const editUser = async (body) => {
 };
 
 
-module.exports = {getUserByID, createUser, deleteUser, editUser, checkValidUser, requestOTP};
+module.exports = {getUserByID, createUser, deleteUser, editUser, checkValidUser, requestOTP, validateOTP};

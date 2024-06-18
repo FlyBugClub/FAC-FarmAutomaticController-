@@ -7,6 +7,10 @@ router.post("/request-otp", async (req, res) => {
   res.json(result);
 });
 
+router.post('/verify-otp', async (req, res) => {
+  const result = await auth.validateOTP(req.body.email, req.body.otp);
+  res.json(result);
+});
 
 router.get("/getUser/:id", async (req, res) => {
   let result = await auth.getUserByID(req.params.id);

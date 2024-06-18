@@ -50,7 +50,6 @@ const ForgotPassw = () => {
             email: email,
           }
         );
-        setCheckOTP(res.data);
         console.log(res);
       };
       checkApi();
@@ -64,16 +63,16 @@ const ForgotPassw = () => {
       const checkApi = async () => {
         let res = await callAPi(
           "post",
-          `${URL}/auth/request-otp`,
+          `${URL}/auth/verify-otp`,
           {
             email: email,
+            otp: OTP
           }
         );
 
         console.log(res);
       };
       checkApi();
-      
     }
   };
   return (
