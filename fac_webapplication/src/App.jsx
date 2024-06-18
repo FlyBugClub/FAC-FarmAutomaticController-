@@ -34,11 +34,7 @@ function App() {
   const handleAddDevice = (key) => {
     setAddDeviceState(key);
   };
-  useEffect(() => {
-    if (!login.status) {
-      navigate("/login");
-    }
-  }, [login.status]);
+ 
 
   return (
     <div className="App">
