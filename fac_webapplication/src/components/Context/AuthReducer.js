@@ -1,7 +1,7 @@
 const INITIAL_STATE = {
   URL: "http://172.31.8.230:3001",
   login: {},
-  users: {'1234': '1234'},
+  user: {},
 };
 const AuthReducer = (state, action) => {
   //action = {type, payload: {tab, visual, setting, lastid, name, control}}
@@ -17,7 +17,7 @@ const AuthReducer = (state, action) => {
         ...state,
         login: action.payload, 
       };
-    case "SET_USERS":
+    case "SET_USER":
       return {
         ...state,
         users: action.payload,
