@@ -1,5 +1,5 @@
 import { BrowserView, MobileView } from "react-device-detect";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff, FiLock, FiUser } from "react-icons/fi";
 import "./Auth.scss";
@@ -9,15 +9,12 @@ import "react-toastify/dist/ReactToastify.css";
 //
 import { callAPi, fetchOneUser } from "../../services/UserService";
 
-import { HandleLoginContext } from "../Context/HandleLoginContext";
-// import { AuthContext } from "../Context/AuthContext";
+import { AuthContext } from "../Context/AuthContext";
 import { INITIAL_STATE } from "../Context/AuthReducer";
 const Login = () => {
-  // const [state, authDispatch, apiURL] = useContext(AuthContext, INITIAL_STATE);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const loginContext = useContext(HandleLoginContext);
-
+  const { URL, login, users, authDispatch } = useContext(AuthContext);
   const handleOpenEye = () => {
     setOpen(!open);
   };
@@ -51,67 +48,82 @@ const Login = () => {
     setCheckSavePassword(checkBox);
   };
   const handleEditUser = async () => {
-    const checkApi = async () => {
-      let body = [
-        "1", // id
-        "new.email@example.com", // gmail
-        "1234", //pass
-        "123456789", //phone
-        "Premium", //member
-      ];
-
-      let res = await callAPi(
-        "post",
-        `${loginContext.apiURL}/auth/editUser`,
-        body
-      );
-      console.log(res);
-      if (res.data) {
-        console.log(res.data);
-        alert("sua thanh cong");
-      } else {
-        alert("sua khong thanh cong");
-      }
-    };
-    checkApi();
+    // const checkApi = async () => {
+    //   let body = [
+    //     "1", // id
+    //     "new.email@example.com", // gmail
+    //     "1234", //pass
+    //     "123456789", //phone
+    //     "Premium", //member
+    //   ];
+    //   let res = await callAPi(
+    //     "post",
+    //     `${state.URL}/auth/editUser`,
+    //     body
+    //   );
+    //   console.log(res);
+    //   if (res.data) {
+    //     console.log(res.data);
+    //     alert("sua thanh cong");
+    //   } else {
+    //     alert("sua khong thanh cong");
+    //   }
+    // };
+    // checkApi();
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isUsernameValid = validateUsername(username);
-    const isPasswordValid = validatePassword(password);
-    if (isUsernameValid && isPasswordValid) {
-      const checkApi = async () => {
-        let body = {
-          username: username,
-          password: password,
-        };
-        let res = await callAPi(
-          "post",
-          `${loginContext.apiURL}/auth/checkValidUser`,
-          body
-        );
-        // console.log(res.data[0].status_);
-        if (res.data[0].status_ === 200) {
-          // console.log("thanh cong");
-          console.log(res.data[0]);
-          let res_ = await callAPi(
-            "get",
-            `${loginContext.apiURL}/auth/getUser/${res.data[0].id_user_}`
-          );
-          if (checkSavePassword) {
-            localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-            sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-            loginContext.login(checkSavePassword);
-          } else {
-            sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
-            loginContext.login(checkSavePassword);
-          }
-        } else {
-          alert("Khong tim thay nguoi dung");
-        }
-      };
-      checkApi();
-    }
+    console.log(users);
+    authDispatch({
+      type: "SET_LOGIN",
+      payload: { username: "exampleUser", token: "exampleToken" },
+    });
+    console.log(users);
+
+    // const isUsernameValid = validateUsername(username);
+    // const isPasswordValid = validatePassword(password);
+    // if (isUsernameValid && isPasswordValid) {
+    //   const checkApi = async () => {
+    //     let body = {
+    //       username: username,
+    //       password: password,
+    //     };
+    //     let res = await callAPi(
+    //       "post",
+    //       `${URL}/auth/checkValidUser`,
+    //       body
+    //     );
+    //     // console.log(res.data[0].status_);
+    //     if (res.data[0].status_ === 200) {
+    //       // console.log("thanh cong");
+    //       // console.log(res.data[0]);
+    //       let res_ = await callAPi(
+    //         "get",
+    //         `${URL}/auth/getUser/${res.data[0].id_user_}`
+    //       );
+    //       if (checkSavePassword) {
+    //         localStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+    //         sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+
+    //         authDispatch({ type: "SET_LOGIN", payload: "Dang nhap thanh cong" });
+
+    //         console.log(login)
+
+    //         // loginContext.login(checkSavePassword);
+    //       } else {
+    //         sessionStorage.setItem("user_info", JSON.stringify(res_.data[0]));
+    //         // loginContext.login(checkSavePassword);
+    //         // authDispatch({ type: "SET_LOGIN", payload: "Da dang nhap khong luu mat khau" });
+    //         authDispatch({ type: "SET_LOGIN", payload: { username: "exampleUser", token: "exampleToken" } });
+    //         console.log(login)
+    //         console.log(users)
+    //       }
+    //     } else {
+    //       alert("Khong tim thay nguoi dung");
+    //     }
+    //   };
+    //   checkApi();
+    // }
   };
 
   return (
