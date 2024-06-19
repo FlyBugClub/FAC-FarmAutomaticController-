@@ -19,6 +19,8 @@ const Menu = ({ handleWeather, weatherState }) => {
             payload: { status: false, isSave: '' },
           })
         console.log(login.status)
+        localStorage.clear();
+        sessionStorage.clear();
         navigate("/");
     }
     const handleMenu = (key) => {
