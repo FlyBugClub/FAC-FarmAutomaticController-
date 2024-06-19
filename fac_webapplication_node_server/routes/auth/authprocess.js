@@ -182,7 +182,7 @@ function verifyToken(token) {
     jwt.verify(token, SECRET_KEY, (err, decoded) => {
       if (err) {
         console.error("Lỗi xác thực token:", err);
-        reject({ status: 403, message: "Token không hợp lệ" });
+        resolve({ status: 403, message: "Token không hợp lệ" });
       } else {
         resolve(decoded); 
       }
