@@ -1,9 +1,10 @@
 require("dotenv").config();
+const jwt = require('jsonwebtoken');
 const db = require("../../models/mysql");
 
 const EMAIL_ACCOUNT = process.env.EMAIL_ACCOUNT;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
-
+const SECRET_KEY = process.env.SECRET_KEY;
 const nodemailer = require("nodemailer");
 const otpStore = {};
 
@@ -144,8 +145,16 @@ const getUserByID = async (usr) => {
 };
 
 const checkValidUser = async (name, pass) => {
+
   return new Promise(async (resolve, reject) => {
+    content = {
+      name: name,
+      pass: pass,
+    }
+    let asscessToken = jwt.sign(content, SECRET_KEY, {expiresIn: '24h'});
+    
     try {
+      
       let res = await db.SELECT(
         "*",
         "check_valid_user('" + name + "', '" + pass + "')"
@@ -154,7 +163,7 @@ const checkValidUser = async (name, pass) => {
         delete res.recordsets[0][0].password;
       }
       console.log(res);
-      resolve({ status: true, data: res.recordsets[0] });
+      resolve({ status: true, data: res.recordsets[0], asscessToken});
     } catch (error) {
       // reject(error);
       resolve({ status: false, code: 255, message: "Error System" });
