@@ -57,10 +57,10 @@ const ForgotPassw = () => {
 
     if (isEmailValid) {
       const checkApi = async () => {
-        let res = await callAPi("post", `${URL}/auth/verify-otp`, {
-          email: email,
-          otp: OTP,
-        });
+        let res = await callAPi("post", `${URL}/auth/verify-otp`, [
+        email,
+        OTP,
+        ]);
 
         console.log(res);
         if (!res.status) { // TODO replace ! by '' when complete newpassw
