@@ -191,12 +191,9 @@ const Login = () => {
         <div style={{ width: "100%", height: "100%" }}>
           <div className="Auth_MobileView_Logo">
             <div className="Auth_MobileView_Logo_Image">
-              <img src="/icons/Bug(Trắng).png" alt="" />
+              <img src="/icons/plantbackground1.jpg" alt="" />
             </div>
-            <div>
-              <div className="div1">Tưới tiêu tự động</div>
-              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
-            </div>
+            
           </div>
 
           <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
