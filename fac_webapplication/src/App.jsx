@@ -71,14 +71,14 @@ function App() {
           token: isToken,
         }
       );
-      console.log(res);
-      // if (res.data) {
-      //   console.log(res.data);
-      //   alert("sua thanh cong");
-      // } else {
-      //   alert("sua khong thanh cong");
-      // }
-    };
+      // console.log(res.data[0].user_name_);
+      if (res.status) {
+        authDispatch({
+          type: "SET_USER",
+          payload: res.data[0],
+        })
+
+      }};
     checkApi();
   }
 
