@@ -89,10 +89,10 @@ const Login = () => {
           password: password,
         };
         let res = await callAPi("post", `${URL}/auth/checkValidUser`, body);
-        // console.log(res.data[0].status_);
+        console.log(res.data[0].status_);
         console.log(res.data[0]);
         if (res.data[0].status_ === 200) {
-          if (checkSavePassword) {
+          console.log("dang nhap thanh cong");
             sendToken(checkSavePassword);
             authDispatch({
               type: "SET_LOGIN",
@@ -102,25 +102,15 @@ const Login = () => {
               type: "SET_USER",
               payload: res.data[0],
             })
-            // loginContext.login(checkSavePassword);
-            console.log(login);
           } else {
-            sendToken(checkSavePassword);
-            authDispatch({
-              type: "SET_USER",
-              payload: res.data[0],
-            }) 
-            authDispatch({
-              type: "SET_LOGIN",
-              payload: { status: true, isSave: checkSavePassword },
-            });
-            console.log(login);
+            console.log("dang nhap that bai");
           }
-        } else {
-          alert("Khong tim thay nguoi dung");
-        }
+         
       };
       checkApi();
+    }
+    else {
+      console.log("Khong tim thay nguoi dung");
     }
   };
 

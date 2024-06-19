@@ -82,8 +82,7 @@ const NewPassw = () => {
         if (res.status) {
           toast.error(res.message);
           navigate("/login");
-        } 
-        
+        }
       };
       checkApi();
     }
