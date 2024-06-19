@@ -63,7 +63,7 @@ const ForgotPassw = () => {
         ]);
 
         console.log(res);
-        if (!res.status) { // TODO replace ! by '' when complete newpassw
+        if (res.status) { 
           navigate("/newpassw", { state: { email: email } });
         } else {
           toast.error(res.message);
