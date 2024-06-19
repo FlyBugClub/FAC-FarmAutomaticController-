@@ -34,13 +34,12 @@ function App() {
   const handleAddDevice = (key) => {
     setAddDeviceState(key);
   };
-  const [token, setToken] = useState(null);
   useEffect(() => {
     let token = null;
     if (localStorage.getItem("token")) {
       token = JSON.parse(localStorage.getItem("token"));
       console.log("Token từ localStorage:", token);
-      setToken(token);
+      getUserByToken(token);
       authDispatch({
         type: "SET_LOGIN",
         payload: { status: true  },
@@ -49,7 +48,7 @@ function App() {
     if (!token && sessionStorage.getItem("token")) {
       token = JSON.parse(sessionStorage.getItem("token"));
       console.log("Token từ sessionStorage:", token);
-      setToken(token);
+      getUserByToken(token);
       authDispatch({
         type: "SET_LOGIN",
         payload: { status: true },
@@ -63,11 +62,25 @@ function App() {
       });
     }
   }, []);
-  const getUserByToken = async () => {
-    let res = await callAPi("get", `${URL}/data/verify-jwt/`, {
-      
-    });
-  };
+  const getUserByToken = async (isToken) => {
+     const checkApi = async () => {    
+      let res = await callAPi(
+        "post",
+        `${URL}/auth/verify-jwt`,
+        {
+          token: isToken,
+        }
+      );
+      console.log(res);
+      // if (res.data) {
+      //   console.log(res.data);
+      //   alert("sua thanh cong");
+      // } else {
+      //   alert("sua khong thanh cong");
+      // }
+    };
+    checkApi();
+  }
 
   return (
     <div className="App">
