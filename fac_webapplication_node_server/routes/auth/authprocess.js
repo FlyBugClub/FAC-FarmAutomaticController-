@@ -172,6 +172,28 @@ const checkValidUser = async (name, pass) => {
     }
   });
 };
+const LoginWhenIsToken = async (name, pass) => {
+  return new Promise(async (resolve, reject) => {
+    content = {
+      name: name,
+      pass: pass,
+    };
+    try {
+      let res = await db.SELECT(
+        "*",
+        "check_valid_user('" + name + "', '" + pass + "')"
+      );
+      if (res.recordsets[0].length > 0) {
+        delete res.recordsets[0][0].password;
+      }
+      console.log(res);
+      resolve({ status: true, data: res.recordsets[0] });
+    } catch (error) {
+      // reject(error);
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  });
+};
 
 function verifyToken(token) {
   return new Promise((resolve, reject) => {
@@ -179,17 +201,26 @@ function verifyToken(token) {
       resolve({ status: 401, message: "Token không được cung cấp" });
     }
 
-    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    jwt.verify(token, SECRET_KEY, async (err, decoded) => {
       if (err) {
         console.error("Lỗi xác thực token:", err);
-        resolve({ status: 403, message: "Token không hợp lệ" });
+        resolve({ status: false, message: "Token không hợp lệ" });
       } else {
-        resolve(decoded); 
+        try {
+          const userResult = await LoginWhenIsToken(decoded.name, decoded.pass);
+          if (userResult.status) {
+            resolve({ status: true, data: userResult.data });
+          } else {
+            resolve({ status: false, message: userResult.message });
+          }
+        } catch (err) {
+          console.error("Lỗi hệ thống:", err);
+          resolve({ status: false, code: 255, message: "Error System" });
+        }
       }
     });
   });
 }
-
 const createUser = async (body) => {
   return new Promise(async (resolve, reject) => {
     const { username, email } = body;
