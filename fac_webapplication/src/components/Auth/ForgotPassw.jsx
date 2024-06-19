@@ -17,7 +17,7 @@ const ForgotPassw = () => {
   const { URL, login, user, authDispatch } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [OTP, setOTP] = useState("");
+  const [otp, setOTP] = useState("");
   const [checkOTP, setCheckOTP] = useState("");
   const validateEmail = (email) => {
     if (email.trim() === "") {
@@ -56,14 +56,16 @@ const ForgotPassw = () => {
     const isEmailValid = validateEmail(email);
 
     if (isEmailValid) {
+      console.log(email);
+      console.log(otp);
       const checkApi = async () => {
-        let res = await callAPi("post", `${URL}/auth/verify-otp`, [
-        email,
-        OTP,
-        ]);
+        let res = await callAPi("post", `${URL}/auth/verify-otp`, {
+          email: email,
+          otp: otp,
+        });
 
         console.log(res);
-        if (res.status) { 
+        if (res.status) {
           navigate("/newpassw", { state: { email: email } });
         } else {
           toast.error(res.message);
@@ -110,7 +112,7 @@ const ForgotPassw = () => {
               <input
                 type="text"
                 placeholder="OTP"
-                value={OTP}
+                value={otp}
                 onChange={handleChangOTP}
               ></input>
             </div>
