@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 //
 import { callAPi } from "../../services/UserService";
 //
-import { checkEmail } from "../../validation";
+import { checkEmail, checkOTP } from "../../validation";
 import { CiBarcode } from "react-icons/ci";
 //
 import { AuthContext } from "../Context/AuthContext";
@@ -18,7 +18,7 @@ const ForgotPassw = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [otp, setOTP] = useState("");
-  const [checkOTP, setCheckOTP] = useState("");
+ 
   const validateEmail = (email) => {
     if (email.trim() === "") {
       toast.error("Vui lòng nhập email");
@@ -26,6 +26,17 @@ const ForgotPassw = () => {
     }
     if (!checkEmail(email)) {
       toast.error("Vui lòng nhập email đúng định dạng");
+      return false;
+    }
+    return true;
+  };
+  const validateOtp = (otp) => {
+    if (otp.trim() === "") {
+      toast.error("Vui lòng nhập OTP");
+      return false;
+    }
+    if (!checkOTP(otp)) {
+      toast.error("vui lòng nhập OTP có 6 số");
       return false;
     }
     return true;
@@ -54,8 +65,8 @@ const ForgotPassw = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isEmailValid = validateEmail(email);
-
-    if (isEmailValid) {
+    const isOTPValid = validateOtp(otp);
+    if (isEmailValid && isOTPValid) {
       console.log(email);
       console.log(otp);
       const checkApi = async () => {
