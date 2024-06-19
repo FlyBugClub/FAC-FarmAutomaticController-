@@ -65,14 +65,13 @@ const requestOTP = async (email) => {
     from: EMAIL_ACCOUNT,
     to: email,
     subject: "OTP Verification",
-
     html: emailContent,
   };
   return new Promise(async (resolve, reject) => {
     console.log();
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        resolve(error);
+        resolve({ status: false, error , message: `OTP has not been sent to your ${email}`} );
       } else {
         resolve({ status: true, message: "OTP has been sent to your email" });
       }
