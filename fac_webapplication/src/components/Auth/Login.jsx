@@ -69,13 +69,13 @@ const Login = () => {
     // };
     // checkApi();
     console.log(login.status);
-    console.log(user.id_user_)
+    console.log(user.id_user_);
   };
-  const sendToken = (check) => {
+  const sendToken = (check, token) => {
     if (check) {
-      localStorage.setItem("token", JSON.stringify(true));
+      localStorage.setItem("token", JSON.stringify(token));
     } else {
-      sessionStorage.setItem("token", JSON.stringify(true));
+      sessionStorage.setItem("token", JSON.stringify(token));
     }
   };
   const handleSubmit = async (e) => {
@@ -89,27 +89,29 @@ const Login = () => {
           password: password,
         };
         let res = await callAPi("post", `${URL}/auth/checkValidUser`, body);
-        console.log(res.data[0].status_);
+        // console.log(res.data[0].status_);
         console.log(res.data[0]);
+        // console.log(res);
+        // console.log(res.asscessToken)
+        let token = res.asscessToken
         if (res.data[0].status_ === 200) {
           console.log("dang nhap thanh cong");
-            sendToken(checkSavePassword);
-            authDispatch({
-              type: "SET_LOGIN",
-              payload: { status: true, isSave: checkSavePassword },
-            });
-            authDispatch({
-              type: "SET_USER",
-              payload: res.data[0],
-            })
-          } else {
-            console.log("dang nhap that bai");
-          }
-         
+          sendToken(checkSavePassword, token);
+          authDispatch({
+            type: "SET_LOGIN",
+            payload: { status: true, isSave: checkSavePassword },
+          });
+          authDispatch({
+            type: "SET_USER",
+            payload: res.data[0],
+          });
+        } else {
+          console.log("Tên đăng nhập hoặc mật khẩu không tồn tại");
+          toast.error("Tên đăng nhập hoặc mật khẩu không tồn tại");
+        }
       };
       checkApi();
-    }
-    else {
+    } else {
       console.log("Khong tim thay nguoi dung");
     }
   };
