@@ -34,7 +34,35 @@ function App() {
   const handleAddDevice = (key) => {
     setAddDeviceState(key);
   };
- 
+  useEffect(() => {
+    let token = null;
+    if (localStorage.getItem("token")) {
+      token = JSON.parse(localStorage.getItem("token"));
+      console.log("Token từ localStorage:", token);
+      authDispatch({
+        type: "SET_LOGIN",
+        payload: { status: true  },
+      });
+    }
+    if (!token && sessionStorage.getItem("token")) {
+      token = JSON.parse(sessionStorage.getItem("token"));
+      console.log("Token từ sessionStorage:", token);
+      authDispatch({
+        type: "SET_LOGIN",
+        payload: { status: true },
+      });
+    }
+    if (!token) {
+      console.log("Không tìm thấy token trong localStorage và sessionStorage")
+      authDispatch({
+        type: "SET_LOGIN",
+        payload: { status: false },
+      });
+    }
+  }, []);
+  const getDashboard = async () => {
+    let res = await callAPi("get", `${URL}/data/getDashboard/${user.id_user_}`);
+  };
 
   return (
     <div className="App">
@@ -68,15 +96,30 @@ function App() {
               <Routes>
                 <Route
                   path="/dashboard"
-                  element={<Dashboard weatherState={weatherState} handleAddDevice={handleAddDevice} />}
+                  element={
+                    <Dashboard
+                      weatherState={weatherState}
+                      handleAddDevice={handleAddDevice}
+                    />
+                  }
                 />
                 <Route
                   path="/farm"
-                  element={<Farm weatherState={weatherState} handleAddDevice={handleAddDevice} />}
+                  element={
+                    <Farm
+                      weatherState={weatherState}
+                      handleAddDevice={handleAddDevice}
+                    />
+                  }
                 />
                 <Route
                   path="/addfarm"
-                  element={<Addfarm weatherState={weatherState} addDeviceState={addDeviceState} />}
+                  element={
+                    <Addfarm
+                      weatherState={weatherState}
+                      addDeviceState={addDeviceState}
+                    />
+                  }
                 />
                 <Route
                   path="/usersetting"
