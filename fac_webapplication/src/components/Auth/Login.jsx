@@ -99,7 +99,7 @@ const Login = () => {
           sendToken(checkSavePassword, token);
           authDispatch({
             type: "SET_LOGIN",
-            payload: { status: true, isSave: checkSavePassword },
+            payload: { status: true},
           });
           authDispatch({
             type: "SET_USER",
