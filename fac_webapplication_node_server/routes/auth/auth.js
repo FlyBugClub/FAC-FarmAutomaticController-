@@ -1,6 +1,11 @@
 const router = require("express").Router();
 const auth = require("./authprocess");
 
+router.post("/change-password", async (req, res) => {
+  
+  let result = await auth.changePassword(req.body);
+  res.json(result);
+});
 
 router.post("/request-otp", async (req, res) => {
   let result = await auth.requestOTP(req.body.email);
@@ -23,6 +28,7 @@ router.post("/checkValidUser", async (req, res) => {
 });
 
 router.post("/createUser", async (req, res) => {
+  
   let result = await auth.createUser(req.body);
   res.json(result);
 });

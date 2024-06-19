@@ -19,24 +19,46 @@ const transporter = nodemailer.createTransport({
   },
 });
 const requestOTP = async (email) => {
-console.log(EMAIL_ACCOUNT);
-console.log(EMAIL_PASSWORD);
+
 console.log(email);
   const otp = generateOTP();
   const currentTime = Date.now();
   otpStore[email] = { otp, time: currentTime, used: false };
+  let res = await db.SELECT(
+    "*",
+    "get_user_by_gmail('" + email + "')",
+    
+  );
+  let username = res.recordset[0].name_
   const mailOptions = {
     from: EMAIL_ACCOUNT,
     to: email,
     subject: 'OTP Verification',
-    text: `Your OTP is ${otp}`,
+
+    html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <h2>OTP Verification</h2>
+            <p>Your OTP is: <strong>${otp}</strong></p>
+            <p>Your Username is: <strong>${username}</strong></p>
+            <p>This OTP will expire in 5 minutes.</p>
+            <p style="color: grey; font-size: 0.9em;">If you did not request this OTP, please ignore this email.</p>
+            <hr>
+            <footer style="font-size: 0.8em;">
+                <p>Thank you for using our service.</p>
+                <p>Best regards,</p>
+                <p>FLY-TEAM</p>
+            </footer>
+        </div>
+    `
   };
   return new Promise(async (resolve, reject) => {
+    
+    console.log()
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         resolve(error);
       } else {
-        resolve({ status: true, message: 'OTP has been sent to your email' });
+        resolve({ status: true, message: 'OTP has been sent to your email'});
       }
     });
   });
@@ -167,5 +189,17 @@ const editUser = async (body) => {
   });
 };
 
+const changePassword = async (body) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await db.executeProcedure("dbo.edit_pwd_on_email", body);
+      console.log(res);
+      resolve({ status: true, data: res});
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  });
+};
 
-module.exports = {getUserByID, createUser, deleteUser, editUser, checkValidUser, requestOTP, validateOTP};
+
+module.exports = {getUserByID, createUser, deleteUser, editUser, checkValidUser, requestOTP, validateOTP, changePassword};

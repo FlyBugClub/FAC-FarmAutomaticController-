@@ -93,7 +93,8 @@ const executeProcedure = async (pro_name, params) => {
     if (params && params.length > 0) {
       paramStr = params.map(param => `'${param}'`).join(', ');
     }
-
+    console.log("hahahahahahahaha")
+    console.log(`EXEC ${pro_name} ${paramStr}`)
     // Gọi stored procedure và trả về kết quả
     const result = await sql.query(`EXEC ${pro_name} ${paramStr}`);
     return result;
