@@ -3,6 +3,8 @@ MushroomAutomation/secret_pass.h
 
 fac_webapplication_node_server
 PYHTON_API/.idea/
+FAC_FarmAutomaticController
+.DS_Store
 
 fac_webapplication/package-lock.json
 

@@ -1,20 +1,20 @@
-STATUS|TODO job|Person|priority
-NO | arduinoide post count pum to sql
-NO | arduinoide post humi, temp to MQTT
-| arduinoide get ... from ...
-| app send ... from ... to ...
+STATUS|TODO job|Person								
+YES 	| arduinoide				post	http						|	DUC
+YES	| button to config new wifi									|	DUC
+YES	| arduinoide  				get	http		
+YES	| arduinoide  				get	MQTT						|		
+YES	| arduinoide  				post    MQTT	
+YES	| esp get from sql and save variable								|	DUC
 |
 |
 |
 |
-|
-|
-NO | define json in mqtt server            | Cuong| 1
-NO | App post state, value_expect, mode    | Cuong| 2
-NO | App get state, value_expect, mode     | Cuong| 3
-NO | App add time                          | Cuong| 4
-NO | App get, post time                    | Cuong| 5
-NO | App get History list                  | Cuong| 6
-NO | App add esp, equipments, sensors      | Cuong| 7
+NO | define json in mqtt server            | Cuong
+NO | App post state, value_expect, mode    | Cuong
+NO | App get state, value_expect, mode     | Cuong
+NO | App add time                          | Cuong
+NO | App get, post time                    | Cuong
+NO | App get History list                  | Cuong
+NO | App add esp, equipments, sensors      | Cuong
 |
 |
