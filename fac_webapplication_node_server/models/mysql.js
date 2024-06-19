@@ -1,9 +1,15 @@
+require("dotenv").config();
+const SQLUSER     = process.env.SQLUSER;
+const SQLPASSWORD = process.env.SQLPASSWORD;
+const SQLSERVER   = process.env.SQLSERVER;
+const SQLDATABASE = process.env.SQLDATABASE;
+
 const sql = require("mssql");
 const sqlConfig = {
-  user: "sa",
-  password: "#FlyBugClub@hoasen.edu.vn",
-  database: "FAC_DB",
-  server: "10.101.172.53\\SQLEXPRESS01",
+  user: SQLUSER,
+  password: SQLPASSWORD,
+  database: SQLDATABASE,
+  server: SQLSERVER,
   pool: {
     max: 10,
     min: 0,
