@@ -1,16 +1,17 @@
-require('dotenv').config();
+require("dotenv").config();
 const db = require("../../models/mysql");
 
 const EMAIL_ACCOUNT = process.env.EMAIL_ACCOUNT;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
-const nodemailer = require('nodemailer');
-const otpStore = {}; 
 
+const nodemailer = require("nodemailer");
+const otpStore = {};
 
-const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+const generateOTP = () =>
+  Math.floor(100000 + Math.random() * 900000).toString();
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.hoasen.edu.vn',
+  service: "gmail",
+  host: "smtp.hoasen.edu.vn",
   port: 465,
   secure: true,
   auth: {
@@ -18,22 +19,27 @@ const transporter = nodemailer.createTransport({
     pass: EMAIL_PASSWORD,
   },
 });
-const requestOTP = async (email) => {
-
-console.log(email);
-  const otp = generateOTP();
+const storeOtp = (email, otp) => {
   const currentTime = Date.now();
-  otpStore[email] = { otp, time: currentTime, used: false };
-  let res = await db.SELECT(
-    "*",
-    "get_user_by_gmail('" + email + "')",
-    
-  );
-  let username = res.recordset[0].name_
+  otpStore[email] = { otp, time: currentTime, used: false }; // Ghi đè OTP cũ nếu email đã tồn tại
+
+  // Xóa OTP sau 5 phút (300000 ms)
+  setTimeout(() => {
+    if (otpStore[email] && otpStore[email].time === currentTime) {
+      delete otpStore[email];
+    }
+  }, 300000);
+};
+const requestOTP = async (email) => {
+  console.log(email);
+  const otp = generateOTP();
+  storeOtp(email, otp);
+  let res = await db.SELECT("*", "get_user_by_gmail('" + email + "')");
+  let username = res.recordset[0].name_;
   const mailOptions = {
     from: EMAIL_ACCOUNT,
     to: email,
-    subject: 'OTP Verification',
+    subject: "OTP Verification",
 
     html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -49,16 +55,15 @@ console.log(email);
                 <p>FLY-TEAM</p>
             </footer>
         </div>
-    `
+    `,
   };
   return new Promise(async (resolve, reject) => {
-    
-    console.log()
+    console.log();
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         resolve(error);
       } else {
-        resolve({ status: true, message: 'OTP has been sent to your email'});
+        resolve({ status: true, message: "OTP has been sent to your email" });
       }
     });
   });
@@ -67,15 +72,16 @@ console.log(email);
 const validateOTP = async (email, otp) => {
   return new Promise(async (resolve, reject) => {
     try {
+      
       const otpData = await getOtpData(email);
 
       if (!otpData) {
-        resolve({ status: false, message: 'OTP not found' });
+        resolve({ status: false, message: "OTP not found"});
         return;
       }
 
       if (otpData.used) {
-        resolve({ status: false, message: 'OTP has already been used' });
+        resolve({ status: false, message: "OTP has already been used"});
         return;
       }
 
@@ -84,18 +90,18 @@ const validateOTP = async (email, otp) => {
 
       if (otpAge > 5) {
         await deleteOtpData(email); // Xóa OTP đã hết hạn
-        resolve({ status: false, message: 'OTP has expired' });
+        resolve({ status: false, message: "OTP has expired"});
         return;
       }
 
       if (otpData.otp === otp) {
         await markOtpAsUsed(email); // Đánh dấu OTP đã được sử dụng
-        resolve({ status: true, message: 'OTP is valid' });
+        resolve({ status: true, message: "OTP is valid" });
       } else {
-        resolve({ status: false, message: 'Invalid OTP' });
+        resolve({ status: false, message: "Invalid OTP"});
       }
     } catch (error) {
-      resolve({ status: false, code: 255, message: 'Error System' });
+      resolve({ status: false, code: 255, message: "Error System" });
     }
   });
 };
@@ -119,11 +125,7 @@ const markOtpAsUsed = async (email) => {
 const getUserByID = async (usr) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let res = await db.SELECT(
-        "*",
-        "get_user_by_id('" + usr + "')",
-        
-      );
+      let res = await db.SELECT("*", "get_user_by_id('" + usr + "')");
       resolve({ status: true, data: res.recordsets[0] });
     } catch (error) {
       // reject(error);
@@ -137,8 +139,7 @@ const checkValidUser = async (name, pass) => {
     try {
       let res = await db.SELECT(
         "*",
-        "check_valid_user('" + name + "', '" + pass + "')",
-        
+        "check_valid_user('" + name + "', '" + pass + "')"
       );
       if (res.recordsets[0].length > 0) {
         delete res.recordsets[0][0].password;
@@ -155,11 +156,11 @@ const checkValidUser = async (name, pass) => {
 const createUser = async (body) => {
   return new Promise(async (resolve, reject) => {
     const { username, email } = body;
-    
+
     try {
       let res = await db.INSERT("Users", body);
       console.log(res);
-      resolve({ status: true, data: res.rowsAffected[0]});
+      resolve({ status: true, data: res.rowsAffected[0] });
     } catch (error) {
       resolve({ status: false, code: 255, message: "Error System" });
     }
@@ -171,7 +172,7 @@ const deleteUser = async (name) => {
     try {
       let res = await db.DELETE("Users", "where name = '" + name + "'");
       console.log(res);
-      resolve({ status: true, data: res.rowsAffected[0]});
+      resolve({ status: true, data: res.rowsAffected[0] });
     } catch (error) {
       resolve({ status: false, code: 255, message: "Error System" });
     }
@@ -180,9 +181,9 @@ const deleteUser = async (name) => {
 const editUser = async (body) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let res = await db.executeProcedure("dbo.edit_user_pro",body);
+      let res = await db.executeProcedure("dbo.edit_user_pro", body);
       console.log(res);
-      resolve({ status: true, data: res.recordset[0]});
+      resolve({ status: true, data: res.recordset[0] });
     } catch (error) {
       resolve({ status: false, code: 255, message: "Error System" });
     }
@@ -194,12 +195,20 @@ const changePassword = async (body) => {
     try {
       let res = await db.executeProcedure("dbo.edit_pwd_on_email", body);
       console.log(res);
-      resolve({ status: true, data: res});
+      resolve({ status: true, message:"Đã đổi mật khẩu thành công"});
     } catch (error) {
       resolve({ status: false, code: 255, message: "Error System" });
     }
   });
 };
 
-
-module.exports = {getUserByID, createUser, deleteUser, editUser, checkValidUser, requestOTP, validateOTP, changePassword};
+module.exports = {
+  getUserByID,
+  createUser,
+  deleteUser,
+  editUser,
+  checkValidUser,
+  requestOTP,
+  validateOTP,
+  changePassword,
+};

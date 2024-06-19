@@ -78,7 +78,11 @@ const NewPassw = () => {
         ];
         let res = await callAPi("post", `${URL}/auth/change-password`,body)
 
-
+        console.log(res);
+        if (res.status) {
+          toast.error(res.message);
+          navigate("/login");
+        } 
         
       };
       checkApi();
