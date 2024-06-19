@@ -34,11 +34,13 @@ function App() {
   const handleAddDevice = (key) => {
     setAddDeviceState(key);
   };
+  const [token, setToken] = useState(null);
   useEffect(() => {
     let token = null;
     if (localStorage.getItem("token")) {
       token = JSON.parse(localStorage.getItem("token"));
       console.log("Token từ localStorage:", token);
+      setToken(token);
       authDispatch({
         type: "SET_LOGIN",
         payload: { status: true  },
@@ -47,6 +49,7 @@ function App() {
     if (!token && sessionStorage.getItem("token")) {
       token = JSON.parse(sessionStorage.getItem("token"));
       console.log("Token từ sessionStorage:", token);
+      setToken(token);
       authDispatch({
         type: "SET_LOGIN",
         payload: { status: true },
@@ -60,8 +63,10 @@ function App() {
       });
     }
   }, []);
-  const getDashboard = async () => {
-    let res = await callAPi("get", `${URL}/data/getDashboard/${user.id_user_}`);
+  const getUserByToken = async () => {
+    let res = await callAPi("get", `${URL}/data/verify-jwt/`, {
+      
+    });
   };
 
   return (
