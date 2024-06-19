@@ -1,5 +1,5 @@
 require("dotenv").config();
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const db = require("../../models/mysql");
 
 const EMAIL_ACCOUNT = process.env.EMAIL_ACCOUNT;
@@ -72,7 +72,11 @@ const requestOTP = async (email) => {
     console.log();
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        resolve({ status: false, error , message: `OTP has not been sent to your ${email}`} );
+        resolve({
+          status: false,
+          error,
+          message: `OTP has not been sent to your ${email}`,
+        });
       } else {
         resolve({ status: true, message: "OTP has been sent to your email" });
       }
@@ -145,16 +149,14 @@ const getUserByID = async (usr) => {
 };
 
 const checkValidUser = async (name, pass) => {
-
   return new Promise(async (resolve, reject) => {
     content = {
       name: name,
       pass: pass,
-    }
-    let asscessToken = jwt.sign(content, SECRET_KEY, {expiresIn: '24h'});
-    
+    };
+    let asscessToken = jwt.sign(content, SECRET_KEY, { expiresIn: "24h" });
+
     try {
-      
       let res = await db.SELECT(
         "*",
         "check_valid_user('" + name + "', '" + pass + "')"
@@ -163,13 +165,30 @@ const checkValidUser = async (name, pass) => {
         delete res.recordsets[0][0].password;
       }
       console.log(res);
-      resolve({ status: true, data: res.recordsets[0], asscessToken});
+      resolve({ status: true, data: res.recordsets[0], asscessToken });
     } catch (error) {
       // reject(error);
       resolve({ status: false, code: 255, message: "Error System" });
     }
   });
 };
+
+function verifyToken(token) {
+  return new Promise((resolve, reject) => {
+    if (!token) {
+      resolve({ status: 401, message: "Token không được cung cấp" });
+    }
+
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+      if (err) {
+        console.error("Lỗi xác thực token:", err);
+        reject({ status: 403, message: "Token không hợp lệ" });
+      } else {
+        resolve(decoded); 
+      }
+    });
+  });
+}
 
 const createUser = async (body) => {
   return new Promise(async (resolve, reject) => {
@@ -229,4 +248,5 @@ module.exports = {
   requestOTP,
   validateOTP,
   changePassword,
+  verifyToken,
 };

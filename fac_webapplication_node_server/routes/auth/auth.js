@@ -17,6 +17,11 @@ router.post('/verify-otp', async (req, res) => {
   res.json(result);
 });
 
+router.post('/verify-jwt', async (req, res) => {
+  const result = await auth.verifyToken(req.body.token);
+  res.json(result);
+});
+
 router.get("/getUser/:id", async (req, res) => {
   let result = await auth.getUserByID(req.params.id);
   res.json(result);
