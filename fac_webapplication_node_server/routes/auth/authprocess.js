@@ -36,26 +36,37 @@ const requestOTP = async (email) => {
   storeOtp(email, otp);
   let res = await db.SELECT("*", "get_user_by_gmail('" + email + "')");
   let username = res.recordset[0].name_;
+  const emailContent = `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+    <h2 style="color: #333333; text-align: center; border-bottom: 2px solid #eaeaea; padding-bottom: 10px;">
+        Xác Minh OTP FAC
+    </h2>
+    <p style="font-size: 16px; color: #555555;">
+        Có vẻ như bạn đã quên mật khẩu tại <span style="color: #007bff; font-weight: bold;">FAC - Nông trại thông minh</span> và đang cố gắng xác minh email của mình.
+    </p>
+    <p style="font-size: 16px; color: #555555;">Đây là mã xác minh. Vui lòng sao chép và xác minh email của bạn. Mã OTP này sẽ tồn tại trong 5 phút.</p>
+    <div style="background-color: #f9f9f9; padding: 20px; text-align: center; border-radius: 10px; margin: 20px 0;">
+        <h3 style="color: #ff6f61; margin: 0;">Mã Xác Minh</h3>
+        <h1 style="font-size: 36px; color: #333333; margin: 10px 0;">${otp}</h1>
+        <h3 style="color: #555555; margin: 0;">Tên Người Dùng</h3>
+        <h2 style="font-size: 24px; color: #007bff; margin: 10px 0;">${username}</h2>
+    </div>
+    <p style="font-size: 14px; color: #999999;">Nếu email này không dành cho bạn, vui lòng bỏ qua và xóa nó. Cảm ơn bạn đã thông cảm.</p>
+    <footer style="font-size: 12px; color: #888888; text-align: center; border-top: 1px solid #eaeaea; padding-top: 10px; margin-top: 20px;">
+        <p style="margin: 5px 0;">FAC - Nông trại thông minh</p>
+        <p style="margin: 5px 0;">Địa chỉ: Số 123, Đường ABC, Quận 1, TP.HCM</p>
+        <p style="margin: 5px 0;">Hotline: 0123 456 789</p>
+        <p style="margin: 5px 0;">Email: support@fac.com</p>
+        <p style="margin: 5px 0;">© 2023 FAC. All rights reserved.</p>
+    </footer>
+</div>
+        `;
   const mailOptions = {
     from: EMAIL_ACCOUNT,
     to: email,
     subject: "OTP Verification",
 
-    html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-            <h2>OTP Verification</h2>
-            <p>Your OTP is: <strong>${otp}</strong></p>
-            <p>Your Username is: <strong>${username}</strong></p>
-            <p>This OTP will expire in 5 minutes.</p>
-            <p style="color: grey; font-size: 0.9em;">If you did not request this OTP, please ignore this email.</p>
-            <hr>
-            <footer style="font-size: 0.8em;">
-                <p>Thank you for using our service.</p>
-                <p>Best regards,</p>
-                <p>FLY-TEAM</p>
-            </footer>
-        </div>
-    `,
+    html: emailContent,
   };
   return new Promise(async (resolve, reject) => {
     console.log();
@@ -72,16 +83,15 @@ const requestOTP = async (email) => {
 const validateOTP = async (email, otp) => {
   return new Promise(async (resolve, reject) => {
     try {
-      
       const otpData = await getOtpData(email);
 
       if (!otpData) {
-        resolve({ status: false, message: "OTP not found"});
+        resolve({ status: false, message: "OTP not found" });
         return;
       }
 
       if (otpData.used) {
-        resolve({ status: false, message: "OTP has already been used"});
+        resolve({ status: false, message: "OTP has already been used" });
         return;
       }
 
@@ -90,7 +100,7 @@ const validateOTP = async (email, otp) => {
 
       if (otpAge > 5) {
         await deleteOtpData(email); // Xóa OTP đã hết hạn
-        resolve({ status: false, message: "OTP has expired"});
+        resolve({ status: false, message: "OTP has expired" });
         return;
       }
 
@@ -98,7 +108,7 @@ const validateOTP = async (email, otp) => {
         await markOtpAsUsed(email); // Đánh dấu OTP đã được sử dụng
         resolve({ status: true, message: "OTP is valid" });
       } else {
-        resolve({ status: false, message: "Invalid OTP"});
+        resolve({ status: false, message: "Invalid OTP" });
       }
     } catch (error) {
       resolve({ status: false, code: 255, message: "Error System" });
@@ -195,7 +205,7 @@ const changePassword = async (body) => {
     try {
       let res = await db.executeProcedure("dbo.edit_pwd_on_email", body);
       console.log(res);
-      resolve({ status: true, message:"Đã đổi mật khẩu thành công"});
+      resolve({ status: true, message: "Đã đổi mật khẩu thành công" });
     } catch (error) {
       resolve({ status: false, code: 255, message: "Error System" });
     }
