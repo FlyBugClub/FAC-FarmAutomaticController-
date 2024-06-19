@@ -8,11 +8,11 @@ import { signUpPassword, checkUserName, checkEmail } from "../../validation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //
-import { AuthContext } from "../../AuthContext";
+import { AuthContext } from "../Context/AuthContext";
 import { callAPi, fetchOneUser } from "../../services/UserService";
 import { BiPhone } from "react-icons/bi";
 const Signup = () => {
-  const authContext = useContext(AuthContext);
+  const { URL, login, user, authDispatch } = useContext(AuthContext);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const handleOpenEye = () => {
@@ -114,7 +114,7 @@ const Signup = () => {
       
         let res = await callAPi(
           "post",
-          `${authContext.apiURL}/auth/createUser`,
+          `${URL}/auth/createUser`,
           body
         );
         console.log(res.data);
