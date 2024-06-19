@@ -1,15 +1,13 @@
-*/node_modules
-MushroomAutomation/secret_pass.h
+**/node_modules/
+**/package-lock.json
+**/.env
+**/secret_pass.h
+**/.idea/
 
-fac_webapplication_node_server
-PYHTON_API/.idea/
-FAC_FarmAutomaticController
 .DS_Store
 
-fac_webapplication/package-lock.json
 
-fac_webapplication_node_server/.env
 
-fac_webapplication/.env
 
-fac_webapplication/src/AuthContext.js
+
+
