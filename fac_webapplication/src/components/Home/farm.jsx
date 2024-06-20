@@ -12,7 +12,7 @@ import { AuthContext } from "../Context/AuthContext";
 import dayjs from 'dayjs';
 import Loading from "./loading";
 const Farm = ({ weatherState, handleAddDevice }) => {
-    const authContext = useContext(AuthContext)
+    const { URL, authDispatch } = useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -47,9 +47,10 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
 
     const getFarm = async (id) => {
+        console.log("heheh")        
         let res = await callAPi(
             "get",
-            `${authContext.apiURL}/data/getequipment/${id}`,
+            `${URL}/data/getequipment/${id}/1`,
         );
         if (res.status) {
             setFarm(res.data)
