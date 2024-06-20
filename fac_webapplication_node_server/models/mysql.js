@@ -82,6 +82,19 @@ const DELETE = async (table_name, condition) => {
 
   return result;
 };
+
+const executeScarlarFunction = async (table) => {
+  return new Promise(async (resolve, reject) => {
+    
+
+    const result = await sql.query(
+      "select " + table + " "
+    );
+
+    resolve(result);
+  });
+};
+
 const executeProcedure = async (pro_name, params) => {
   try {
     // Tạo chuỗi tham số từ đối số 'params'
@@ -99,4 +112,4 @@ const executeProcedure = async (pro_name, params) => {
   }
 };
 
-module.exports = { connection, SELECT, UPDATE, INSERT, DELETE, executeProcedure};
+module.exports = { connection, SELECT, UPDATE, INSERT, DELETE, executeProcedure, executeScarlarFunction};
