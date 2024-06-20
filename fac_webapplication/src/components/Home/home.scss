@@ -21,11 +21,14 @@
             border-radius: 8px;
             backdrop-filter: blur(2px);
             box-shadow: rgba($box_shadow_color, 0.8) 0px 50px 100px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
-
-
+            
             padding: 10px 15px;
             box-sizing: border-box;
-
+            display: flex;
+            justify-content: center;
+            margin: auto;
+            flex-direction: column;
+            max-width: 2500px;
             &_Header {
                 display: flex;
                 justify-content: space-between;
@@ -57,7 +60,9 @@
             }
 
             &_Farms {
-
+                
+                
+                // max-height: 250px;
                 padding: 2px 2px;
                 box-sizing: border-box;
                 overflow-y: auto;
@@ -65,7 +70,7 @@
                 width: 100%;
                 height: calc(100% - 54px);
                 white-space: nowrap;
-                            text-overflow: ellipsis;
+                text-overflow: ellipsis;
                 &_Item {
                     margin-top: 18px;
                     height: 150px;
@@ -240,6 +245,8 @@
                         outline: 2px solid $outline_color;
                         display: flex;
                         overflow: auto;
+                        overflow-x: hidden;
+
                         flex-direction: column;
                         align-items: center;
                         padding: 15px 10px;
@@ -323,9 +330,13 @@
 
                         &_Content {
                             margin-top: 5px;
+                            
                             font-size: 20px;
-
+                            margin-right: auto;
                             text-align: left;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis
                         }
                         &::-webkit-scrollbar
                         {

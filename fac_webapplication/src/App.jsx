@@ -78,7 +78,7 @@ function App() {
                   element={<Dashboard weatherState={weatherState} handleAddDevice={handleAddDevice} />}
                 />
                 <Route
-                  path="/farm"
+                  path="/farm/:id"
                   element={<Farm weatherState={weatherState} handleAddDevice={handleAddDevice} />}
                 />
                 <Route
