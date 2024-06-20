@@ -42,6 +42,10 @@ function App() {
      );
      // console.log(res.data[0].user_name_);
      if (res.status) {
+      authDispatch({
+        type: "SET_LOGIN",
+        payload: { status: true},
+      });
        authDispatch({
          type: "SET_USER",
          payload: res.data[0],
@@ -56,19 +60,13 @@ function App() {
       token = JSON.parse(localStorage.getItem("token"));
       // console.log("Token từ localStorage:", token);
       getUserByToken(token);
-      authDispatch({
-        type: "SET_LOGIN",
-        payload: { status: true  },
-      });
+     
     }
     if (!token && sessionStorage.getItem("token")) {
       token = JSON.parse(sessionStorage.getItem("token"));
       // console.log("Token từ sessionStorage:", token);
       getUserByToken(token);
-      authDispatch({
-        type: "SET_LOGIN",
-        payload: { status: true },
-      });
+      
     }
     if (!token) {
       // console.log("Không tìm thấy token trong localStorage và sessionStorage")

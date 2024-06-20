@@ -17,8 +17,8 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
     useEffect(() => {
         if(login.status === true) 
         { getDashboard()}
-        
-    }, [])
+        console.log("hehe")
+    }, [login.status])
 
     const getDashboard = async () => {
         let res = await callAPi(
