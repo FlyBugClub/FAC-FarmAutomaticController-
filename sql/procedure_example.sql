@@ -43,3 +43,16 @@ N'
 
 --EXPECT RESULT state	status
 --				200		success
+
+SELECT * FROM dbo.get_equipment_schedule('BC0002')
+/* EXPECT RESULT
+time_offset		times				_state	_status
+15				03:32:00.0000000	200		success
+15				23:50:00.0000000	200		success
+5				20:12:00.0000000	200		success
+5				14:12:00.0000000	200		success
+15				02:48:00.0000000	200		success
+20				23:59:00.0000000	200		success
+20				00:10:00.0000000	200		success
+20				18:08:00.0000000	200		success
+*/
