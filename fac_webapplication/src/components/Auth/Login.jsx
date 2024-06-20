@@ -1,5 +1,5 @@
 import { BrowserView, MobileView } from "react-device-detect";
-import React, { useContext, useEffect, useReducer, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff, FiLock, FiUser } from "react-icons/fi";
 import "./Auth.scss";
@@ -7,12 +7,12 @@ import "./Auth.scss";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //
-import { callAPi, fetchOneUser } from "../../services/UserService";
+import { callAPi} from "../../services/UserService";
 import { AuthContext } from "../Context/AuthContext";
 const Login = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { URL, login, user, authDispatch } = useContext(AuthContext);
+  const { URL, authDispatch } = useContext(AuthContext);
   const handleOpenEye = () => {
     setOpen(!open);
   };

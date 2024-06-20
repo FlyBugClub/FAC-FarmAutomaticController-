@@ -2,20 +2,17 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
-  Switch,
-  Redirect,
   Navigate,
   Routes,
-  useNavigate,
 } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import ForgotPassw from "./components/Auth/ForgotPassw";
 import { Dashboard } from "./components/Home/dashboard";
 import NewPassw from "./components/Auth/NewPassw";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { callAPi, host } from "./services/UserService";
+import { callAPi } from "./services/UserService";
 import Menu from "./components/Menu/menu";
 import Weather from "./components/Weather/weather";
 import Farm from "./components/Home/farm";
@@ -24,16 +21,35 @@ import User from "./components/Home/user";
 //
 import { AuthContext } from "./components/Context/AuthContext";
 function App() {
-  const navigate = useNavigate();
+
   const [weatherState, setWeatherState] = useState(true);
   const [addDeviceState, setAddDeviceState] = useState("");
-  const { URL, login, user, authDispatch } = useContext(AuthContext);
+  const { URL, login, authDispatch } = useContext(AuthContext);
   const handleWeather = () => {
     setWeatherState(!weatherState);
   };
   const handleAddDevice = (key) => {
     setAddDeviceState(key);
   };
+  const getUserByToken = async (isToken) => {
+    const checkApi = async () => {    
+     let res = await callAPi(
+       "post",
+       `${URL}/auth/verify-jwt`,
+       {
+         token: isToken,
+       }
+     );
+     // console.log(res.data[0].user_name_);
+     if (res.status) {
+       authDispatch({
+         type: "SET_USER",
+         payload: res.data[0],
+       })
+
+     }};
+   checkApi();
+ }
   useEffect(() => {
     let token = null;
     if (localStorage.getItem("token")) {
@@ -62,25 +78,7 @@ function App() {
       });
     }
   }, []);
-  const getUserByToken = async (isToken) => {
-     const checkApi = async () => {    
-      let res = await callAPi(
-        "post",
-        `${URL}/auth/verify-jwt`,
-        {
-          token: isToken,
-        }
-      );
-      // console.log(res.data[0].user_name_);
-      if (res.status) {
-        authDispatch({
-          type: "SET_USER",
-          payload: res.data[0],
-        })
 
-      }};
-    checkApi();
-  }
 
   return (
     <div className="App">

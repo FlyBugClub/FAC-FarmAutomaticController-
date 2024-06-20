@@ -1,7 +1,7 @@
 import { BrowserView, MobileView } from "react-device-detect";
 import { useNavigate } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
-import { FiEye, FiEyeOff, FiLock, FiUser } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiLock } from "react-icons/fi";
 import "./Auth.scss";
 //
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ import { useLocation } from "react-router-dom";
 //
 import { AuthContext } from "../Context/AuthContext";
 const NewPassw = () => {
-  const { URL, login, user, authDispatch } = useContext(AuthContext);
+  const { URL} = useContext(AuthContext);
   const location = useLocation();
   const [email, setEmail] = useState("");
 
