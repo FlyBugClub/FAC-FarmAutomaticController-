@@ -26,7 +26,7 @@ N'
 	{
 	  "id_esp":"ESP0003",
 	  "id_equipment":"BC0303",
-	  "name_equipment":"ï¿½dassdasd",
+	  "name_equipment":"ádassdasd",
 	  "sensors":
 	   [
 		  {
@@ -84,4 +84,12 @@ EXEC dbo.delete_schedule_pro 'BC0003';
 /*	EXPECT RESULT
 	_state	_status
 	200		success 
+*/
+
+EXEC dbo.delete_schedule_pro 'BC0001', @times ='23:59:00.0000000'--just use times arguement
+EXEC dbo.delete_schedule_pro 'BC0001', 20 
+
+/*	EXPECT RESULT
+	_state	_status
+	200		success
 */
