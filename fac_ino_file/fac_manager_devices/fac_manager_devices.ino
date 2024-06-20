@@ -1,9 +1,14 @@
-void setup() {
-  // put your setup code here, to run once:
+#include <Arduino.h>
+#include "my_module.h"
 
+void setup() {
+  Serial.begin(9600);
+
+  myFunction();
+
+  int result = add(5, 3);
+  Serial.println(result);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
 }
