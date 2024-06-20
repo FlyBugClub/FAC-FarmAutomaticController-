@@ -1,19 +1,17 @@
 #include "wifiConnection.h"
-#include <WiFi.h>
 
-void connectToWiFi(const char* ssid, const char* password) {
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
 
+
+void connectToWiFi(const String& ssid, const String& password) {
+  Serial.println("Starting connection to WiFi");
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
+    delay(100);
     Serial.print(".");
   }
-
-  Serial.println("");
-  Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
+  // getWhenStart("/api/laststatus/", id_sensor);
+  Serial.println("\nWiFi connection successful!");
+  Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
 }
