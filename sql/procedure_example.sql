@@ -1,4 +1,4 @@
-EXEC dbo.insert_sensor_equipment N'
+EXEC dbo.insert_device_pro N'
 	{
 		"id_esp":"ESP0001",
 		"device":
