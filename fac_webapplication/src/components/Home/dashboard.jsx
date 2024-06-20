@@ -3,8 +3,7 @@ import './home.scss'
 import { BrowserView, MobileView } from "react-device-detect";
 import { MdOutlineLibraryAdd } from "react-icons/md";
 import { MdCircle } from "react-icons/md";
-import { Navigate, useNavigate } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import { callAPi } from "../../services/UserService";
 import Loading from "./loading";
 import { AuthContext } from "../Context/AuthContext";
@@ -26,10 +25,14 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
             "get",
             `${URL}/data/getDashboard/${user.id_user_}`,
         );
-
         setLoadingState(false)
+        authDispatch({type: "SET_USER",payload:res.data})
         setFarms(res.data)
     }
+
+    const navigateToFarm = (id_esp) => {
+        navigate(`/farm/${id_esp}`);
+    };
 
     return (
         <div className="Fac_Home">
@@ -54,7 +57,7 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
                                     :
                                     <div className="Fac_Home_Web_Dashboardcontainer_Farms">
                                         {farms.map((item) => (
-                                            <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item" key={item.id_esp_} onClick={() => navigate("/farm")}>
+                                            <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item" key={item.id_esp_} onClick={() => navigateToFarm(item.id_esp_)}>
                                                 <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header">
                                                     {item.name_esp_}
                                                     {item.state ? <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header_State">
@@ -66,28 +69,19 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
                                                             Disconnected
                                                         </div>
                                                     }
-
                                                 </div>
                                                 <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Description">
                                                     {item.description_}
-
                                                 </div>
                                                 <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Amount">
-                                                    <div >ph: {item.number_of_sensor_}</div>
-                                                    <div style={{ marginLeft: "10px" }}>sht: {item.number_of_sensor_}</div>
-                                                    <div style={{ marginLeft: "10px" }}>bump: {item.number_of_equipment_}</div>
+                                                    <div >sensors: {item.number_of_sensor_}</div>
+                                                    <div style={{ marginLeft: "10px" }}>equipments: {item.number_of_equipment_}</div>
                                                 </div>
                                             </div>
-
-
                                         ))}
                                     </div>
                             }
-
                     }
-
-
-
                 </div>
             </BrowserView>
             <MobileView>

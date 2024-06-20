@@ -120,13 +120,8 @@ function App() {
                   }
                 />
                 <Route
-                  path="/farm"
-                  element={
-                    <Farm
-                      weatherState={weatherState}
-                      handleAddDevice={handleAddDevice}
-                    />
-                  }
+                  path="/farm/:id"
+                  element={<Farm weatherState={weatherState} handleAddDevice={handleAddDevice} />}
                 />
                 <Route
                   path="/addfarm"
