@@ -14,10 +14,9 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
     
     const [loadingState, setLoadingState] = useState(true)
 
-    useEffect(() => {
-        if(login.status === true) 
+    useEffect( () => {
+        if(login.status === true ) 
         { getDashboard()}
-        console.log("hehe")
     }, [login.status])
 
     const getDashboard = async () => {
@@ -26,7 +25,6 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
             `${URL}/data/getDashboard/${user.id_user_}`,
         );
         setLoadingState(false)
-        authDispatch({type: "SET_USER",payload:res.data})
         setFarms(res.data)
     }
 
