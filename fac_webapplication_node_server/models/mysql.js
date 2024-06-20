@@ -1,9 +1,15 @@
+require("dotenv").config();
+const SQLUSER     = process.env.SQLUSER;
+const SQLPASSWORD = process.env.SQLPASSWORD;
+const SQLSERVER   = process.env.SQLSERVER;
+const SQLDATABASE = process.env.SQLDATABASE;
+
 const sql = require("mssql");
 const sqlConfig = {
-  user: "sa",
-  password: "#FlyBugClub@hoasen.edu.vn",
-  database: "FAC_DB",
-  server: "10.101.172.53\\SQLEXPRESS01",
+  user: SQLUSER,
+  password: SQLPASSWORD,
+  database: SQLDATABASE,
+  server: SQLSERVER,
   pool: {
     max: 10,
     min: 0,
@@ -29,17 +35,7 @@ const connection = async () => {
   }
 };
 
-const SELECT = async (select, table) => {
-  return new Promise(async (resolve, reject) => {
-    
 
-    const result = await sql.query(
-      "select " + select + " from " + table + " "
-    );
-
-    resolve(result);
-  });
-};
 const UPDATE = async (table_name, update_values, condition) => {
   return new Promise(async (resolve, reject) => {
     let condition_ = "";
@@ -83,6 +79,20 @@ const DELETE = async (table_name, condition) => {
   return result;
 };
 
+const SELECT = async (select, table) => {
+  return new Promise(async (resolve, reject) => {
+    
+
+    const result = await sql.query(
+      "select " + select + " from " + table + " "
+    );
+
+    resolve(result);
+  });
+};
+
+
+
 const executeScarlarFunction = async (table) => {
   return new Promise(async (resolve, reject) => {
     
@@ -102,7 +112,8 @@ const executeProcedure = async (pro_name, params) => {
     if (params && params.length > 0) {
       paramStr = params.map(param => `'${param}'`).join(', ');
     }
-
+    console.log("hahahahahahahaha")
+    console.log(`EXEC ${pro_name} ${paramStr}`)
     // Gọi stored procedure và trả về kết quả
     const result = await sql.query(`EXEC ${pro_name} ${paramStr}`);
     return result;

@@ -1,24 +1,26 @@
 import React, { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../../AuthContext";
 import { FiGrid, FiBell, FiSettings, FiUserMinus } from "react-icons/fi";
 import { WiDayCloudy } from "react-icons/wi";
 
 import { BrowserView, MobileView } from "react-device-detect";
 import './menu.scss'
 import { useNavigate } from "react-router-dom";
+
+import { AuthContext } from "../Context/AuthContext";
 const Menu = ({ handleWeather, weatherState }) => {
-    const context = useContext(AuthContext);
+    const { URL, login, user, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
     const [menuState, setMenuState] = useState("dashboard")
     const [userState, setUserState] = useState("")
-   
-    useEffect(() => {
-        if(context.isLoggedIn === true) 
-        { console.log(context.user.name_)}
-        
-    }, [context.isLoggedIn])
+ 
     const handleLogout = () => {
-        context.logout();
+        authDispatch({
+            type: "SET_LOGIN",
+            payload: { status: false, isSave: '' },
+          })
+        console.log(login.status)
+        localStorage.clear();
+        sessionStorage.clear();
         navigate("/");
     }
     const handleMenu = (key) => {
@@ -57,8 +59,8 @@ const Menu = ({ handleWeather, weatherState }) => {
                             <div className="Fac_Menu_Web_Container_Dropbox" >
                                 <div className="Fac_Menu_Web_Container_Dropbox_Header">
                                     <div className="Fac_Menu_Web_Container_Dropbox_Header_Info">
-                                        {context.user.name_}
-                                        <div style={{ fontSize: "12px", fontWeight: "400" }}>{context.user.gmail_}</div>
+                                        {user.user_name_}
+                                        <div style={{ fontSize: "12px", fontWeight: "400" }}>{user.gmail_}</div>
                                     </div>
 
                                 </div>

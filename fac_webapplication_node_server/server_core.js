@@ -6,6 +6,7 @@ const auth = require('./routes/auth/auth');
 const data = require('./routes/data/data');
 const db = require('./models/mysql');
 
+
 db.connection();
 
 // connectToDatabase();

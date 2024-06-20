@@ -14,6 +14,7 @@ const signUpPassword = (signUpPassword, dataPassword) => {
   return signUpPassword === dataPassword; 
 }
 
+const checkOTP = (otp) => otp.length === 6;
 
 const checkEmail = (email) => {
   const reg =
@@ -26,4 +27,4 @@ const checkPhone = (phone) => {
   return reg.test(String(phone).toLowerCase());
 };
 
-export {signUpPassword, checkUserName, checkPassword, checkEmail, checkPhone, loginUserName, loginPassword };
+export {signUpPassword, checkUserName, checkPassword, checkEmail, checkOTP, checkPhone, loginUserName, loginPassword };
