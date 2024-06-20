@@ -6,6 +6,7 @@ const auth = require('./routes/auth/auth');
 const data = require('./routes/data/data');
 const db = require('./models/mysql');
 
+
 db.connection();
 
 // connectToDatabase();
@@ -13,7 +14,9 @@ db.connection();
 const host = [
   'http://172.31.8.230:3000',
   'http://10.101.172.53:3000',
-  "http://10.101.172.53:8080"
+  "http://10.101.172.53:8080",
+  "http://172.16.17.47:3000",
+  "http://10.102.69.69:3000",
 
 ]
 

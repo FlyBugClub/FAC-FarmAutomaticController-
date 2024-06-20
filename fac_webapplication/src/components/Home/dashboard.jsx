@@ -5,33 +5,25 @@ import { MdOutlineLibraryAdd } from "react-icons/md";
 import { MdCircle } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { callAPi } from "../../services/UserService";
-import { AuthContext } from "../../AuthContext";
 import Loading from "./loading";
-import { ToolContext } from "../Context/ToolContext";
+import { AuthContext } from "../Context/AuthContext";
 export const Dashboard = ({ weatherState, handleAddDevice }) => {
-    const authContext = useContext(AuthContext)
-    const {data,toolDispatch} = useContext(ToolContext)
+    const { URL, login, user, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
-    const [user, setUser] = useState([])
+    
     const [loadingState, setLoadingState] = useState(true)
 
     useEffect(() => {
-        let json = sessionStorage.getItem('user_info');
-        json = JSON.parse(json);
-        setUser(json)
+        if(login.status === true) 
+        { getDashboard()}
+        
     }, [])
-
-    useEffect(() => {
-        if (user.id_user_ != undefined) {
-            getDashboard()
-        }
-    }, [user])
 
     const getDashboard = async () => {
         let res = await callAPi(
             "get",
-            `${authContext.apiURL}/data/getDashboard/${user.id_user_}`,
+            `${URL}/data/getDashboard/${user.id_user_}`,
         );
         setLoadingState(false)
         toolDispatch({type: "ADD_DATA",payload:res.data})

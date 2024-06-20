@@ -2,51 +2,88 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
-  Switch,
-  Redirect,
   Navigate,
   Routes,
-  useNavigate,
 } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import ForgotPassw from "./components/Auth/ForgotPassw";
 import { Dashboard } from "./components/Home/dashboard";
 import NewPassw from "./components/Auth/NewPassw";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { callAPi, host } from "./services/UserService";
-import { AuthContext } from "./AuthContext";
+import { callAPi } from "./services/UserService";
 import Menu from "./components/Menu/menu";
 import Weather from "./components/Weather/weather";
 import Farm from "./components/Home/farm";
 import Addfarm from "./components/Home/newfarm";
 import User from "./components/Home/user";
-
+//
+import { AuthContext } from "./components/Context/AuthContext";
 function App() {
-  const navigate = useNavigate();
+
   const [weatherState, setWeatherState] = useState(true);
   const [addDeviceState, setAddDeviceState] = useState("");
-  
+  const { URL, login, authDispatch } = useContext(AuthContext);
   const handleWeather = () => {
     setWeatherState(!weatherState);
   };
   const handleAddDevice = (key) => {
     setAddDeviceState(key);
   };
+  const getUserByToken = async (isToken) => {
+    const checkApi = async () => {    
+     let res = await callAPi(
+       "post",
+       `${URL}/auth/verify-jwt`,
+       {
+         token: isToken,
+       }
+     );
+     // console.log(res.data[0].user_name_);
+     if (res.status) {
+       authDispatch({
+         type: "SET_USER",
+         payload: res.data[0],
+       })
 
-  const Context = useContext(AuthContext);
-
+     }};
+   checkApi();
+ }
   useEffect(() => {
-    if (!Context.isLoggedIn) {
-      navigate("/login");
+    let token = null;
+    if (localStorage.getItem("token")) {
+      token = JSON.parse(localStorage.getItem("token"));
+      // console.log("Token từ localStorage:", token);
+      getUserByToken(token);
+      authDispatch({
+        type: "SET_LOGIN",
+        payload: { status: true  },
+      });
     }
-  }, [Context.isLoggedIn]);
+    if (!token && sessionStorage.getItem("token")) {
+      token = JSON.parse(sessionStorage.getItem("token"));
+      // console.log("Token từ sessionStorage:", token);
+      getUserByToken(token);
+      authDispatch({
+        type: "SET_LOGIN",
+        payload: { status: true },
+      });
+    }
+    if (!token) {
+      // console.log("Không tìm thấy token trong localStorage và sessionStorage")
+      authDispatch({
+        type: "SET_LOGIN",
+        payload: { status: false },
+      });
+    }
+  }, []);
+
 
   return (
     <div className="App">
       <header className="App-header">
-        {Context.isLoggedIn ? (
+        {login.status ? (
           <div style={{ position: "fixed", width: "100%", height: "100%" }}>
             <img
               src="/images/b3.jpg"
@@ -75,7 +112,12 @@ function App() {
               <Routes>
                 <Route
                   path="/dashboard"
-                  element={<Dashboard weatherState={weatherState} handleAddDevice={handleAddDevice} />}
+                  element={
+                    <Dashboard
+                      weatherState={weatherState}
+                      handleAddDevice={handleAddDevice}
+                    />
+                  }
                 />
                 <Route
                   path="/farm/:id"
@@ -83,7 +125,12 @@ function App() {
                 />
                 <Route
                   path="/addfarm"
-                  element={<Addfarm weatherState={weatherState} addDeviceState={addDeviceState} />}
+                  element={
+                    <Addfarm
+                      weatherState={weatherState}
+                      addDeviceState={addDeviceState}
+                    />
+                  }
                 />
                 <Route
                   path="/usersetting"
@@ -104,7 +151,7 @@ function App() {
           </Routes>
         )}
       </header>
-      <ToastContainer />
+      <ToastContainer  autoClose={1500}/>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import react, { useContext, useState } from "react";
+import react, { useContext, useEffect, useState } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -6,16 +6,25 @@ import { TbMessageLanguage } from "react-icons/tb";
 import { FiSettings, FiUserMinus } from "react-icons/fi";
 import { BiCheckShield } from "react-icons/bi";
 import { RiVipCrownLine, RiArrowDownSFill } from "react-icons/ri";
-import { AuthContext } from "../../AuthContext";
+import { AuthContext } from "../Context/AuthContext";
 const User = ({ weatherState }) => {
-    const authContext = useContext(AuthContext);
+    const { URL, login, user, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
     const [language, setlanguage] = useState("English");
     const [languageState, setlanguageState] = useState(false);
+
     const handleLogout = () => {
-        authContext.logout();
+        logout();
         navigate("/");
     }
+    const logout = () => {
+        authDispatch({
+            type: "SET_LOGIN",
+            payload: { status: false, isSave: '' },
+        })
+        localStorage.clear();
+        sessionStorage.clear();
+      };
     return (
 
         <div className="Fac_Home">
@@ -33,12 +42,16 @@ const User = ({ weatherState }) => {
                             <div className="Fac_Home_Web_Usercontainer_Body_Userinfo_Name">
                                 <div style={{ display: "flex", alignItems: "center" }}>
 
-                                    Name: Đinh Quốc Cường
+                                    Name: {user.user_name_}
                                     <FiSettings size={20} style={{ marginLeft: "15px", paddingTop: "5px", cursor: "pointer" }} />
                                 </div>
                                 <div style={{ marginTop: "5px" }}>
-                                    Email: tr6r20@gmail.com
+                                    Email: {user.gmail_}
                                 </div>
+                                <div style={{ marginTop: "5px" }}>
+                                    SDT: {user.phone_no_}
+                                </div>
+
                             </div>
                         </div>
                         <div className="Fac_Home_Web_Usercontainer_Body_Language">
@@ -68,8 +81,8 @@ const User = ({ weatherState }) => {
                         <div className="Fac_Home_Web_Usercontainer_Body_Items">
                             <BiCheckShield size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Change password
                         </div>
-                        <div className="Fac_Home_Web_Usercontainer_Body_Items" onClick={()=>handleLogout()} >
-                            <FiUserMinus  size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Log out
+                        <div className="Fac_Home_Web_Usercontainer_Body_Items" onClick={() => handleLogout()} >
+                            <FiUserMinus size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Log out
                         </div>
 
                     </div>
