@@ -44,7 +44,7 @@ N'
 --EXPECT RESULT state	status
 --				200		success
 
-SELECT * FROM dbo.get_equipment_schedule('BC0002')
+SELECT * FROM dbo.get_equipment_schedule('BC0002');
 /*  RESULT WILL HAVE THIS FORMAT
 time_offset		times				_state	_status
 15				03:32:00.0000000	200		success
@@ -57,7 +57,7 @@ time_offset		times				_state	_status
 20				18:08:00.0000000	200		success
 */
 
-EXEC [dbo].[insert_schedule_pro] 'BC0001',14,'03:32:00'
+EXEC [dbo].[insert_schedule_pro] 'BC0001',14,'03:32:00';
 /*
 	EXPECT RESULT
 	_state	_status
@@ -65,7 +65,15 @@ EXEC [dbo].[insert_schedule_pro] 'BC0001',14,'03:32:00'
 */
 
 
-EXEC dbo.edit_schedule_pro 'BC0001', 20
+EXEC dbo.edit_schedule_pro 'BC0001', 20;
+/*	EXPECT RESULT
+	_state	_status
+	200		'success'
+*/
+
+
+EXEC dbo.edit_schedule_pro 'BC0001', 20;
+EXEC dbo.edit_schedule_pro 'BC0001',@old_time ='03:32:00',@new_time = '03:34:00';--use 2 last arguement with out using @offset
 /*	EXPECT RESULT
 	_state	_status
 	200		'success'
