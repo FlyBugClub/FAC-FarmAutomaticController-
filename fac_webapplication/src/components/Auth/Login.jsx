@@ -45,32 +45,32 @@ const Login = () => {
     const checkBox = e.target.checked;
     setCheckSavePassword(checkBox);
   };
-  const handleEditUser = async () => {
-    // const checkApi = async () => {
-    //   let body = [
-    //     "1", // id
-    //     "new.email@example.com", // gmail
-    //     "1234", //pass
-    //     "123456789", //phone
-    //     "Premium", //member
-    //   ];
-    //   let res = await callAPi(
-    //     "post",
-    //     `${state.URL}/auth/editUser`,
-    //     body
-    //   );
-    //   console.log(res);
-    //   if (res.data) {
-    //     console.log(res.data);
-    //     alert("sua thanh cong");
-    //   } else {
-    //     alert("sua khong thanh cong");
-    //   }
-    // };
-    // checkApi();
-    console.log(login.status);
-    console.log(user.id_user_);
-  };
+  // const handleEditUser = async () => {
+  //   // const checkApi = async () => {
+  //   //   let body = [
+  //   //     "1", // id
+  //   //     "new.email@example.com", // gmail
+  //   //     "1234", //pass
+  //   //     "123456789", //phone
+  //   //     "Premium", //member
+  //   //   ];
+  //   //   let res = await callAPi(
+  //   //     "post",
+  //   //     `${state.URL}/auth/editUser`,
+  //   //     body
+  //   //   );
+  //   //   console.log(res);
+  //   //   if (res.data) {
+  //   //     console.log(res.data);
+  //   //     alert("sua thanh cong");
+  //   //   } else {
+  //   //     alert("sua khong thanh cong");
+  //   //   }
+  //   // };
+  //   // checkApi();
+  //   console.log(login.status);
+  //   console.log(user.id_user_);
+  // };
   const sendToken = (check, token) => {
     if (check) {
       localStorage.setItem("token", JSON.stringify(token));
@@ -173,7 +173,7 @@ const Login = () => {
               <div onClick={() => navigate("/forgotpassword")}>
                 Quên mật khẩu
               </div>
-              <div onClick={handleEditUser}>edit</div>
+              {/* <div onClick={handleEditUser}>edit</div> */}
             </div>
           </form>
         </div>
