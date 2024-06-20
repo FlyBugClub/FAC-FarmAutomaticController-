@@ -26,7 +26,7 @@ N'
 	{
 	  "id_esp":"ESP0003",
 	  "id_equipment":"BC0303",
-	  "name_equipment":"ádassdasd",
+	  "name_equipment":"ï¿½dassdasd",
 	  "sensors":
 	   [
 		  {
@@ -79,3 +79,9 @@ EXEC dbo.edit_schedule_pro 'BC0001',@old_time ='03:32:00',@new_time = '03:34:00'
 	200		'success'
 */
 
+
+EXEC dbo.delete_schedule_pro 'BC0003';
+/*	EXPECT RESULT
+	_state	_status
+	200		success 
+*/
