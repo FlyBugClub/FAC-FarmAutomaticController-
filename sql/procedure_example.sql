@@ -26,7 +26,7 @@ N'
 	{
 	  "id_esp":"ESP0003",
 	  "id_equipment":"BC0303",
-	  "name_equipment":"ï¿½dassdasd",
+	  "name_equipment":"ádassdasd",
 	  "sensors":
 	   [
 		  {
@@ -93,3 +93,15 @@ EXEC dbo.delete_schedule_pro 'BC0001', 20 --just use offset
 	_state	_status
 	200		success
 */
+
+
+--arguement's list @id_esp varchar(23),
+/*
+@new_id_user varchar(20) =NULL,
+@new_name_esp VARCHAR(20) = NULL,
+@new_description VARCHAR(100) = NULL,
+@new_latitude float =NULL,
+@new_longtitude float = NULL
+*/
+EXEC dbo.edit_farm_pro '202403215' ,@new_name_esp = 'dongnho'
+
