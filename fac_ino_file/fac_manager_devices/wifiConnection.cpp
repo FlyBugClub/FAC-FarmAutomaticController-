@@ -32,9 +32,14 @@ WiFiConnection::WifiCredentials WiFiConnection::activateAPMode() {
     Serial.println("Connected to WiFi");
     Serial.print("SSID: ");
     Serial.println(WiFi.SSID());
+    Serial.print("Password: ");
     Serial.println(WiFi.psk());
     creds.ssid = WiFi.SSID();
     creds.password = WiFi.psk();
   }
   return creds;
+}
+
+bool WiFiConnection::isConnected() {
+  return WiFi.status() == WL_CONNECTED;
 }

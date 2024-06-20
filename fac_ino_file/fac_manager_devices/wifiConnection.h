@@ -2,7 +2,6 @@
 #define WIFICONNECTION_H
 
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
 #include <WiFiManager.h>
 
 class WiFiConnection {
@@ -15,6 +14,7 @@ public:
   WiFiConnection();
   void connectToWiFi(const String& ssid, const String& password);
   WifiCredentials activateAPMode();
+  bool isConnected();
 
 private:
   WiFiManager wifiManager;
