@@ -1,36 +1,40 @@
-#include "wifiConnection.h"
+#include "WiFiConnection.h"
 
-void connectToWiFi(const String& ssid, const String& password) {
-  Serial.println("Starting connection to WiFi");
-  WiFi.begin(ssid, password);
+WiFiConnection::WiFiConnection() {}
 
+void WiFiConnection::connectToWiFi(const String& ssid, const String& password) {
+  WiFi.begin(ssid.c_str(), password.c_str());
   while (WiFi.status() != WL_CONNECTED) {
-    delay(100);
+    delay(1000);
     Serial.print(".");
   }
-  Serial.println("\nWiFi connection successful!");
-  Serial.print("IP Address: ");
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 }
 
-WifiCredentials activateAPMode() {
-  WifiCredentials credentials;
+WiFiConnection::WifiCredentials WiFiConnection::activateAPMode() {
+  Serial.println("Starting Access Point Mode");
 
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("Disconnecting from WiFi");
     WiFi.disconnect();
+    delay(1000);
   }
 
-  WiFiManager wifiManager;
-
+  WifiCredentials creds;
   if (!wifiManager.autoConnect("ESP8266_AP")) {
     Serial.println("Failed to connect and hit timeout");
-    ESP.reset();
+    ESP.restart();
     delay(1);
-    return credentials; 
   } else {
-    credentials.ssid = WiFi.SSID();
-    credentials.password = WiFi.psk();
-    return credentials; 
+    Serial.println("Connected to WiFi");
+    Serial.print("SSID: ");
+    Serial.println(WiFi.SSID());
+    Serial.println(WiFi.psk());
+    creds.ssid = WiFi.SSID();
+    creds.password = WiFi.psk();
   }
+  return creds;
 }
