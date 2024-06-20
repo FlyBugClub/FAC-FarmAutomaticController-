@@ -45,7 +45,7 @@ N'
 --				200		success
 
 SELECT * FROM dbo.get_equipment_schedule('BC0002')
-/* EXPECT RESULT
+/*  RESULT WILL HAVE THIS FORMAT
 time_offset		times				_state	_status
 15				03:32:00.0000000	200		success
 15				23:50:00.0000000	200		success
@@ -64,4 +64,10 @@ EXEC [dbo].[insert_schedule_pro] 'BC0001',14,'03:32:00'
 	200		'success'
 */
 
+
+EXEC dbo.edit_schedule_pro 'BC0001', 20
+/*	EXPECT RESULT
+	_state	_status
+	200		'success'
+*/
 
