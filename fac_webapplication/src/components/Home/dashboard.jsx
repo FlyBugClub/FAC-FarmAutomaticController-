@@ -26,7 +26,7 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
             `${URL}/data/getDashboard/${user.id_user_}`,
         );
         setLoadingState(false)
-        toolDispatch({type: "ADD_DATA",payload:res.data})
+        authDispatch({type: "SET_USER",payload:res.data})
         setFarms(res.data)
     }
 

@@ -8,7 +8,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { MdCircle } from "react-icons/md";
 import { callAPi } from "../../services/UserService";
-import { AuthContext } from "../../AuthContext";
+import { AuthContext } from "../Context/AuthContext";
 import dayjs from 'dayjs';
 import Loading from "./loading";
 const Farm = ({ weatherState, handleAddDevice }) => {

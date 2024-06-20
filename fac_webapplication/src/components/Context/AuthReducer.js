@@ -30,6 +30,7 @@ const AuthReducer = (state, action) => {
           [action.payload]: action.payload,
         },
       };
+    
     default:
       return state;
   }
