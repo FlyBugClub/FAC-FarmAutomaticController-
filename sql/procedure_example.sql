@@ -56,3 +56,12 @@ time_offset		times				_state	_status
 20				00:10:00.0000000	200		success
 20				18:08:00.0000000	200		success
 */
+
+EXEC [dbo].[insert_schedule_pro] 'BC0001',14,'03:32:00'
+/*
+	EXPECT RESULT
+	_state	_status
+	200		'success'
+*/
+
+
