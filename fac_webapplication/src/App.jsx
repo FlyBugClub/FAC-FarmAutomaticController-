@@ -38,7 +38,7 @@ function App() {
     let token = null;
     if (localStorage.getItem("token")) {
       token = JSON.parse(localStorage.getItem("token"));
-      console.log("Token từ localStorage:", token);
+      // console.log("Token từ localStorage:", token);
       getUserByToken(token);
       authDispatch({
         type: "SET_LOGIN",
@@ -47,7 +47,7 @@ function App() {
     }
     if (!token && sessionStorage.getItem("token")) {
       token = JSON.parse(sessionStorage.getItem("token"));
-      console.log("Token từ sessionStorage:", token);
+      // console.log("Token từ sessionStorage:", token);
       getUserByToken(token);
       authDispatch({
         type: "SET_LOGIN",
@@ -55,7 +55,7 @@ function App() {
       });
     }
     if (!token) {
-      console.log("Không tìm thấy token trong localStorage và sessionStorage")
+      // console.log("Không tìm thấy token trong localStorage và sessionStorage")
       authDispatch({
         type: "SET_LOGIN",
         payload: { status: false },
@@ -158,7 +158,7 @@ function App() {
           </Routes>
         )}
       </header>
-      <ToastContainer />
+      <ToastContainer  autoClose={1500}/>
     </div>
   );
 }
