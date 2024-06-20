@@ -36,6 +36,7 @@ const requestOTP = async (email) => {
   const otp = generateOTP();
   storeOtp(email, otp);
   let res = await db.SELECT("*", "get_user_by_gmail('" + email + "')");
+  let status = res.recordset[0].status_;
   let username = res.recordset[0].name_;
   const emailContent = `
             <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
@@ -78,7 +79,14 @@ const requestOTP = async (email) => {
           message: `OTP has not been sent to your ${email}`,
         });
       } else {
-        resolve({ status: true, message: "OTP has been sent to your email" });
+        if (status === 200) {
+          resolve({
+            status: true,
+            message: "OTP đã được gửi cho email của bạn",
+          });
+        } else {
+          resolve({ status: false, message: "Email này chưa được đăng ký" });
+        }
       }
     });
   });

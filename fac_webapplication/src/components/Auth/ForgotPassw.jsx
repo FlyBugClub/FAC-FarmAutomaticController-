@@ -57,7 +57,11 @@ const ForgotPassw = () => {
         let res = await callAPi("post", `${URL}/auth/request-otp`, {
           email: email,
         });
-        console.log(res);
+        if (res.status) {
+          toast.success(res.message);
+        } else {
+          toast.error(res.message);
+        }
       };
       checkApi();
     }
