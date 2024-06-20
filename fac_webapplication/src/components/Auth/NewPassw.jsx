@@ -78,9 +78,9 @@ const NewPassw = () => {
         ];
         let res = await callAPi("post", `${URL}/auth/change-password`,body)
 
-        console.log(res);
+        // console.log(res);
         if (res.status) {
-          toast.error(res.message);
+          toast.success(res.message);
           navigate("/login");
         }
       };
@@ -139,10 +139,7 @@ const NewPassw = () => {
                 )}
               </div>
             </div>
-            <div className="Auth_BrowserView_Region-NewPass_Save">
-              <input type="checkbox" />
-              <div>Lưu đăng nhập</div>
-            </div>
+            <div style={{ height: "20px" }}></div>
             <div className="Auth_BrowserView_Region-NewPass_Button">
               <button type="submit">Xác nhận</button>
             </div>
