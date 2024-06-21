@@ -105,3 +105,10 @@ EXEC dbo.delete_schedule_pro 'BC0001', 20 --just use offset
 */
 EXEC dbo.edit_farm_pro '202403215' ,@new_name_esp = 'dongnho'
 
+
+
+EXEC dbo.edit_esp_last_status_pro '202403215' , '"a" : "abc"'
+/*	EXPECT RESULT
+	_state	_status
+	200		success
+*/
