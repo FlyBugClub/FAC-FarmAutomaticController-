@@ -10,6 +10,7 @@ import { MdCircle } from "react-icons/md";
 import { callAPi } from "../../services/UserService";
 import { AuthContext } from "../Context/AuthContext";
 import dayjs from 'dayjs';
+import { Client,Message } from 'paho-mqtt';
 import Loading from "./loading";
 const Farm = ({ weatherState, handleAddDevice }) => {
     const { URL, authDispatch } = useContext(AuthContext);
@@ -30,41 +31,126 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [farm, setFarm] = useState([]);
     const [data, setData] = useState([]);
     const [currentDate, setcurrentDate] = useState("___-___-___");
+    const [client, setClient] = useState(null);
+    const [connectStatus, setConnectStatus] = useState("Disconnected");
 
+
+    // const mqttConnect = (host, id) => {
+    //     setConnectStatus('Connecting');
+    //     const mqttClient = mqtt.connect(host, { id });
+    //     setClient(mqttClient);
+    // };
 
     useEffect(() => {
+            const options = {
+            clientId: "id_" + parseInt(Math.random() * 100000), // Tạo clientId ngẫu nhiên
+            host: 'broker.emqx.io',
+            port: 8083,
+            path: '/mqtt',
+        };
+        const newClient = new Client(options.host, options.port, options.clientId);
+        setClient(newClient);
+        
         setId(paramId || '')
+        
+
+        // if (client) {
+        //     client.on('connect', () => {
+        //         setConnectStatus('Connected');
+        //         client.subscribe('your/topic/here'); // Subscribe to a topic after connecting
+        //     });
+
+        //     client.on('error', (err) => {
+        //         console.error('Connection error: ', err);
+        //         client.end();
+        //         setConnectStatus('Error');
+        //     });
+
+        //     client.on('reconnect', () => {
+        //         setConnectStatus('Reconnecting');
+        //     });
+
+        //     client.on('message', (topic, message) => {
+        //         const payload = { topic, message: message.toString() };
+        //         console.log(payload);
+        //     });
+
+        //     client.on('close', () => {
+        //         setConnectStatus('Disconnected');
+        //     });
+
+        //     return () => {
+        //         client.end(); // Cleanup the connection when the component unmounts
+        //     };
+        // }
     }, [])
+    useEffect(() => {
+        if (client !== null && connectStatus != "Connected" && connectStatus != "Connecting") {
+            setConnectStatus("Connecting");
+            client.connect( {
+                
+                onSuccess: () => {
+                    console.log('Connected to MQTT broker');
+                    client.subscribe('fac_iot');
+                    setConnectStatus("Connected");
+                },
+                onFailure: (message) => {
+                    console.log("Connect fail : "+message);
+                    setConnectStatus("Disconected");
+                },
+    
+            });
+            client.onMessageArrived = (message) => {
+                console.log(`Received message on topic ${message.destinationName}: ${message.payloadString}`);
+            };
+            client.onConnectionLost = (responseObject) => {
+                console.log("connection lost : " + responseObject.errorCode);
+                setConnectStatus("Disconected");
+            }
+        }
+    }, [client,connectStatus])
 
     useEffect(() => {
         if (id !== '') {
-            getFarm(id,1)
+            getFarm(id, 1)
         }
     }, [id])
 
     useEffect(() => {
         if (farm.length !== 0) {
-            console.log(farm)
             setLoadingState(false)
-            if (farm[0]["Sensors"] != undefined)
-            {
+            if (farm[0]["Sensors"] != undefined) {
                 currentDateFunc()
                 setFarmData()
             }
-            else 
-            {
+            else {
                 setcurrentDate("___-___-___")
                 setData([])
             }
         }
     }, [farm])
 
-    useEffect(() => {
-        console.log(listEquipment)
-    }, [listEquipment])
+    const disconnectMqtt = () => {
+        if (connectStatus == "Connected" && client.isConnected()) {
+            client.disconnect();
+            setConnectStatus("Disconnected");
+        }
+    }
 
 
-    const getFarm = async (id_esp,id_equipment) => {
+    const sendMessage = () => {
+
+        console.log(client.isConnected());
+
+        if (client.isConnected()) {
+            console.log("send message");
+            var message = new Message("{'vake':'cuong'}");
+        message.destinationName = "fac_iot";
+        client.send(message);
+        } 
+    };
+
+    const getFarm = async (id_esp, id_equipment) => {
         setLoadingState(true)
         let res = await callAPi(
             "get",
@@ -79,64 +165,58 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     }
 
     const currentDateFunc = () => {
-        
-                if (farm[0]["Sensors"][0]["value"] != undefined)
-                    {
-        
-                        const date = dayjs((farm[0]["Sensors"][0]["value"][0]["datetime"]).split('T')[0]).format('DD-MM-YYYY')
-                        setcurrentDate(date)
-                    }
-                    else
-                    {
-                        setcurrentDate("___-___-___")
-                    }
-            
-                
+
+        if (farm[0]["Sensors"][0]["value"] != undefined) {
+
+            const date = dayjs((farm[0]["Sensors"][0]["value"][0]["datetime"]).split('T')[0]).format('DD-MM-YYYY')
+            setcurrentDate(date)
+        }
+        else {
+            setcurrentDate("___-___-___")
+        }
+
+
     }
 
     const setFarmData = async () => {
-        if (farm[0]["Sensors"][0]["value"] != undefined)
-            {
-                let temp = []
-                farm[0]["Sensors"][0]["value"].map((item, index) => {
-                    const date = (item.datetime).split('T')[0]
-                    const time = (item.datetime).split('T')[1]
-                    let value = {}
-                    value = {
-                        id: index + 1,
-                        date: dayjs(date).format('DD-MM-YYYY'),
-                        time: time.slice(0, 5)
+        if (farm[0]["Sensors"][0]["value"] != undefined) {
+            let temp = []
+            farm[0]["Sensors"][0]["value"].map((item, index) => {
+                const date = (item.datetime).split('T')[0]
+                const time = (item.datetime).split('T')[1]
+                let value = {}
+                value = {
+                    id: index + 1,
+                    date: dayjs(date).format('DD-MM-YYYY'),
+                    time: time.slice(0, 5)
+                }
+                for (let i = 0; i < farm[0]["Sensors"].length; i++) {
+                    if (farm[0]["Sensors"][i]["category"] == "sht") {
+                        value = {
+                            ...value,
+                            sht_humid: farm[0]["Sensors"][i]["value"][index]["value_humid"],
+                            sht_temp: farm[0]["Sensors"][i]["value"][index]["value_temp"],
+                        }
                     }
-                    for (let i = 0; i < farm[0]["Sensors"].length; i++) {
-                        if (farm[0]["Sensors"][i]["category"] == "sht")
-                            {
-                                value = {
-                                    ...value,
-                                    sht_humid: farm[0]["Sensors"][i]["value"][index]["value_humid"],
-                                    sht_temp: farm[0]["Sensors"][i]["value"][index]["value_temp"],
-                                }
-                            }
-                        else
-                            {
-                                const type = farm[0]["Sensors"][i]["category"];
-                                value = {
-                                ...value,
-                                [type] : farm[0]["Sensors"][i]["value"][index]["value_humid"]
-                            }
-        
-                            }
-                            
+                    else {
+                        const type = farm[0]["Sensors"][i]["category"];
+                        value = {
+                            ...value,
+                            [type]: farm[0]["Sensors"][i]["value"][index]["value_humid"]
+                        }
+
                     }
-                    
-                    temp = [
-                        value
-                        , ...temp]
-        
-                    setData(temp)
-                })
+
+                }
+
+                temp = [
+                    value
+                    , ...temp]
+
+                setData(temp)
+            })
         }
-        else
-        {
+        else {
             setData([])
         }
     }
@@ -187,7 +267,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                             <div className="Fac_Home_Web_Farmcontainer_Chart_Left">
                                 <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
                                     <div className="Fac_Home_Web_Farmcontainer_Chart_Left_Title">
-                                        <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => navigate("/dashboard")} />
+                                        <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => {navigate("/dashboard");disconnectMqtt()}} />
                                         <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                             Farm name
                                         </div>
@@ -276,7 +356,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                             <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Dropbox">
                                                 {
                                                     listEquipment.map((item, index) => (
-                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Dropbox_Item" key={item.id_equipment} onClick={() => {getFarm(id,item.id_equipment) ;setEquipment("Equipment " + (index + 1)); setListEquipmentState(false); setListModeState(false) }}>
+                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Dropbox_Item" key={item.id_equipment} onClick={() => { getFarm(id, item.id_equipment); setEquipment("Equipment " + (index + 1)); setListEquipmentState(false); setListModeState(false) }}>
                                                             Equipment {index + 1}
                                                         </div>
                                                     ))}
@@ -292,28 +372,28 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                     </div>
                                     <div style={{ marginTop: "10px", marginRight: "auto" }}>
 
-                                        {farm[0]["Sensors"] != undefined?
-                                        (farm[0]["Sensors"]).map((item) => (
-                                            item.category === "sht" ?
-                                                <div key={item.id}>
-                                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
-                                                        <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
+                                        {farm[0]["Sensors"] != undefined ?
+                                            (farm[0]["Sensors"]).map((item) => (
+                                                item.category === "sht" ?
+                                                    <div key={item.id}>
+                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
+                                                            <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
+                                                            {item.name}
+                                                        </div>
+                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
+                                                            <MdCircle size={15} color="#FF2828" style={{ marginRight: "5px" }} />
+                                                            {item.name}
+                                                        </div>
+                                                    </div>
+
+                                                    :
+                                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content" key={item.id}>
+                                                        <MdCircle size={15} color="#33A829" style={{ marginRight: "5px" }} />
                                                         {item.name}
                                                     </div>
-                                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
-                                                        <MdCircle size={15} color="#FF2828" style={{ marginRight: "5px" }} />
-                                                        {item.name}
-                                                    </div>
-                                                </div>
 
-                                                :
-                                                <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content" key={item.id}>
-                                                    <MdCircle size={15} color="#33A829" style={{ marginRight: "5px" }} />
-                                                    {item.name}
-                                                </div>
-
-                                        )
-                                        ):<></>}
+                                            )
+                                            ) : <></>}
                                         {/* <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
                                         <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
                                         Humidity
@@ -365,7 +445,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                             <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
+                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState);sendMessage() }} />
                                                 <span className="slider round"></span>
                                             </label>
 
@@ -390,7 +470,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                                 <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
+                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState);sendMessage() }} />
                                                     <span className="slider round"></span>
                                                 </label>
 

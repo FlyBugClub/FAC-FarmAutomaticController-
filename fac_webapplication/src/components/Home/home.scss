@@ -13,7 +13,8 @@
         height: 100%;
         width: 100%;
         box-sizing: border-box;
-
+        min-width: 574px;
+        min-height: 403px;
         &_Dashboardcontainer {
             height: 100%;
             width: 100%;
@@ -356,6 +357,7 @@
                 backdrop-filter: blur(4px);
                 box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px, rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
                 border-radius: 8px;
+                min-width: 330px;
                 padding: 0px 10px 5px 10px;
                 box-sizing: border-box;
                 outline: 2px solid $outline_color;
