@@ -8,7 +8,7 @@ import { callAPi } from "../../services/UserService";
 import Loading from "./loading";
 import { AuthContext } from "../Context/AuthContext";
 export const Dashboard = ({ weatherState, handleAddDevice }) => {
-    const { URL, login, user, authDispatch } = useContext(AuthContext);
+    const { URL, login, user,farmct, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
     
@@ -18,6 +18,7 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
         if(login.status === true ) 
         { getDashboard()}
     }, [login.status])
+
 
     const getDashboard = async () => {
         let res = await callAPi(
@@ -29,7 +30,12 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
     }
 
     const navigateToFarm = (id_esp) => {
-        navigate(`/farm/${id_esp}`);
+        const farm = farms.find(farm => farm.id_esp_ === id_esp);
+        authDispatch({
+            type: "SET_FARM",
+            payload: farm,
+          });
+          navigate(`/farm/${id_esp}`);
     };
 
     return (

@@ -10,11 +10,10 @@ import { MdCircle } from "react-icons/md";
 import { callAPi } from "../../services/UserService";
 import { AuthContext } from "../Context/AuthContext";
 import dayjs from 'dayjs';
-import { Client,Message } from 'paho-mqtt';
+import { Client, Message } from 'paho-mqtt';
 import Loading from "./loading";
 const Farm = ({ weatherState, handleAddDevice }) => {
-    const { URL, authDispatch } = useContext(AuthContext);
-
+    const { URL, farmct, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const { id: paramId } = useParams(); // Sử dụng useParams để lấy tham số id từ URL nếu cần
@@ -24,9 +23,10 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [equipment, setEquipment] = useState("Equipment 1");
     const [listModeState, setListModeState] = useState(false);
     const [mode, setMode] = useState("Manual");
-    const [modeState, setModeState] = useState(false);
-    const sliderRef = useRef(null); // Tạo một ref cho slider
-    const [value, setValue] = useState(50);
+    const [modeState, setModeState] = useState(false);// state cho toogle
+    const [bumperState, setBumperState] = useState(false);
+    const sliderRef = useRef(null);
+    const [value, setValue] = useState(50); // value cho slider
     const [loadingState, setLoadingState] = useState(true)
     const [farm, setFarm] = useState([]);
     const [data, setData] = useState([]);
@@ -42,7 +42,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     // };
 
     useEffect(() => {
-            const options = {
+        const options = {
             clientId: "id_" + parseInt(Math.random() * 100000), // Tạo clientId ngẫu nhiên
             host: 'broker.emqx.io',
             port: 8083,
@@ -50,55 +50,24 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         };
         const newClient = new Client(options.host, options.port, options.clientId);
         setClient(newClient);
-        
+
         setId(paramId || '')
-        
-
-        // if (client) {
-        //     client.on('connect', () => {
-        //         setConnectStatus('Connected');
-        //         client.subscribe('your/topic/here'); // Subscribe to a topic after connecting
-        //     });
-
-        //     client.on('error', (err) => {
-        //         console.error('Connection error: ', err);
-        //         client.end();
-        //         setConnectStatus('Error');
-        //     });
-
-        //     client.on('reconnect', () => {
-        //         setConnectStatus('Reconnecting');
-        //     });
-
-        //     client.on('message', (topic, message) => {
-        //         const payload = { topic, message: message.toString() };
-        //         console.log(payload);
-        //     });
-
-        //     client.on('close', () => {
-        //         setConnectStatus('Disconnected');
-        //     });
-
-        //     return () => {
-        //         client.end(); // Cleanup the connection when the component unmounts
-        //     };
-        // }
     }, [])
     useEffect(() => {
         if (client !== null && connectStatus != "Connected" && connectStatus != "Connecting") {
             setConnectStatus("Connecting");
-            client.connect( {
-                
+            client.connect({
+
                 onSuccess: () => {
                     console.log('Connected to MQTT broker');
                     client.subscribe('fac_iot');
                     setConnectStatus("Connected");
                 },
                 onFailure: (message) => {
-                    console.log("Connect fail : "+message);
+                    console.log("Connect fail : " + message);
                     setConnectStatus("Disconected");
                 },
-    
+
             });
             client.onMessageArrived = (message) => {
                 console.log(`Received message on topic ${message.destinationName}: ${message.payloadString}`);
@@ -108,7 +77,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                 setConnectStatus("Disconected");
             }
         }
-    }, [client,connectStatus])
+    }, [client, connectStatus])
 
     useEffect(() => {
         if (id !== '') {
@@ -116,9 +85,11 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     }, [id])
 
+
     useEffect(() => {
         if (farm.length !== 0) {
             setLoadingState(false)
+            getLastStatus()
             if (farm[0]["Sensors"] != undefined) {
                 currentDateFunc()
                 setFarmData()
@@ -130,6 +101,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     }, [farm])
 
+
     const disconnectMqtt = () => {
         if (connectStatus == "Connected" && client.isConnected()) {
             client.disconnect();
@@ -139,15 +111,15 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
 
     const sendMessage = () => {
-
-        console.log(client.isConnected());
-
-        if (client.isConnected()) {
-            console.log("send message");
-            var message = new Message("{'vake':'cuong'}");
-        message.destinationName = "fac_iot";
-        client.send(message);
-        } 
+        if (connectStatus == "Connected" && client.isConnected() && farmct !== undefined) {
+            
+            //     var message = new Message("{'vake':'cuong'}");
+            // message.destinationName = "fac_iot";
+            // client.send(message);
+        }
+        else {
+            setConnectStatus("Disconnected1");
+        }
     };
 
     const getFarm = async (id_esp, id_equipment) => {
@@ -221,6 +193,46 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     }
 
+    const getLastStatus = async () => {
+        if (farmct !== undefined && farmct["json_esp_"] != null) {
+
+            const laststatus = JSON.parse(farmct["json_esp_"])["equipment"].find(e => e.id_bc === farm[0]["id"]);
+            if ( laststatus!= undefined)
+            {
+            
+                if (laststatus["control_status"] == false) {
+                    setModeState(false)
+                }
+                else setModeState(true)
+                if (laststatus["bump_status"] == false) {
+                    setBumperState(false)
+                }
+                else setBumperState(true)
+                if (laststatus["mode"] == 0) {
+                    setMode("Manual")
+                }
+                else if (laststatus["mode"] == 1) {
+
+                    setMode("Automatic")
+                    setValue(laststatus["expect_value"])
+                } 
+                else if (laststatus["mode"] == 2) {
+                    setMode("Timer")
+                } 
+
+            
+            }
+            else 
+            {
+                setModeState(false);
+                setMode("Manual");
+                setBumperState(false)
+                setValue(50)
+            }
+            
+        }
+    }
+
     const handleEquipmentButton = async () => {
         setListEquipmentState(!listEquipmentState)
         let res = await callAPi(
@@ -267,7 +279,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                             <div className="Fac_Home_Web_Farmcontainer_Chart_Left">
                                 <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
                                     <div className="Fac_Home_Web_Farmcontainer_Chart_Left_Title">
-                                        <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => {navigate("/dashboard");disconnectMqtt()}} />
+                                        <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => { navigate("/dashboard"); disconnectMqtt() }} />
                                         <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                             Farm name
                                         </div>
@@ -410,7 +422,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                         </div>
                         <div className="Fac_Home_Web_Farmcontainer_Controller">
                             <div className="Fac_Home_Web_Farmcontainer_Controller_Header">
-                                {farm[0].id}
+                                {farm[0].name}
                                 <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode">
                                     Mode:
                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State" onClick={() => setListModeState(!listModeState)}>
@@ -445,13 +457,13 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                             <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState);sendMessage() }} />
+                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState); sendMessage() }} />
                                                 <span className="slider round"></span>
                                             </label>
 
                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
-                                                State:
-                                                {modeState ?
+                                                Bump:
+                                                {bumperState ?
                                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                         ON
                                                         <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
@@ -470,13 +482,13 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                                 <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState);sendMessage() }} />
+                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState); sendMessage() }} />
                                                     <span className="slider round"></span>
                                                 </label>
 
                                                 <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
-                                                    State:
-                                                    {modeState ?
+                                                    Bump:
+                                                    {bumperState ?
                                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                             ON
                                                             <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
@@ -508,13 +520,13 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                                 <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => setModeState(!modeState)} />
+                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState); sendMessage() }} />
                                                     <span className="slider round"></span>
                                                 </div>
 
                                                 <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
-                                                    State:
-                                                    {modeState ?
+                                                    Bump:
+                                                    {bumperState ?
                                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                             ON
                                                             <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
