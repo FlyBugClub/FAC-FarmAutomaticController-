@@ -160,7 +160,7 @@ const Signup = () => {
                     />
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiUser size={24}/>
+                    <FiUser color={usernameErr ? "red" : "white"} size={24}/>
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
@@ -178,7 +178,7 @@ const Signup = () => {
                     />
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiUser size={24}/>
+                    <FiMail color={emailErr ? "red" : "white"} size={24}/>
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
@@ -196,7 +196,7 @@ const Signup = () => {
                     />
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiPhone size={24}/>
+                    <FiPhone color={phoneErr ? "red" : "white"} size={24}/>
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
@@ -218,11 +218,11 @@ const Signup = () => {
                     {open ? <FiEye size={18}/> : <FiEyeOff size={18}/>}
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiLock size={24}/>
+                    <FiLock color={passwordErr ? "red" : "white"} size={24}/>
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
-                  {passwordErrw}
+                  {passwordErr}
                 </div>
               </div>
               <div className="Auth_BrowserView_Container_Form_Body_Item">
@@ -240,7 +240,7 @@ const Signup = () => {
                     {open1 ? <FiEye size={18}/> : <FiEyeOff size={18}/>}
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiLock size={24}/>
+                    <FiLock color={rePasswordErr ? "red" : "white"} size={24}/>
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
