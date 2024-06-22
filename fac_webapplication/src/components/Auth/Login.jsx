@@ -18,16 +18,18 @@ const Login = () => {
   };
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [usernameErr, setUsernameErr] = useState("");
+  const [passwordErr, setPasswordErr] = useState("");
   const validateUsername = (username) => {
     if (username.trim() === "") {
-      toast.error("Tên đăng nhập không được để trống");
+      setUsernameErr("Tên đăng nhập không được để trống");
       return false;
     }
     return true;
   };
   const validatePassword = (password) => {
     if (password.trim() === "") {
-      toast.error("Mật khẩu không được để trống");
+      setPasswordErr("Mật khẩu không được để trống");
       return false;
     }
     return true;
@@ -83,6 +85,8 @@ const Login = () => {
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
     if (isUsernameValid && isPasswordValid) {
+      setUsernameErr("");
+      setPasswordErr("");
       const checkApi = async () => {
         let body = {
           username: username,
@@ -126,8 +130,7 @@ const Login = () => {
               </div>
               <div className="Auth_BrowserView_Container_Form_Body">
                 <div className="Auth_BrowserView_Container_Form_Body_Item">
-                  <div
-                      className="Auth_BrowserView_Container_Form_Body_Item_Content">
+                  <div className={`Auth_BrowserView_Container_Form_Body_Item_Content ${usernameErr ? "Error" : ""}`}>
                     <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
                       <input
                               id="username"
@@ -138,15 +141,15 @@ const Login = () => {
                             />
                     </div>
                     <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                      <FiUser size={24}/>
+                      <FiUser color={usernameErr ? "red" : "white"} size={24}/>
                     </div>
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
-
+                    {usernameErr}
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item">
-                  <div className="Auth_BrowserView_Container_Form_Body_Item_Content">
+                  <div className={`Auth_BrowserView_Container_Form_Body_Item_Content ${passwordErr ? "Error" : ""}`}>
                     <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
                       <input
                         id="password"
@@ -160,11 +163,11 @@ const Login = () => {
                       {open ? <FiEye size={18}/> : <FiEyeOff size={18}/>}
                     </div>
                     <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                      <FiLock size={24}/>
+                      <FiLock color={usernameErr ? "red" : "white"} size={24}/>
                     </div>
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
-
+                    {passwordErr}
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item">
