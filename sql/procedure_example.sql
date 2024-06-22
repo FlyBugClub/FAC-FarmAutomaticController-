@@ -101,3 +101,9 @@ EXEC dbo.edit_esp_last_status_pro '202403215' , '"a" : "abc"'
 	_state	_status
 	200		success
 */
+
+EXEC dbo.edit_btn_status_pro 'BC0001', 0
+/*	EXPECT RESULT
+	_state	_status
+	200		success
+*/
