@@ -1,7 +1,7 @@
 import { BrowserView, MobileView } from "react-device-detect";
 import { useNavigate } from "react-router-dom";
 import React, { useContext, useState } from "react";
-import {FiMail} from "react-icons/fi";
+import { FiMail } from "react-icons/fi";
 import "./Auth.scss";
 //
 import { toast } from "react-toastify";
@@ -18,30 +18,32 @@ const ForgotPassw = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [otp, setOTP] = useState("");
-  const [errorEmail, setErrorEmail] = useState("")
-  const [errorOtp, setErrorOtp] = useState("")
+  const [errorEmail, setErrorEmail] = useState("");
+  const [errorOtp, setErrorOtp] = useState("");
 
   const validateEmail = (email) => {
     if (email.trim() === "") {
       setErrorEmail("Vui lòng nhập email");
       return false;
-    }
-    if (!checkEmail(email)) {
-      setErrorEmail("Vui lòng nhập email đúng định dạng");
+    } else if (!checkEmail(email)) {
+      setErrorEmail("Vui được nhập đúng định dạng email");
       return false;
+    } else {
+      setErrorEmail("");
+      return true;
     }
-    return true;
   };
   const validateOtp = (otp) => {
     if (otp.trim() === "") {
-      setErrorOtp("Vui lòng nhập OTP")
+      setErrorOtp("Vui lòng nhập OTP");
       return false;
-    }
-    if (!checkOTP(otp)) {
-      setErrorOtp("Vui lòng nhập OTP có 6 số")
+    } else if (!checkOTP(otp)) {
+      setErrorOtp("Vui lòng nhập OTP có 6 số");
       return false;
+    } else {
+      setErrorOtp("");
+      return true;
     }
-    return true;
   };
   const handleChangEmail = (e) => {
     const newEmail = e.target.value;
@@ -55,7 +57,7 @@ const ForgotPassw = () => {
     e.preventDefault();
     const isEmailValid = validateEmail(email);
     if (isEmailValid) {
-      setErrorEmail("")
+      setErrorEmail("");
       const checkApi = async () => {
         let res = await callAPi("post", `${URL}/auth/request-otp`, {
           email: email,
@@ -74,8 +76,8 @@ const ForgotPassw = () => {
     const isEmailValid = validateEmail(email);
     const isOTPValid = validateOtp(otp);
     if (isEmailValid && isOTPValid) {
-      setErrorOtp("")
-      setErrorEmail("")
+      setErrorOtp("");
+      setErrorEmail("");
       console.log(email);
       console.log(otp);
       const checkApi = async () => {
@@ -97,24 +99,28 @@ const ForgotPassw = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
-        <div className="Auth_BrowserView_Container" >
+        <div className="Auth_BrowserView_Container">
           <div className="Auth_BrowserView_Container_Form">
             <div className="Auth_BrowserView_Container_Form_Header">
-              <div>Quên mật khẩu  </div>
+              <div>Quên mật khẩu </div>
             </div>
             <div className="Auth_BrowserView_Container_Form_Body">
               <div className="Auth_BrowserView_Container_Form_Body_Item">
-                <div className={`Auth_BrowserView_Container_Form_Body_Item_Content ${errorEmail ? 'Error' : ''}`}>
+                <div
+                  className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                    errorEmail ? "Error" : ""
+                  }`}
+                >
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
                     <input
-                        type="text"
-                        placeholder="Nhập Email"
-                        value={email}
-                        onChange={handleChangEmail}
+                      type="text"
+                      placeholder="Nhập Email"
+                      value={email}
+                      onChange={handleChangEmail}
                     />
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiMail color={errorEmail ? 'red' : 'white'} size={24}/>
+                    <FiMail color={errorEmail ? "red" : "white"} size={24} />
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
@@ -122,34 +128,43 @@ const ForgotPassw = () => {
                 </div>
               </div>
               <div className="Auth_BrowserView_Container_Form_Body_Item">
-                <div className={`Auth_BrowserView_Container_Form_Body_Item_Content ${errorOtp ? 'Error' : ''}`}>
+                <div
+                  className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                    errorOtp ? "Error" : ""
+                  }`}
+                >
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
                     <input
-                        type="text"
-                        placeholder="Nhập mã OTP"
-                        value={otp}
-                        onChange={handleChangOTP}
+                      type="text"
+                      placeholder="Nhập mã OTP"
+                      value={otp}
+                      onChange={handleChangOTP}
                     />
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <CiBarcode color={errorOtp ? 'red' : 'white'} size={24}/>
+                    <CiBarcode color={errorOtp ? "red" : "white"} size={24} />
                   </div>
                 </div>
-                <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">{errorOtp}</div>
+                <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
+                  {errorOtp}
+                </div>
               </div>
               <div className="Auth_BrowserView_Container_Form_Body_Item">
-                <div onClick={handleSendOtp} className="Auth_BrowserView_Container_Form_Body_Item_OTP">
+                <div
+                  onClick={handleSendOtp}
+                  className="Auth_BrowserView_Container_Form_Body_Item_OTP"
+                >
                   <p>Gửi mã OTP</p>
                 </div>
               </div>
             </div>
             <div className="Auth_BrowserView_Container_Form_Footer">
-              <button onClick={(e) => handleSubmit(e)}>
-                Xác nhận
-              </button>
+              <button onClick={(e) => handleSubmit(e)}>Xác nhận</button>
               <div className="Auth_BrowserView_Container_Form_Footer_Choice">
-              <div onClick={() => navigate("/login")}>Quay lại trang đăng nhập?</div>
-              <div onClick={() => navigate("/login")}>Đăng nhập</div>
+                <div onClick={() => navigate("/login")}>
+                  Quay lại trang đăng nhập?
+                </div>
+                <div onClick={() => navigate("/login")}>Đăng nhập</div>
               </div>
             </div>
           </div>
@@ -157,10 +172,10 @@ const ForgotPassw = () => {
       </BrowserView>
 
       <MobileView className="Auth_MobileView">
-        <div style={{width: "100%", height: "100%"}}>
+        <div style={{ width: "100%", height: "100%" }}>
           <div className="Auth_MobileView_Logo">
             <div className="Auth_MobileView_Logo_Image">
-              <img src="/icons/Bug(Trắng).png" alt=""/>
+              <img src="/icons/Bug(Trắng).png" alt="" />
             </div>
             <div>
               <div className="div1">Tưới tiêu tự động</div>
@@ -171,13 +186,13 @@ const ForgotPassw = () => {
           <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
             <div className="Auth_MobileView_Region_Input ">
               <div>
-                <FiMail color="white" size={24}/>
+                <FiMail color="white" size={24} />
               </div>
               <input
-                  type="text"
-                  placeholder="Email"
-                  value={email}
-                  onChange={handleChangEmail}
+                type="text"
+                placeholder="Email"
+                value={email}
+                onChange={handleChangEmail}
               ></input>
             </div>
             <div className="Auth_MobileView_Region_Button">

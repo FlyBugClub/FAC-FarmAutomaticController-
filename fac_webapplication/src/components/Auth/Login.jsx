@@ -20,20 +20,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [usernameErr, setUsernameErr] = useState("");
   const [passwordErr, setPasswordErr] = useState("");
-  const validateUsername = (username) => {
-    if (username.trim() === "") {
-      setUsernameErr("Tên đăng nhập không được để trống");
-      return false;
-    }
-    return true;
-  };
-  const validatePassword = (password) => {
-    if (password.trim() === "") {
-      setPasswordErr("Mật khẩu không được để trống");
-      return false;
-    }
-    return true;
-  };
+  
   const handleChangeUsername = (e) => {
     const newUsername = e.target.value;
     setUsername(newUsername);
@@ -80,6 +67,27 @@ const Login = () => {
       sessionStorage.setItem("token", JSON.stringify(token));
     }
   };
+  const validateUsername = (username) => {
+    if (username.trim() === "") {
+      setUsernameErr("Tên đăng nhập không được để trống");
+      return false;
+    }
+    else {
+      setUsernameErr("");
+      return true;
+    }
+
+  };
+  const validatePassword = (password) => {
+    if (password.trim() === "") {
+      setPasswordErr("Mật khẩu không được để trống");
+      return false;
+    }else {
+      setPasswordErr("");
+      return true;
+    }
+    
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isUsernameValid = validateUsername(username);
@@ -123,100 +131,100 @@ const Login = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
-      <div>
         <div>
-          <div className="Auth_BrowserView_Logo">
-            <div className="Auth_BrowserView_Logo_Image">
-              <img src="/icons/Bug(Trắng).png" alt="" />
-            </div>
-            <div>
-              <div className="div1">Tưới tiêu tự động</div>
-              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+          <div>
+            <div className="Auth_BrowserView_Logo">
+              <div className="Auth_BrowserView_Logo_Image">
+                <img src="/icons/Bug(Trắng).png" alt="" />
+              </div>
+              <div>
+                <div className="div1">Tưới tiêu tự động</div>
+                <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="Auth_BrowserView_Container">
-          <div className="Auth_BrowserView_Container_Form">
-            <div className="Auth_BrowserView_Container_Form_Header">
-              <div>Đăng nhập</div>
-            </div>
-            <div className="Auth_BrowserView_Container_Form_Body">
-              <div className="Auth_BrowserView_Container_Form_Body_Item">
-                <div
-                  className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
-                    usernameErr ? "Error" : ""
-                  }`}
-                >
-                  <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
-                    <input
-                      id="username"
-                      type="text"
-                      placeholder="Tên tài khoản"
-                      value={username}
-                      onChange={handleChangeUsername}
-                    />
-                  </div>
-                  <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiUser color={usernameErr ? "red" : "white"} size={24} />
-                  </div>
-                </div>
-                <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
-                  {usernameErr}
-                </div>
+          <div className="Auth_BrowserView_Container">
+            <div className="Auth_BrowserView_Container_Form">
+              <div className="Auth_BrowserView_Container_Form_Header">
+                <div>Đăng nhập</div>
               </div>
-              <div className="Auth_BrowserView_Container_Form_Body_Item">
-                <div
-                  className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
-                    passwordErr ? "Error" : ""
-                  }`}
-                >
-                  <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
-                    <input
-                      id="password"
-                      type={open ? "text" : "password"}
-                      placeholder="Mật khẩu"
-                      value={password}
-                      onChange={handleChangePassword}
-                    />
-                  </div>
+              <div className="Auth_BrowserView_Container_Form_Body">
+                <div className="Auth_BrowserView_Container_Form_Body_Item">
                   <div
-                    onClick={() => setOpen(!open)}
-                    className="Auth_BrowserView_Container_Form_Body_Item_Content_IconEye"
+                    className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                      usernameErr ? "Error" : ""
+                    }`}
                   >
-                    {open ? <FiEye size={18} /> : <FiEyeOff size={18} />}
+                    <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
+                      <input
+                        id="username"
+                        type="text"
+                        placeholder="Tên tài khoản"
+                        value={username}
+                        onChange={handleChangeUsername}
+                      />
+                    </div>
+                    <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
+                      <FiUser color={usernameErr ? "red" : "white"} size={24} />
+                    </div>
                   </div>
-                  <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiLock color={usernameErr ? "red" : "white"} size={24} />
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
+                    {usernameErr}
                   </div>
                 </div>
-                <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
-                  {passwordErr}
+                <div className="Auth_BrowserView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                      passwordErr ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
+                      <input
+                        id="password"
+                        type={open ? "text" : "password"}
+                        placeholder="Mật khẩu"
+                        value={password}
+                        onChange={handleChangePassword}
+                      />
+                    </div>
+                    <div
+                      onClick={() => setOpen(!open)}
+                      className="Auth_BrowserView_Container_Form_Body_Item_Content_IconEye"
+                    >
+                      {open ? <FiEye size={18} /> : <FiEyeOff size={18} />}
+                    </div>
+                    <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
+                      <FiLock color={usernameErr ? "red" : "white"} size={24} />
+                    </div>
+                  </div>
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
+                    {passwordErr}
+                  </div>
+                </div>
+                <div className="Auth_BrowserView_Container_Form_Body_Item">
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Choice">
+                    <div>
+                      <input type="checkbox" />
+                      <div>Nhớ mật khẩu</div>
+                    </div>
+                    <div onClick={() => navigate("/forgotpassword")}>
+                      Quên mật khẩu?
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="Auth_BrowserView_Container_Form_Body_Item">
-                <div className="Auth_BrowserView_Container_Form_Body_Item_Choice">
-                  <div>
-                    <input type="checkbox" />
-                    <div>Nhớ mật khẩu</div>
+              <div className="Auth_BrowserView_Container_Form_Footer">
+                <button onClick={handleSubmit}>Đăng nhập</button>
+                <div className="Auth_BrowserView_Container_Form_Footer_Choice">
+                  <div onClick={() => navigate("/signup")}>
+                    Bạn chưa có tài khoản?
                   </div>
-                  <div onClick={() => navigate("/forgotpassword")}>
-                    Quên mật khẩu?
-                  </div>
+                  <div onClick={() => navigate("/signup")}>Đăng ký</div>
                 </div>
-              </div>
-            </div>
-            <div className="Auth_BrowserView_Container_Form_Footer">
-              <button onClick={handleSubmit}>Đăng nhập</button>
-              <div className="Auth_BrowserView_Container_Form_Footer_Choice">
-                <div onClick={() => navigate("/signup")}>
-                  Bạn chưa có tài khoản?
-                </div>
-                <div onClick={() => navigate("/signup")}>Đăng ký</div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       </BrowserView>
 

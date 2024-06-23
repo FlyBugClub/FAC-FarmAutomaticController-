@@ -49,19 +49,26 @@ const NewPassw = () => {
       setErrorPass("Vui lòng nhập mật khẩu mới");
       return false;
     }
-    return true;
+    else{
+      setErrorPass("");
+      return true;
+    }
+   
   };
 
   const validateConfirmPassword = (password, confirmPassword) => {
     if (confirmPassword.trim() === "") {
       setErrorPass1("Vui lòng xác nhận lại mật khẩu");
       return false;
-    }
-    if (password !== confirmPassword) {
+    } else if (password !== confirmPassword) {
       setErrorPass1("Mật khẩu không giống nhau");
       return false;
+    }else
+    {
+      setErrorPass1("");
+      return true;
     }
-    return true;
+
   };
 
   const handleSubmit = async (e) => {
