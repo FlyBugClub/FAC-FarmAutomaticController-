@@ -7,18 +7,34 @@ import { useNavigate } from "react-router-dom";
 import { callAPi } from "../../services/UserService";
 import Loading from "./loading";
 import { AuthContext } from "../Context/AuthContext";
+import { stringify } from "ajv";
 export const Dashboard = ({ weatherState, handleAddDevice }) => {
-    const { URL, login, user,farmct, authDispatch } = useContext(AuthContext);
+    const { URL, login, user, farmsct, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
-    
+
     const [loadingState, setLoadingState] = useState(true)
 
-    useEffect( () => {
-        if(login.status === true ) 
-        { getDashboard()}
+    useEffect(() => {
+        if (login.status === true) { getDashboard() }
     }, [login.status])
 
+    useEffect(() => {
+        let farms_temp = [];
+
+        farms.map((item) => {
+            const info = {
+                id_esp: item.id_esp_,
+                name: item.name_esp_
+            };
+            farms_temp = [...farms_temp, info]; 
+        });
+
+        authDispatch({
+            type: "SET_FARM",
+            payload: farms_temp,
+        });
+    },[farms])
 
     const getDashboard = async () => {
         let res = await callAPi(
@@ -30,12 +46,24 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
     }
 
     const navigateToFarm = (id_esp) => {
-        const farm = farms.find(farm => farm.id_esp_ === id_esp);
+        let farms_temp = [];
+
+        // Sử dụng map() để tạo mảng mới farms_temp
+        farms.map((item, index) => {
+            const info = {
+                id_esp: item.id_esp_,
+                name: item.name_esp_
+            };
+            farms_temp = [...farms_temp, info]; // Thêm info vào mảng farms_temp
+        });
+
+        // Đảm bảo rằng farms_temp đã chứa dữ liệu sau khi map
+
         authDispatch({
             type: "SET_FARM",
-            payload: farm,
-          });
-          navigate(`/farm/${id_esp}`);
+            payload: farms_temp,
+        });
+        navigate(`/farm/${id_esp}`);
     };
 
     return (

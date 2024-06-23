@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 import { Client, Message } from 'paho-mqtt';
 import Loading from "./loading";
 const Farm = ({ weatherState, handleAddDevice }) => {
-    const { URL, farmct, authDispatch } = useContext(AuthContext);
+    const { URL, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const { id: paramId } = useParams(); // Sử dụng useParams để lấy tham số id từ URL nếu cần
@@ -33,13 +33,6 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [currentDate, setcurrentDate] = useState("___-___-___");
     const [client, setClient] = useState(null);
     const [connectStatus, setConnectStatus] = useState("Disconnected");
-
-
-    // const mqttConnect = (host, id) => {
-    //     setConnectStatus('Connecting');
-    //     const mqttClient = mqtt.connect(host, { id });
-    //     setClient(mqttClient);
-    // };
 
     useEffect(() => {
         const options = {
@@ -101,6 +94,13 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     }, [farm])
 
+    useEffect(() => {
+        if(connectStatus == "Connected" && client.isConnected())
+            {
+                sendMessage();
+            }
+        
+    }, [mode,modeState,bumperState,value])
 
     const disconnectMqtt = () => {
         if (connectStatus == "Connected" && client.isConnected()) {
@@ -111,15 +111,18 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
 
     const sendMessage = () => {
-        if (connectStatus == "Connected" && client.isConnected() && farmct !== undefined) {
+            try {
+                // var message = new Message("{'vake':'cuong'}");
+                // message.destinationName = "fac_iot";
+                // client.send(message);
+                setLastStatus();
+            }
+            catch (e) {
+                alert(e);
+            }
             
-            //     var message = new Message("{'vake':'cuong'}");
-            // message.destinationName = "fac_iot";
-            // client.send(message);
-        }
-        else {
-            setConnectStatus("Disconnected1");
-        }
+        
+        
     };
 
     const getFarm = async (id_esp, id_equipment) => {
@@ -194,17 +197,18 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     }
 
     const getLastStatus = async () => {
-        if (farmct !== undefined && farmct["json_esp_"] != null) {
 
-            const laststatus = JSON.parse(farmct["json_esp_"])["equipment"].find(e => e.id_bc === farm[0]["id"]);
-            if ( laststatus!= undefined)
+
+            const laststatus = farm[0]["laststatus"]
+            if ( laststatus != undefined)
             {
-            
-                if (laststatus["control_status"] == false) {
+                // set toogle state
+                if (laststatus["btn_status"] == 0) {
                     setModeState(false)
                 }
                 else setModeState(true)
-                if (laststatus["bump_status"] == false) {
+
+                if (laststatus["last_status"] == 0 || laststatus["last_status"] == null) {
                     setBumperState(false)
                 }
                 else setBumperState(true)
@@ -212,15 +216,13 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                     setMode("Manual")
                 }
                 else if (laststatus["mode"] == 1) {
-
                     setMode("Automatic")
-                    setValue(laststatus["expect_value"])
-                } 
+                }
                 else if (laststatus["mode"] == 2) {
                     setMode("Timer")
-                } 
+                }             
+                setValue(laststatus["expect_sensor_value"])
 
-            
             }
             else 
             {
@@ -230,7 +232,27 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                 setValue(50)
             }
             
-        }
+        
+    }
+
+    const setLastStatus = async () => {
+        let body = [
+            `${farm[0]["id"]}`, // id equipment
+            `${modeState?1:0}`, // toogle state
+            `${mode == "Manual"?0:mode == "Automatic"?1:2}`, // mode state
+            `${value}`, // expect sensor value
+          ];
+          let res = await callAPi("post", `${URL}/data/editlaststatus`,body)
+  
+          if (!res.status) {
+            alert ("seting last status fail")
+          }
+          else 
+          {
+            console.log("ok")
+          }
+        
+       
     }
 
     const handleEquipmentButton = async () => {
@@ -359,9 +381,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                 </button>
                                 <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation">
                                     <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Header" onClick={() => handleEquipmentButton()}>
-
                                         {equipment}
-
                                     </div>
                                     {
                                         listEquipmentState ?
@@ -372,7 +392,6 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                                             Equipment {index + 1}
                                                         </div>
                                                     ))}
-
                                             </div>
                                             :
                                             <></>
@@ -390,18 +409,18 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                                     <div key={item.id}>
                                                         <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
                                                             <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
-                                                            {item.name}
+                                                            Humidity
                                                         </div>
                                                         <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
                                                             <MdCircle size={15} color="#FF2828" style={{ marginRight: "5px" }} />
-                                                            {item.name}
+                                                            Temperature
                                                         </div>
                                                     </div>
 
                                                     :
                                                     <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content" key={item.id}>
                                                         <MdCircle size={15} color="#33A829" style={{ marginRight: "5px" }} />
-                                                        {item.name}
+                                                        Ph
                                                     </div>
 
                                             )
@@ -457,7 +476,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                             <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState); sendMessage() }} />
+                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState) }} />
                                                 <span className="slider round"></span>
                                             </label>
 
@@ -482,7 +501,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                                 <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState); sendMessage() }} />
+                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState)}} />
                                                     <span className="slider round"></span>
                                                 </label>
 
@@ -520,7 +539,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                                 <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState); sendMessage() }} />
+                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState) }} />
                                                     <span className="slider round"></span>
                                                 </div>
 
