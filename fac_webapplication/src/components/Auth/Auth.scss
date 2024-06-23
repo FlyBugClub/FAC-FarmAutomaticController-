@@ -26,7 +26,34 @@ $font-size-small: 18px;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    
+    &_Logo {
+      border-radius: 1rem;
+      border: 2px solid white;
+      background-color: rgba(0, 0, 0, 0.4);
+      width: 100%;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      align-items: center;
+      backdrop-filter: blur($blur-amount);
+      margin-bottom: 10px;
+      &_Image {
+        & img {
+          width: 70px;
+          height: 50px;
+        }
+      }
+      .div1 {
+        font-size: 20px;
+        color: white;
+        font-weight: 700;
+      }
+      .div2 {
+        font-size: 16px;
+        color: white;
+      }
+    }
     &_Container {
       overflow-y: scroll;
       box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
