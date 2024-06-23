@@ -154,7 +154,15 @@ $font-size-small: 18px;
                     color: white;
                     text-transform: capitalize;
                   }
-                 
+                  &:-webkit-autofill,
+                  &:-webkit-autofill:hover,
+                  &:-webkit-autofill:focus,
+                  &:-webkit-autofill:active {
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: white !important;
+                    background-color: transparent !important;
+                    caret-color: white; /* Đặt màu con trỏ nháy thành trắng */
+                  }
                 }
               }
             }
