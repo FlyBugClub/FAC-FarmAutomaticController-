@@ -123,10 +123,10 @@ const Login = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
-          <div className="Auth_BrowserView_Container">
-            <div className="Auth_BrowserView_Container_Form">
+          <div className="Auth_BrowserView_Container" >
+            <div className="Auth_BrowserView_Container_Form" >
               <div className="Auth_BrowserView_Container_Form_Header">
-                <div>Login</div>
+                <div>Đăng nhập</div>
               </div>
               <div className="Auth_BrowserView_Container_Form_Body">
                 <div className="Auth_BrowserView_Container_Form_Body_Item">
@@ -174,21 +174,21 @@ const Login = () => {
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Choice">
                     <div>
                       <input type="checkbox"/>
-                      <div>Remember me</div>
+                      <div>Nhớ mật khẩu</div>
                     </div>
                     <div onClick={() => navigate("/forgotpassword")}>
-                      Forgot password?
+                      Quên mật khẩu?
                     </div>
                   </div>
                 </div>
               </div>
               <div className="Auth_BrowserView_Container_Form_Footer">
                 <button onClick={handleSubmit}>
-                  Login
+                  Đăng nhập
                 </button>
                 <div className="Auth_BrowserView_Container_Form_Footer_Choice">
-                  <div>Don't have an account?</div>
-                  <div onClick={() => navigate("/signup")}>Register</div>
+                  <div onClick={() => navigate("/signup")}>Bạn chưa có tài khoản?</div>
+                  <div onClick={() => navigate("/signup")}>Đăng ký</div>
                 </div>
               </div>
             </div>

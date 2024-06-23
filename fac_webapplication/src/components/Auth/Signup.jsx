@@ -130,11 +130,11 @@ const Signup = () => {
         console.log(res.data);
         if (res.data === 1) {
          
-          alert("dang ky thanh cong ");
+          // alert("dang ky thanh cong ");
           navigate("/login");
         } else {
      
-          alert("dang ky khong thanh cong ");
+          // alert("dang ky khong thanh cong ");
         }
       };
       checkApi();
@@ -143,10 +143,10 @@ const Signup = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
-        <div className="Auth_BrowserView_Container">
-          <div className="Auth_BrowserView_Container_Form">
+        <div className="Auth_BrowserView_Container" style={{marginTop: "100px"}}>
+          <div className="Auth_BrowserView_Container_Form" >
             <div className="Auth_BrowserView_Container_Form_Header">
-              <div>Sign Up</div>
+              <div>Đăng ký</div>
             </div>
             <div className="Auth_BrowserView_Container_Form_Body">
               <div className="Auth_BrowserView_Container_Form_Body_Item">
@@ -250,11 +250,11 @@ const Signup = () => {
             </div>
             <div className="Auth_BrowserView_Container_Form_Footer">
               <button onClick={handleSubmit}>
-                Sign up
+                Đăng ký
               </button>
               <div className="Auth_BrowserView_Container_Form_Footer_Choice">
-                <div>Already have an account?</div>
-                <div onClick={() => navigate("/login")}>Sign in now!</div>
+                <div onClick={() => navigate("/login")}>Bạn đã có tài khoản?</div>
+                <div onClick={() => navigate("/login")}>Đăng nhập</div>
               </div>
             </div>
           </div>

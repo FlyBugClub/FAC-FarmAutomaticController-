@@ -97,10 +97,10 @@ const ForgotPassw = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
-        <div className="Auth_BrowserView_Container">
+        <div className="Auth_BrowserView_Container" >
           <div className="Auth_BrowserView_Container_Form">
             <div className="Auth_BrowserView_Container_Form_Header">
-              <div>Confirm Email</div>
+              <div>Quên mật khẩu  </div>
             </div>
             <div className="Auth_BrowserView_Container_Form_Body">
               <div className="Auth_BrowserView_Container_Form_Body_Item">
@@ -108,7 +108,7 @@ const ForgotPassw = () => {
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
                     <input
                         type="text"
-                        placeholder="Email"
+                        placeholder="Nhập Email"
                         value={email}
                         onChange={handleChangEmail}
                     />
@@ -126,7 +126,7 @@ const ForgotPassw = () => {
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
                     <input
                         type="text"
-                        placeholder="OTP"
+                        placeholder="Nhập mã OTP"
                         value={otp}
                         onChange={handleChangOTP}
                     />
@@ -139,7 +139,7 @@ const ForgotPassw = () => {
               </div>
               <div className="Auth_BrowserView_Container_Form_Body_Item">
                 <div onClick={handleSendOtp} className="Auth_BrowserView_Container_Form_Body_Item_OTP">
-                  Send OTP
+                  <p>Gửi mã OTP</p>
                 </div>
               </div>
             </div>
@@ -148,7 +148,8 @@ const ForgotPassw = () => {
                 Xác nhận
               </button>
               <div className="Auth_BrowserView_Container_Form_Footer_Choice">
-                <div onClick={() => navigate('/login')}>Quay lại trang đăng nhập.</div>
+              <div onClick={() => navigate("/login")}>Quay lại trang đăng nhập?</div>
+              <div onClick={() => navigate("/login")}>Đăng nhập</div>
               </div>
             </div>
           </div>

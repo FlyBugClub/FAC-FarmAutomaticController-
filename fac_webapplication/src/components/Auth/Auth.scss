@@ -22,10 +22,11 @@ $font-size-small: 18px;
     right: 0;
     justify-content: center;
     align-items: center;
-    background-image: url("../../../public/images/CanhDong.jpg");
+    background-image: url("../../../public/images/luiz-guimaraes-WFZmeE-veU4-unsplash.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    
     &_Container {
       overflow-y: scroll;
       box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
@@ -35,6 +36,7 @@ $font-size-small: 18px;
       &::-webkit-scrollbar {
         display: none;
       }
+      margin-bottom: 100px;
       &_Form {
         width: 450px;
         &_Header {
@@ -52,27 +54,28 @@ $font-size-small: 18px;
             font-size: 1.5rem;
             padding: 0 1rem;
             height: 65px;
-            background-color: white;
+            background-color: rgba(0, 0, 0, 0.4);
             border-radius: 0px 0px 20px 20px;
-            color: black;
-            &:after{
-              content: "";
-              position: absolute;
-              right: -5px;
-              top: 0;
-              border-left: 15px solid transparent;
-              border-right: 10px solid transparent;
-              border-top: 10px solid white;
-            }
-            &:before{
-              content: "";
-              position: absolute;
-              left: -8px;
-              top: 0;
-              border-left: 15px solid transparent;
-              border-right: 10px solid transparent;
-              border-top: 10px solid white;
-            }
+            color: rgb(255, 255, 255);
+            // &:after{
+            //   content: "";
+            //   position: absolute;
+            //   right: -5px;
+            //   top: 0;
+            //   border-left: 15px solid transparent;
+            //   border-right: 10px solid transparent;
+            //   border-top: 10px solid rgb(0, 0, 0, 0.4);
+              
+            // }
+            // &:before{
+            //   content: "";
+            //   position: absolute;
+            //   left: -8px;
+            //   top: 0;
+            //   border-left: 15px solid transparent;
+            //   border-right: 10px solid transparent;
+            //   border-top: 10px solid rgb(0, 0, 0, 0.4);
+            // }
           }
         }
 
@@ -110,12 +113,13 @@ $font-size-small: 18px;
                   background-color: transparent;
                   border: none;
                   font-size: 1rem;
-                  text-transform: capitalize;
                   &:focus {
-                    outline: none;
+                    outline: none;  
                   }
                   &::placeholder {
                     color: white;
+                    text-transform: capitalize;
+
                   }
                 }
               }
@@ -148,13 +152,17 @@ $font-size-small: 18px;
               }
             }
             &_OTP {
-              color: #0061f2;
+              width: 100px;
+              color: #ffffff;
               font-weight: 500;
               font-size: 1rem;
+              align-items: center;
               cursor: pointer;
+              margin-left: 10px;
               &:hover{
                 text-decoration: underline;
               }
+
             }
             &_Validate{
               width: 100%;
@@ -170,8 +178,8 @@ $font-size-small: 18px;
           & button {
             width: 100%;
             border: none;
-            background-color: rgba(255, 255, 255, 0.4);
-            color:black;
+            background-color: rgba(0, 0, 0, 0.4);
+            color:rgb(255, 255, 255);
             border-radius: 2rem;
             font-size: 1rem;
             font-weight: bold;
