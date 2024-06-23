@@ -84,8 +84,9 @@ EXEC dbo.delete_schedule_pro 'BC0001', 20 --just use offset
 */
 
 
---arguement's list @id_esp varchar(23),
+--arguement's list
 /*
+@id_esp varchar(23),
 @new_id_user varchar(20) =NULL,
 @new_name_esp VARCHAR(20) = NULL,
 @new_description VARCHAR(100) = NULL,
@@ -103,6 +104,21 @@ EXEC dbo.edit_esp_last_status_pro '202403215' , '"a" : "abc"'
 */
 
 EXEC dbo.edit_btn_status_pro 'BC0001', 0
+/*	EXPECT RESULT
+	_state	_status
+	200		success
+*/
+
+
+/*
+arguement's list
+
+@id_equipment VARCHAR(23),
+@btn_status INT,
+@mode SMALLINT,
+@expect_sensor_value FLOAT
+*/
+EXEC dbo.edit_last_state_pro 'BC0001',1,1,81
 /*	EXPECT RESULT
 	_state	_status
 	200		success
