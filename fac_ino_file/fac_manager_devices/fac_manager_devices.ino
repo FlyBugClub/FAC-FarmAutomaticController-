@@ -9,13 +9,19 @@ String password = "ktd01042013";
 const char* mqtt_server = "broker.emqx.io";
 const uint16_t mqtt_port = 1883;
 
-const char* send_to_client = "SendToClient";
-const char* client_to_server = "ClientToServer";
+String send_to_client = "SendToClient";
+String client_to_server = "ClientToServer";
 const char* mqtt_client_id = "helloem";
 
+String id_esp = "111";
+String x_send_to_client = id_esp + send_to_client;
+String x_client_to_server = id_esp + client_to_server;
 
-WiFiConnection wifiConn;//                           topic gửi lên , topic đăng ký/lắng nghe
-MQTTConnection mqttConn(mqtt_server, mqtt_client_id, send_to_client, client_to_server);
+const char* char_x_send_to_client = x_send_to_client.c_str();
+const char* char_x_client_to_server = x_client_to_server.c_str();
+
+WiFiConnection wifiConn;//                           topic gửi lên        , topic đăng ký/lắng nghe
+MQTTConnection mqttConn(mqtt_server, mqtt_client_id, char_x_send_to_client, char_x_client_to_server);
 
 void setup() {
   Serial.begin(9600);
@@ -36,5 +42,7 @@ void loop() {
   if (!mqttConn.connected()) {
     mqttConn.reconnectMQTT();
   }
+  // mqttConn.processPumps("dummy_json_payload");
+
   mqttConn.loop();
 }
