@@ -32,6 +32,8 @@ const Login = () => {
   const [checkSavePassword, setCheckSavePassword] = useState(false);
   const handleCheckboxClick = (e) => {
     const checkBox = e.target.checked;
+    console.log(checkBox);
+    console.log("haha");
     setCheckSavePassword(checkBox);
   };
   // const handleEditUser = async () => {
@@ -202,7 +204,7 @@ const Login = () => {
                 <div className="Auth_BrowserView_Container_Form_Body_Item">
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Choice">
                     <div>
-                      <input type="checkbox" />
+                      <input onClick={(e) => handleCheckboxClick(e)} type="checkbox" />
                       <div>Nhớ mật khẩu</div>
                     </div>
                     <div onClick={() => navigate("/forgotpassword")}>
@@ -222,12 +224,6 @@ const Login = () => {
               </div>
             </div>
           </form>
-
-
-
-
-
-
 
         </div>
       </BrowserView>
@@ -292,7 +288,7 @@ const Login = () => {
               </div>
               <div className="Auth_MobileView_Region_LoginArea_FeatureArea">
                 <div className="Auth_MobileView_Region_LoginArea_FeatureArea_Save">
-                  <input type="checkbox" onClick={handleCheckboxClick} />
+                  <input type="checkbox" onClick={(e) => handleCheckboxClick(e)} />
                   <div>Lưu đăng nhập</div>
                 </div>
                 <div
