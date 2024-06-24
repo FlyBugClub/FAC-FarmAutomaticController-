@@ -11,7 +11,7 @@ const uint16_t mqtt_port = 1883;
 
 String send_to_client = "SendToClient";
 String client_to_server = "ClientToServer";
-String last_will_message = "LastWillMessage"
+String last_will_message = "LastWillMessage";
 const char* mqtt_client_id = "helloem";
 
 String id_esp = "111";
