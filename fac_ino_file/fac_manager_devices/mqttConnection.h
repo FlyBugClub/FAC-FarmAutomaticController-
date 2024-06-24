@@ -12,7 +12,7 @@ struct Pump {
     int mode;
   };
 
-  MQTTConnection(const char* server, const char* client_id, const char* topic_send, const char* topic_hello);
+  MQTTConnection(const char* server, const char* client_id, const char* topic_send, const char* topic_recive);
 
   void setupMQTT();
   void reconnectMQTT();
@@ -28,7 +28,7 @@ private:
   const char* mqtt_server;
   const char* mqtt_client_id;
   const char* mqtt_topic_send;
-  const char* mqtt_topic_hello;
+  const char* mqtt_topic_recive;
   Pump pumps[3]; // Maximum 3 pumps, adjust as needed
   void mqttCallback(char* topic, byte* payload, unsigned int length);
 };
