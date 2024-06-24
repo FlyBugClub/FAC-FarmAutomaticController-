@@ -10,8 +10,11 @@ import { MdCircle } from "react-icons/md";
 import { callAPi } from "../../services/UserService";
 import { AuthContext } from "../Context/AuthContext";
 import dayjs from 'dayjs';
+import {FiSettings} from "react-icons/fi"
 import { Client, Message } from 'paho-mqtt';
 import Loading from "./loading";
+import { TbDatabaseSearch } from "react-icons/tb";
+
 const Farm = ({ weatherState, handleAddDevice }) => {
     const { URL, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -95,12 +98,11 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     }, [farm])
 
     useEffect(() => {
-        if(connectStatus == "Connected" && client.isConnected())
-            {
-                sendMessage();
-            }
-        
-    }, [mode,modeState,bumperState,value])
+        if (connectStatus == "Connected" && client.isConnected()) {
+            sendMessage();
+        }
+
+    }, [mode, modeState, bumperState, value])
 
     const disconnectMqtt = () => {
         if (connectStatus == "Connected" && client.isConnected()) {
@@ -111,21 +113,21 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
 
     const sendMessage = () => {
-            try {
-                // var message = new Message("{'vake':'cuong'}");
-                // message.destinationName = "fac_iot";
-                // client.send(message);
-                setLastStatus();
-            }
-            catch (e) {
-                alert(e);
-            }
-            
-        
-        
+        try {
+            // var message = new Message("{'vake':'cuong'}");
+            // message.destinationName = "fac_iot";
+            // client.send(message);
+            setLastStatus();
+        }
+        catch (e) {
+            alert(e);
+        }
+
+
+
     };
 
-  
+
 
     const getFarm = async (id_esp, id_equipment) => {
         setLoadingState(true)
@@ -201,58 +203,55 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const getLastStatus = async () => {
 
 
-            const laststatus = farm[0]["laststatus"]
-            if ( laststatus != undefined)
-            {
-                // set toogle state
-                if (laststatus["btn_status"] == 0) {
-                    setModeState(false)
-                }
-                else setModeState(true)
-
-                if (laststatus["last_status"] == 0 || laststatus["last_status"] == null) {
-                    setBumperState(false)
-                }
-                else setBumperState(true)
-                if (laststatus["mode"] == 0) {
-                    setMode("Manual")
-                }
-                else if (laststatus["mode"] == 1) {
-                    setMode("Automatic")
-                }
-                else if (laststatus["mode"] == 2) {
-                    setMode("Timer")
-                }             
-                setValue(laststatus["expect_sensor_value"])
-
+        const laststatus = farm[0]["laststatus"]
+        if (laststatus != undefined) {
+            // set toogle state
+            if (laststatus["btn_status"] == 0) {
+                setModeState(false)
             }
-            else 
-            {
-                setModeState(false);
-                setMode("Manual");
+            else setModeState(true)
+
+            if (laststatus["last_status"] == 0 || laststatus["last_status"] == null) {
                 setBumperState(false)
-                setValue(50)
             }
-            
-        
+            else setBumperState(true)
+            if (laststatus["mode"] == 0) {
+                setMode("Manual")
+            }
+            else if (laststatus["mode"] == 1) {
+                setMode("Automatic")
+            }
+            else if (laststatus["mode"] == 2) {
+                setMode("Timer")
+            }
+            setValue(laststatus["expect_sensor_value"])
+
+        }
+        else {
+            setModeState(false);
+            setMode("Manual");
+            setBumperState(false)
+            setValue(50)
+        }
+
+
     }
 
     const setLastStatus = async () => {
         let body = [
             `${farm[0]["id"]}`, // id equipment
-            `${modeState?1:0}`, // toogle state
-            `${mode == "Manual"?0:mode == "Automatic"?1:2}`, // mode state
+            `${modeState ? 1 : 0}`, // toogle state
+            `${mode == "Manual" ? 0 : mode == "Automatic" ? 1 : 2}`, // mode state
             `${value}`, // expect sensor value
-          ];
-          let res = await callAPi("post", `${URL}/data/editlaststatus`,body)
-  
-          if (!res.status) {
-            alert ("seting last status fail")
-          }
-          else 
-          {
+        ];
+        let res = await callAPi("post", `${URL}/data/editlaststatus`, body)
+
+        if (!res.status) {
+            alert("seting last status fail")
+        }
+        else {
             console.log("ok")
-          }  
+        }
     }
 
     const handleEquipmentButton = async () => {
@@ -297,141 +296,151 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                 {farm.length == 0 ? <></>
                     :
                     <div className="Fac_Home_Web_Farmcontainer">
+                        <div className="Fac_Home_Web_Farmcontainer_Header">
+                            <div className="Fac_Home_Web_Farmcontainer_Header_Left">
+
+                                <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => { navigate("/dashboard"); disconnectMqtt() }} />
+                                <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                    Farm name
+                                </div>
+
+                            </div>
+                            <div className="Fac_Home_Web_Farmcontainer_Header_Right">
+                                <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigate(`/addfarm/${id}`); }} >
+                                    <TbDatabaseSearch size={20} className="Icon"/>
+                                    History
+                                </button>
+                                <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigate(`/addfarm/${id}`); }} >
+                                    <FiSettings size={20} className="Icon"/>
+                                    Setting
+                                </button>
+                                <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigate(`/addfarm/${id}`); }} >
+                                    <IoIosAddCircleOutline size={26} className="Icon"/>
+                                    Add device
+                                </button>
+                                <div className="Fac_Home_Web_Farmcontainer_Header_Right_Status">
+
+                                    <MdCircle size={18} color="#8AFF02" style={{ marginRight: "5px", marginTop: "3px" }} />
+                                    Connected
+                                </div>
+
+                            </div>
+                        </div>
                         <div className="Fac_Home_Web_Farmcontainer_Chart">
                             <div className="Fac_Home_Web_Farmcontainer_Chart_Left">
-                                <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
-                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Left_Title">
-                                        <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => { navigate("/dashboard"); disconnectMqtt() }} />
-                                        <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                            Farm name
-                                        </div>
 
-                                    </div>
-                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Left_Status">
+                                {
+                                    data.length != 0 ? <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart
 
-                                        <MdCircle size={18} color="#8AFF02" style={{ marginRight: "5px", marginTop: "3px" }} />
-                                        Connected
-                                    </div>
+                                            data={data}
+                                            margin={{
+                                                top: 10,
+                                                right: 30,
+                                                left: 0,
+                                                bottom: 0,
+                                            }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                            <XAxis
+                                                dataKey="time"
+                                                tick={{ fontSize: 18, fill: '#fff' }} // Configures font size and color
+                                                stroke="#fff" // Configures stroke color
+                                                tickLine={false} // Configures tick line color
+                                                axisLine={{ stroke: '#fff', strokeWidth: 3 }} // Configures axis line color
+                                            />
+                                            <YAxis
+                                                tick={{ fontSize: 18, fill: '#fff' }} // Configures font size and color
+                                                stroke="#fff" // Configures stroke color
+                                                tickLine={false} // Configures tick line color
+                                                axisLine={{ stroke: '#fff', strokeWidth: 2 }}
+                                            />
+                                            <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ borderRadius: '0.1px' }} />
 
-                                </div>
-                                <div className="Fac_Home_Web_Farmcontainer_Chart_Left_Chart">
-                                    {
-                                        data.length != 0 ? <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart
+                                            <Area type="monotone"
+                                                dataKey="sht_humid"
+                                                stroke="#0061f2" // Màu xanh đậm cho đường line
+                                                strokeWidth={2} //
+                                                fill="#95C5FF"
+                                                dot={{ fill: 'blue', stroke: '#0061f2', strokeWidth: 0, r: 4 }} // Đặc và màu xanh đậm cho các điểm dữ liệu
+                                            />
+                                            <Area type="monotone"
+                                                dataKey="sht_temp"
+                                                stroke="#FF2828"
+                                                strokeWidth={2}
+                                                fill="#F75B5B"
+                                                dot={{ fill: 'red', stroke: '#FF2828', strokeWidth: 0, r: 4 }}
+                                            />
+                                            <Area type="monotone"
+                                                dataKey="ph"
+                                                stroke="#24761D"
+                                                strokeWidth={2}
+                                                fill="#ACFDA5"
+                                                dot={{ fill: 'green', stroke: '#33A829', strokeWidth: 0, r: 4 }}
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                        : <></>
+                                }
 
-                                                data={data}
-                                                margin={{
-                                                    top: 10,
-                                                    right: 30,
-                                                    left: 0,
-                                                    bottom: 0,
-                                                }}
-                                            >
-                                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                                <XAxis
-                                                    dataKey="time"
-                                                    tick={{ fontSize: 18, fill: '#fff' }} // Configures font size and color
-                                                    stroke="#fff" // Configures stroke color
-                                                    tickLine={false} // Configures tick line color
-                                                    axisLine={{ stroke: '#fff', strokeWidth: 3 }} // Configures axis line color
-                                                />
-                                                <YAxis
-                                                    tick={{ fontSize: 18, fill: '#fff' }} // Configures font size and color
-                                                    stroke="#fff" // Configures stroke color
-                                                    tickLine={false} // Configures tick line color
-                                                    axisLine={{ stroke: '#fff', strokeWidth: 2 }}
-                                                />
-                                                <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ borderRadius: '0.1px' }} />
 
-                                                <Area type="monotone"
-                                                    dataKey="sht_humid"
-                                                    stroke="#0061f2" // Màu xanh đậm cho đường line
-                                                    strokeWidth={2} //
-                                                    fill="#95C5FF"
-                                                    dot={{ fill: 'blue', stroke: '#0061f2', strokeWidth: 0, r: 4 }} // Đặc và màu xanh đậm cho các điểm dữ liệu
-                                                />
-                                                <Area type="monotone"
-                                                    dataKey="sht_temp"
-                                                    stroke="#FF2828"
-                                                    strokeWidth={2}
-                                                    fill="#F75B5B"
-                                                    dot={{ fill: 'red', stroke: '#FF2828', strokeWidth: 0, r: 4 }}
-                                                />
-                                                <Area type="monotone"
-                                                    dataKey="ph"
-                                                    stroke="#24761D"
-                                                    strokeWidth={2}
-                                                    fill="#ACFDA5"
-                                                    dot={{ fill: 'green', stroke: '#33A829', strokeWidth: 0, r: 4 }}
-                                                />
-                                            </AreaChart>
-                                        </ResponsiveContainer>
-                                            : <></>
-                                    }
-
-                                </div>
 
                             </div>
                             <div className="Fac_Home_Web_Farmcontainer_Chart_Right">
 
 
-                                <button className="Fac_Home_Web_Farmcontainer_Chart_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt();navigate(`/addfarm/${id}`); }} >
-                                    <IoIosAddCircleOutline size={30} style={{ marginRight: "15px" }} />
-                                    Add device
-                                </button>
-                                <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation">
-                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Header" onClick={() => handleEquipmentButton()}>
-                                        {equipment}
-                                    </div>
-                                    {
-                                        listEquipmentState ?
-                                            <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Dropbox">
-                                                {
-                                                    listEquipment.map((item, index) => (
-                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Dropbox_Item" key={item.id_equipment} onClick={() => { getFarm(id, item.id_equipment); setEquipment("Equipment " + (index + 1)); setListEquipmentState(false); setListModeState(false) }}>
-                                                            Equipment {index + 1}
-                                                        </div>
-                                                    ))}
-                                            </div>
-                                            :
-                                            <></>
-                                    }
 
-                                    <div style={{ width: "100%", height: "1px", borderTop: "2px solid white", marginTop: "10px" }}></div>
-                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Date">
-                                        Date : {currentDate}
-                                    </div>
-                                    <div style={{ marginTop: "10px", marginRight: "auto" }}>
-
-                                        {farm[0]["Sensors"] != undefined ?
-                                            (farm[0]["Sensors"]).map((item) => (
-                                                item.category === "sht" ?
-                                                    <div key={item.id}>
-                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
-                                                            <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
-                                                            Humidity
-                                                        </div>
-                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
-                                                            <MdCircle size={15} color="#FF2828" style={{ marginRight: "5px" }} />
-                                                            Temperature
-                                                        </div>
+                                <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Header" onClick={() => handleEquipmentButton()}>
+                                    {equipment}
+                                </div>
+                                {
+                                    listEquipmentState ?
+                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Dropbox">
+                                            {
+                                                listEquipment.map((item, index) => (
+                                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Dropbox_Item" key={item.id_equipment} onClick={() => { getFarm(id, item.id_equipment); setEquipment("Equipment " + (index + 1)); setListEquipmentState(false); setListModeState(false) }}>
+                                                        Equipment {index + 1}
                                                     </div>
+                                                ))}
+                                        </div>
+                                        :
+                                        <></>
+                                }
 
-                                                    :
-                                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content" key={item.id}>
-                                                        <MdCircle size={15} color="#33A829" style={{ marginRight: "5px" }} />
-                                                        Ph
+                                <div style={{ width: "100%", height: "1px", borderTop: "2px solid white", marginTop: "10px" }}></div>
+                                <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Date">
+                                    Date : {currentDate}
+                                </div>
+                                <div style={{ marginTop: "10px", marginRight: "auto" }}>
+
+                                    {farm[0]["Sensors"] != undefined ?
+                                        (farm[0]["Sensors"]).map((item) => (
+                                            item.category === "sht" ?
+                                                <div key={item.id}>
+                                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Content">
+                                                        <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
+                                                        Humidity
                                                     </div>
+                                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Content">
+                                                        <MdCircle size={15} color="#FF2828" style={{ marginRight: "5px" }} />
+                                                        Temperature
+                                                    </div>
+                                                </div>
 
-                                            )
-                                            ) : <></>}
-                                        {/* <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
+                                                :
+                                                <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Content" key={item.id}>
+                                                    <MdCircle size={15} color="#33A829" style={{ marginRight: "5px" }} />
+                                                    Ph
+                                                </div>
+
+                                        )
+                                        ) : <></>}
+                                    {/* <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
                                         <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
                                         Humidity
                                     </div>
                                     
                                     */}
-                                    </div>
 
                                 </div>
 
@@ -501,7 +510,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                                 <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState)}} />
+                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState) }} />
                                                     <span className="slider round"></span>
                                                 </label>
 
