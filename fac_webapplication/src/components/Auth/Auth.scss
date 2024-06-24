@@ -28,8 +28,8 @@ $font-size-small: 18px;
     background-size: cover;
     &_Logo {
       overflow-y: scroll;
-      box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-        rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+      box-shadow: 0px 0px 16px white;
+
       backdrop-filter: blur(30px);
       border-radius: 1rem;
       border: 2px solid white;
@@ -61,9 +61,10 @@ $font-size-small: 18px;
       }
     }
     &_Container {
+      
       overflow-y: scroll;
-      box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
-        rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+      box-shadow: 0px 0px 16px white;
+
       backdrop-filter: blur(30px);
       border-radius: 1rem;
       border: 2px solid white;
@@ -91,6 +92,7 @@ $font-size-small: 18px;
             background-color: rgba(0, 0, 0, 0.4);
             border-radius: 0px 0px 20px 20px;
             color: rgb(255, 255, 255);
+            box-shadow: 0px 0px 16px white;
             // &:after{
             //   content: "";
             //   position: absolute;
