@@ -122,7 +122,7 @@ function App() {
                   element={<Farm weatherState={weatherState} handleAddDevice={handleAddDevice} />}
                 />
                 <Route
-                  path="/addfarm"
+                  path="/addfarm/:id"
                   element={
                     <Addfarm
                       weatherState={weatherState}

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import './home.scss'
 import { BrowserView, MobileView } from "react-device-detect";
 import { MdArrowBackIosNew } from "react-icons/md";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { BsQrCode } from "react-icons/bs";
 import { PiPlusBold } from "react-icons/pi";
 import { AiOutlinePlusCircle } from "react-icons/ai";
@@ -12,15 +12,22 @@ import SearchLocationInput from "./locationsearch"
 import { AuthContext } from "../Context/AuthContext";
 import QrScanner from 'qr-scanner';
 import MapComponent from "./map";
+import { callAPi } from "../../services/UserService";
+
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { stringify } from "ajv";
+
 const AddFarm = ({ weatherState, addDeviceState }) => {
-    // const farm = ["farm1","farm2","farm3","farm1","farm2","farm3"]
+    const { id: paramId } = useParams();
     const [qrcodeState, setQrcodeState] = useState(false)
     const [authQrState, setAuthQrState] = useState(false)
     const [farmSeleted, setFarmSelected] = useState("")
     const [farmSeletedState, setFarmSelectedState] = useState(false)
+    const [qrData, setQrData] = useState([])
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
-
+    const nameEquipmentRef = useRef(null);
     const { URL, farmsct } = useContext(AuthContext);
 
     const [place, setLocation] = useState("");
@@ -38,8 +45,9 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
         if (data != undefined) {
             const splitResult = data.split(',');
             if (splitResult[0] == "fac") {
-                if (splitResult[1] == addDeviceState) { 
-                     setQrcodeState(true) 
+                if (splitResult[1] == addDeviceState) {
+                    setQrData(splitResult)
+                    setQrcodeState(true)
                 }
                 else alert("this qr code for add equipment")
 
@@ -49,9 +57,47 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
     };
 
     const handleButtonClick = () => {
-        
-        fileInputRef.current.click();
+        // fileInputRef.current.click();
+        setQrcodeState(true) 
     };
+
+    const handleAddEquipmentClick = async () => {
+        // console.log(nameEquipmentRef.current.value)
+        if (nameEquipmentRef.current.value != "") {
+            console.log(qrData)
+            console.log(paramId)
+            let device = [];
+            for (let i = 2; i < qrData.length; i++) {
+                if (i == 2) {
+                    device.push({ "id": qrData[i],
+                        "name":nameEquipmentRef.current.value,
+                        "type":"Equipment" })
+                }
+                else {
+                    device.push({
+                        "id": qrData[i],
+                        "name":"",
+                        "id_equipment":qrData[2],
+                        "type":"Sensor"
+                    })
+                }
+            }
+            let body = {
+                "id_esp" : paramId,
+                "device" : device    
+            };
+              let res = await callAPi("post", `${URL}/data/insertequipment`,body)
+
+              if (!res.status) {
+                alert (stringify( res))
+              }
+              else navigate(-1)
+        }
+        else toast.error("please enter name equipment");
+
+        // setAuthQrState(true)
+        // navigate('/farm')
+    }
 
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
@@ -128,7 +174,7 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                     <div className="Fac_Home_Web_Addfarmcontainer_Body_Left">
                                         <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items">
                                             Bump name:
-                                            <textarea className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input" maxLength="30"></textarea>
+                                            <textarea className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={nameEquipmentRef} ></textarea>
                                         </div>
                                         {/* <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{marginTop:"15px"}} maxLength="30">
                                         SHT name:
@@ -167,7 +213,7 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                                 <BsQrCode size={20} style={{ marginRight: "10px" }} />
                                                 Add QR code again
                                             </button>
-                                            <button className="Fac_Home_Web_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => navigate('/farm')}>
+                                            <button className="Fac_Home_Web_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddEquipmentClick()}>
                                                 <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
                                                 Add equipment
                                             </button>

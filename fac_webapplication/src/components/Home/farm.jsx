@@ -125,6 +125,8 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         
     };
 
+  
+
     const getFarm = async (id_esp, id_equipment) => {
         setLoadingState(true)
         let res = await callAPi(
@@ -250,9 +252,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
           else 
           {
             console.log("ok")
-          }
-        
-       
+          }  
     }
 
     const handleEquipmentButton = async () => {
@@ -375,7 +375,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                             <div className="Fac_Home_Web_Farmcontainer_Chart_Right">
 
 
-                                <button className="Fac_Home_Web_Farmcontainer_Chart_Right_Button" onClick={() => { handleAddDevice("equipment"); navigate("/addfarm") }} >
+                                <button className="Fac_Home_Web_Farmcontainer_Chart_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt();navigate(`/addfarm/${id}`); }} >
                                     <IoIosAddCircleOutline size={30} style={{ marginRight: "15px" }} />
                                     Add device
                                 </button>
