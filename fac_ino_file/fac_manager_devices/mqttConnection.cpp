@@ -1,7 +1,7 @@
 #include "mqttConnection.h"
 #include <ArduinoJson.h> // Bao gồm thư viện ArduinoJSON
-MQTTConnection::MQTTConnection(const char* server, const char* client_id, const char* topic_send, const char* topic_hello)
-  : mqtt_server(server), mqtt_client_id(client_id), mqtt_topic_send(topic_send), mqtt_topic_recive(topic_hello), mqttClient(espClient) {
+MQTTConnection::MQTTConnection(const char* server, const char* client_id, const char* topic_send, const char* topic_recive,  const char* mqtt_topic_lwm;)
+  : mqtt_server(server), mqtt_client_id(client_id), mqtt_topic_send(topic_send), mqtt_topic_recive(topic_recive), mqttClient(espClient), mqtt_topic_lwm(mqtt_topic_lwm) {
 }
 
 void MQTTConnection::setupMQTT() {
@@ -14,10 +14,12 @@ void MQTTConnection::setupMQTT() {
 void MQTTConnection::reconnectMQTT() {
   while (!mqttClient.connected()) {
     Serial.print("Attempting MQTT connection...");
-    if (mqttClient.connect(mqtt_client_id)) {
+    if (mqttClient.connect(mqtt_client_id, mqtt_topic_lwm, 0, true, "da ngat ket noi")) {
       Serial.println("connected");
+      mqttClient.publish(mqtt_topic_lwm, "da ket noi lai", true);
       mqttClient.subscribe(mqtt_topic_recive);
       mqttClient.subscribe(mqtt_topic_send);
+      mqttClient.subscribe(mqtt_topic_lwm);
 
     } else {
       Serial.print("failed, rc=");
