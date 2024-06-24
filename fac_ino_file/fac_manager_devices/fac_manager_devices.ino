@@ -8,12 +8,14 @@ String password = "ktd01042013";
 
 const char* mqtt_server = "broker.emqx.io";
 const uint16_t mqtt_port = 1883;
-const char* mqtt_topic_iot = "fac_iot";
-const char* mqtt_topic_app = "fac_app";
+
+const char* send_to_client = "SendToClient";
+const char* client_to_server = "ClientToServer";
 const char* mqtt_client_id = "helloem";
 
-WiFiConnection wifiConn;
-MQTTConnection mqttConn(mqtt_server, mqtt_client_id, mqtt_topic_app, mqtt_topic_iot);
+
+WiFiConnection wifiConn;//                           topic gửi lên , topic đăng ký/lắng nghe
+MQTTConnection mqttConn(mqtt_server, mqtt_client_id, send_to_client, client_to_server);
 
 void setup() {
   Serial.begin(9600);
