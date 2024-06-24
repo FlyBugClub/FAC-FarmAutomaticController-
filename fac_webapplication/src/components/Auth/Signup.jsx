@@ -161,7 +161,7 @@ const Signup = () => {
           className="Auth_BrowserView_Container"
           style={{ marginTop: "100px" }}
         >
-          <div className="Auth_BrowserView_Container_Form">
+          <form onSubmit={handleSubmit} className="Auth_BrowserView_Container_Form">
             <div className="Auth_BrowserView_Container_Form_Header">
               <div>Đăng ký</div>
             </div>
@@ -290,7 +290,8 @@ const Signup = () => {
               </div>
             </div>
             <div className="Auth_BrowserView_Container_Form_Footer">
-              <button onClick={handleSubmit}>Đăng ký</button>
+              <button type="submit">Đăng ký</button>
+
               <div className="Auth_BrowserView_Container_Form_Footer_Choice">
                 <div onClick={() => navigate("/login")}>
                   Bạn đã có tài khoản?
@@ -298,7 +299,8 @@ const Signup = () => {
                 <div onClick={() => navigate("/login")}>Đăng nhập</div>
               </div>
             </div>
-          </div>
+          </form>
+
         </div>
       </BrowserView>
       <MobileView className="Auth_MobileView">

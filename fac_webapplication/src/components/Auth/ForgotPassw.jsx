@@ -99,7 +99,7 @@ const ForgotPassw = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
-        <div className="Auth_BrowserView_Container">
+        <form className="Auth_BrowserView_Container" onSubmit={handleSubmit}>
           <div className="Auth_BrowserView_Container_Form">
             <div className="Auth_BrowserView_Container_Form_Header">
               <div>Quên mật khẩu </div>
@@ -159,7 +159,7 @@ const ForgotPassw = () => {
               </div>
             </div>
             <div className="Auth_BrowserView_Container_Form_Footer">
-              <button onClick={(e) => handleSubmit(e)}>Xác nhận</button>
+              <button type="submit">Xác nhận</button>
               <div className="Auth_BrowserView_Container_Form_Footer_Choice">
                 <div onClick={() => navigate("/login")}>
                   Quay lại trang đăng nhập?
@@ -168,7 +168,7 @@ const ForgotPassw = () => {
               </div>
             </div>
           </div>
-        </div>
+        </form>
       </BrowserView>
 
       <MobileView className="Auth_MobileView">

@@ -20,7 +20,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [usernameErr, setUsernameErr] = useState("");
   const [passwordErr, setPasswordErr] = useState("");
-  
+
   const handleChangeUsername = (e) => {
     const newUsername = e.target.value;
     setUsername(newUsername);
@@ -71,22 +71,19 @@ const Login = () => {
     if (username.trim() === "") {
       setUsernameErr("Tên đăng nhập không được để trống");
       return false;
-    }
-    else {
+    } else {
       setUsernameErr("");
       return true;
     }
-
   };
   const validatePassword = (password) => {
     if (password.trim() === "") {
       setPasswordErr("Mật khẩu không được để trống");
       return false;
-    }else {
+    } else {
       setPasswordErr("");
       return true;
     }
-    
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,7 +141,7 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="Auth_BrowserView_Container">
+          <form onSubmit={handleSubmit} className="Auth_BrowserView_Container">
             <div className="Auth_BrowserView_Container_Form">
               <div className="Auth_BrowserView_Container_Form_Header">
                 <div>Đăng nhập</div>
@@ -215,7 +212,7 @@ const Login = () => {
                 </div>
               </div>
               <div className="Auth_BrowserView_Container_Form_Footer">
-                <button onClick={handleSubmit}>Đăng nhập</button>
+                <button type="submit">Đăng nhập</button>
                 <div className="Auth_BrowserView_Container_Form_Footer_Choice">
                   <div onClick={() => navigate("/signup")}>
                     Bạn chưa có tài khoản?
@@ -224,7 +221,14 @@ const Login = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </form>
+
+
+
+
+
+
+
         </div>
       </BrowserView>
 

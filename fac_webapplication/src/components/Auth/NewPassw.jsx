@@ -12,7 +12,7 @@ import { useLocation } from "react-router-dom";
 //
 import { AuthContext } from "../Context/AuthContext";
 const NewPassw = () => {
-  const { URL} = useContext(AuthContext);
+  const { URL } = useContext(AuthContext);
   const location = useLocation();
   const [email, setEmail] = useState("");
   const [errorPass, setErrorPass] = useState("");
@@ -28,7 +28,6 @@ const NewPassw = () => {
   const navigate = useNavigate();
   const handleOpenEye = () => {
     setShowPassword(!showPassword);
-
   };
   const handleOpenEye1 = () => {
     setShowPassword1(!showPassword1);
@@ -48,12 +47,10 @@ const NewPassw = () => {
     if (password.trim() === "") {
       setErrorPass("Vui lòng nhập mật khẩu mới");
       return false;
-    }
-    else{
+    } else {
       setErrorPass("");
       return true;
     }
-   
   };
 
   const validateConfirmPassword = (password, confirmPassword) => {
@@ -63,12 +60,10 @@ const NewPassw = () => {
     } else if (password !== confirmPassword) {
       setErrorPass1("Mật khẩu không giống nhau");
       return false;
-    }else
-    {
+    } else {
       setErrorPass1("");
       return true;
     }
-
   };
 
   const handleSubmit = async (e) => {
@@ -86,7 +81,7 @@ const NewPassw = () => {
           `${email}`, // email
           `${newPassword}`, // new password
         ];
-        let res = await callAPi("post", `${URL}/auth/change-password`,body)
+        let res = await callAPi("post", `${URL}/auth/change-password`, body);
 
         // console.log(res);
         if (res.status) {
@@ -101,28 +96,38 @@ const NewPassw = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
-        <div className="Auth_BrowserView_Container">
+        <form className="Auth_BrowserView_Container" onSubmit={handleSubmit}>
           <div className="Auth_BrowserView_Container_Form">
             <div className="Auth_BrowserView_Container_Form_Header">
               <div>Reset Password</div>
             </div>
             <div className="Auth_BrowserView_Container_Form_Body">
               <div className="Auth_BrowserView_Container_Form_Body_Item">
-                <div className={`Auth_BrowserView_Container_Form_Body_Item_Content ${errorPass ? "Error" : ""}`}>
+                <div
+                  className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                    errorPass ? "Error" : ""
+                  }`}
+                >
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
                     <input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Mật khẩu mới"
-                        onChange={handleChangNewPass}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Mật khẩu mới"
+                      onChange={handleChangNewPass}
+                     
                     />
                   </div>
-                  <div onClick={handleOpenEye}
-                       className="Auth_BrowserView_Container_Form_Body_Item_Content_IconEye">
-                    {showPassword ? <FiEyeOff size={20}/> :
-                        <FiEye size={20}/>}
+                  <div
+                    onClick={handleOpenEye}
+                    className="Auth_BrowserView_Container_Form_Body_Item_Content_IconEye"
+                  >
+                    {showPassword ? (
+                      <FiEyeOff size={20} />
+                    ) : (
+                      <FiEye size={20} />
+                    )}
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiLock color={errorPass ? "red" : "white"} size={24}/>
+                    <FiLock color={errorPass ? "red" : "white"} size={24} />
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
@@ -130,21 +135,30 @@ const NewPassw = () => {
                 </div>
               </div>
               <div className="Auth_BrowserView_Container_Form_Body_Item">
-                <div className={`Auth_BrowserView_Container_Form_Body_Item_Content ${errorPass1 ? "Error" : ""}`}>
+                <div
+                  className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                    errorPass1 ? "Error" : ""
+                  }`}
+                >
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
                     <input
-                        type={showPassword1 ? "text" : "password"}
-                        placeholder="Xác nhận mật khẩu"
-                        onChange={handleChangConfirmPass}
+                      type={showPassword1 ? "text" : "password"}
+                      placeholder="Xác nhận mật khẩu"
+                      onChange={handleChangConfirmPass}
                     />
                   </div>
-                  <div onClick={handleOpenEye1}
-                       className="Auth_BrowserView_Container_Form_Body_Item_Content_IconEye">
-                    {showPassword1 ? <FiEyeOff size={20}/> :
-                        <FiEye size={20}/>}
+                  <div
+                    onClick={handleOpenEye1}
+                    className="Auth_BrowserView_Container_Form_Body_Item_Content_IconEye"
+                  >
+                    {showPassword1 ? (
+                      <FiEyeOff size={20} />
+                    ) : (
+                      <FiEye size={20} />
+                    )}
                   </div>
                   <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
-                    <FiLock color={errorPass1 ? "red" : "white"} size={24}/>
+                    <FiLock color={errorPass1 ? "red" : "white"} size={24} />
                   </div>
                 </div>
                 <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
@@ -153,22 +167,22 @@ const NewPassw = () => {
               </div>
             </div>
             <div className="Auth_BrowserView_Container_Form_Footer">
-            <button onClick={() => handleSubmit()}>
-                Xác nhận
-              </button>
+              <button type="submit">Xác nhận</button>
               <div className="Auth_BrowserView_Container_Form_Footer_Choice">
-                <div onClick={()=>navigate("/login")}>Quay lại trang đăng nhập.</div>
+                <div onClick={() => navigate("/login")}>
+                  Quay lại trang đăng nhập.
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </form>
       </BrowserView>
 
       <MobileView className="Auth_MobileView">
-        <div style={{width: "100%", height: "100%"}}>
+        <div style={{ width: "100%", height: "100%" }}>
           <div className="Auth_MobileView_Logo">
             <div className="Auth_MobileView_Logo_Image">
-              <img src="/icons/Bug(Trắng).png" alt=""/>
+              <img src="/icons/Bug(Trắng).png" alt="" />
             </div>
             <div>
               <div className="div1">Tưới tiêu tự động</div>
@@ -178,40 +192,40 @@ const NewPassw = () => {
           <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
             <div className="Auth_MobileView_Region_Input ">
               <div>
-                <FiLock color="white" size={24}/>
+                <FiLock color="white" size={24} />
               </div>
               <input
-                  type={showPassword1 ? "text" : "password"}
-                  placeholder="Mật khẩu mới"
-                  onChange={handleChangNewPass}
+                type={showPassword1 ? "text" : "password"}
+                placeholder="Mật khẩu mới"
+                onChange={handleChangNewPass}
               ></input>
               <div onClick={handleOpenEye1}>
                 {showPassword1 ? (
-                    <FiEye color="white"/>
+                  <FiEye color="white" />
                 ) : (
-                    <FiEyeOff color="white"/>
+                  <FiEyeOff color="white" />
                 )}
               </div>
             </div>
             <div className="Auth_MobileView_Region_Input">
               <div>
-                <FiLock color="white" size={24}/>
+                <FiLock color="white" size={24} />
               </div>
               <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Xác nhận mật khẩu"
-                  onChange={handleChangConfirmPass}
+                type={showPassword ? "text" : "password"}
+                placeholder="Xác nhận mật khẩu"
+                onChange={handleChangConfirmPass}
               ></input>
               <div onClick={handleOpenEye}>
                 {showPassword ? (
-                    <FiEye color="white"/>
+                  <FiEye color="white" />
                 ) : (
-                    <FiEyeOff color="white"/>
+                  <FiEyeOff color="white" />
                 )}
               </div>
             </div>
             <div className="Auth_MobileView_Region_Save">
-              <input type="checkbox"/>
+              <input type="checkbox" />
               <div>Lưu đăng nhập</div>
             </div>
             <div className="Auth_MobileView_Region_Button">
@@ -219,16 +233,16 @@ const NewPassw = () => {
             </div>
             <div className="Auth_MobileView_Region_Stuff">
               <div
-                  onClick={() => {
-                    navigate("/login");
-                  }}
+                onClick={() => {
+                  navigate("/login");
+                }}
               >
                 Đăng nhập
               </div>
               <div
-                  onClick={() => {
-                    navigate("/forgotpassword");
-                  }}
+                onClick={() => {
+                  navigate("/forgotpassword");
+                }}
               >
                 Quên mật khẩu
               </div>
