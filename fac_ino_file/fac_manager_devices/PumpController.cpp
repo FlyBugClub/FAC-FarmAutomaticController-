@@ -1,39 +1,30 @@
 #include "PumpController.h"
+#include "MQTTConnection.h"
 
-PumpController::PumpController(int pumpPin) : _pumpPin(pumpPin) {
+PumpController::PumpController(int pumpPin, MQTTConnection& mqttConnection)
+  : _pumpPin(pumpPin), _mqttConnection(mqttConnection) {
   pinMode(_pumpPin, OUTPUT);
-  digitalWrite(_pumpPin, LOW); // Đảm bảo máy bơm tắt ban đầu
+  digitalWrite(_pumpPin, LOW); // Ensure pump starts in the off state
 }
 
 void PumpController::handleAction(const char* action, const char* message, int index) {
-  Serial.print("Handling action ");
-  Serial.print(action);
-  Serial.print(" with message ");
-  Serial.println(message);
-  
-  String indexStr = String(index);
-  const char* indexChar = indexStr.c_str();
-
-  // Xử lý các trường hợp action ở đây
-  if (strcmp(action, "auto") == 0) {
-    // Xử lý chế độ tự động
-  } else if (strcmp(action, "manual") == 0) {
-    // Xử lý chế độ thủ công
+  if (strcmp(action, "manual") == 0) {
     if (strcmp(message, "on") == 0) {
       digitalWrite(_pumpPin, HIGH);
-      Serial.println(_pumpPin);
-       Serial.println("on");
+      Serial.println("Pump turned on");
+      publishStatus(message, index);
     } else if (strcmp(message, "off") == 0) {
       digitalWrite(_pumpPin, LOW);
-      Serial.println(_pumpPin);
-      Serial.println("off");
-    } else {
-      Serial.println("Unknown manual command");
+      Serial.println("Pump turned off");
+      publishStatus(message, index);
     }
-  } else if (strcmp(action, "schedule") == 0) {
-    // Xử lý chế độ lịch trình
-    // Ví dụ: parsing message để lấy thông tin lịch trình
-  } else {
-    Serial.println("Unknown action");
   }
+}
+
+void PumpController::publishStatus(const char* action, const char* message, int index) {
+  String indexStr = String(index);
+  const char* indexChar = indexStr.c_str();
+  char payload[50];
+  snprintf(payload, sizeof(payload), "{\"index\": %s, \"status\": \"%s\"}", indexChar, message);
+  _mqttConnection.publish(_mqttConnection.mqtt_topic_send, payload, true);
 }

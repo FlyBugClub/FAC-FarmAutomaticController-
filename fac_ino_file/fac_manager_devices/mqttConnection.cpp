@@ -1,8 +1,9 @@
 #include "MQTTConnection.h"
-#include <ArduinoJson.h>
+#include "PumpController.h" // Thêm include này để sử dụng lớp PumpController
+#include <ArduinoJson.h> // Thêm include cho thư viện ArduinoJson
 
 MQTTConnection::MQTTConnection(const char* server, const char* client_id, const char* topic_send, const char* topic_recive, const char* mqtt_topic_lwm)
-  : mqtt_server(server), mqtt_client_id(client_id), mqtt_topic_send(topic_send), mqtt_topic_recive(topic_recive), mqttClient(espClient), mqtt_topic_lwm(mqtt_topic_lwm), pumpController(-1) { // Khởi tạo PumpController với chân -1 ban đầu
+  : mqtt_server(server), mqtt_client_id(client_id), mqtt_topic_send(topic_send), mqtt_topic_recive(topic_recive), mqttClient(espClient), mqtt_topic_lwm(mqtt_topic_lwm) {
 }
 
 void MQTTConnection::setupMQTT() {
@@ -32,7 +33,6 @@ void MQTTConnection::reconnectMQTT() {
     }
   }
 }
-
 
 void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int length) {
   if (strcmp(topic, mqtt_topic_recive) == 0) {
@@ -87,7 +87,7 @@ void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int lengt
 
     if (pumpPin != -1) {
       // Tạo một thể hiện của PumpController với pumpPin tương ứng
-      PumpController pumpController(pumpPin);
+      PumpController pumpController(pumpPin, *this); // Truyền *this vào constructor của PumpController
       // Xử lý action và message bằng cách gọi handleAction từ PumpController
       pumpController.handleAction(action, message, index);
     }
@@ -103,11 +103,11 @@ void MQTTConnection::loop() {
 }
 
 void MQTTConnection::publish(const char* topic, const char* message, bool retain) {
-  // Phương thức publish với retain
   if (mqttClient.connected()) {
     mqttClient.publish(topic, message, retain);
   }
 }
+
 bool MQTTConnection::connected() {
   return mqttClient.connected();
 }
