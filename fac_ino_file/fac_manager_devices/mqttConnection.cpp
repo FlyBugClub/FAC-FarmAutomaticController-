@@ -102,6 +102,9 @@ void MQTTConnection::loop() {
   mqttClient.loop();
 }
 
+void MQTTConnection::publishData(const char* topic, const char* payload) {
+  mqttClient.publish(topic, payload);
+}
 bool MQTTConnection::connected() {
   return mqttClient.connected();
 }

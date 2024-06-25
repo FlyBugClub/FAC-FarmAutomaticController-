@@ -13,6 +13,7 @@ public:
   void reconnectMQTT();
   void loop();
   bool connected();
+  void publishData(const char* topic, const char* payload);
 
 private:
   const char* mqtt_server;
