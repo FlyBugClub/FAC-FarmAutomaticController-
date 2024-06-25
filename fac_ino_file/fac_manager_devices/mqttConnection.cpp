@@ -102,8 +102,11 @@ void MQTTConnection::loop() {
   mqttClient.loop();
 }
 
-void MQTTConnection::publishData(const char* topic, const char* payload) {
-  mqttClient.publish(topic, payload);
+void MQTTConnection::publish(const char* topic, const char* message, bool retain) {
+  // Phương thức publish với retain
+  if (mqttClient.connected()) {
+    mqttClient.publish(topic, message, retain);
+  }
 }
 bool MQTTConnection::connected() {
   return mqttClient.connected();
