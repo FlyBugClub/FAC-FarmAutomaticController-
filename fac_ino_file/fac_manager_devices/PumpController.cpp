@@ -1,45 +1,36 @@
 #include "PumpController.h"
-#include <Arduino.h>
 
-PumpController::PumpController(int pumpPin) : _pumpPin(pumpPin) {}
-
-void PumpController::setup() {
+PumpController::PumpController(int pumpPin) : _pumpPin(pumpPin) {
   pinMode(_pumpPin, OUTPUT);
   digitalWrite(_pumpPin, LOW); // Đảm bảo máy bơm tắt ban đầu
 }
 
-void PumpController::handleAction(int action, const char* message) {
-  switch (action) {
-    case 1:
-      manualPump(message);
-      break;
-    case 2:
-      // Chúng ta sẽ thêm code cho chế độ tự động sau
-      break;
-    case 3:
-      // Chúng ta sẽ thêm code cho lịch bơm sau
-      break;
-    default:
-      Serial.println("Unknown action");
-      break;
-  }
-}
+void PumpController::handleAction(const char* action, const char* message) {
+  Serial.print("Handling action ");
+  Serial.print(action);
+  Serial.print(" with message ");
+  Serial.println(message);
 
-void PumpController::manualPump(const char* message) {
-  Serial.println("Manual Pump Action");
-  if (strcmp(message, "on") == 0) {
-    digitalWrite(_pumpPin, HIGH);
-  } else if (strcmp(message, "off") == 0) {
-    digitalWrite(_pumpPin, LOW);
+  // Xử lý các trường hợp action ở đây
+  if (strcmp(action, "auto") == 0) {
+    // Xử lý chế độ tự động
+  } else if (strcmp(action, "manual") == 0) {
+    // Xử lý chế độ thủ công
+    if (strcmp(message, "on") == 0) {
+      digitalWrite(_pumpPin, HIGH);
+      Serial.println(_pumpPin);
+       Serial.println("on");
+    } else if (strcmp(message, "off") == 0) {
+      digitalWrite(_pumpPin, LOW);
+      Serial.println(_pumpPin);
+      Serial.println("off");
+    } else {
+      Serial.println("Unknown manual command");
+    }
+  } else if (strcmp(action, "schedule") == 0) {
+    // Xử lý chế độ lịch trình
+    // Ví dụ: parsing message để lấy thông tin lịch trình
   } else {
-    Serial.println("Unknown manual command");
+    Serial.println("Unknown action");
   }
-}
-
-void PumpController::automaticPump(int message) {
-
-}
-
-void PumpController::schedulePump(int message) {
-
 }

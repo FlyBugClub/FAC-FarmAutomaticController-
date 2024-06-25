@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include "my_module.h"
 #include "wifiConnection.h"
 #include "mqttConnection.h"
 
@@ -48,5 +47,5 @@ void loop() {
   // mqttConn.processPumps("dummy_json_payload");
 
   mqttConn.loop();
-    
+
 }
