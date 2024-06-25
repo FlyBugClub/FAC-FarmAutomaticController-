@@ -14,8 +14,7 @@ public:
   void loop();
   bool connected();
   void publishData(const char* topic, const char* payload);
-
-private:
+  
   const char* mqtt_server;
   const char* mqtt_client_id;
   const char* mqtt_topic_send;
