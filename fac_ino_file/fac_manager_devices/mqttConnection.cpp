@@ -14,9 +14,9 @@ void MQTTConnection::setupMQTT() {
 void MQTTConnection::reconnectMQTT() {
   while (!mqttClient.connected()) {
     Serial.print("Attempting MQTT connection...");
-    if (mqttClient.connect(mqtt_client_id, mqtt_topic_lwm, 0, true, "da ngat ket noi")) {
+    if (mqttClient.connect(mqtt_client_id, mqtt_topic_lwm, 0, true, "{\"status\": false}")) {
       Serial.println("connected");
-      mqttClient.publish(mqtt_topic_lwm, "da ket noi lai", true);
+      mqttClient.publish(mqtt_topic_lwm, "{\"status\": true}", true);
       mqttClient.subscribe(mqtt_topic_recive);
       mqttClient.subscribe(mqtt_topic_send);
       Serial.println("mqtt_topic_lwm");
