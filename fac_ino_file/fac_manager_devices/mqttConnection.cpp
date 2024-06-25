@@ -20,7 +20,7 @@ void MQTTConnection::reconnectMQTT() {
       Serial.println("connected");
       mqttClient.publish(mqtt_topic_lwm, "{\"status\": true}", true);
       mqttClient.subscribe(mqtt_topic_recive);
-      mqttClient.subscribe(mqtt_topic_send);
+      // mqttClient.subscribe(mqtt_topic_send);
       Serial.println("mqtt_topic_lwm");
       Serial.println(mqtt_topic_lwm); 
       mqttClient.subscribe(mqtt_topic_lwm);
@@ -69,7 +69,7 @@ void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int lengt
     // Ánh xạ index sang chân cụ thể trên board Arduino
     switch (index) {
       case 1:
-        pumpPin = 14;  // GPIO14 (tương ứng với D5 trên ESP8266)
+        pumpPin = 2;  // GPIO14 (tương ứng với D5 trên ESP8266)
         break;
       case 2:
         pumpPin = 12;  // GPIO12 (tương ứng với D6 trên ESP8266)
@@ -92,7 +92,7 @@ void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int lengt
       pumpController.handleAction(action, message, index);
     }
   } else if (strcmp(topic, mqtt_topic_send) == 0) {
-    Serial.print("Nhận dữ liệu trên topic send: ");
+    Serial.print("Nhận dữ liệu trên web gửi xuống ");
   } else {
     Serial.print("Nhận dữ liệu trên topic khác: ");
   }
