@@ -48,9 +48,4 @@ bool MQTTConnection::connected() {
   return mqttClient.connected();
 }
 
-void MQTTConnection::processPumps(const char* jsonPayload) {
 
-  const char* message = "hello";
-  Serial.println("Da gui");
-  mqttClient.publish(mqtt_topic_send, message);
-}
