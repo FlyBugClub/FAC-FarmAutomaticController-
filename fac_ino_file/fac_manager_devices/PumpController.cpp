@@ -14,10 +14,10 @@ void PumpController::handleAction(int action, const char* message) {
       manualPump(message);
       break;
     case 2:
-      automaticPump(atoi(message));
+      // Chúng ta sẽ thêm code cho chế độ tự động sau
       break;
     case 3:
-      schedulePump(atoi(message));
+      // Chúng ta sẽ thêm code cho lịch bơm sau
       break;
     default:
       Serial.println("Unknown action");
