@@ -6,7 +6,7 @@
 class PumpController {
 public:
   PumpController(int pumpPin);
-  void handleAction(const char* action, const char* message);
+  void handleAction(const char* action, const char* message, int index);
 
 private:
   int _pumpPin;
