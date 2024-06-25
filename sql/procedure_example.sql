@@ -26,18 +26,7 @@ N'
 	{
 	  "id_esp":"ESP0003",
 	  "id_equipment":"BC0303",
-	  "name_equipment":"ádassdasd",
-	  "sensors":
-	   [
-		  {
-			"id":"DHT0505",
-			"name":"mathettatca"	
-		  },
-		  {	
-			"id":"PH141",
-			"name":"dongnho"
-		  }
-	  ]
+	  "name_equipment":"ádassdasd"
 	}
 '
 
