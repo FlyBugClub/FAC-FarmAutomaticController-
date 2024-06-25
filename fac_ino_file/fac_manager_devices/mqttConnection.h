@@ -7,6 +7,7 @@
 class MQTTConnection {
 public:
   MQTTConnection(const char* server, const char* client_id, const char* topic_send, const char* topic_recive, const char* mqtt_topic_lwm);
+
   void setupMQTT();
   void loop();
   bool connected();
@@ -21,6 +22,7 @@ private:
   const char* mqtt_topic_send;
   const char* mqtt_topic_recive;
   const char* mqtt_topic_lwm;
+  void mqttCallback(char* topic, byte* payload, unsigned int length);
 };
 
 #endif  // MQTTCONNECTION_H

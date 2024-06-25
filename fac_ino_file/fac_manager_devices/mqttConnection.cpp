@@ -20,7 +20,7 @@ void MQTTConnection::reconnectMQTT() {
       mqttClient.subscribe(mqtt_topic_recive);
       mqttClient.subscribe(mqtt_topic_send);
       Serial.println("mqtt_topic_lwm");
-      Serial.println(mqtt_topic_lwm);
+      Serial.println(mqtt_topic_lwm); 
       mqttClient.subscribe(mqtt_topic_lwm);
 
     } else {
