@@ -7,12 +7,11 @@
 class MQTTConnection {
 public:
   MQTTConnection(const char* server, const char* client_id, const char* topic_send, const char* topic_recive, const char* mqtt_topic_lwm);
-
   void setupMQTT();
   void loop();
   bool connected();
   void reconnectMQTT();
-   void setCallback(MQTT_CALLBACK_SIGNATURE);
+  void setCallback(MQTT_CALLBACK_SIGNATURE);
 
 private:
   WiFiClient espClient;
