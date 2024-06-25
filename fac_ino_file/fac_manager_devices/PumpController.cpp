@@ -21,15 +21,28 @@ void PumpController::handleAction(const char* action, const char* message, int i
   } else if (strcmp(action, "auto") == 0) {
     // Xử lý hành động auto ở đây
     // Ví dụ: Tự động điều khiển theo một số điều kiện nào đó
-    int sensorValue = analogRead(A0);  // Ví dụ đọc giá trị từ cảm biến
+    int sensorValue = analogRead(A0); // Ví dụ đọc giá trị từ cảm biến
     if (sensorValue > 500) {
-      digitalWrite(_pumpPin, HIGH);  // Bật bơm nếu giá trị cảm biến lớn hơn 500
+      digitalWrite(_pumpPin, HIGH); // Bật bơm nếu giá trị cảm biến lớn hơn 500
       Serial.println("Pump turned on (auto)");
-      publishStatus(action, message, index);  // Truyền action "on" cho publishStatus
+      publishStatus(action, message, index); // Truyền action "on" cho publishStatus
     } else {
-      digitalWrite(_pumpPin, LOW);  // Tắt bơm nếu giá trị cảm biến không lớn hơn 500
+      digitalWrite(_pumpPin, LOW); // Tắt bơm nếu giá trị cảm biến không lớn hơn 500
       Serial.println("Pump turned off (auto)");
-      publishStatus(action, message, index);  // Truyền action "off" cho publishStatus
+      publishStatus(action, message, index); // Truyền action "off" cho publishStatus
+    }
+  } else if (strcmp(action, "schedule") == 0) {
+    // Xử lý hành động schedule ở đây
+    // Ví dụ: Đọc lịch trình từ message và thực hiện hành động dựa trên lịch trình
+    // Đây chỉ là ví dụ đơn giản, bạn cần thay đổi theo logic của hệ thống thực tế
+    if (strcmp(message, "morning") == 0) {
+      digitalWrite(_pumpPin, HIGH); // Bật bơm vào buổi sáng
+      Serial.println("Pump turned on (morning schedule)");
+      publishStatus(action, message, index); // Truyền action "on" cho publishStatus
+    } else if (strcmp(message, "evening") == 0) {
+      digitalWrite(_pumpPin, LOW); // Tắt bơm vào buổi tối
+      Serial.println("Pump turned off (evening schedule)");
+      publishStatus(action, message, index); // Truyền action "off" cho publishStatus
     }
   }
 }
