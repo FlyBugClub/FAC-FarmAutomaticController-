@@ -5,11 +5,14 @@ PumpController::PumpController(int pumpPin) : _pumpPin(pumpPin) {
   digitalWrite(_pumpPin, LOW); // Đảm bảo máy bơm tắt ban đầu
 }
 
-void PumpController::handleAction(const char* action, const char* message) {
+void PumpController::handleAction(const char* action, const char* message, int index) {
   Serial.print("Handling action ");
   Serial.print(action);
   Serial.print(" with message ");
   Serial.println(message);
+  
+  String indexStr = String(index);
+  const char* indexChar = indexStr.c_str();
 
   // Xử lý các trường hợp action ở đây
   if (strcmp(action, "auto") == 0) {

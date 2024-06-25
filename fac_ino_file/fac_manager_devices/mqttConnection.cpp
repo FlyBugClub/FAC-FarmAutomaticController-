@@ -89,7 +89,7 @@ void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int lengt
       // Tạo một thể hiện của PumpController với pumpPin tương ứng
       PumpController pumpController(pumpPin);
       // Xử lý action và message bằng cách gọi handleAction từ PumpController
-      pumpController.handleAction(action, message);
+      pumpController.handleAction(action, message, index);
     }
   } else if (strcmp(topic, mqtt_topic_send) == 0) {
     Serial.print("Nhận dữ liệu trên topic send: ");
