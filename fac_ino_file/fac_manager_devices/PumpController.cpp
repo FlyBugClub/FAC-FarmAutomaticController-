@@ -26,7 +26,14 @@ void PumpController::handleAction(int action, const char* message) {
 }
 
 void PumpController::manualPump(const char* message) {
- 
+  Serial.println("Manual Pump Action");
+  if (strcmp(message, "on") == 0) {
+    digitalWrite(_pumpPin, HIGH);
+  } else if (strcmp(message, "off") == 0) {
+    digitalWrite(_pumpPin, LOW);
+  } else {
+    Serial.println("Unknown manual command");
+  }
 }
 
 void PumpController::automaticPump(int message) {
