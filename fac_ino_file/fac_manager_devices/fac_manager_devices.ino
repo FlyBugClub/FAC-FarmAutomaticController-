@@ -75,7 +75,21 @@ void setup() {
   ssid = wifiCreds.ssid;
   password = wifiCreds.password;
   wifiConn.connectToWiFi(ssid, password);
+
+  while (!wifiConn.isConnected()) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("WiFi connected");
+
   mqttConn.setupMQTT();
+  while (!mqttConn.connected()) {
+    mqttConn.reconnectMQTT();
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("MQTT connected");
+
   for (int i = 0; i < NUM_PUMPS; ++i) {
     pinMode(pumpPins[i], OUTPUT);
     digitalWrite(pumpPins[i], LOW);  // Đặt các chân pin ở mức LOW ban đầu
@@ -142,7 +156,7 @@ void loop() {
   payload_sum += "]";  // Kết thúc chuỗi JSON tổng hợp
 
   // Kiểm tra nếu có sự thay đổi payload thì mới gửi lên MQTT
-  if (payloadChanged) {
+  if (payloadChanged || loadPayloadSumFromEEPROM().isEmpty()) {
     Serial.println(payload_sum);                                   // In ra payload tổng hợp
     mqttConn.publish(char_x_send_to_client, payload_sum.c_str());  // Gửi payload tổng hợp lên MQTT
     savePayloadSumToEEPROM(payload_sum);                           // Lưu payload vào EEPROM khi có sự thay đổi
