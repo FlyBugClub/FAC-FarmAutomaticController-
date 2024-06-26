@@ -17,7 +17,7 @@ public:
   const char* mqtt_topic_send; // Đảm bảo rằng biến này có thể truy cập từ bên ngoài
   const char* mqtt_server;
   const char* mqtt_client_id;
-  const char* mqtt_topic_recive;
+  const char* mqtt_topic_receive;
   const char* mqtt_topic_lwm;
   WiFiClient espClient;
   PubSubClient mqttClient;

@@ -22,6 +22,8 @@ const char* char_x_send_to_client = x_send_to_client.c_str();
 const char* char_x_client_to_server = x_client_to_server.c_str();
 const char* char_x_last_will_message = x_last_will_message.c_str();
 
+
+
 WiFiConnection wifiConn;//                           topic gửi lên        , topic đăng ký/lắng nghe
 MQTTConnection mqttConn(mqtt_server, mqtt_client_id, char_x_send_to_client, char_x_client_to_server, char_x_last_will_message);
 
@@ -44,7 +46,13 @@ void loop() {
   if (!mqttConn.connected()) {
     mqttConn.reconnectMQTT();
   }
-  // mqttConn.processPumps("dummy_json_payload");
+
+  Serial.println("mqttConn.currentIndex()");
+  Serial.println(mqttConn.currentIndex);
+  Serial.println("mqttConn.currentAction()");
+  Serial.println(mqttConn.currentAction);
+  Serial.println("mqttConn.currentMessage()");
+  Serial.println(mqttConn.currentMessage);
 
   mqttConn.loop();
 
