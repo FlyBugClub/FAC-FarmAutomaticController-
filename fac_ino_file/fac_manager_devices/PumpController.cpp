@@ -5,6 +5,11 @@ PumpController::PumpController(int pumpPin, MQTTConnection& mqttConnection)
   : _pumpPin(pumpPin), _mqttConnection(mqttConnection) {
   pinMode(_pumpPin, OUTPUT);
   digitalWrite(_pumpPin, LOW);  // Ensure pump starts in the off state
+  if (!sht31.begin(0x44)) { // Địa chỉ I2C mặc định của SHT31
+    Serial.println("Couldn't find SHT31 sensor!");
+} else {
+    Serial.println("SHT31 sensor initialized successfully!");
+}
 }
 
 void PumpController::handleAction(const char* action, const char* message, int index) {
@@ -21,16 +26,20 @@ void PumpController::handleAction(const char* action, const char* message, int i
   } else if (strcmp(action, "auto") == 0) {
     // Xử lý hành động auto ở đây
     // Ví dụ: Tự động điều khiển theo một số điều kiện nào đó
-    int sensorValue = analogRead(A0); // Ví dụ đọc giá trị từ cảm biến
-    if (sensorValue > 500) {
-      digitalWrite(_pumpPin, HIGH); // Bật bơm nếu giá trị cảm biến lớn hơn 500
+    int threshold = atoi(message); // Chuyển đổi message (ngưỡng) từ chuỗi sang số nguyên
+
+      float humidity = sht31.readHumidity();
+    if (humidity < threshold) {
+      digitalWrite(_pumpPin, HIGH); 
       Serial.println("Pump turned on (auto)");
-      publishStatus(action, message, index); // Truyền action "on" cho publishStatus
+      publishStatus(action, "on", index); // Truyền action "on" cho publishStatus
     } else {
-      digitalWrite(_pumpPin, LOW); // Tắt bơm nếu giá trị cảm biến không lớn hơn 500
+      digitalWrite(_pumpPin, LOW); // Tắt bơm nếu giá trị cảm biến không lớn hơn ngưỡng
       Serial.println("Pump turned off (auto)");
-      publishStatus(action, message, index); // Truyền action "off" cho publishStatus
+      publishStatus(action, "off", index); // Truyền action "off" cho publishStatus
     }
+
+    
   } else if (strcmp(action, "schedule") == 0) {
     // Xử lý hành động schedule ở đây
     // Ví dụ: Đọc lịch trình từ message và thực hiện hành động dựa trên lịch trình
@@ -40,7 +49,7 @@ void PumpController::handleAction(const char* action, const char* message, int i
       Serial.println("Pump turned on (morning schedule)");
       publishStatus(action, message, index); // Truyền action "on" cho publishStatus
     } else if (strcmp(message, "evening") == 0) {
-      digitalWrite(_pumpPin, LOW); // Tắt bơm vào buổi tối
+      digitalWrite(_pumpPin, LOW); // Tắt bơm vào b
       Serial.println("Pump turned off (evening schedule)");
       publishStatus(action, message, index); // Truyền action "off" cho publishStatus
     }

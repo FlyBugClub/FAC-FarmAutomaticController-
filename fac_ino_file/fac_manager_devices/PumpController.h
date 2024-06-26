@@ -2,7 +2,7 @@
 #define PUMP_CONTROLLER_H
 
 #include <Arduino.h>
-
+#include "Adafruit_SHT31.h"
 // Forward declaration của MQTTConnection
 class MQTTConnection;
 
@@ -15,6 +15,7 @@ public:
 private:
   int _pumpPin;
   MQTTConnection& _mqttConnection; // Tham chiếu đến MQTTConnection
+  Adafruit_SHT31 sht31;
 };
 
 #endif // PUMP_CONTROLLER_H
