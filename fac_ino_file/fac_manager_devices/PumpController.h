@@ -6,8 +6,8 @@
 
 class PumpController {
 public:
-  PumpController(int pumpPin);
-  char* handleAction(const char* action, const char* message, int index);
+  PumpController();
+  char* handleAction(const char* action, const char* message, int index, int pumpPin);
 
 private:
   int _pumpPin;

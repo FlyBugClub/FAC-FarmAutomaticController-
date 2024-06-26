@@ -24,10 +24,10 @@ void MQTTConnection::reconnectMQTT() {
       Serial.println("connected");
       mqttClient.publish(mqtt_topic_lwm, "{\"status\": true}", true);
       mqttClient.subscribe(mqtt_topic_receive);
+      mqttClient.subscribe(mqtt_topic_lwm);
       // mqttClient.subscribe(mqtt_topic_send);
       Serial.println("mqtt_topic_lwm");
       Serial.println(mqtt_topic_lwm); 
-      mqttClient.subscribe(mqtt_topic_lwm);
 
     } else {
       Serial.print("failed, rc=");
@@ -38,15 +38,13 @@ void MQTTConnection::reconnectMQTT() {
   }
 }
 
-
-
 void MQTTConnection::loop() {
   mqttClient.loop();
 }
 
-void MQTTConnection::publish(const char* topic, const char* message, bool retain) {
+void MQTTConnection::publish(const char* topic, const char* message) {
   if (mqttClient.connected()) {
-    mqttClient.publish(topic, message, retain);
+    mqttClient.publish(topic, message, true);
   }
 }
 

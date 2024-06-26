@@ -12,7 +12,7 @@ public:
   void reconnectMQTT();
   void loop();
   bool connected();
-  void publish(const char* topic, const char* payload, bool retain = false);
+  void publish(const char* topic, const char* payload);
 
   const char* mqtt_topic_send; // Đảm bảo rằng biến này có thể truy cập từ bên ngoài
   const char* mqtt_server;
