@@ -34,6 +34,22 @@ void MQTTConnection::reconnectMQTT() {
   }
 }
 
+
+
+void MQTTConnection::loop() {
+  mqttClient.loop();
+}
+
+void MQTTConnection::publish(const char* topic, const char* message, bool retain) {
+  if (mqttClient.connected()) {
+    mqttClient.publish(topic, message, retain);
+  }
+}
+
+bool MQTTConnection::connected() {
+  return mqttClient.connected();
+}
+
 void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int length) {
   if (strcmp(topic, mqtt_topic_recive) == 0) {
     Serial.print("Nhận dữ liệu trên topic receive: ");
@@ -96,18 +112,4 @@ void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int lengt
   } else {
     Serial.print("Nhận dữ liệu trên topic khác: ");
   }
-}
-
-void MQTTConnection::loop() {
-  mqttClient.loop();
-}
-
-void MQTTConnection::publish(const char* topic, const char* message, bool retain) {
-  if (mqttClient.connected()) {
-    mqttClient.publish(topic, message, retain);
-  }
-}
-
-bool MQTTConnection::connected() {
-  return mqttClient.connected();
 }
