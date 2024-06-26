@@ -22,8 +22,8 @@ public:
   WiFiClient espClient;
   PubSubClient mqttClient;
 
-  const char* currentAction;
-  const char* currentMessage;
+  String currentAction;
+  String currentMessage;
   int currentIndex;
 
   void mqttCallback(char* topic, byte* payload, unsigned int length);

@@ -27,6 +27,23 @@ const char* char_x_last_will_message = x_last_will_message.c_str();
 WiFiConnection wifiConn;//                           topic gửi lên        , topic đăng ký/lắng nghe
 MQTTConnection mqttConn(mqtt_server, mqtt_client_id, char_x_send_to_client, char_x_client_to_server, char_x_last_will_message);
 
+
+const int NUM_PUMPS = 4;
+
+struct Pump {
+  int index;         // Chỉ số của máy bơm
+  String action;   // Hành động (action) của máy bơm
+  String message;  // Tin nhắn (message) của máy bơm
+};
+
+Pump pumps[NUM_PUMPS] = {
+  {1, "", ""},   
+  {2, "", ""},  
+  {3, "", ""},    
+  {4, "", ""} 
+};
+
+
 void setup() {
   Serial.begin(9600);
 
@@ -47,13 +64,36 @@ void loop() {
     mqttConn.reconnectMQTT();
   }
 
-  Serial.println("mqttConn.currentIndex()");
-  Serial.println(mqttConn.currentIndex);
-  Serial.println("mqttConn.currentAction()");
-  Serial.println(mqttConn.currentAction);
-  Serial.println("mqttConn.currentMessage()");
-  Serial.println(mqttConn.currentMessage);
+switch (mqttConn.currentIndex) {
+    case 1:
+      pumps[0].action = mqttConn.currentAction;
+      pumps[0].message = mqttConn.currentMessage;
+      break;
+    case 2:
+      pumps[1].action = mqttConn.currentAction;
+      pumps[1].message = mqttConn.currentMessage;
+      break;
+    case 3:
+      pumps[2].action = mqttConn.currentAction;
+      pumps[2].message = mqttConn.currentMessage;
+      break;
+    case 4:
+      pumps[3].action = mqttConn.currentAction;
+      pumps[3].message = mqttConn.currentMessage;
+      break;
+    default:
+      Serial.println("Index không hợp lệ");
+      break;
+  }
 
+  Serial.println("Updated pumps array:");
+  for (int i = 0; i < NUM_PUMPS; ++i) {
+    Serial.print("Pump ");
+    Serial.print(pumps[i].index);
+    Serial.print(", Action: ");
+    Serial.print(pumps[i].action);
+    Serial.print(", Message: ");
+    Serial.println(pumps[i].message);
+  }
   mqttConn.loop();
-
 }

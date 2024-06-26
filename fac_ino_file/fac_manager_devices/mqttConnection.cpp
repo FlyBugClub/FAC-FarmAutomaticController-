@@ -70,9 +70,8 @@ void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int lengt
     }
 
     currentIndex = atoi(doc["index"]);
-    currentAction = doc["payload"]["action"];
-    currentMessage = doc["payload"]["messages"];
-
+    currentAction = String(doc["payload"]["action"].as<const char*>());
+    currentMessage = String(doc["payload"]["messages"].as<const char*>());
   } else if (strcmp(topic, mqtt_topic_send) == 0) {
     Serial.print("Nhận dữ liệu trên web gửi xuống ");
   } else {
