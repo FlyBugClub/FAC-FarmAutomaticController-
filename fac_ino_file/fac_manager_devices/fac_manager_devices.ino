@@ -1,4 +1,5 @@
-#include <Arduino.h>
+#include <EEPROM.h>
+#include <ArduinoJson.h>
 #include "wifiConnection.h"
 #include "mqttConnection.h"
 #include "PumpController.h"
@@ -45,8 +46,30 @@ Pump pumps[NUM_PUMPS] = {
   { 4, "manual", "on", false }
 };
 
+// Hàm lưu payload_sum vào EEPROM
+void savePayloadSumToEEPROM(const String& payload_sum) {
+  for (int i = 0; i < payload_sum.length(); ++i) {
+    EEPROM.write(i, payload_sum[i]);
+  }
+  EEPROM.write(payload_sum.length(), '\0');  // Kết thúc chuỗi JSON
+  EEPROM.commit();
+}
+
+// Hàm đọc payload_sum từ EEPROM
+String loadPayloadSumFromEEPROM() {
+  char buffer[512];
+  size_t i;
+  for (i = 0; i < sizeof(buffer) - 1; ++i) {
+    buffer[i] = EEPROM.read(i);
+    if (buffer[i] == '\0') break;
+  }
+  buffer[i] = '\0';
+  return String(buffer);
+}
+
 void setup() {
   Serial.begin(9600);
+  EEPROM.begin(512);  // Initialize EEPROM with size 512 bytes
 
   WiFiConnection::WifiCredentials wifiCreds = wifiConn.activateAPMode();
   ssid = wifiCreds.ssid;
@@ -56,6 +79,22 @@ void setup() {
   for (int i = 0; i < NUM_PUMPS; ++i) {
     pinMode(pumpPins[i], OUTPUT);
     digitalWrite(pumpPins[i], LOW);  // Đặt các chân pin ở mức LOW ban đầu
+  }
+
+  String initialPayload = loadPayloadSumFromEEPROM();  // Load payload từ EEPROM khi khởi động
+  if (initialPayload.length() > 0) {
+    mqttConn.publish(char_x_send_to_client, initialPayload.c_str());  // Gửi payload tổng hợp lên MQTT
+
+    // Parse the initial payload to update pump states
+    StaticJsonDocument<512> doc;
+    deserializeJson(doc, initialPayload);
+    JsonArray arr = doc.as<JsonArray>();
+    for (JsonObject pump : arr) {
+      int index = pump["index"];
+      pumps[index - 1].action = pump["payload"]["action"].as<String>();
+      pumps[index - 1].message = pump["payload"]["messages"].as<String>();
+      pumps[index - 1].lastPayloadSent = "{\"index\":\"" + String(index) + "\",\"payload\":{\"action\":\"" + pumps[index - 1].action + "\",\"messages\":\"" + pumps[index - 1].message + "\"}}";
+    }
   }
 }
 
@@ -106,8 +145,8 @@ void loop() {
   if (payloadChanged) {
     Serial.println(payload_sum);                                   // In ra payload tổng hợp
     mqttConn.publish(char_x_send_to_client, payload_sum.c_str());  // Gửi payload tổng hợp lên MQTT
+    savePayloadSumToEEPROM(payload_sum);                           // Lưu payload vào EEPROM khi có sự thay đổi
   }
-
 
   mqttConn.loop();
 }
