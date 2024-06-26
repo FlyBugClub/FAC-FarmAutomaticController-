@@ -104,3 +104,19 @@ EXEC dbo.edit_last_state_pro 'BC0001',1,1,81
 	_state	_status
 	200		success
 */
+
+/* add farm parameters:
+	@farm_id varchar(23) ,
+	@user_id varchar(20) ,
+	@farm_name nvarchar(20)= NULL,
+	@decription nvarchar(100)= NULL,
+	@latitude float= NULL,
+	@longtitude float= NULL,
+	@_state varchar(10) = NULL
+*/
+
+EXEC [dbo].[add_farm_pro] 'ESP0032' ,'CT0001'
+/*	EXPECT RESULT
+	_state	_status
+	200		success
+*/
