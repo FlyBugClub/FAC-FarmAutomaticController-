@@ -24,24 +24,25 @@ const char* char_x_client_to_server = x_client_to_server.c_str();
 const char* char_x_last_will_message = x_last_will_message.c_str();
 
 const int NUM_PUMPS = 4;
-const int pumpPins[NUM_PUMPS] = {2, 12, 13, 15};
+const int pumpPins[NUM_PUMPS] = { 2, 12, 13, 15 };
 // D5, D6, D7, D8
-WiFiConnection wifiConn;//                           topic gửi lên        , topic đăng ký/lắng nghe
+WiFiConnection wifiConn;  //                           topic gửi lên        , topic đăng ký/lắng nghe
 MQTTConnection mqttConn(mqtt_server, mqtt_client_id, char_x_send_to_client, char_x_client_to_server, char_x_last_will_message);
 PumpController pumpControllers;
 
 struct Pump {
-  int index;         // Chỉ số của máy bơm
-  String action;   // Hành động (action) của máy bơm
-  String message;  // Tin nhắn (message) của máy bơm
-  bool isOn;       // Trạng thái của máy bơm
+  int index;               // Chỉ số của máy bơm
+  String action;           // Hành động (action) của máy bơm
+  String message;          // Tin nhắn (message) của máy bơm
+  bool isOn;               // Trạng thái của máy bơm
+  String lastPayloadSent;  // Payload cuối cùng được gửi
 };
 
 Pump pumps[NUM_PUMPS] = {
-  {1, "", "", false},
-  {2, "", "", false},
-  {3, "", "", false},
-  {4, "", "", false}
+  { 1, "manual", "on", false },
+  { 2, "manual", "on", false },
+  { 3, "manual", "on", false },
+  { 4, "manual", "on", false }
 };
 
 void setup() {
@@ -50,14 +51,11 @@ void setup() {
   WiFiConnection::WifiCredentials wifiCreds = wifiConn.activateAPMode();
   ssid = wifiCreds.ssid;
   password = wifiCreds.password;
-
   wifiConn.connectToWiFi(ssid, password);
-
   mqttConn.setupMQTT();
-
   for (int i = 0; i < NUM_PUMPS; ++i) {
     pinMode(pumpPins[i], OUTPUT);
-    digitalWrite(pumpPins[i], LOW); // Đặt các chân pin ở mức LOW ban đầu
+    digitalWrite(pumpPins[i], LOW);  // Đặt các chân pin ở mức LOW ban đầu
   }
 }
 
@@ -69,45 +67,47 @@ void loop() {
     mqttConn.reconnectMQTT();
   }
 
-  char* payload = nullptr;
-  switch (mqttConn.currentIndex) {
-    case 1:
-      pumps[0].action = mqttConn.currentAction;
-      pumps[0].message = mqttConn.currentMessage;
-      payload = pumpControllers.handleAction(pumps[0].action.c_str(), pumps[0].message.c_str(), 1, 2);
-      break;
-    case 2:
-      pumps[1].action = mqttConn.currentAction;
-      pumps[1].message = mqttConn.currentMessage;
-      payload = pumpControllers.handleAction(pumps[1].action.c_str(), pumps[1].message.c_str(), 2, 12);
-      break;
-    case 3:
-      pumps[2].action = mqttConn.currentAction;
-      pumps[2].message = mqttConn.currentMessage;
-      payload = pumpControllers.handleAction(pumps[2].action.c_str(), pumps[2].message.c_str(), 3, 13);
-      break;
-    case 4:
-      pumps[3].action = mqttConn.currentAction;
-      pumps[3].message = mqttConn.currentMessage;
-      payload = pumpControllers.handleAction(pumps[3].action.c_str(), pumps[3].message.c_str(), 4, 15);
-      break;
-    default:
-      Serial.println("Index không hợp lệ");
-      break;
-  }
+  String payload_sum = "[";     // Chuỗi JSON tổng hợp payload
+  bool payloadChanged = false;  // Biến đánh dấu sự thay đổi payload
 
-  if (payload != nullptr) {
-    Serial.println(payload);  // In ra payload
+  for (int i = 0; i < NUM_PUMPS; ++i) {
+    String currentPayload;
 
-    // Kiểm tra trạng thái hiện tại và trước đó của các máy bơm
-    for (int i = 0; i < NUM_PUMPS; ++i) {
-      bool currentState = digitalRead(pumpPins[i]);
-      if (currentState != pumps[i].isOn) {
-        mqttConn.publish(char_x_send_to_client, payload);  // Gửi lên MQTT nếu trạng thái thay đổi
-        pumps[i].isOn = currentState;  // Cập nhật trạng thái trước đó
+    // Kiểm tra nếu index của máy bơm khớp với currentIndex từ MQTT
+    if (mqttConn.currentIndex == pumps[i].index) {
+      // Lấy action và message hiện tại từ MQTT
+      pumps[i].action = mqttConn.currentAction;
+      pumps[i].message = mqttConn.currentMessage;
+
+      // Xử lý action của máy bơm và nhận lại payload
+      char* payload = pumpControllers.handleAction(pumps[i].action.c_str(), pumps[i].message.c_str(), pumps[i].index, pumpPins[i]);
+
+      currentPayload = "{\"index\":\"" + String(pumps[i].index) + "\",\"payload\":{\"action\":\"" + pumps[i].action + "\",\"messages\":\"" + pumps[i].message + "\"}}";
+
+      // Kiểm tra sự thay đổi so với payload trước đó của máy bơm
+      if (currentPayload != pumps[i].lastPayloadSent) {
+        pumps[i].lastPayloadSent = currentPayload;  // Lưu lại payload gửi gần đây nhất
+        payloadChanged = true;                      // Đánh dấu có sự thay đổi payload
       }
+    } else {
+      // Nếu không phải là máy bơm có index khớp, giữ nguyên payload trước đó
+      currentPayload = pumps[i].lastPayloadSent;
+    }
+
+    payload_sum += currentPayload;  // Thêm payload vào chuỗi tổng hợp
+    if (i < NUM_PUMPS - 1) {
+      payload_sum += ",";  // Thêm dấu phẩy nếu không phải là phần tử cuối cùng
     }
   }
+
+  payload_sum += "]";  // Kết thúc chuỗi JSON tổng hợp
+
+  // Kiểm tra nếu có sự thay đổi payload thì mới gửi lên MQTT
+  if (payloadChanged) {
+    Serial.println(payload_sum);                                   // In ra payload tổng hợp
+    mqttConn.publish(char_x_send_to_client, payload_sum.c_str());  // Gửi payload tổng hợp lên MQTT
+  }
+
 
   mqttConn.loop();
 }
