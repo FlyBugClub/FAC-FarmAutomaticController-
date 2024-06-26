@@ -18,12 +18,14 @@ import Weather from "./components/Weather/weather";
 import Farm from "./components/Home/farm";
 import Addfarm from "./components/Home/newfarm";
 import User from "./components/Home/user";
+import Editfarm from "./components/Home/editfarm";
 //
 import { AuthContext } from "./components/Context/AuthContext";
 function App() {
 
   const [weatherState, setWeatherState] = useState(true);
   const [addDeviceState, setAddDeviceState] = useState("");
+
   const { URL, login, authDispatch } = useContext(AuthContext);
   const handleWeather = () => {
     setWeatherState(!weatherState);
@@ -125,6 +127,15 @@ function App() {
                   path="/addfarm/:id"
                   element={
                     <Addfarm
+                      weatherState={weatherState}
+                      addDeviceState={addDeviceState}
+                    />
+                  }
+                />
+                <Route
+                  path="/editfarm/:id"
+                  element={
+                    <Editfarm
                       weatherState={weatherState}
                       addDeviceState={addDeviceState}
                     />

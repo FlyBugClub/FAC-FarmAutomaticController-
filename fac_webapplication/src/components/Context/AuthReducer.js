@@ -3,6 +3,8 @@ const INITIAL_STATE = {
   login: {},
   user: {},
   farmsct:[],
+  currentFarm: {},
+  currentDevice: {},
 };
 const AuthReducer = (state, action) => {
   //action = {type, payload: {tab, visual, setting, lastid, name, control}}
@@ -27,6 +29,16 @@ const AuthReducer = (state, action) => {
       return {
         ...state,
         farmsct : action.payload, 
+      }
+      case "SET_CURRENT_FARM":
+      return {
+        ...state,
+        currentFarm : action.payload, 
+      }
+      case "SET_CURRENT_DEVICE":  
+      return {
+        ...state,
+        currentDevice : action.payload, 
       }
     default:
       return state;

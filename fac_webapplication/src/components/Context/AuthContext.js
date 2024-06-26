@@ -12,6 +12,8 @@ export const AuthContextProvider = ({ children }) => {
         login:state.login,
         URL:state.URL,
         farmsct:state.farmsct,
+        currentFarm:state.currentFarm,
+        currentDevice:state.currentDevice,
         authDispatch,
       }}
     >

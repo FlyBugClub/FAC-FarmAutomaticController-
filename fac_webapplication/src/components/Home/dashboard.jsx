@@ -41,7 +41,7 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
         totalfarms.map((item) => {
             const info = {
                 id_esp: item.id_esp_,
-                name_esp: item.name_esp_,
+                name: item.name_esp_,
                 
             };
             farms_temp = [...farms_temp, info]; 
@@ -54,10 +54,20 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
         navigate(`/farm/${id_esp}`);
     };
 
+    const navigateToSetting = (event,id) => {
+        event.stopPropagation();
+        const farmsetting = farms.find((farm) => farm.id_esp_ == id)
+        authDispatch({
+            type: "SET_CURRENT_FARM",
+            payload: farmsetting,
+        })
+        handleAddDevice("farm")
+        navigate(`/editfarm/${id}`)
+      };
+
     const handleChange = (event) => {
         if(farms == undefined) return
         const newValue = event.target.value;
-
         let farm_search = []
         totalfarms.map((item) => {
             if ((item.name_esp_).toLowerCase().includes(newValue.toLowerCase()) || (item.description_).toLowerCase().includes(newValue.toLowerCase())) {
@@ -104,9 +114,9 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
                                                     {item.name_esp_}
                                                     
                                                     <div className="center">
-                                                        <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header_Edit">
+                                                        <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header_Edit" onClick={(e) => navigateToSetting(e,item.id_esp_)}>
                                                         Setting
-                                                            <FiSettings className="Icon" size={20}  />
+                                                            <FiSettings className="Icon" size={20}   />
                                                         </div>
                                                     {item.state ? <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header_State">
                                                         <MdCircle size={20} color="#8AFF02" style={{ marginTop: "1px", marginRight: "5px" }} />
