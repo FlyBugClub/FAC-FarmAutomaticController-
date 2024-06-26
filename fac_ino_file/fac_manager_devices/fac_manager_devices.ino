@@ -68,43 +68,50 @@ void loop() {
   if (!mqttConn.connected()) {
     mqttConn.reconnectMQTT();
   }
-
+char* payload = nullptr;
 switch (mqttConn.currentIndex) {
     case 1:
       pumps[0].action = mqttConn.currentAction;
       pumps[0].message = mqttConn.currentMessage;
-      pumpControllers.handleAction(pumps[0].action.c_str(), pumps[0].message.c_str(), 1, 2);
+      payload = pumpControllers.handleAction(pumps[0].action.c_str(), pumps[0].message.c_str(), 1, 2);
+      mqttConn.publish(x_send_to_client, payload)
+      
       break;
     case 2:
       pumps[1].action = mqttConn.currentAction;
       pumps[1].message = mqttConn.currentMessage;
-      pumpControllers.handleAction(pumps[1].action.c_str(), pumps[1].message.c_str(), 2, 12);
+      payload = pumpControllers.handleAction(pumps[1].action.c_str(), pumps[1].message.c_str(), 2, 12);
+       mqttConn.publish(x_send_to_client, payload)
       break;
     case 3:
       pumps[2].action = mqttConn.currentAction;
       pumps[2].message = mqttConn.currentMessage;
-      pumpControllers.handleAction(pumps[2].action.c_str(), pumps[2].message.c_str(), 3, 13);
+      payload = pumpControllers.handleAction(pumps[2].action.c_str(), pumps[2].message.c_str(), 3, 13);
+       mqttConn.publish(x_send_to_client, payload)
       break;
     case 4:
       pumps[3].action = mqttConn.currentAction;
       pumps[3].message = mqttConn.currentMessage;
-      pumpControllers.handleAction(pumps[3].action.c_str(), pumps[3].message.c_str(), 4, 15);
+      payload = pumpControllers.handleAction(pumps[3].action.c_str(), pumps[3].message.c_str(), 4, 15);
+       mqttConn.publish(x_send_to_client, payload)
       break;
     default:
       Serial.println("Index không hợp lệ");
       break;
   }
-
-
-  Serial.println("Updated pumps array:");
-  for (int i = 0; i < NUM_PUMPS; ++i) {
-    Serial.print("Pump ");
-    Serial.print(pumps[i].index);
-    Serial.print(", Action: ");
-    Serial.print(pumps[i].action);
-    Serial.print(", Message: ");
-    Serial.println(pumps[i].message);
+if (payload != nullptr) {
+    Serial.println(payload);  // In ra payload
   }
+
+  // Serial.println("Updated pumps array:");
+  // for (int i = 0; i < NUM_PUMPS; ++i) {
+  //   Serial.print("Pump ");
+  //   Serial.print(pumps[i].index);
+  //   Serial.print(", Action: ");
+  //   Serial.print(pumps[i].action);
+  //   Serial.print(", Message: ");
+  //   Serial.println(pumps[i].message);
+  // }
 
 
   mqttConn.loop();

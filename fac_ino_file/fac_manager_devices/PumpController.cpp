@@ -11,7 +11,7 @@ PumpController::PumpController() {
 
 
 char* PumpController::handleAction(const char* action, const char* message, int index, int pumpPin) {
-  char payload[100];  // Tăng kích thước mảng để chứa payload lớn hơn nếu cần thiết
+  static char payload[100];  // Tăng kích thước mảng để chứa payload lớn hơn nếu cần thiết
   if (strcmp(action, "manual") == 0) {
     if (strcmp(message, "on") == 0) {
       digitalWrite(pumpPin, HIGH);
