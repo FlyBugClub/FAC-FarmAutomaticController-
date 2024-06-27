@@ -117,7 +117,7 @@
                     }
 
                     &_Header {
-                        
+
                         position: relative;
                         z-index: 45;
 
@@ -144,7 +144,7 @@
                         &_Edit {
                             position: absolute;
                             top: 5px;
-                            right :175px;
+                            right: 175px;
                             padding: 5px 10px;
                             box-sizing: border-box;
                             height: 35px;
@@ -156,6 +156,7 @@
                             font-size: 20px;
                             border: 2px solid transparent;
                             z-index: 50;
+
                             &:hover {
                                 background: rgba(255, 255, 255, 0.9);
                                 color: rgb(43, 42, 42);
@@ -215,6 +216,7 @@
             will-change: width;
             padding: 15px 15px;
             box-sizing: border-box;
+            position: relative;
 
             &_Header {
                 display: flex;
@@ -236,9 +238,10 @@
                 &_Right {
                     display: flex;
                     align-items: center;
+
                     &_Status {
 
-                        
+
                         height: 40px;
                         padding: 0px 10px;
                         box-sizing: border-box;
@@ -274,13 +277,15 @@
                         color: $color_text;
                         cursor: pointer;
                         white-space: nowrap; // ngan xuong dong
+
                         &:hover {
                             background: rgba(255, 255, 255, 0.2);
                         }
 
 
                     }
-                    .Icon{
+
+                    .Icon {
                         margin-right: 5px;
                     }
                 }
@@ -543,6 +548,7 @@
                         width: 100%;
                         display: flex;
                         align-items: center;
+
                         justify-content: space-between;
 
                         &_switch {
@@ -694,7 +700,9 @@
                                 margin-left: 6px
                             }
                         }
+
                     }
+
                 }
 
                 &::-webkit-scrollbar {
@@ -704,8 +712,160 @@
                 }
             }
 
-        }
+            &_Settime {
+                width: 350px;
+                top: 50%;
+                left: 50%;
+                height: 350px;
+                transform: translate(-50%, -50%);
+                position: absolute;
+                background-color: #000000;
+                border-radius: 8px;
+                outline: 2px solid $outline_color;
 
+                &_Title {
+                    width: 100%;
+                    height: 50px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 10px 10px;
+                    box-sizing: border-box;
+                    border-top-left-radius: 8px;
+                    border-top-right-radius: 8px;
+                    border-bottom: 2px solid #ffffff; 
+
+                    &_Offset
+                    {
+                        display: flex;
+                        align-items: center;
+                        font-size: 20px;
+                        &_Input
+                        {
+                            height: 25px;
+                            width: 80px;
+                            margin-left: 10px;
+                            border: none;
+                            outline: 2px solid rgba(255, 255, 255, 0.9);
+                            background: $background_element;
+                            color: $color_text;
+                            padding: 0px 10px;
+                            box-sizing: border-box;
+                            font-size: 15px;
+                            border-radius: 8px;
+                        }
+                    }
+                    &_Icon
+                    {
+                        rotate: 45deg;
+                        cursor: pointer;
+                    }
+                }
+
+                &_Body {
+                    
+                    width: 100%;
+                    height: calc(100% - 50px);
+                    display: flex;
+             
+
+                
+
+                    &_Left {
+                        flex: 7;
+                        height: 100%;
+                        
+                        box-sizing: border-box;
+                        &_Title {
+                            padding-top:10px;
+                            padding-left: 10px;
+                            padding-right: 10px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            font-size: 20px;
+                            .Icon
+                            {
+                                cursor: pointer;
+                            }
+                        }
+                        &_Times
+                        {
+                            width: 100%;
+                            height: calc(100% - 45px);
+                            overflow-y: auto;
+                            padding-left: 10px;
+                            box-sizing: border-box;
+                            &_Item
+                            {
+                                
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                width: 100%;
+                                height: 35px;
+                                margin-top: 10px;
+                                padding: 5px 5px;
+                                box-sizing: border-box;
+                                font-size: 20px;
+                                background-color: #686666;
+                                border-radius: 8px;
+                                
+                                &_Edit
+                                {
+                                    display: flex;
+                                    align-items: center;
+                                    .Icon
+                                    {
+                                        margin-left: 10px;
+                                        cursor: pointer;
+                                    }
+                                }
+                            }
+                            &::-webkit-scrollbar {
+                                height: 1px;
+                                scrollbar-width: thin;
+                            }
+                        }
+
+                    }
+
+                    &_Right {
+                        
+                        flex: 3;
+                        height: 100%;
+                        position: relative;
+                        &_Button
+                        {   
+                            width: 60px;
+                            height: 25px;
+                            position: absolute;
+                            border-radius: 8px;
+                            bottom: 10px;
+                            right: 10px;
+                            margin-left: 10px;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+            &_Nofarm{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                font-size: 30px;
+                font-weight: 500;
+            }
+
+
+
+        }
+            .center{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
         &_Addfarmcontainer {
             height: 100%;
             width: 100%;
@@ -1072,6 +1232,7 @@
 
 
         }
+
     }
 
 }
