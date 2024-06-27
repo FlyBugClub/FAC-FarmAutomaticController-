@@ -79,8 +79,8 @@ void PumpController::processPumpAction(const char* payload_sum,const int pumpPin
       else if (action == "auto") {
         int threshold = message.toInt();  // Chuyển đổi ngưỡng từ chuỗi sang số nguyên
 
-        // float humidity = sensor.readHumidity();
-        float humidity = 30; // Giả lập độ ẩm, bạn cần thay thế bằng đọc từ cảm biến thực tế
+        float humidity = sht31.readHumidity();
+        // float humidity = 30; // Giả lập độ ẩm, bạn cần thay thế bằng đọc từ cảm biến thực tế
         if (humidity < threshold) {
           digitalWrite(pumpPin, HIGH);
           Serial.print("Pump ");

@@ -15,13 +15,12 @@ String client_to_server = "ClientToServer";
 String last_will_message = "LastWillMessage";
 const char* mqtt_client_id = "helloem";
 
-// String id_esp = "111";
 uint32_t chipId = ESP.getChipId();
 String id_esp = String(chipId, HEX);
 
-String x_send_to_client = chipId + send_to_client;
-String x_client_to_server = chipId + client_to_server;
-String x_last_will_message = chipId + last_will_message;
+String x_send_to_client = id_esp + send_to_client;
+String x_client_to_server = id_esp + client_to_server;
+String x_last_will_message = id_esp + last_will_message;
 
 const char* char_x_send_to_client = x_send_to_client.c_str();
 const char* char_x_client_to_server = x_client_to_server.c_str();
@@ -178,6 +177,14 @@ void loop() {
   pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS);
 
   // Xử lý MQTT
+  Serial.print("char_x_send_to_client: ");
+Serial.println(char_x_send_to_client);
+
+Serial.print("char_x_client_to_server: ");
+Serial.println(char_x_client_to_server);
+
+Serial.print("char_x_last_will_message: ");
+Serial.println(char_x_last_will_message);
   mqttConn.loop();
 }
 
