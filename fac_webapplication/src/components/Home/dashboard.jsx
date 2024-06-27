@@ -10,7 +10,7 @@ import { callAPi } from "../../services/UserService";
 import Loading from "./loading";
 import { AuthContext } from "../Context/AuthContext";
 
-export const Dashboard = ({ weatherState, handleAddDevice }) => {
+export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
     const { URL, login, user, farmsct, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
@@ -20,11 +20,6 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
     useEffect(() => {
         if (login.status === true) { getDashboard() }
     }, [login.status])
-
-    useEffect(() => {
-        
-        
-    },[farms])
 
     const getDashboard = async () => {
         let res = await callAPi(
@@ -46,7 +41,7 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
             };
             farms_temp = [...farms_temp, info]; 
         });
-
+        getWeather(id_esp);
         authDispatch({
             type: "SET_FARM",
             payload: farms_temp,
@@ -54,6 +49,11 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
         navigate(`/farm/${id_esp}`);
     };
 
+    const getWeather = async (id_esp) => {
+        const location = farms.find((farm) => farm.id_esp_ == id_esp)
+        console.log(location.longtitude_)
+        setLocation({lat: location.latitude_,lng: location.longtitude_})
+    }
     const navigateToSetting = (event,id) => {
         event.stopPropagation();
         const farmsetting = farms.find((farm) => farm.id_esp_ == id)

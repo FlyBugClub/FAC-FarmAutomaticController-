@@ -25,7 +25,10 @@ function App() {
 
   const [weatherState, setWeatherState] = useState(true);
   const [addDeviceState, setAddDeviceState] = useState("");
-
+  const [location,setLocation] = useState({
+    lat: 10.8231,
+    lng: 106.6297,
+});
   const { URL, login, authDispatch } = useContext(AuthContext);
   const handleWeather = () => {
     setWeatherState(!weatherState);
@@ -108,7 +111,7 @@ function App() {
                 zIndex: "-1",
               }}
             >
-              <Weather weatherState={weatherState} />
+              <Weather weatherState={weatherState} location={location}/>
               <Routes>
                 <Route
                   path="/dashboard"
@@ -116,6 +119,7 @@ function App() {
                     <Dashboard
                       weatherState={weatherState}
                       handleAddDevice={handleAddDevice}
+                      setLocation={setLocation}
                     />
                   }
                 />
