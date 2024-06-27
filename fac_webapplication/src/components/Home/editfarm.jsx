@@ -20,9 +20,13 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
     const [equipmentName, setEquipmentName] = useState("");
     const [farmName, setFarmName] = useState("");
     const [farmDescription, setFarmDescription] = useState("");
+    const [farmAddress, setFarmAddress] = useState("");
     const [selectedLocation, setSelectedLocation] = useState({});
     const [query, setQuery] = useState("");
     const autoCompleteRef = useRef(null);
+    const farmNameRef = useRef(null);
+    const farmDescriptionRef = useRef(null);
+    const equipmentNameRef = useRef(null);
     const googleMapsApiKey = "AIzaSyBF_aYE1ude5Qh1-SEoX1yMVAKz7Z46r7o";
 
             const { isLoaded, loadError } = useLoadScript({
@@ -46,11 +50,24 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
     }, [farmsct]);
 
     useEffect(() => {
-        console.log(currentFarm)
-        if (currentFarm != undefined) {
+        if (farmAddress != "" && autoCompleteRef.current && farmNameRef.current && farmDescriptionRef.current) {
+            farmNameRef.current.value = farmName
+            farmDescriptionRef.current.value = farmDescription
+            autoCompleteRef.current.value = farmAddress
+        }
+    }, [farmAddress, farmName, farmDescription]);
+
+
+    useEffect(() => {
+        if (equipmentName != "" && equipmentNameRef.current) {
+            equipmentNameRef.current.value = equipmentName
+        }
+    },[equipmentName])
+    useEffect(() => {
+        if (Object.keys(currentFarm).length > 0 ) {
             setFarmName(currentFarm.name_esp_)
             setFarmDescription(currentFarm.description_)
-            autoCompleteRef.current.value = currentFarm.Address
+            setFarmAddress(currentFarm.Address)
             if (currentFarm["latitude_"] != null && currentFarm["longtitude_"] != null) {
                 setSelectedLocation({ lat: currentFarm["latitude_"], lng: currentFarm["longtitude_"] })
             }
@@ -59,7 +76,7 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
     }, [currentFarm]);
 
     useEffect(() => {
-        if (currentDevice != undefined) {
+        if (Object.keys(currentDevice).length > 0) {
 
             setEquipmentName(currentDevice["name"])
         }
@@ -114,18 +131,21 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
         else toast.error("please enter name equipment");
     }
     const handleEditFarmClick = async () => {
-        if (autoCompleteRef.current.value != "" && farmName != "" && farmDescription != "") {
+        if (autoCompleteRef.current.value != "" && farmNameRef.current.value != "" && farmDescriptionRef.current.value != "") {
             console.log(user.id_user_)
             let body = [
                 paramId,
-                user.id_user_,
-                farmName,
-                farmDescription,
+                farmNameRef.current.value,
+                farmDescriptionRef.current.value,
                 selectedLocation.lat,
                 selectedLocation.lng,
                 autoCompleteRef.current.value
             ]
-            alert(stringify(body))
+            let res = await callAPi("post", `${URL}/data/editfarm`, body)
+            if (!res.status) {
+                alert("update fail")
+            }
+            else navigate(-1)
         }
         else toast.error("please enter infomation");
     }
@@ -156,25 +176,25 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
                                         <input
                                             className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input"
                                             maxLength="30"
-                                            value={farmName}
-                                            onChange={(e) => setFarmName(e.target.value)} ></input>
+                                            ref={farmNameRef} ></input>
                                     </div>
-                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }} maxLength="30">
+                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }} >
                                         Address:
                                         <input
                                             id = "autocomplete"
+                                            maxLength="30"
                                             className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input"
                                             ref = {autoCompleteRef}
                                             onFocus={Focus}>
                                         </input>
                                     </div>
-                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }} maxLength="150">
+                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }} >
                                         Description:
                                         <textarea
+                                        maxLength="150"
                                             className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input"
                                             style={{ height: "100px", textAlign: "left" }}
-                                            value={farmDescription}
-                                            onChange={(e) => setFarmDescription(e.target.value)}></textarea>
+                                            ref={farmDescriptionRef}></textarea>
                                     </div>
                                 </div>
                                 <div className="Fac_Home_Web_Addfarmcontainer_Body_Right">
@@ -212,7 +232,7 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
                                 <div className="Fac_Home_Web_Addfarmcontainer_Body_Left">
                                     <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items">
                                         Bump name:
-                                        <input className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" value={equipmentName} onChange={(e) => setEquipmentName(e.target.value)}></input>
+                                        <input className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={equipmentNameRef}></input>
                                     </div>
                                 </div>
                                 <div className="Fac_Home_Web_Addfarmcontainer_Body_Right">

@@ -207,9 +207,10 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                             onFocus={() => Focus()}
                                         ></input>
                                     </div>
-                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }} maxLength="150">
+                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }}>
                                         Description:
                                         <textarea
+                                         maxLength="150"
                                             className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input"
                                             ref={DesciptionRef}
                                             style={{ height: "100px", textAlign: "left" }}
