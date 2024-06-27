@@ -54,6 +54,7 @@ bool MQTTConnection::connected() {
 
 void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int length) {
   if (strcmp(topic, mqtt_topic_receive) == 0) {
+    isMessagesArrive = true;
     Serial.print("Nhận dữ liệu trên topic receive: ");
 
     payload[length] = '\0';
@@ -70,6 +71,7 @@ void MQTTConnection::mqttCallback(char* topic, byte* payload, unsigned int lengt
     currentIndex = atoi(doc["index"]);
     currentAction = String(doc["payload"]["action"].as<const char*>());
     currentMessage = String(doc["payload"]["messages"].as<const char*>());
+    Serial.print("hehe");
   } else if (strcmp(topic, mqtt_topic_send) == 0) {
     Serial.print("Nhận dữ liệu trên web gửi xuống ");
   } else {

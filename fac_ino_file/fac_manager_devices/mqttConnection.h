@@ -21,7 +21,7 @@ public:
   const char* mqtt_topic_lwm;
   WiFiClient espClient;
   PubSubClient mqttClient;
-
+  bool isMessagesArrive = false;
   String currentAction;
   String currentMessage;
   int currentIndex;
