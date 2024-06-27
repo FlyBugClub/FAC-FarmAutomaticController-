@@ -1,4 +1,5 @@
 #include "PumpController.h"
+#include <ArduinoJson.h>
 
 PumpController::PumpController() {
   if (!sht31.begin(0x44)) {    
@@ -8,59 +9,116 @@ PumpController::PumpController() {
   }
 }
 
+char* PumpController::handleNewMessages(String currentAction, String currentMessage, int currentIndex, const char* payload_sum) {
+  StaticJsonDocument<512> doc;
+  DeserializationError error = deserializeJson(doc, payload_sum);
 
-
-char* PumpController::handleAction(const char* action, const char* message, int index, int pumpPin) {
-  static char payload[100];  // Tăng kích thước mảng để chứa payload lớn hơn nếu cần thiết
-  if (strcmp(action, "manual") == 0) {
-    if (strcmp(message, "on") == 0) {
-      digitalWrite(pumpPin, HIGH);
-      Serial.println("Pump turned on");
-      snprintf(payload, sizeof(payload), "{\"index\": \"%d\", \"payload\": {\"action\": \"%s\", \"messages\": \"%s\"}}", index, action, message);
-    } else if (strcmp(message, "off") == 0) {
-      digitalWrite(pumpPin, LOW);
-      Serial.println("Pump turned off");
-      snprintf(payload, sizeof(payload), "{\"index\": \"%d\", \"payload\": {\"action\": \"%s\", \"messages\": \"%s\"}}", index, action, message);
-    } else {
-      Serial.println("Invalid message for manual action");
-      return nullptr;  // Không thực hiện hành động gì nếu message không hợp lệ
-    }
-  } else if (strcmp(action, "auto") == 0) {
-    // Xử lý hành động auto ở đây
-    // Ví dụ: Tự động điều khiển theo một số điều kiện nào đó
-    int threshold = atoi(message);  // Chuyển đổi message (ngưỡng) từ chuỗi sang số nguyên
-
-    // float humidity = sht31.readHumidity();
-    float humidity = 30;
-    if (humidity < threshold) {
-      digitalWrite(pumpPin, HIGH);
-      Serial.println("Pump turned on (auto)");
-      snprintf(payload, sizeof(payload), "{\"index\": \"%d\", \"payload\": {\"action\": \"%s\", \"messages\": \"on\"}}", index, action);
-    } else {
-      digitalWrite(pumpPin, LOW);  // Tắt bơm nếu giá trị cảm biến không lớn hơn ngưỡng
-      Serial.println("Pump turned off (auto)");
-      snprintf(payload, sizeof(payload), "{\"index\": \"%d\", \"payload\": {\"action\": \"%s\", \"messages\": \"off\"}}", index, action);
-    }
-  } else if (strcmp(action, "schedule") == 0) {
-    // Xử lý hành động schedule ở đây
-    // Ví dụ: Đọc lịch trình từ message và thực hiện hành động dựa trên lịch trình
-    // Đây chỉ là ví dụ đơn giản, bạn cần thay đổi theo logic của hệ thống thực tế
-    if (strcmp(message, "morning") == 0) {
-      digitalWrite(pumpPin, HIGH);  // Bật bơm vào buổi sáng
-      Serial.println("Pump turned on (morning schedule)");
-      snprintf(payload, sizeof(payload), "{\"index\": \"%d\", \"payload\": {\"action\": \"%s\", \"messages\": \"morning\"}}", index, action);
-    } else if (strcmp(message, "evening") == 0) {
-      digitalWrite(pumpPin, LOW);  // Tắt bơm vào buổi tối
-      Serial.println("Pump turned off (evening schedule)");
-      snprintf(payload, sizeof(payload), "{\"index\": \"%d\", \"payload\": {\"action\": \"%s\", \"messages\": \"evening\"}}", index, action);
-    } else {
-      Serial.println("Invalid message for schedule action");
-      return nullptr;  // Không thực hiện hành động gì nếu message không hợp lệ
-    }
-  } else {
-    Serial.println("Invalid action");
-    return nullptr;  // Không thực hiện hành động gì nếu action không hợp lệ
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return nullptr;
   }
 
-  return payload;
+  // Lặp qua từng phần tử trong payload_sum
+  for (JsonObject pump : doc.as<JsonArray>()) {
+    int index = pump["index"];
+    if (index == currentIndex) {
+      // Cập nhật action và message tương ứng
+      pump["payload"]["action"] = currentAction;
+      pump["payload"]["messages"] = currentMessage;
+    }
+  }
+  // Chuyển đổi doc trở lại thành chuỗi JSON
+  static char updated_payload_sum[512];
+  serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
+
+  return updated_payload_sum;
+}
+
+
+void PumpController::processPumpAction(const char* payload_sum,const int pumpPins[], int numPumps) {
+  StaticJsonDocument<512> doc;
+  DeserializationError error = deserializeJson(doc, payload_sum);
+
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return;
+  }
+
+  // Lặp qua từng phần tử trong payload_sum
+  for (JsonObject pump : doc.as<JsonArray>()) {
+    int index = pump["index"];
+    String action = pump["payload"]["action"].as<String>();
+    String message = pump["payload"]["messages"].as<String>();
+
+    // Tìm chân điều khiển tương ứng với máy bơm index
+    if (index > 0 && index <= numPumps) {
+      int pumpPin = pumpPins[index - 1];  // Chọn chân điều khiển máy bơm
+
+      // Xử lý hành động manual
+      if (action == "manual") {
+        if (message == "on") {
+          digitalWrite(pumpPin, HIGH);
+          Serial.print("Pump ");
+          Serial.print(index);
+          Serial.println(" turned on (manual)");
+        } else if (message == "off") {
+          digitalWrite(pumpPin, LOW);
+          Serial.print("Pump ");
+          Serial.print(index);
+          Serial.println(" turned off (manual)");
+        } else {
+          Serial.print("Invalid message '");
+          Serial.print(message);
+          Serial.println("' for manual action");
+        }
+      }
+
+      // Xử lý hành động auto
+      else if (action == "auto") {
+        int threshold = message.toInt();  // Chuyển đổi ngưỡng từ chuỗi sang số nguyên
+
+        // float humidity = sensor.readHumidity();
+        float humidity = 30; // Giả lập độ ẩm, bạn cần thay thế bằng đọc từ cảm biến thực tế
+        if (humidity < threshold) {
+          digitalWrite(pumpPin, HIGH);
+          Serial.print("Pump ");
+          Serial.print(index);
+          Serial.println(" turned on (auto)");
+        } else {
+          digitalWrite(pumpPin, LOW);
+          Serial.print("Pump ");
+          Serial.print(index);
+          Serial.println(" turned off (auto)");
+        }
+      }
+
+      // Xử lý hành động theo lịch trình
+      else if (action == "schedule") {
+        if (message == "morning") {
+          digitalWrite(pumpPin, HIGH);  // Bật bơm vào buổi sáng
+          Serial.print("Pump ");
+          Serial.print(index);
+          Serial.println(" turned on (morning schedule)");
+        } else if (message == "evening") {
+          digitalWrite(pumpPin, LOW);  // Tắt bơm vào buổi tối
+          Serial.print("Pump ");
+          Serial.print(index);
+          Serial.println(" turned off (evening schedule)");
+        } else {
+          Serial.print("Invalid message '");
+          Serial.print(message);
+          Serial.println("' for schedule action");
+        }
+      }
+
+      // Xử lý các hành động khác
+      else {
+        Serial.print("Invalid action '");
+        Serial.print(action);
+        Serial.println("'");
+      }
+    }
+  }
 }

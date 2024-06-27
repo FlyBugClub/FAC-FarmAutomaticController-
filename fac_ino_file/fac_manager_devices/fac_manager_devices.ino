@@ -25,25 +25,24 @@ const char* char_x_client_to_server = x_client_to_server.c_str();
 const char* char_x_last_will_message = x_last_will_message.c_str();
 
 const int NUM_PUMPS = 4;
-const int pumpPins[NUM_PUMPS] = { 2, 12, 13, 15 };
-// D5, D6, D7, D8
-WiFiConnection wifiConn;  //                           topic gửi lên        , topic đăng ký/lắng nghe
+const int pumpPins[NUM_PUMPS] = { 14, 12, 13, 15 };  // D5, D6, D7, D8
+WiFiConnection wifiConn;  
 MQTTConnection mqttConn(mqtt_server, mqtt_client_id, char_x_send_to_client, char_x_client_to_server, char_x_last_will_message);
 PumpController pumpControllers;
 
 struct Pump {
-  int index;               // Chỉ số của máy bơm
-  String action;           // Hành động (action) của máy bơm
-  String message;          // Tin nhắn (message) của máy bơm
-  bool isOn;               // Trạng thái của máy bơm
-  String lastPayloadSent;  // Payload cuối cùng được gửi
+  int index;               
+  String action;           
+  String message;          
+  bool isOn;               
+  String lastPayloadSent;  
 };
 
 Pump pumps[NUM_PUMPS] = {
-  { 1, "manual", "on", false },
-  { 2, "manual", "on", false },
-  { 3, "manual", "on", false },
-  { 4, "manual", "on", false }
+  { 1, "manual", "off", false },
+  { 2, "manual", "off", false },
+  { 3, "manual", "off", false },
+  { 4, "manual", "off", false }
 };
 
 // Hàm lưu payload_sum vào EEPROM
@@ -51,7 +50,7 @@ void savePayloadSumToEEPROM(const String& payload_sum) {
   for (int i = 0; i < payload_sum.length(); ++i) {
     EEPROM.write(i, payload_sum[i]);
   }
-  EEPROM.write(payload_sum.length(), '\0');  // Kết thúc chuỗi JSON
+  EEPROM.write(payload_sum.length(), '\0');  
   EEPROM.commit();
 }
 
@@ -71,17 +70,20 @@ void setup() {
   Serial.begin(9600);
   EEPROM.begin(512);  // Initialize EEPROM with size 512 bytes
 
+  // Kết nối đến mạng WiFi
   WiFiConnection::WifiCredentials wifiCreds = wifiConn.activateAPMode();
   ssid = wifiCreds.ssid;
   password = wifiCreds.password;
   wifiConn.connectToWiFi(ssid, password);
 
+  // Chờ kết nối WiFi thành công
   while (!wifiConn.isConnected()) {
     delay(500);
     Serial.print(".");
   }
   Serial.println("WiFi connected");
 
+  // Kết nối đến broker MQTT
   mqttConn.setupMQTT();
   while (!mqttConn.connected()) {
     mqttConn.reconnectMQTT();
@@ -90,29 +92,30 @@ void setup() {
   }
   Serial.println("MQTT connected");
 
+  // Khởi tạo các chân pin điều khiển bơm
   for (int i = 0; i < NUM_PUMPS; ++i) {
     pinMode(pumpPins[i], OUTPUT);
-    digitalWrite(pumpPins[i], LOW);  // Đặt các chân pin ở mức LOW ban đầu
+    digitalWrite(pumpPins[i], LOW);  // Mặc định tắt các bơm
   }
 
-  String initialPayload = loadPayloadSumFromEEPROM();  // Load payload từ EEPROM khi khởi động
-  if (initialPayload.length() > 0) {
-    mqttConn.publish(char_x_send_to_client, initialPayload.c_str());  // Gửi payload tổng hợp lên MQTT
-
-    // Parse the initial payload to update pump states
-    StaticJsonDocument<512> doc;
-    deserializeJson(doc, initialPayload);
-    JsonArray arr = doc.as<JsonArray>();
-    for (JsonObject pump : arr) {
-      int index = pump["index"];
-      pumps[index - 1].action = pump["payload"]["action"].as<String>();
-      pumps[index - 1].message = pump["payload"]["messages"].as<String>();
-      pumps[index - 1].lastPayloadSent = "{\"index\":\"" + String(index) + "\",\"payload\":{\"action\":\"" + pumps[index - 1].action + "\",\"messages\":\"" + pumps[index - 1].message + "\"}}";
-    }
+  // Tạo mới payload từ thông tin ban đầu của các bơm và lưu vào EEPROM
+  StaticJsonDocument<512> doc;
+  JsonArray arr = doc.to<JsonArray>();
+  for (int i = 0; i < NUM_PUMPS; ++i) {
+    JsonObject pump = arr.createNestedObject();
+    pump["index"] = pumps[i].index;
+    pump["payload"]["action"] = pumps[i].action;
+    pump["payload"]["messages"] = pumps[i].message;
   }
+  String initialPayload;
+  serializeJson(doc, initialPayload);
+  savePayloadSumToEEPROM(initialPayload);
+
+  // Gửi payload tổng hợp lên MQTT khi kết nối lần đầu tiên
+  mqttConn.publish(char_x_send_to_client, initialPayload.c_str());
 }
-
 void loop() {
+  // Kiểm tra và tái kết nối WiFi, MQTT khi cần thiết
   if (!wifiConn.isConnected()) {
     wifiConn.connectToWiFi(ssid, password);
   }
@@ -120,47 +123,24 @@ void loop() {
     mqttConn.reconnectMQTT();
   }
 
-  String payload_sum = "[";     // Chuỗi JSON tổng hợp payload
-  bool payloadChanged = false;  // Biến đánh dấu sự thay đổi payload
+  // Lấy payload từ EEPROM
+  String payload_sum = loadPayloadSumFromEEPROM();
 
-  for (int i = 0; i < NUM_PUMPS; ++i) {
-    String currentPayload;
+  // Cập nhật payload_sum từ handleNewMessages
+  String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
+  if (updatedPayload.length() > 0 && updatedPayload != payload_sum) {
+    payload_sum = updatedPayload;
+    // Lưu lại vào EEPROM khi có sự thay đổi
+    savePayloadSumToEEPROM(payload_sum);
 
-    // Kiểm tra nếu index của máy bơm khớp với currentIndex từ MQTT
-    if (mqttConn.currentIndex == pumps[i].index) {
-      // Lấy action và message hiện tại từ MQTT
-      pumps[i].action = mqttConn.currentAction;
-      pumps[i].message = mqttConn.currentMessage;
-
-      // Xử lý action của máy bơm và nhận lại payload
-      char* payload = pumpControllers.handleAction(pumps[i].action.c_str(), pumps[i].message.c_str(), pumps[i].index, pumpPins[i]);
-
-      currentPayload = "{\"index\":\"" + String(pumps[i].index) + "\",\"payload\":{\"action\":\"" + pumps[i].action + "\",\"messages\":\"" + pumps[i].message + "\"}}";
-
-      // Kiểm tra sự thay đổi so với payload trước đó của máy bơm
-      if (currentPayload != pumps[i].lastPayloadSent) {
-        pumps[i].lastPayloadSent = currentPayload;  // Lưu lại payload gửi gần đây nhất
-        payloadChanged = true;                      // Đánh dấu có sự thay đổi payload
-      }
-    } else {
-      // Nếu không phải là máy bơm có index khớp, giữ nguyên payload trước đó
-      currentPayload = pumps[i].lastPayloadSent;
-    }
-
-    payload_sum += currentPayload;  // Thêm payload vào chuỗi tổng hợp
-    if (i < NUM_PUMPS - 1) {
-      payload_sum += ",";  // Thêm dấu phẩy nếu không phải là phần tử cuối cùng
-    }
+    // Gửi payload tổng hợp lên MQTT
+    mqttConn.publish(char_x_send_to_client, payload_sum.c_str());
   }
 
-  payload_sum += "]";  // Kết thúc chuỗi JSON tổng hợp
+  // Xử lý các hành động bơm nước
+  pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS);
 
-  // Kiểm tra nếu có sự thay đổi payload thì mới gửi lên MQTT
-  if (payloadChanged || loadPayloadSumFromEEPROM().isEmpty()) {
-    Serial.println(payload_sum);                                   // In ra payload tổng hợp
-    mqttConn.publish(char_x_send_to_client, payload_sum.c_str());  // Gửi payload tổng hợp lên MQTT
-    savePayloadSumToEEPROM(payload_sum);                           // Lưu payload vào EEPROM khi có sự thay đổi
-  }
-
+  // Xử lý MQTT
   mqttConn.loop();
 }
+

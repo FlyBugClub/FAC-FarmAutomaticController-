@@ -1,17 +1,16 @@
-#ifndef PUMP_CONTROLLER_H
-#define PUMP_CONTROLLER_H
+#ifndef PumpController_h
+#define PumpController_h
 
 #include <Arduino.h>
+#include <Wire.h>
 #include "Adafruit_SHT31.h"
 
 class PumpController {
-public:
-  PumpController();
-  char* handleAction(const char* action, const char* message, int index, int pumpPin);
-
-private:
-  int _pumpPin;
-  Adafruit_SHT31 sht31;
+  public:
+    PumpController();
+    char* handleNewMessages(String currentAction, String currentMessage, int currentIndex, const char* payload_sum);
+    void processPumpAction(const char* payload_sum,const int pumpPins[], int numPumps);
+    Adafruit_SHT31 sht31;
 };
 
-#endif // PUMP_CONTROLLER_H
+#endif
