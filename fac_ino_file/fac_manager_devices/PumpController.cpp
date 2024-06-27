@@ -60,18 +60,18 @@ void PumpController::processPumpAction(const char* payload_sum,const int pumpPin
       if (action == "manual") {
         if (message == "on") {
           digitalWrite(pumpPin, HIGH);
-          Serial.print("Pump ");
-          Serial.print(index);
-          Serial.println(" turned on (manual)");
+          // Serial.print("Pump ");
+          // Serial.print(index);
+          // Serial.println(" turned on (manual)");
         } else if (message == "off") {
           digitalWrite(pumpPin, LOW);
-          Serial.print("Pump ");
-          Serial.print(index);
-          Serial.println(" turned off (manual)");
+          // Serial.print("Pump ");
+          // Serial.print(index);
+          // Serial.println(" turned off (manual)");
         } else {
-          Serial.print("Invalid message '");
-          Serial.print(message);
-          Serial.println("' for manual action");
+          // Serial.print("Invalid message '");
+          // Serial.print(message);
+          // Serial.println("' for manual action");
         }
       }
 

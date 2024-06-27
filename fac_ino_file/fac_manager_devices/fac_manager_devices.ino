@@ -15,10 +15,13 @@ String client_to_server = "ClientToServer";
 String last_will_message = "LastWillMessage";
 const char* mqtt_client_id = "helloem";
 
-String id_esp = "111";
-String x_send_to_client = id_esp + send_to_client;
-String x_client_to_server = id_esp + client_to_server;
-String x_last_will_message = id_esp + last_will_message;
+// String id_esp = "111";
+uint32_t chipId = ESP.getChipId();
+String id_esp = String(chipId, HEX);
+
+String x_send_to_client = chipId + send_to_client;
+String x_client_to_server = chipId + client_to_server;
+String x_last_will_message = chipId + last_will_message;
 
 const char* char_x_send_to_client = x_send_to_client.c_str();
 const char* char_x_client_to_server = x_client_to_server.c_str();
@@ -53,7 +56,31 @@ void savePayloadSumToEEPROM(const String& payload_sum) {
   EEPROM.write(payload_sum.length(), '\0');  
   EEPROM.commit();
 }
+bool isJsonPayloadValid(const String& payload) {
+  // Tạo một bộ đệm đủ lớn để chứa dữ liệu JSON
+  StaticJsonDocument<512> doc;
 
+  // Phân tích chuỗi JSON và kiểm tra tính hợp lệ
+  DeserializationError error = deserializeJson(doc, payload);
+
+  // Kiểm tra lỗi phân tích JSON
+  if (error) {
+    Serial.print("deserializeJson() failed: ");
+    Serial.println(error.c_str());
+    return false;
+  }
+
+  // Kiểm tra xem JSON có phải là một mảng và có các trường cần thiết không
+  if (!doc.is<JsonArray>()) {
+    Serial.println("Invalid JSON format: Not an array.");
+    return false;
+  }
+
+  // Kiểm tra các yêu cầu khác tùy theo cấu trúc của JSON của bạn
+
+  // Nếu không có lỗi và JSON hợp lệ, trả về true
+  return true;
+}
 // Hàm đọc payload_sum từ EEPROM
 String loadPayloadSumFromEEPROM() {
   char buffer[512];
@@ -69,6 +96,10 @@ String loadPayloadSumFromEEPROM() {
 void setup() {
   Serial.begin(9600);
   EEPROM.begin(512);  // Initialize EEPROM with size 512 bytes
+
+  // Kiểm tra xem EEPROM đã có dữ liệu hay chưa
+  String initialPayload = loadPayloadSumFromEEPROM();
+  bool validPayload = isJsonPayloadValid(initialPayload);
 
   // Kết nối đến mạng WiFi
   WiFiConnection::WifiCredentials wifiCreds = wifiConn.activateAPMode();
@@ -98,22 +129,28 @@ void setup() {
     digitalWrite(pumpPins[i], LOW);  // Mặc định tắt các bơm
   }
 
-  // Tạo mới payload từ thông tin ban đầu của các bơm và lưu vào EEPROM
-  StaticJsonDocument<512> doc;
-  JsonArray arr = doc.to<JsonArray>();
-  for (int i = 0; i < NUM_PUMPS; ++i) {
-    JsonObject pump = arr.createNestedObject();
-    pump["index"] = pumps[i].index;
-    pump["payload"]["action"] = pumps[i].action;
-    pump["payload"]["messages"] = pumps[i].message;
-  }
-  String initialPayload;
-  serializeJson(doc, initialPayload);
-  savePayloadSumToEEPROM(initialPayload);
+  // Nếu EEPROM có dữ liệu hợp lệ, sử dụng giá trị từ EEPROM
+  if (validPayload) {
+    // Gửi payload tổng hợp lên MQTT khi kết nối lần đầu tiên
+    mqttConn.publish(char_x_send_to_client, initialPayload.c_str());
+  } else {
+    // Khởi tạo payload sum ban đầu và lưu vào EEPROM
+    StaticJsonDocument<512> doc;
+    JsonArray arr = doc.to<JsonArray>();
+    for (int i = 0; i < NUM_PUMPS; ++i) {
+      JsonObject pump = arr.createNestedObject();
+      pump["index"] = pumps[i].index;
+      pump["payload"]["action"] = pumps[i].action;
+      pump["payload"]["messages"] = pumps[i].message;
+    }
+    serializeJson(doc, initialPayload);
+    savePayloadSumToEEPROM(initialPayload);
 
-  // Gửi payload tổng hợp lên MQTT khi kết nối lần đầu tiên
-  mqttConn.publish(char_x_send_to_client, initialPayload.c_str());
+    // Gửi payload tổng hợp lên MQTT khi khởi tạo lần đầu tiên
+    mqttConn.publish(char_x_send_to_client, initialPayload.c_str());
+  }
 }
+
 void loop() {
   // Kiểm tra và tái kết nối WiFi, MQTT khi cần thiết
   if (!wifiConn.isConnected()) {
