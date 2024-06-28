@@ -127,20 +127,18 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
 
         char* token = strtok(msg, " ");
         int numTimes = atoi(token);
-        String times[numTimes];  
+        String times[numTimes];
         int count = 0;
-        token = strtok(NULL, " ");  // Lấy token tiếp theo (bỏ qua phần tử đầu tiên)
-
+        int wateringTimeSeconds = atoi(strtok(NULL, " "));  
+        token =  strtok(NULL, " "); 
         while (token != NULL && count < numTimes) {
           times[count++] = String(token);
           token = strtok(NULL, " ");
+
         }
 
+
         // In các phần tử trong mảng `times`
-        // Serial.println(times[0]);
-        // Serial.println(times[1]);
-        // Serial.println(times[2]);
-        int wateringTimeSeconds = atoi(times[0].c_str());
         handleScheduleTimes(pumpPin, index, times, numTimes, currentSeconds, wateringTimeSeconds);
       } else {
         Serial.print("Invalid action '");
@@ -161,24 +159,30 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
 
 void PumpController::handleScheduleTimes(int pumpPin, int index, String times[], int numTimes, unsigned long currentSeconds, int wateringTimeSeconds) {
   // Calculate current millis
-  unsigned long currentMillis = millis();
 
+  unsigned long currentMillis = currentSeconds * 1000;
   // Calculate millis watering time
   unsigned long wateringTimeMillis = wateringTimeSeconds * 1000;  // Convert seconds to millis
-
   bool pumpOn = false;
 
   for (int i = 0; i < numTimes; ++i) {
     int hours, minutes;
-    sscanf(times[i+1].c_str(), "%d:%d", &hours, &minutes);
-    unsigned long scheduleSeconds = hours * 3600 + minutes * 60;
+    sscanf(times[i].c_str(), "%d:%d", &hours, &minutes);
 
-    // Convert schedule seconds to millis
+    unsigned long scheduleSeconds = hours * 3600 + minutes * 60;
     unsigned long scheduleMillis = scheduleSeconds * 1000;
 
     // Calculate end watering time in millis
     unsigned long endWateringTime = scheduleMillis + wateringTimeMillis;
+    unsigned long endWateringTimeSeconds = endWateringTime / 1000;
 
+    Serial.print("currentMillis Time Seconds: ");
+    Serial.println(currentMillis);
+    Serial.print("scheduleMillis Seconds    : ");
+    Serial.println(scheduleMillis);
+    Serial.print("End Watering Time         : ");
+    Serial.println(endWateringTime);
+  
     // Check if current time is within the watering window
     if (currentMillis >= scheduleMillis && currentMillis <= endWateringTime) {
       Serial.println("hehe");
