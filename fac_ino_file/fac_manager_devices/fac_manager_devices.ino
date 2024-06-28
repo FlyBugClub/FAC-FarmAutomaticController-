@@ -10,7 +10,7 @@ String password = "ktd01042013";
 const char* mqtt_server = "broker.emqx.io";
 const uint16_t mqtt_port = 1883;
 
-String send_to_client = "SendToClient";
+String send_to_client = "ServerToClient";
 String client_to_server = "ClientToServer";
 String last_will_message = "LastWillMessage";
 const char* mqtt_client_id = "helloem";
@@ -68,15 +68,22 @@ bool isJsonPayloadValid(const String& payload) {
     return false;
   }
 
-  // Kiểm tra xem JSON có phải là một mảng và có các trường cần thiết không
+  // Kiểm tra xem payload có phải là một mảng không
   if (!doc.is<JsonArray>()) {
-    Serial.println("Invalid JSON format: Not an array.");
+    Serial.println("JSON is not an array");
     return false;
   }
 
-  // Kiểm tra các yêu cầu khác tùy theo cấu trúc của JSON của bạn
+  // Lấy mảng JSON từ doc
+  JsonArray arr = doc.as<JsonArray>();
 
-  // Nếu không có lỗi và JSON hợp lệ, trả về true
+  // Kiểm tra xem mảng có đủ 4 phần tử không
+  if (arr.size() != NUM_PUMPS) {
+    Serial.print("JSON array size is not ");
+    Serial.println(NUM_PUMPS);
+    return false;
+  }
+
   return true;
 }
 String loadPayloadSumFromEEPROM() {
@@ -237,12 +244,12 @@ void loop() {
   unsigned long currentMillis = millis();
 
 
-  if (currentMillis - lastSendTime >= sendInterval) {
-    lastSendTime = currentMillis;
+  // if (currentMillis - lastSendTime >= sendInterval) {
+  //   lastSendTime = currentMillis;
 
 
-    checkAndSendSensorState();
-  }
+  //   checkAndSendSensorState();
+  // }
   // Cập nhật payload_sum từ handleNewMessages
 
   mqttConn.loop();

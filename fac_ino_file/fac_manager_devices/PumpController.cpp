@@ -41,15 +41,30 @@ char* PumpController::handleNewMessages(String currentAction, String currentMess
     if (index == currentIndex) {
       // Cập nhật action và message tương ứng
       pump["payload"]["action"] = currentAction;
-      pump["payload"]["messages"] = currentMessage;
+
+      if (currentAction == "schedule") {
+        StaticJsonDocument<200> messageDoc;
+        DeserializationError messageError = deserializeJson(messageDoc, currentMessage);
+        if (messageError) {
+          Serial.print(F("deserializeJson() for schedule messages failed: "));
+          Serial.println(messageError.f_str());
+          return nullptr;
+        }
+        // Sao chép đối tượng messages vào payload
+        pump["payload"]["messages"] = messageDoc.as<JsonObject>();
+      } else {
+        pump["payload"]["messages"] = currentMessage;
+      }
     }
   }
+  
   // Chuyển đổi doc trở lại thành chuỗi JSON
   static char updated_payload_sum[512];
   serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
 
   return updated_payload_sum;
 }
+
 
 
 void PumpController::processPumpAction(const char* payload_sum, const int pumpPins[], int numPumps) {
