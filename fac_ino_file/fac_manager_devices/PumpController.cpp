@@ -26,12 +26,12 @@ PumpController::PumpController() {
   }
 }
 char* PumpController::handleNewMessages(String currentAction, String currentMessage, int currentIndex, const char* payload_sum) {
-  StaticJsonDocument<1024> doc; // Tăng kích thước bộ nhớ nếu cần thiết
+  StaticJsonDocument<1024> doc; // Dung lượng tối đa cho bộ nhớ tạm thời
   DeserializationError error = deserializeJson(doc, payload_sum);
 
   if (error) {
     Serial.print(F("deserializeJson() failed: "));
-    Serial.println(error.f_str());
+    Serial.println(error.c_str());
     return nullptr;
   }
 
@@ -40,20 +40,10 @@ char* PumpController::handleNewMessages(String currentAction, String currentMess
   for (JsonObject pump : doc.as<JsonArray>()) {
     int index = pump["index"];
     if (index == currentIndex) {
-      // Cập nhật action và message tương ứng
+      // Cập nhật action
       pump["payload"]["action"] = currentAction;
-
-      // Kiểm tra nếu currentMessage là một chuỗi JSON hợp lệ
-      StaticJsonDocument<256> messageDoc;
-      DeserializationError messageError = deserializeJson(messageDoc, currentMessage);
-      if (!messageError) {
-        // Nếu currentMessage là một đối tượng JSON, cập nhật messages
-        pump["payload"]["messages"] = messageDoc.as<JsonObject>();
-      } else {
-        // Nếu không phải, cập nhật messages bằng chuỗi thông thường
-        pump["payload"]["messages"] = currentMessage;
-      }
-
+      pump["payload"]["messages"] = currentMessage;   
+      Serial.println(currentMessage);
       updated = true;
       break;
     }
@@ -65,11 +55,13 @@ char* PumpController::handleNewMessages(String currentAction, String currentMess
   }
 
   // Chuyển đổi doc trở lại thành chuỗi JSON
-  static char updated_payload_sum[1024]; // Tăng kích thước bộ nhớ nếu cần thiết
+  static char updated_payload_sum[1024]; // Dung lượng tối đa cho bộ nhớ tạm thời
   serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
 
+  
   return updated_payload_sum;
 }
+
 
 
 

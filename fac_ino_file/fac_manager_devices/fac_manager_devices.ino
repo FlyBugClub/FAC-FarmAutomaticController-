@@ -228,13 +228,13 @@ void loop() {
     String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
       payload_sum = updatedPayload;
       savePayloadSumToEEPROM(payload_sum);
-      mqttConn.publish(char_x_send_to_client, payload_sum.c_str());
-    Serial.print("char_x_send_to_client: ");
-    Serial.println(char_x_send_to_client);
-    Serial.print("char_x_client_to_server: ");
-    Serial.println(char_x_client_to_server);
-    Serial.print("char_x_last_will_message: ");
-    Serial.println(char_x_last_will_message);
+      mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
+    // Serial.print("char_x_send_to_client: ");
+    // Serial.println(char_x_send_to_client);
+    // Serial.print("char_x_client_to_server: ");
+    // Serial.println(char_x_client_to_server);
+    // Serial.print("char_x_last_will_message: ");
+    // Serial.println(char_x_last_will_message);
     mqttConn.isMessagesArrive = false;
   }
   pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS);
