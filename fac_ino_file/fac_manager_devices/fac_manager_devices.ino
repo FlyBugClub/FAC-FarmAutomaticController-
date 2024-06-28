@@ -226,11 +226,9 @@ void loop() {
   if (mqttConn.isMessagesArrive) {
     
     String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-    if (updatedPayload.length() > 0 && updatedPayload != payload_sum) {
       payload_sum = updatedPayload;
       savePayloadSumToEEPROM(payload_sum);
       mqttConn.publish(char_x_send_to_client, payload_sum.c_str());
-    }
     Serial.print("char_x_send_to_client: ");
     Serial.println(char_x_send_to_client);
     Serial.print("char_x_client_to_server: ");

@@ -26,7 +26,7 @@ PumpController::PumpController() {
   }
 }
 char* PumpController::handleNewMessages(String currentAction, String currentMessage, int currentIndex, const char* payload_sum) {
-  StaticJsonDocument<512> doc;
+  StaticJsonDocument<1024> doc; // Tăng kích thước bộ nhớ nếu cần thiết
   DeserializationError error = deserializeJson(doc, payload_sum);
 
   if (error) {
@@ -36,30 +36,36 @@ char* PumpController::handleNewMessages(String currentAction, String currentMess
   }
 
   // Lặp qua từng phần tử trong payload_sum
+  bool updated = false;
   for (JsonObject pump : doc.as<JsonArray>()) {
     int index = pump["index"];
     if (index == currentIndex) {
       // Cập nhật action và message tương ứng
       pump["payload"]["action"] = currentAction;
 
-      if (currentAction == "schedule") {
-        StaticJsonDocument<200> messageDoc;
-        DeserializationError messageError = deserializeJson(messageDoc, currentMessage);
-        if (messageError) {
-          Serial.print(F("deserializeJson() for schedule messages failed: "));
-          Serial.println(messageError.f_str());
-          return nullptr;
-        }
-        // Sao chép đối tượng messages vào payload
+      // Kiểm tra nếu currentMessage là một chuỗi JSON hợp lệ
+      StaticJsonDocument<256> messageDoc;
+      DeserializationError messageError = deserializeJson(messageDoc, currentMessage);
+      if (!messageError) {
+        // Nếu currentMessage là một đối tượng JSON, cập nhật messages
         pump["payload"]["messages"] = messageDoc.as<JsonObject>();
       } else {
+        // Nếu không phải, cập nhật messages bằng chuỗi thông thường
         pump["payload"]["messages"] = currentMessage;
       }
+
+      updated = true;
+      break;
     }
   }
-  
+
+  if (!updated) {
+    Serial.println(F("No matching index found in payload_sum."));
+    return nullptr;
+  }
+
   // Chuyển đổi doc trở lại thành chuỗi JSON
-  static char updated_payload_sum[512];
+  static char updated_payload_sum[1024]; // Tăng kích thước bộ nhớ nếu cần thiết
   serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
 
   return updated_payload_sum;
@@ -108,15 +114,15 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
         if (humidity < threshold) {
           digitalWrite(pumpPin, HIGH);
           pumpState[index - 1] = true;
-          Serial.print("Pump ");
-          Serial.print(index);
-          Serial.println(" turned on (auto)");
+          // Serial.print("Pump ");
+          // Serial.print(index);
+          // Serial.println(" turned on (auto)");
         } else {
           digitalWrite(pumpPin, LOW);
           pumpState[index - 1] = false;
-          Serial.print("Pump ");
-          Serial.print(index);
-          Serial.println(" turned off (auto)");
+          // Serial.print("Pump ");
+          // Serial.print(index);
+          // Serial.println(" turned off (auto)");
         }
       }
 
@@ -125,19 +131,19 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
         if (message == "morning") {
           digitalWrite(pumpPin, HIGH);  // Bật bơm vào buổi sáng
           pumpState[index - 1] = true;
-          Serial.print("Pump ");
-          Serial.print(index);
-          Serial.println(" turned on (morning schedule)");
+          // Serial.print("Pump ");
+          // Serial.print(index);
+          // Serial.println(" turned on (morning schedule)");
         } else if (message == "evening") {
           digitalWrite(pumpPin, LOW);  // Tắt bơm vào buổi tối
           pumpState[index - 1] = false;
-          Serial.print("Pump ");
-          Serial.print(index);
-          Serial.println(" turned off (evening schedule)");
+          // Serial.print("Pump ");
+          // Serial.print(index);
+          // Serial.println(" turned off (evening schedule)");
         } else {
-          Serial.print("Invalid message '");
-          Serial.print(message);
-          Serial.println("' for schedule action");
+          // Serial.print("Invalid message '");
+          // Serial.print(message);
+          // Serial.println("' for schedule action");
         }
       }
 
