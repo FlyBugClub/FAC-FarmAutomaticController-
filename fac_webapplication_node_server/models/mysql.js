@@ -105,6 +105,19 @@ const executeScarlarFunction = async (table) => {
   });
 };
 
+
+const executeJsonProcedure = async (pro_name, params) => {
+  try {
+
+    // console.log(`EXEC ${pro_name} N'${params.toString()}'`)
+    const result = await sql.query(`EXEC ${pro_name} N'${JSON.stringify(params, null, 2)}'`);
+    return result;
+  } catch (error) {
+    console.error('Error executing stored procedure:', error);
+    throw error; // Ném lỗi để xử lý ở phía gọi hàm
+  }
+};
+
 const executeProcedure = async (pro_name, params) => {
   try {
     // Tạo chuỗi tham số từ đối số 'params'
@@ -123,4 +136,4 @@ const executeProcedure = async (pro_name, params) => {
   }
 };
 
-module.exports = { connection, SELECT, UPDATE, INSERT, DELETE, executeProcedure, executeScarlarFunction};
+module.exports = { connection, SELECT, UPDATE, INSERT, DELETE, executeProcedure, executeScarlarFunction,executeJsonProcedure};
