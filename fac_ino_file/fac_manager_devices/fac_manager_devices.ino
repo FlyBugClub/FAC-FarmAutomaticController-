@@ -4,6 +4,15 @@
 #include "mqttConnection.h"
 #include "PumpController.h"
 
+#include <NTPClient.h>
+const char* ntpServer = "pool.ntp.org";
+const int ntpPort = 123;
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, ntpServer, ntpPort);
+
+const long timeZoneOffset = 7 * 3600;  // Đổi thành số giây
+
 String ssid = "DAT_MOBILE";
 String password = "ktd01042013";
 
@@ -174,6 +183,18 @@ void checkAndSendSensorState() {
     }
   }
 }
+unsigned long getCurrentSecondsFromMidnight() {
+  unsigned long totalSeconds;
+  time_t currentEpochTime = timeClient.getEpochTime();  // Assume timeClient is accessible and defined elsewhere
+  struct tm* currentTimeStruct = localtime(&currentEpochTime);
+  int hour = currentTimeStruct->tm_hour;
+  int minute = currentTimeStruct->tm_min;
+  int second = currentTimeStruct->tm_sec;
+  
+  totalSeconds = hour * 3600 + minute * 60 + second;
+
+  return totalSeconds;
+}
 void setup() {
   Serial.begin(9600);
   EEPROM.begin(512);
@@ -214,41 +235,48 @@ void setup() {
     savePayloadSumToEEPROM(initialPayload);
     mqttConn.publish(char_x_send_to_client, initialPayload.c_str());
   }
+  timeClient.begin();
+  timeClient.setTimeOffset(timeZoneOffset);
 }
 void loop() {
+  timeClient.update();
   if (!wifiConn.isConnected()) {
     wifiConn.connectToWiFi(ssid, password);
   }
   if (!mqttConn.connected()) {
     mqttConn.reconnectMQTT();
   }
+
   String payload_sum = loadPayloadSumFromEEPROM();
-  if (mqttConn.isMessagesArrive) {
-    
-    String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-      payload_sum = updatedPayload;
-      savePayloadSumToEEPROM(payload_sum);
-      mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
-    // Serial.print("char_x_send_to_client: ");
-    // Serial.println(char_x_send_to_client);
-    // Serial.print("char_x_client_to_server: ");
-    // Serial.println(char_x_client_to_server);
-    // Serial.print("char_x_last_will_message: ");
-    // Serial.println(char_x_last_will_message);
-    mqttConn.isMessagesArrive = false;
-  }
-  pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS);
-  checkAndSendPumpState();
-  unsigned long currentMillis = millis();
+ unsigned long currentSeconds = getCurrentSecondsFromMidnight();
 
 
-  // if (currentMillis - lastSendTime >= sendInterval) {
-  //   lastSendTime = currentMillis;
+if (mqttConn.isMessagesArrive) {
+
+  String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
+  payload_sum = updatedPayload;
+  savePayloadSumToEEPROM(payload_sum);
+  mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
+  // Serial.print("char_x_send_to_client: ");
+  // Serial.println(char_x_send_to_client);
+  // Serial.print("char_x_client_to_server: ");
+  // Serial.println(char_x_client_to_server);
+  // Serial.print("char_x_last_will_message: ");
+  // Serial.println(char_x_last_will_message);
+  mqttConn.isMessagesArrive = false;
+}
+pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
+checkAndSendPumpState();
+unsigned long currentMillis = millis();
 
 
-  //   checkAndSendSensorState();
-  // }
-  // Cập nhật payload_sum từ handleNewMessages
+// if (currentMillis - lastSendTime >= sendInterval) {
+//   lastSendTime = currentMillis;
 
-  mqttConn.loop();
+
+//   checkAndSendSensorState();
+// }
+// Cập nhật payload_sum từ handleNewMessages
+
+mqttConn.loop();
 }

@@ -1,32 +1,32 @@
 #include "PumpController.h"
 #include <ArduinoJson.h>
 PumpController::PumpController() {
-  if (!sht31_1.begin(0x44)) {    
+  if (!sht31_1.begin(0x44)) {
     Serial.println("Couldn't find SHT31 sensor 1!");
   } else {
     Serial.println("SHT31 sensor 1 initialized successfully!");
   }
 
-  if (!sht31_2.begin(0x45)) {    
+  if (!sht31_2.begin(0x45)) {
     Serial.println("Couldn't find SHT31 sensor 2!");
   } else {
     Serial.println("SHT31 sensor 2 initialized successfully!");
   }
 
-  if (!sht31_3.begin(0x46)) {    
+  if (!sht31_3.begin(0x46)) {
     Serial.println("Couldn't find SHT31 sensor 3!");
   } else {
     Serial.println("SHT31 sensor 3 initialized successfully!");
   }
 
-  if (!sht31_4.begin(0x47)) {    
+  if (!sht31_4.begin(0x47)) {
     Serial.println("Couldn't find SHT31 sensor 4!");
   } else {
     Serial.println("SHT31 sensor 4 initialized successfully!");
   }
 }
 char* PumpController::handleNewMessages(String currentAction, String currentMessage, int currentIndex, const char* payload_sum) {
-  StaticJsonDocument<1024> doc; // Dung lượng tối đa cho bộ nhớ tạm thời
+  StaticJsonDocument<1024> doc;  // Dung lượng tối đa cho bộ nhớ tạm thời
   DeserializationError error = deserializeJson(doc, payload_sum);
 
   if (error) {
@@ -42,7 +42,7 @@ char* PumpController::handleNewMessages(String currentAction, String currentMess
     if (index == currentIndex) {
       // Cập nhật action
       pump["payload"]["action"] = currentAction;
-      pump["payload"]["messages"] = currentMessage;   
+      pump["payload"]["messages"] = currentMessage;
       Serial.println(currentMessage);
       updated = true;
       break;
@@ -55,17 +55,14 @@ char* PumpController::handleNewMessages(String currentAction, String currentMess
   }
 
   // Chuyển đổi doc trở lại thành chuỗi JSON
-  static char updated_payload_sum[1024]; // Dung lượng tối đa cho bộ nhớ tạm thời
+  static char updated_payload_sum[1024];  // Dung lượng tối đa cho bộ nhớ tạm thời
   serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
 
-  
+
   return updated_payload_sum;
 }
 
-
-
-
-void PumpController::processPumpAction(const char* payload_sum, const int pumpPins[], int numPumps) {
+void PumpController::processPumpAction(const char* payload_sum, const int pumpPins[], int numPumps, unsigned long currentSeconds) {
   StaticJsonDocument<512> doc;
   DeserializationError error = deserializeJson(doc, payload_sum);
 
@@ -88,6 +85,9 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
         if (message == "on") {
           digitalWrite(pumpPin, HIGH);
           pumpState[index - 1] = true;
+          // Serial.println("index");
+          // Serial.println(index);
+          // Serial.println("on");
         } else if (message == "off") {
           digitalWrite(pumpPin, LOW);
           pumpState[index - 1] = false;
@@ -120,32 +120,73 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
 
       // Xử lý hành động theo lịch trình
       else if (action == "schedule") {
-        if (message == "morning") {
-          digitalWrite(pumpPin, HIGH);  // Bật bơm vào buổi sáng
-          pumpState[index - 1] = true;
-          // Serial.print("Pump ");
-          // Serial.print(index);
-          // Serial.println(" turned on (morning schedule)");
-        } else if (message == "evening") {
-          digitalWrite(pumpPin, LOW);  // Tắt bơm vào buổi tối
-          pumpState[index - 1] = false;
-          // Serial.print("Pump ");
-          // Serial.print(index);
-          // Serial.println(" turned off (evening schedule)");
-        } else {
-          // Serial.print("Invalid message '");
-          // Serial.print(message);
-          // Serial.println("' for schedule action");
+        // Tách message thành từng thời điểm riêng biệt
+        char msg[message.length() + 1];
+        message.toCharArray(msg, sizeof(msg));
+        char* token = strtok(msg, " ");
+        int numTimes = atoi(token);  // Số lượng thời điểm tưới nước
+        if (numTimes <= 0) {
+          Serial.println("Invalid schedule message format: missing number of times");
+          continue;
         }
-      }
 
-      // Xử lý các hành động khác
-      else {
+        // Xử lý từng thời điểm trong message
+        String times[numTimes];  
+        int count = 0;
+        while (token != NULL && count < numTimes + 1) {  // +1 để bỏ qua số lượng thời điểm đầu tiên
+          token = strtok(NULL, " ");
+          if (token != NULL) {
+            times[count++] = String(token);
+          }
+        }
+
+        // Xử lý từng thời điểm trong times[]
+        handleScheduleTimes(pumpPin, index, times, numTimes, currentSeconds);
+      } else {
         Serial.print("Invalid action '");
         Serial.print(action);
-        Serial.println("'");
+        Serial.println("' for pump action");
       }
     }
+
+    // Xử lý các hành động khác
+    else {
+      Serial.print("Invalid action '");
+      Serial.print(action);
+      Serial.println("'");
+    }
+  }
+}
+
+
+void PumpController::handleScheduleTimes(int pumpPin, int index, String times[], int numTimes, unsigned long currentSeconds) {
+  bool pumpOn = false;
+  for (int i = 0; i < numTimes; ++i) {
+    int hours, minutes;
+    sscanf(times[i].c_str(), "%d:%d", &hours, &minutes);
+    unsigned long scheduleSeconds = hours * 3600 + minutes * 60;
+
+    // Tính toán khoảng thời gian cho đến nửa đêm
+    unsigned long endOfDay = 24 * 3600;  // 86400 seconds in a day
+    unsigned long startOfNextDay = endOfDay - currentSeconds;
+    if (currentSeconds >= scheduleSeconds && currentSeconds <= startOfNextDay) {
+      pumpOn = true;
+      break;
+    }
+  }
+
+  if (pumpOn) {
+    digitalWrite(pumpPin, HIGH);  // Bật bơm
+    pumpState[index - 1] = true;
+    Serial.print("Pump ");
+    Serial.print(index);
+    Serial.println(" turned on (schedule)");
+  } else {
+    digitalWrite(pumpPin, LOW);  // Tắt bơm
+    pumpState[index - 1] = false;
+    Serial.print("Pump ");
+    Serial.print(index);
+    Serial.println(" turned off (schedule)");
   }
 }
 
@@ -162,6 +203,6 @@ Adafruit_SHT31& PumpController::getSHT31Sensor(int index) {
       return sht31_4;
     default:
       // Nếu index không hợp lệ, bạn có thể trả về một trong các đối tượng sht31_1, sht31_2, sht31_3 hoặc sht31_4 mặc định
-      return sht31_1; // Ví dụ trả về sht31_1 cho các trường hợp khác
+      return sht31_1;  // Ví dụ trả về sht31_1 cho các trường hợp khác
   }
 }
