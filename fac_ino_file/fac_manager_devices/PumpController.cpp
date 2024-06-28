@@ -129,12 +129,11 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
         int numTimes = atoi(token);
         String times[numTimes];
         int count = 0;
-        int wateringTimeSeconds = atoi(strtok(NULL, " "));  
-        token =  strtok(NULL, " "); 
+        int wateringTimeSeconds = atoi(strtok(NULL, " "));
+        token = strtok(NULL, " ");
         while (token != NULL && count < numTimes) {
           times[count++] = String(token);
           token = strtok(NULL, " ");
-
         }
 
 
@@ -163,8 +162,6 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
   unsigned long currentMillis = currentSeconds * 1000;
   // Calculate millis watering time
   unsigned long wateringTimeMillis = wateringTimeSeconds * 1000;  // Convert seconds to millis
-  bool pumpOn = false;
-
   for (int i = 0; i < numTimes; ++i) {
     int hours, minutes;
     sscanf(times[i].c_str(), "%d:%d", &hours, &minutes);
@@ -182,28 +179,19 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
     Serial.println(scheduleMillis);
     Serial.print("End Watering Time         : ");
     Serial.println(endWateringTime);
-  
+
     // Check if current time is within the watering window
-    if (currentMillis >= scheduleMillis && currentMillis <= endWateringTime) {
+    if (currentMillis == scheduleMillis) {
       Serial.println("hehe");
+      digitalWrite(pumpPin, HIGH);
+      lastWateringTime[index - 1] = currentMillis;
       // Check if enough time has passed since last watering
-      if (currentMillis - lastWateringTime[index - 1] >= wateringTimeMillis) {
-        Serial.println("haha");
-        pumpOn = true;
-        break;
+      
+    }
+    if (currentMillis - lastWateringTime[index - 1] == wateringTimeMillis) {
+        Serial.println("đèn tắt");
+        digitalWrite(pumpPin, LOW);
       }
-    }
-    if (pumpOn) {
-      digitalWrite(pumpPin, HIGH);  // Turn on pump
-      pumpState[index - 1] = true;
-      // Serial.print("Pump ");
-      // Serial.print(index);
-      // Serial.println(" turned on (schedule)");
-      lastWateringTime[index - 1] = currentMillis;  // Update last watering time
-    } else {
-      digitalWrite(pumpPin, LOW);  // Turn off pump
-      pumpState[index - 1] = false;
-    }
   }
 }
 
