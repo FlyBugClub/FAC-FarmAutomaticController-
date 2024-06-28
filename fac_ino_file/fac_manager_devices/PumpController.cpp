@@ -159,36 +159,42 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
 }
 
 
-void PumpController::handleScheduleTimes(int pumpPin, int index, String times[], int numTimes, unsigned long currentSeconds) {
+void PumpController::handleScheduleTimes(int pumpPin, int index, String times[], int numTimes, unsigned long currentSeconds ) {
+
+
   bool pumpOn = false;
   for (int i = 0; i < numTimes; ++i) {
     int hours, minutes;
     sscanf(times[i].c_str(), "%d:%d", &hours, &minutes);
     unsigned long scheduleSeconds = hours * 3600 + minutes * 60;
+    unsigned long wateringTime = 3;
+    // Tính toán thời điểm kết thúc bơm nước
+    unsigned long endWateringTime = scheduleSeconds + wateringTime;
 
-    // Tính toán khoảng thời gian cho đến nửa đêm
-    unsigned long endOfDay = 24 * 3600;  // 86400 seconds in a day
-    unsigned long startOfNextDay = endOfDay - currentSeconds;
-    if (currentSeconds >= scheduleSeconds && currentSeconds <= startOfNextDay) {
+    // Kiểm tra xem thời gian hiện tại có nằm trong khoảng thời gian bơm không
+    if (currentSeconds >= scheduleSeconds && currentSeconds <= endWateringTime) {
       pumpOn = true;
       break;
+    }else{
+      pumpOn = false;
     }
   }
 
   if (pumpOn) {
     digitalWrite(pumpPin, HIGH);  // Bật bơm
     pumpState[index - 1] = true;
-    Serial.print("Pump ");
-    Serial.print(index);
+    // Serial.print("Pump ");
+    // Serial.print(index);
     Serial.println(" turned on (schedule)");
   } else {
     digitalWrite(pumpPin, LOW);  // Tắt bơm
     pumpState[index - 1] = false;
-    Serial.print("Pump ");
-    Serial.print(index);
-    Serial.println(" turned off (schedule)");
+    // Serial.print("Pump ");
+    // Serial.print(index);
+    // Serial.println(" turned off (schedule)");
   }
 }
+
 
 Adafruit_SHT31& PumpController::getSHT31Sensor(int index) {
   // Trả về cảm biến SHT31 tương ứng với index máy bơm
