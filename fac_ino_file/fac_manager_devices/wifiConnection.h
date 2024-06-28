@@ -1,14 +1,23 @@
 #ifndef WIFICONNECTION_H
 #define WIFICONNECTION_H
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <WiFiManager.h>  
 
-struct WifiCredentials {
-  String ssid;
-  String password;
+#include <ESP8266WiFi.h>
+#include <WiFiManager.h>
+
+class WiFiConnection {
+public:
+  struct WifiCredentials {
+    String ssid;
+    String password;
+  };
+
+  WiFiConnection();
+  void connectToWiFi(const String& ssid, const String& password);
+  WifiCredentials activateAPMode();
+  bool isConnected();
+
+private:
+  WiFiManager wifiManager;
 };
-void connectToWiFi(const String& ssid, const String& password);
-WifiCredentials activateAPMode();
 
 #endif  // WIFICONNECTION_H

@@ -7,7 +7,7 @@ import { BsQrCode } from "react-icons/bs";
 import { PiPlusBold } from "react-icons/pi";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { hover } from "@testing-library/user-event/dist/hover";
-
+import MapComponent from "./map";
 const AddFarm = ({ weatherState,addDeviceState }) => {
     const farm = ["farm1","farm2","farm3","farm1","farm2","farm3"]
     const [qrcodeState, setQrcodeState] = useState(false)
@@ -16,7 +16,10 @@ const AddFarm = ({ weatherState,addDeviceState }) => {
     const [farmSeletedState, setFarmSelectedState] = useState(false)
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
-
+    const [selectedLocation, setSelectedLocation] = useState({
+        lat: 10.8231,
+        lng: 106.6297,
+      });
     
     const handleButtonClick = () => {
         // fileInputRef.current.click(); // Kích hoạt hộp thoại chọn file
@@ -57,7 +60,9 @@ const AddFarm = ({ weatherState,addDeviceState }) => {
                                 </div>
                                 <div className="Fac_Home_Web_Addfarmcontainer_Body_Right">
                                     
-                                        <img className="Fac_Home_Web_Addfarmcontainer_Body_Right_Map" src="/images/map.png" alt="" />
+                                        <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Map" >
+                                           <MapComponent selectedLocation={selectedLocation} />
+                                        </div>
                                     
                                     <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Buttons">
                                         <button className="Fac_Home_Web_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{marginRight:"20px"}}>

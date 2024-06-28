@@ -18,28 +18,32 @@ const ForgotPassw = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [otp, setOTP] = useState("");
- 
+  const [errorEmail, setErrorEmail] = useState("");
+  const [errorOtp, setErrorOtp] = useState("");
+
   const validateEmail = (email) => {
     if (email.trim() === "") {
-      toast.error("Vui lòng nhập email");
+      setErrorEmail("Vui lòng nhập email");
       return false;
-    }
-    if (!checkEmail(email)) {
-      toast.error("Vui lòng nhập email đúng định dạng");
+    } else if (!checkEmail(email)) {
+      setErrorEmail("Vui được nhập đúng định dạng email");
       return false;
+    } else {
+      setErrorEmail("");
+      return true;
     }
-    return true;
   };
   const validateOtp = (otp) => {
     if (otp.trim() === "") {
-      toast.error("Vui lòng nhập OTP");
+      setErrorOtp("Vui lòng nhập OTP");
       return false;
-    }
-    if (!checkOTP(otp)) {
-      toast.error("vui lòng nhập OTP có 6 số");
+    } else if (!checkOTP(otp)) {
+      setErrorOtp("Vui lòng nhập OTP có 6 số");
       return false;
+    } else {
+      setErrorOtp("");
+      return true;
     }
-    return true;
   };
   const handleChangEmail = (e) => {
     const newEmail = e.target.value;
@@ -53,6 +57,7 @@ const ForgotPassw = () => {
     e.preventDefault();
     const isEmailValid = validateEmail(email);
     if (isEmailValid) {
+      setErrorEmail("");
       const checkApi = async () => {
         let res = await callAPi("post", `${URL}/auth/request-otp`, {
           email: email,
@@ -71,6 +76,8 @@ const ForgotPassw = () => {
     const isEmailValid = validateEmail(email);
     const isOTPValid = validateOtp(otp);
     if (isEmailValid && isOTPValid) {
+      setErrorOtp("");
+      setErrorEmail("");
       console.log(email);
       console.log(otp);
       const checkApi = async () => {
@@ -92,57 +99,76 @@ const ForgotPassw = () => {
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
-        <div>
-          <div className="Auth_BrowserView_Logo">
-            <div className="Auth_BrowserView_Logo_Image">
-              <img src="/icons/Bug(Trắng).png" alt="" />
+        <form className="Auth_BrowserView_Container" onSubmit={handleSubmit}>
+          <div className="Auth_BrowserView_Container_Form">
+            <div className="Auth_BrowserView_Container_Form_Header">
+              <div>Quên mật khẩu </div>
             </div>
-            <div>
-              <div className="div1">Tưới tiêu tự động</div>
-              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+            <div className="Auth_BrowserView_Container_Form_Body">
+              <div className="Auth_BrowserView_Container_Form_Body_Item">
+                <div
+                  className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                    errorEmail ? "Error" : ""
+                  }`}
+                >
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
+                    <input
+                      type="text"
+                      placeholder="Nhập Email"
+                      value={email}
+                      onChange={handleChangEmail}
+                    />
+                  </div>
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
+                    <FiMail color={errorEmail ? "red" : "white"} size={24} />
+                  </div>
+                </div>
+                <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
+                  {errorEmail}
+                </div>
+              </div>
+              <div className="Auth_BrowserView_Container_Form_Body_Item">
+                <div
+                  className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                    errorOtp ? "Error" : ""
+                  }`}
+                >
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
+                    <input
+                      type="text"
+                      placeholder="Nhập mã OTP"
+                      value={otp}
+                      onChange={handleChangOTP}
+                    />
+                  </div>
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
+                    <CiBarcode color={errorOtp ? "red" : "white"} size={24} />
+                  </div>
+                </div>
+                <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
+                  {errorOtp}
+                </div>
+              </div>
+              <div className="Auth_BrowserView_Container_Form_Body_Item">
+                <div
+                  onClick={handleSendOtp}
+                  className="Auth_BrowserView_Container_Form_Body_Item_OTP"
+                >
+                  <p>Gửi mã OTP</p>
+                </div>
+              </div>
+            </div>
+            <div className="Auth_BrowserView_Container_Form_Footer">
+              <button type="submit">Xác nhận</button>
+              <div className="Auth_BrowserView_Container_Form_Footer_Choice">
+                <div onClick={() => navigate("/login")}>
+                  Quay lại trang đăng nhập?
+                </div>
+                <div onClick={() => navigate("/login")}>Đăng nhập</div>
+              </div>
             </div>
           </div>
-
-          <form
-            className="Auth_BrowserView_Region-Forgot"
-            style={{ height: "auto" }}
-            onSubmit={handleSubmit}
-          >
-            <div className="Auth_BrowserView_Region-Forgot_Input ">
-              <div>
-                <FiMail color="white" size={24} />
-              </div>
-              <input
-                type="text"
-                placeholder="Email"
-                value={email}
-                onChange={handleChangEmail}
-              ></input>
-            </div>
-
-            <div className="Auth_BrowserView_Region-Forgot_Input ">
-              <div>
-                <CiBarcode color="white" size={24} />
-              </div>
-              <input
-                type="text"
-                placeholder="OTP"
-                value={otp}
-                onChange={handleChangOTP}
-              ></input>
-            </div>
-            <div
-              onClick={handleSendOtp}
-              className="Auth_BrowserView_Region-Forgot_Otp"
-            >
-              <button>Gửi mã otp</button>
-            </div>
-
-            <div className="Auth_BrowserView_Region-Forgot_Button">
-              <button type="submit">Tiếp theo</button>
-            </div>
-          </form>
-        </div>
+        </form>
       </BrowserView>
 
       <MobileView className="Auth_MobileView">

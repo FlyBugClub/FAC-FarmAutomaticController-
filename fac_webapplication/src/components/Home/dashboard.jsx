@@ -3,33 +3,40 @@ import './home.scss'
 import { BrowserView, MobileView } from "react-device-detect";
 import { MdOutlineLibraryAdd } from "react-icons/md";
 import { MdCircle } from "react-icons/md";
-import { Navigate, useNavigate } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import { callAPi } from "../../services/UserService";
 import Loading from "./loading";
 import { AuthContext } from "../Context/AuthContext";
 export const Dashboard = ({ weatherState, handleAddDevice }) => {
-    const { URL, login, user, authDispatch } = useContext(AuthContext);
+    const { URL, login, user,farmct, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
     const [farms, setFarms] = useState([]);
     
     const [loadingState, setLoadingState] = useState(true)
 
-    useEffect(() => {
-        if(login.status === true) 
+    useEffect( () => {
+        if(login.status === true ) 
         { getDashboard()}
-        
-    }, [])
+    }, [login.status])
+
 
     const getDashboard = async () => {
         let res = await callAPi(
             "get",
             `${URL}/data/getDashboard/${user.id_user_}`,
         );
-
         setLoadingState(false)
         setFarms(res.data)
     }
+
+    const navigateToFarm = (id_esp) => {
+        const farm = farms.find(farm => farm.id_esp_ === id_esp);
+        authDispatch({
+            type: "SET_FARM",
+            payload: farm,
+          });
+          navigate(`/farm/${id_esp}`);
+    };
 
     return (
         <div className="Fac_Home">
@@ -54,7 +61,7 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
                                     :
                                     <div className="Fac_Home_Web_Dashboardcontainer_Farms">
                                         {farms.map((item) => (
-                                            <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item" key={item.id_esp_} onClick={() => navigate("/farm")}>
+                                            <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item" key={item.id_esp_} onClick={() => navigateToFarm(item.id_esp_)}>
                                                 <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header">
                                                     {item.name_esp_}
                                                     {item.state ? <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Header_State">
@@ -66,28 +73,19 @@ export const Dashboard = ({ weatherState, handleAddDevice }) => {
                                                             Disconnected
                                                         </div>
                                                     }
-
                                                 </div>
                                                 <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Description">
                                                     {item.description_}
-
                                                 </div>
                                                 <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Amount">
-                                                    <div >ph: {item.number_of_sensor_}</div>
-                                                    <div style={{ marginLeft: "10px" }}>sht: {item.number_of_sensor_}</div>
-                                                    <div style={{ marginLeft: "10px" }}>bump: {item.number_of_equipment_}</div>
+                                                    <div >sensors: {item.number_of_sensor_}</div>
+                                                    <div style={{ marginLeft: "10px" }}>equipments: {item.number_of_equipment_}</div>
                                                 </div>
                                             </div>
-
-
                                         ))}
                                     </div>
                             }
-
                     }
-
-
-
                 </div>
             </BrowserView>
             <MobileView>

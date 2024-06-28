@@ -13,26 +13,37 @@ $font-size-small: 18px;
   width: 100%;
 
   &_BrowserView {
-    background-image: url("../../../public/images/CanhDong.jpg");
-    background-size: cover;
-    background-position: center 30%;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
     display: flex;
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     justify-content: center;
+    align-items: center;
+    background-image: url("../../../public/images/luiz-guimaraes-WFZmeE-veU4-unsplash.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     &_Logo {
-      border: $border-amount;
-      margin: 15px 0 50px 0;
-      background-color: rgba(105, 109, 104, 0.4);
+      overflow-y: scroll;
+      box-shadow: 0px 0px 16px white;
+
+      backdrop-filter: blur(30px);
+      border-radius: 1rem;
+      border: 2px solid white;
+      &::-webkit-scrollbar {
+        display: none;
+      }
       width: 100%;
       height: 100px;
-      border-radius: $border-radius-amount;
-      @include auth-shadow;
       display: flex;
       justify-content: center;
       gap: 20px;
       align-items: center;
       backdrop-filter: blur($blur-amount);
+      margin-bottom: 10px;
       &_Image {
         & img {
           width: 70px;
@@ -49,370 +60,204 @@ $font-size-small: 18px;
         color: white;
       }
     }
-    &_Region-Login {
-      background-color: rgba(105, 109, 104, 0.4);
-      width: 430px;
-      height: 230px;
-      margin-bottom: 200px;
-      border: $border-amount;
-      border-radius: $border-radius-amount;
-      backdrop-filter: blur($blur-amount);
-      overflow: hidden;
-      box-sizing: border-box;
-      padding: 20px 60px;
+    &_Container {
+      
+      overflow-y: scroll;
+      box-shadow: 0px 0px 16px white;
 
-      @include auth-shadow;
-
-      &_Input {
-        padding: 10px 10px 0px 10px;
-        display: flex;
-        justify-content: flex-start;
-        border-bottom: 1px solid rgb(255, 255, 255);
-        & input {
-          font-weight: 100;
-          width: 100%;
-          width: 100%;
-          padding-left: 10px;
-          color: white;
-          border: none;
-          background-color: transparent;
-
-          &::placeholder {
+      backdrop-filter: blur(30px);
+      border-radius: 1rem;
+      border: 2px solid white;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      margin-bottom: 100px;
+      &_Form {
+        width: 450px;
+        &_Header {
+          margin-bottom: 3rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          & div {
+            position: relative;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.5rem;
+            padding: 0 1rem;
+            height: 65px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 0px 0px 20px 20px;
             color: rgb(255, 255, 255);
+            box-shadow: 0px 0px 16px white;
+            // &:after{
+            //   content: "";
+            //   position: absolute;
+            //   right: -5px;
+            //   top: 0;
+            //   border-left: 15px solid transparent;
+            //   border-right: 10px solid transparent;
+            //   border-top: 10px solid rgb(0, 0, 0, 0.4);
+
+            // }
+            // &:before{
+            //   content: "";
+            //   position: absolute;
+            //   left: -8px;
+            //   top: 0;
+            //   border-left: 15px solid transparent;
+            //   border-right: 10px solid transparent;
+            //   border-top: 10px solid rgb(0, 0, 0, 0.4);
+            // }
           }
-          &:focus {
-            &::placeholder {
-              color: transparent; /* Xóa placeholder khi input được focus */
+        }
+
+        &_Body {
+          padding: 0 2rem;
+          &_Item {
+            margin-bottom: 1rem;
+            width: 100%;
+            &_Content {
+              display: flex;
+              align-items: center;
+              padding: 0.75rem 1.5rem;
+              border-radius: 2rem;
+              border: 2px solid white;
+              &.Error {
+                border: 2px solid red;
+              }
+              &_Icon {
+                margin-left: 0.5rem;
+                color: white;
+              }
+              &_IconEye {
+                padding: 0 0.5rem;
+                cursor: pointer;
+                color: white;
+              }
+
+              &_Input {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                & input {
+                  color: white;
+                  width: 100%;
+                  background-color: transparent;
+                  border: none;
+                  font-size: 1rem;
+                  &:focus {
+                    outline: none;
+                  }
+                  &::placeholder {
+                    color: white;
+                    text-transform: capitalize;
+                  }
+                  &:-webkit-autofill,
+                  &:-webkit-autofill:hover,
+                  &:-webkit-autofill:focus,
+                  &:-webkit-autofill:active {
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: white !important;
+                    background-color: transparent !important;
+                    caret-color: white; /* Đặt màu con trỏ nháy thành trắng */
+                  }
+                }
+              }
             }
-            outline: none;
+            &_Choice {
+              display: flex;
+              align-items: center;
+              color: black;
+              justify-content: space-between;
+              & div {
+                display: flex;
+                color: white;
+                align-items: center;
+                &:first-child {
+                  & input {
+                    margin-right: 0.5rem;
+                    &[type="checkbox"] {
+                      cursor: pointer;
+                      width: 1rem;
+                      height: 1rem;
+                    }
+                  }
+                }
+                &:last-child {
+                  cursor: pointer;
+                  &:hover {
+                    text-decoration: underline;
+                  }
+                }
+              }
+            }
+            &_OTP {
+              width: 100px;
+              color: #ffffff;
+              font-weight: 500;
+              font-size: 1rem;
+              align-items: center;
+              cursor: pointer;
+              margin-left: 10px;
+              &:hover {
+                text-decoration: underline;
+              }
+            }
+            &_Validate {
+              width: 100%;
+              font-size: 14px;
+              color: red;
+              padding: 2px;
+            }
           }
         }
-      }
 
-      &_Save {
-        width: 100%;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        padding-left: 6px;
-        & input {
-          margin-top: 5px;
-          width: 18px;
-          height: 18px;
-          margin-right: 5px;
-          color: aqua;
-          border: none;
-          cursor: pointer;
-        }
-
-        & div:last-child {
-          color: white;
-          font-size: small;
-        }
-      }
-      &_Button {
-        width: 80%;
-        height: 35px;
-        backdrop-filter: blur(5px);
-        border-radius: 30px;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: auto;
-        & button {
-          border: none;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.3);
-          color: white;
-        }
-        :hover {
-          cursor: pointer;
-        }
-        :focus {
-          background-color: rgba(0, 0, 0, 0.6);
-        }
-      }
-      &_Stuff {
-        width: 80%;
-        height: 40px;
-        margin: auto;
-        display: flex;
-        justify-content: space-between;
-        font-size: small;
-        cursor: pointer;
-        color: white;
-      }
-    }
-    &_Region-Signup {
-      background-color: rgba(105, 109, 104, 0.4);
-      width: 430px;
-      height: 290px;
-      margin-bottom: 200px;
-      backdrop-filter: blur($blur-amount);
-      border: $border-amount;
-      @include auth-shadow;
-      border-radius: 10px;
-      overflow: hidden;
-      box-sizing: border-box;
-      padding: 20px 60px;
-
-      &_Input {
-        padding: 10px 10px 0px 10px;
-        display: flex;
-        justify-content: flex-start;
-        border-bottom: 1px solid rgb(255, 255, 255);
-        & input {
-          font-size: smaller;
-          font-weight: 100;
-          width: 100%;
-          padding-left: 10px;
-          color: white;
-          border: none;
-          background-color: transparent;
-
-          &::placeholder {
+        &_Footer {
+          padding: 0 2rem 3rem 2rem;
+          & button {
+            width: 100%;
+            border: none;
+            background-color: rgba(0, 0, 0, 0.4);
             color: rgb(255, 255, 255);
-          }
-          &:focus {
-            &::placeholder {
-              color: transparent; /* Xóa placeholder khi input được focus */
+            border-radius: 2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s linear;
+            &:hover {
+              background-color: black;
+              color: white;
             }
-            outline: none;
           }
-        }
-      }
-
-      &_Save {
-        width: 100%;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        padding-left: 6px;
-        & input {
-          margin-top: 5px;
-          width: 18px;
-          height: 18px;
-          margin-right: 5px;
-          color: aqua;
-          border: none;
-          cursor: pointer;
-        }
-
-        & div:last-child {
-          color: white;
-          font-size: small;
-        }
-      }
-      &_Button {
-        width: 80%;
-        height: 35px;
-        backdrop-filter: blur(5px);
-        border-radius: 30px;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: auto;
-        & button {
-          border: none;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.3);
-          color: white;
-        }
-        :hover {
-          cursor: pointer;
-        }
-        :focus {
-          background-color: rgba(0, 0, 0, 0.6);
-        }
-      }
-      &_Stuff {
-        width: 80%;
-        height: 40px;
-        margin: auto;
-        display: flex;
-        justify-content: space-between;
-        font-size: small;
-        cursor: pointer;
-        color: white;
-      }
-    }
-    &_Region-Forgot {
-      background-color: rgba(105, 109, 104, 0.4);
-      width: 430px;
-      height: 130px;
-      margin-bottom: 200px;
-      backdrop-filter: blur($blur-amount);
-      border: $border-amount;
-      @include auth-shadow;
-      border-radius: 10px;
-      overflow: hidden;
-      box-sizing: border-box;
-      padding: 20px 60px;
-
-      &_Input {
-        margin-bottom: 20px;
-        padding: 10px 10px 0px 10px;
-        display: flex;
-        justify-content: flex-start;
-        border-bottom: 1px solid rgb(255, 255, 255);
-        & input {
-          font-size: smaller;
-          font-weight: 100;
-          width: 100%;
-          padding-left: 10px;
-          color: white;
-          border: none;
-          background-color: transparent;
-
-          &::placeholder {
-            color: rgb(255, 255, 255);
-          }
-          &:focus {
-            &::placeholder {
-              color: transparent; /* Xóa placeholder khi input được focus */
+          &_Choice {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            color: white;
+            & div {
+              font-weight: normal;
+              &:first-child {
+                font-size: 1rem;
+                cursor: pointer;
+              }
+              &:last-child {
+                margin-left: 0.5rem;
+                font-weight: bold;
+                cursor: pointer;
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
             }
-            outline: none;
           }
         }
       }
-
-      &_Button {
-        pad-top: 100px;
-        width: 80%;
-        height: 35px;
-        backdrop-filter: blur(5px);
-        border-radius: 30px;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: auto;
-        & button {
-          border: none;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.3);
-          color: white;
-        }
-        :hover {
-          cursor: pointer;
-        }
-        :focus {
-          background-color: rgba(0, 0, 0, 0.6);
-        }
-      }
-      &_Stuff {
-        width: 80%;
-        height: 40px;
-        margin: auto;
-        display: flex;
-        justify-content: space-between;
-        font-size: small;
-        cursor: pointer;
-        color: white;
-      }
-    }
-    &_Region-NewPass {
-      background-color: rgba(105, 109, 104, 0.4);
-      width: 430px;
-      height: 230px;
-      margin-bottom: 200px;
-      backdrop-filter: blur($blur-amount);
-      border: $border-amount;
-      @include auth-shadow;
-      border-radius: 10px;
-      overflow: hidden;
-      box-sizing: border-box;
-      padding: 20px 60px;
-
-      &_Input {
-        padding: 10px 10px 0px 10px;
-        display: flex;
-        justify-content: flex-start;
-        border-bottom: 1px solid rgb(255, 255, 255);
-        & input {
-          font-weight: 100;
-          width: 100%;
-          width: 100%;
-          padding-left: 10px;
-          color: white;
-          border: none;
-          background-color: transparent;
-
-          &::placeholder {
-            color: rgb(255, 255, 255);
-          }
-          &:focus {
-            &::placeholder {
-              color: transparent; /* Xóa placeholder khi input được focus */
-            }
-            outline: none;
-          }
-        }
-      }
-
-      &_Save {
-        width: 100%;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        padding-left: 6px;
-        & input {
-          margin-top: 5px;
-          width: 18px;
-          height: 18px;
-          margin-right: 5px;
-          color: aqua;
-          border: none;
-          cursor: pointer;
-        }
-
-        & div:last-child {
-          color: white;
-          font-size: small;
-        }
-      }
-      &_Button {
-        width: 80%;
-        height: 35px;
-        backdrop-filter: blur(5px);
-        border-radius: 30px;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: auto;
-        & button {
-          border: none;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.3);
-          color: white;
-        }
-        :hover {
-          cursor: pointer;
-        }
-        :focus {
-          background-color: rgba(0, 0, 0, 0.6);
-        }
-      }
-      &_Stuff {
-        width: 80%;
-        height: 40px;
-        margin: auto;
-        display: flex;
-        justify-content: space-between;
-        font-size: small;
-        cursor: pointer;
-        color: white;
-      }
-    }
-
-    &_Footer {
     }
   }
 
@@ -554,7 +399,7 @@ $font-size-small: 18px;
           justify-content: center;
           align-items: center;
           gap: 5px;
-          
+
           &_Text {
             font-size: 14px;
             font-weight: 500;
@@ -566,7 +411,6 @@ $font-size-small: 18px;
             cursor: pointer;
             color: #2d642c;
           }
-          
         }
       }
     }

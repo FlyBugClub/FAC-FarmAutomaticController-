@@ -7,7 +7,7 @@ import "./Auth.scss";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 //
-import { callAPi} from "../../services/UserService";
+import { callAPi } from "../../services/UserService";
 import { AuthContext } from "../Context/AuthContext";
 const Login = () => {
   const [open, setOpen] = useState(false);
@@ -18,20 +18,9 @@ const Login = () => {
   };
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const validateUsername = (username) => {
-    if (username.trim() === "") {
-      toast.error("Tên đăng nhập không được để trống");
-      return false;
-    }
-    return true;
-  };
-  const validatePassword = (password) => {
-    if (password.trim() === "") {
-      toast.error("Mật khẩu không được để trống");
-      return false;
-    }
-    return true;
-  };
+  const [usernameErr, setUsernameErr] = useState("");
+  const [passwordErr, setPasswordErr] = useState("");
+
   const handleChangeUsername = (e) => {
     const newUsername = e.target.value;
     setUsername(newUsername);
@@ -43,6 +32,8 @@ const Login = () => {
   const [checkSavePassword, setCheckSavePassword] = useState(false);
   const handleCheckboxClick = (e) => {
     const checkBox = e.target.checked;
+    console.log(checkBox);
+    console.log("haha");
     setCheckSavePassword(checkBox);
   };
   // const handleEditUser = async () => {
@@ -78,11 +69,31 @@ const Login = () => {
       sessionStorage.setItem("token", JSON.stringify(token));
     }
   };
+  const validateUsername = (username) => {
+    if (username.trim() === "") {
+      setUsernameErr("Tên đăng nhập không được để trống");
+      return false;
+    } else {
+      setUsernameErr("");
+      return true;
+    }
+  };
+  const validatePassword = (password) => {
+    if (password.trim() === "") {
+      setPasswordErr("Mật khẩu không được để trống");
+      return false;
+    } else {
+      setPasswordErr("");
+      return true;
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
     if (isUsernameValid && isPasswordValid) {
+      setUsernameErr("");
+      setPasswordErr("");
       const checkApi = async () => {
         let body = {
           username: username,
@@ -93,13 +104,13 @@ const Login = () => {
         console.log(res.data[0]);
         // console.log(res);
         // console.log(res.asscessToken)
-        let token = res.asscessToken
+        let token = res.asscessToken;
         if (res.data[0].status_ === 200) {
           console.log("dang nhap thanh cong");
           sendToken(checkSavePassword, token);
           authDispatch({
             type: "SET_LOGIN",
-            payload: { status: true},
+            payload: { status: true },
           });
           authDispatch({
             type: "SET_USER",
@@ -120,62 +131,100 @@ const Login = () => {
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
         <div>
-          <div className="Auth_BrowserView_Logo">
-            <div className="Auth_BrowserView_Logo_Image">
-              <img src="/icons/Bug(Trắng).png" alt="" />
-            </div>
-            <div>
-              <div className="div1">Tưới tiêu tự động</div>
-              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+          <div>
+            <div className="Auth_BrowserView_Logo">
+              <div className="Auth_BrowserView_Logo_Image">
+                <img src="/icons/Bug(Trắng).png" alt="" />
+              </div>
+              <div>
+                <div className="div1">Tưới tiêu tự động</div>
+                <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+              </div>
             </div>
           </div>
 
-          <form
-            className="Auth_BrowserView_Region-Login"
-            onSubmit={handleSubmit}
-          >
-            <div className="Auth_BrowserView_Region-Login_Input">
-              <div>
-                <FiUser color="white" size={24} />
+          <form onSubmit={handleSubmit} className="Auth_BrowserView_Container">
+            <div className="Auth_BrowserView_Container_Form">
+              <div className="Auth_BrowserView_Container_Form_Header">
+                <div>Đăng nhập</div>
               </div>
-              <input
-                id="username"
-                type="text"
-                placeholder="Tên tài khoản"
-                value={username}
-                onChange={handleChangeUsername}
-              />
-            </div>
-            <div className="Auth_BrowserView_Region-Login_Input">
-              <div>
-                <FiLock color="white" size={24} />
+              <div className="Auth_BrowserView_Container_Form_Body">
+                <div className="Auth_BrowserView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                      usernameErr ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
+                      <input
+                        id="username"
+                        type="text"
+                        placeholder="Tên tài khoản"
+                        value={username}
+                        onChange={handleChangeUsername}
+                      />
+                    </div>
+                    <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
+                      <FiUser color={usernameErr ? "red" : "white"} size={24} />
+                    </div>
+                  </div>
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
+                    {usernameErr}
+                  </div>
+                </div>
+                <div className="Auth_BrowserView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_BrowserView_Container_Form_Body_Item_Content ${
+                      passwordErr ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Input">
+                      <input
+                        id="password"
+                        type={open ? "text" : "password"}
+                        placeholder="Mật khẩu"
+                        value={password}
+                        onChange={handleChangePassword}
+                      />
+                    </div>
+                    <div
+                      onClick={() => setOpen(!open)}
+                      className="Auth_BrowserView_Container_Form_Body_Item_Content_IconEye"
+                    >
+                      {open ? <FiEye size={18} /> : <FiEyeOff size={18} />}
+                    </div>
+                    <div className="Auth_BrowserView_Container_Form_Body_Item_Content_Icon">
+                      <FiLock color={usernameErr ? "red" : "white"} size={24} />
+                    </div>
+                  </div>
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Validate">
+                    {passwordErr}
+                  </div>
+                </div>
+                <div className="Auth_BrowserView_Container_Form_Body_Item">
+                  <div className="Auth_BrowserView_Container_Form_Body_Item_Choice">
+                    <div>
+                      <input onClick={(e) => handleCheckboxClick(e)} type="checkbox" />
+                      <div>Nhớ mật khẩu</div>
+                    </div>
+                    <div onClick={() => navigate("/forgotpassword")}>
+                      Quên mật khẩu?
+                    </div>
+                  </div>
+                </div>
               </div>
-              <input
-                id="password"
-                type={open ? "text" : "password"}
-                placeholder="Mật khẩu"
-                value={password}
-                onChange={handleChangePassword}
-              />
-              <div onClick={handleOpenEye}>
-                {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
+              <div className="Auth_BrowserView_Container_Form_Footer">
+                <button type="submit">Đăng nhập</button>
+                <div className="Auth_BrowserView_Container_Form_Footer_Choice">
+                  <div onClick={() => navigate("/signup")}>
+                    Bạn chưa có tài khoản?
+                  </div>
+                  <div onClick={() => navigate("/signup")}>Đăng ký</div>
+                </div>
               </div>
-            </div>
-            <div className="Auth_BrowserView_Region-Login_Save">
-              <input type="checkbox" onClick={handleCheckboxClick} />
-              <div>Lưu đăng nhập</div>
-            </div>
-            <div className="Auth_BrowserView_Region-Login_Button">
-              <button type="submit">Đăng nhập</button>
-            </div>
-            <div className="Auth_BrowserView_Region-Login_Stuff">
-              <div onClick={() => navigate("/signup")}>Đăng ký tài khoản</div>
-              <div onClick={() => navigate("/forgotpassword")}>
-                Quên mật khẩu
-              </div>
-              {/* <div onClick={handleEditUser}>edit</div> */}
             </div>
           </form>
+
         </div>
       </BrowserView>
 
@@ -239,7 +288,7 @@ const Login = () => {
               </div>
               <div className="Auth_MobileView_Region_LoginArea_FeatureArea">
                 <div className="Auth_MobileView_Region_LoginArea_FeatureArea_Save">
-                  <input type="checkbox" onClick={handleCheckboxClick} />
+                  <input type="checkbox" onClick={(e) => handleCheckboxClick(e)} />
                   <div>Lưu đăng nhập</div>
                 </div>
                 <div
