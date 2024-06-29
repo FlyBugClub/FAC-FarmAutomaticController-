@@ -6,7 +6,6 @@ const auth = require('./routes/auth/auth');
 const data = require('./routes/data/data');
 const db = require('./models/mysql');
 const mqtt = require('mqtt');
-const db = require("./models/mysql");
 // Connect to MySQL database
 db.connection();
 // Allowed CORS origins
@@ -64,25 +63,17 @@ mqttClient.on('connect', () => {
 });
 
 mqttClient.on('message', async (topic, message) => {
-  console.log(`Received message from topic '${topic}': ${message}`);
-  try {
-    let parsedMessage = JSON.parse(message);
-    console.log(parsedMessage.id_esp);
-
-    // Lưu dữ liệu vào cơ sở dữ liệu
-    const query = 'INSERT INTO sensor_data (id_esp, value) VALUES (?, ?)';
-    const values = [parsedMessage.id_esp, parsedMessage.value];
-
-    db.query(query, values, (err, results) => {
-      if (err) {
-        console.error('Error inserting data into database:', err);
-      } else {
-        console.log('Data inserted successfully:', results);
-      }
-    });
-  } catch (error) {
-    console.error('Error parsing MQTT message:', error);
-  }
+  console.log(`Received message from topic '${topic}': ${message}`); 
+  let parsedMessage = JSON.parse(message);
+  console.log(parsedMessage.id_esp);// TODO xử lý message và đưa vào body rồi add dữ liệu cảm biến vào 
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await db.executeProcedure("dbo.add_farm_pro", body);
+      resolve({ status: true});
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  });
 });
 
 mqttClient.on('error', (err) => {
