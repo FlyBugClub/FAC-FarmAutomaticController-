@@ -83,6 +83,62 @@ function App() {
   }, []);
 
 
+  useEffect(() => {
+      //array index obj.key
+
+      // key and value
+      // let obj = {
+      //   data:{name:'loc', age:'29'},
+      //   2:{name:'duc', age:'49'},
+      //   info:{name:'cuong', age:'19'},
+      //   4:{name:'trieu', age:'18'},
+      // }
+
+      // Object.entries(obj).map((item) => {
+      //   // console.log(obj[key])
+      //   console.log(item[0], item[1])
+      // })
+
+      //read obj
+      // Object.entries(obj).map(([key, value]) => {
+      //   // console.log(obj[key])
+      //   console.log(value)
+      // })
+
+      // Object.keys(obj).map((key) => {
+      //   console.log(key, obj[key])
+      // })
+
+    //  // add
+    //   obj['5']={name:'tung', age:'19'}
+
+    //   console.log('add',obj)
+
+    //   //delete
+    //   delete obj['data']
+    //   console.log('delete',obj) 
+
+      //update
+      // obj['4']={
+      //   ...obj['4'],
+      //   name:'loc',
+      // }
+      // console.log('update',obj)
+
+
+      // for (const key in obj) {
+      //   console.log(key, obj[key])
+      // }
+
+      // console.log(obj['1'].name)
+
+      // obj.map((item) => {
+      //   console.log(item)
+      // })
+
+  },[])
+
+
   return (
     <div className="App">
       <header className="App-header">
