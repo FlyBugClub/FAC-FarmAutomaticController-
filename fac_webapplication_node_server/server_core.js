@@ -5,12 +5,11 @@ const bodyParser = require("body-parser");
 const auth = require('./routes/auth/auth');
 const data = require('./routes/data/data');
 const db = require('./models/mysql');
-
-
+const mqtt = require('mqtt');
+const db = require("./models/mysql");
+// Connect to MySQL database
 db.connection();
-
-// connectToDatabase();
-
+// Allowed CORS origins
 const host = [
   'http://172.31.8.230:3000',
   'http://10.101.172.53:3000',
@@ -20,22 +19,72 @@ const host = [
   "http://172.31.8.227:3000",
   'http://172.16.17.47:3000',
   "http://192.168.1.194:3000",
-  "http://192.168.1.9:3000" 
+  "http://192.168.1.9:3000"
+];
 
-]
-
-
+// Middleware Configuration
 app.use(cors({
   origin: host,
   credentials: true,
   optionsSuccessStatus: 200,
-
 }));
 app.use(bodyParser.json());
 
+// Routes
 app.use('/auth', auth);
 app.use('/data', data);
 
-app.listen((process.env.PORT || 3001), () => {
-  console.log(`Example app listening at http://localhost:${process.env.PORT || 3001}`);
+// Start the server
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
+});
+
+// MQTT Client Configuration
+// MQTT Broker Configuration
+const brokerUrl = 'mqtt://broker.emqx.io';
+const brokerPort = 1883;
+
+// Create a client instance
+const mqttClient = mqtt.connect(`${brokerUrl}:${brokerPort}`);
+module.exports.mqttClient = mqttClient; // Export MQTT client để sử dụng trong các file khác
+
+
+
+mqttClient.on('connect', () => {
+  console.log('Connected to MQTT broker');
+  const topic = 'sensorData';
+  mqttClient.subscribe(topic, (err) => {
+    if (!err) {
+      console.log(`Subscribed to topic '${topic}'`);
+    } else {
+      console.error('Failed to subscribe:', err);
+    }
+  });
+});
+
+mqttClient.on('message', async (topic, message) => {
+  console.log(`Received message from topic '${topic}': ${message}`);
+  try {
+    let parsedMessage = JSON.parse(message);
+    console.log(parsedMessage.id_esp);
+
+    // Lưu dữ liệu vào cơ sở dữ liệu
+    const query = 'INSERT INTO sensor_data (id_esp, value) VALUES (?, ?)';
+    const values = [parsedMessage.id_esp, parsedMessage.value];
+
+    db.query(query, values, (err, results) => {
+      if (err) {
+        console.error('Error inserting data into database:', err);
+      } else {
+        console.log('Data inserted successfully:', results);
+      }
+    });
+  } catch (error) {
+    console.error('Error parsing MQTT message:', error);
+  }
+});
+
+mqttClient.on('error', (err) => {
+  console.error('MQTT client error:', err);
 });

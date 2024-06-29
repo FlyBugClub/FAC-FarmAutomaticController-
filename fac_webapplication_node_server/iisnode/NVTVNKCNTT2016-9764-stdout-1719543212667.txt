@@ -1,2 +1,0 @@
-Example app listening at http://localhost:\\.\pipe\02a3ef7d-69fb-4a97-b708-774712a3fae9
-connected
