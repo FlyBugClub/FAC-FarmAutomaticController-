@@ -127,6 +127,9 @@ const Login = () => {
     }
   };
 
+  // Change color textbox checked
+
+
   return (
     <div className="Auth">
       <BrowserView className="Auth_BrowserView">
@@ -252,6 +255,10 @@ const Login = () => {
           </div>
           <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
             <div className="Auth_MobileView_Region_LoginArea">
+              <div className="Auth_MobileView_Region_LoginArea_Leafe">
+                  <img src="/images/leafe.png"/>
+                  <img src="/images/leafe.png"/>
+              </div>
               <div className="Auth_MobileView_Region_LoginArea_Input">
                 <div>
                   <FiUser color="#2D642C" size={24} />
