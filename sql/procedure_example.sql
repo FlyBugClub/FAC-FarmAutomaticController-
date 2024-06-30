@@ -22,7 +22,7 @@ EXEC dbo.insert_device_pro N'
 --EXPECT RESULT state	status
 --				203		id sensor and id equipment has been exists
 
-EXEC dbo.edit_device_pro 'BC0001' , 'ESP0004', 'dongnho'
+EXEC dbo.edit_device_pro 'BC0001' , 'ESP0004', 'dongnho',4
 --EXPECT RESULT state	status
 --				200		success
 
