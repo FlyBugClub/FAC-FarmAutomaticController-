@@ -19,3 +19,13 @@ time_offset		times				_state	_status
 20				00:10:00.0000000	200		success
 20				18:08:00.0000000	200		success
 */
+
+select * from dbo.get_farm_info('CT0001')
+/*  RESULT WILL HAVE THIS FORMAT
+farm_id_	farm_name_			farm_decription_	farm_state_		equipment_id_	equipment_name_		_index	sensor_id_	sensor_name_	func_state
+ESP0004		Farm tr6r 2			hello				0				BC0001			dongnho				4		DHT0001		ShtB			200
+ESP0001		farm cua cuong		Tr?ng rau c?i		0				BC0002			Cà rot				NULL	DHT0002		ShtB			200
+ESP0001		farm cua cuong		Tr?ng rau c?i		0				BC0104			Pumpr				NULL	DHT0002		ShtB			200
+ESP0001		farm cua cuong		Tr?ng rau c?i		0				BC0404			def					4		DHT0002		ShtB			200
+
+*/
