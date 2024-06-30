@@ -4,7 +4,7 @@ EXEC dbo.insert_device_pro N'
 		"device":
 			 [
 				{
-					"id":"DHT0505",
+					"id":"PH0004",
 					"name":"abc",
 					"id_equipment":"BC0404",
 					"type":"Sensor"
@@ -12,6 +12,7 @@ EXEC dbo.insert_device_pro N'
 				{	
 				    "id":"BC0404",
 				    "name":"def",
+					"_index": 4,
 				    "type":"Equipment"
 				}
 			]
