@@ -16,8 +16,8 @@ import Loading from "./loading";
 import { TbDatabaseSearch } from "react-icons/tb";
 import HourMinutePicker from "../Time/timepicker";
 
-const initialTimeList = ["12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Farm = ({ weatherState, handleAddDevice }) => {
     const { URL, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -30,8 +30,11 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [listModeState, setListModeState] = useState(false);
     const [mode, setMode] = useState("Manual");
     const [timeTableState, setTimeTableState] = useState(false);
-    const [timeState, setTimeState] = useState(false);
+    const [timeState, setTimeState] = useState(true);
     const [timeList, setTimeList] = useState([]);
+    const [offset, setOffset] = useState(5);
+    const [offsetState, setOffsetState] = useState(false);
+    const seconds = [...Array(59).keys()];
 
     const [modeState, setModeState] = useState(false);// state cho to   ogle
     const [bumperState, setBumperState] = useState(false);
@@ -44,16 +47,19 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [client, setClient] = useState(null);
     const [connectStatus, setConnectStatus] = useState("Disconnected");
 
-
     const [time, setTime] = useState('');
-
-
-
     const handleTimeChange = (newTime) => {
         setTime(newTime);
-        console.log(newTime)
     };
 
+
+    const hourMinutePickerRef = useRef(null);
+
+    const handleClearClickFromParent = () => {
+        if (hourMinutePickerRef.current) {
+            hourMinutePickerRef.current.handleClearClick();
+        }
+    };
     useEffect(() => {
         const options = {
             clientId: "id_" + parseInt(Math.random() * 100000), // Tạo clientId ngẫu nhiên
@@ -113,7 +119,6 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                 setData([])
             }
             setLoadingState(false)
-            setTimeList(initialTimeList)
         }
     }, [farm])
 
@@ -131,7 +136,6 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     }
 
-
     const sendMessage = () => {
         try {
             // var message = new Message("{'vake':'cuong'}");
@@ -144,10 +148,62 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         catch (e) {
             alert(e);
         }
-
-
-
     };
+
+    const handleAddTime = async () => {
+        if (time != "") {
+            let flag = false;
+            timeList.forEach(element => {
+                if (element == time) {
+                    toast.error("time exist")
+                    flag = true;
+                    return
+                }
+            });
+            if (flag) return
+            let body = [
+                `${farm[0]["id"]}`, // id equipment
+                `${offset}`,
+                `${time}:00`, // mode state
+            ];
+            let res = await callAPi("post", `${URL}/data/insertschedule`, body)
+            if (!res.status) {
+                toast.error("add equipment fail");
+            }
+            else {
+                setTime("")
+                handleClearClickFromParent()
+                let timearray = timeList;
+                timearray.push(time)
+                timearray.sort((a, b) => {
+                    const [hoursA, minutesA] = a.split(':').map(Number);
+                    const [hoursB, minutesB] = b.split(':').map(Number);
+                    
+                    return hoursA - hoursB || minutesA - minutesB;
+                  });
+                setTimeList(timearray)
+                toast.info("add time success");
+            }
+        }
+    }
+
+    const handlEditOffset = async (offset) => {
+        console.log(offset)
+        let body = [
+            `${farm[0]["id"]}`, // id equipment
+            `${offset}` // mode state
+        ];
+        let res = await callAPi("post", `${URL}/data/editchedule`, body)
+        if (!res.status) {
+            toast.error("update offset fail");
+        }
+        else 
+        {
+            setOffset(offset)
+            toast.info("update offset success");
+        }
+
+    }
 
     const getFarm = async (id_esp, id_equipment) => {
         setLoadingState(true)
@@ -160,7 +216,6 @@ const Farm = ({ weatherState, handleAddDevice }) => {
             setFarm(res.data)
         }
         else setLoadingState(false)
-
     }
 
     const currentDateFunc = () => {
@@ -175,6 +230,49 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
 
 
+    }
+    function timeToMinutes(timeString) {
+        const [hours, minutes] = timeString.split(":").map(Number);
+        return hours * 60 + minutes;
+    }
+    const getSchedule = async () => {
+        let res = await callAPi(
+            "get",
+            `${URL}/data/getschedule/${farm[0]["id"]}`,
+        );
+
+        if (res.status && res["data"].length > 0) {
+            setOffset(res["data"][0]["times_offset"])
+            const sortedArray = [...res.data]
+                .sort((a, b) => {
+                    const timeA = timeToMinutes(a.time_string);
+                    const timeB = timeToMinutes(b.time_string);
+                    return timeA - timeB;
+                })
+                .map(item => item.time_string);
+            setTimeList(sortedArray)
+        }
+    }
+
+    const handleDeleteTime = async (time,index) => {
+        let body = [
+            `${farm[0]["id"]}`, // id equipment
+            `${time}:00` // mode state
+        ];
+        let res = await callAPi("post", `${URL}/data/deleteschedule`, body)
+        if (!res.status) {
+            toast.error("delete time fail");
+        }
+        else 
+        {
+
+            setTimeList(prevTimeList => {
+                const newTimeList = [...prevTimeList]; // Tạo bản sao của mảng
+                newTimeList.splice(index, 1); // Xóa phần tử
+                return newTimeList; // Trả về mảng mới
+              });
+            toast.info("delete time success");
+        }
     }
 
     const setFarmData = async () => {
@@ -242,7 +340,9 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                 setMode("Automatic")
             }
             else if (laststatus["mode"] == 2) {
+
                 setMode("Timer")
+                getSchedule()
             }
             setValue(laststatus["expect_sensor_value"])
 
@@ -424,12 +524,8 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                             : <></>
                                     }
 
-
-
                                 </div>
                                 <div className="Fac_Home_Web_Farmcontainer_Chart_Right">
-
-
 
                                     <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Header" onClick={() => handleEquipmentButton()}>
                                         {equipment}
@@ -476,13 +572,6 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
                                             )
                                             ) : <></>}
-                                        {/* <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
-                                        <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
-                                        Humidity
-                                    </div>
-                                    
-                                    */}
-
                                     </div>
 
 
@@ -599,35 +688,21 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                                 ON
                                                                 <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
-
                                                             </div>
                                                             :
                                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                                 OFF
                                                                 <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
-
                                                             </div>
                                                         }
                                                     </div>
                                                 </div>
                                                 <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer" onClick={() => { setTimeTableState(!timeTableState) }}>
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                        12:08
-                                                    </div>
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                        12:08
-                                                    </div>
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                        12:08
-                                                    </div>
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                        12:08
-                                                    </div>
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                        12:08
-                                                    </div>
-
-
+                                                    {timeList.map((time, index) => (
+                                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
+                                                            {time}
+                                                        </div>
+                                                    ))}
                                                 </div>
 
                                             </div>
@@ -638,11 +713,25 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                 <div className="Fac_Home_Web_Farmcontainer_Settime" style={timeState ? { width: "220px" } : { width: "350px" }}>
                                     <div className="Fac_Home_Web_Farmcontainer_Settime_Title">
                                         <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset">
-                                            Offset:
-                                            <input className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Input" maxLength="2" type="text" />
+                                            Offset:                                            
+                                            <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Input" onClick={() => { setOffsetState(!offsetState) }}>
+                                                {offset}
+                                            </div>
+                                            {
+                                                offsetState && 
+                                                <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Dropbox">
+                                                    {seconds.map((item) => (
+                                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Dropbox_Item" key={item}  onClick={() => { handlEditOffset(item+1) ; setOffsetState(false)}}>
+                                                            {item +1}
+                                                    </div>
+                                                    ))}
+                                                    
+                                                    
+                                                </div>
+                                            }
                                         </div>
 
-                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Icon">
+                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Icon" onClick={() => { setTimeTableState(!timeTableState) }}>
                                             <FiPlus size={30} />
                                         </div>
                                     </div>
@@ -653,22 +742,21 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                                 <FiPlus className="Icon" onClick={() => { setTimeState(!timeState) }} size={28} />
                                             </div>
                                             <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Left_Times">
-                                                {timeList.map((item,index) => (
-                                                    
+                                                {timeList.map((item, index) => (
+
                                                     <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Left_Times_Item" key={index}>
-                                                            {item}
+                                                        {item}
                                                         <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Left_Times_Item_Edit">
-                                                            <FiEdit3 className="Icon" />
-                                                            <FiXCircle className="Icon" />
+                                                            <FiXCircle className="Icon" onClick={() => { handleDeleteTime(item, index) }} size={28} />
                                                         </div>
                                                     </div>
                                                 ))}
-                                                 
+
                                             </div>
                                         </div>
                                         {!timeState ? <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Right">
-                                            <HourMinutePicker onTimeChange={handleTimeChange} />
-                                            <button className="Fac_Home_Web_Farmcontainer_Settime_Body_Right_Button">Add</button>
+                                            <HourMinutePicker onTimeChange={handleTimeChange} ref={hourMinutePickerRef} />
+                                            <button className="Fac_Home_Web_Farmcontainer_Settime_Body_Right_Button" onClick={() => { handleAddTime() }}>Add</button>
                                         </div> : <></>}
 
                                     </div>

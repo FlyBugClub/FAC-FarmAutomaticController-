@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import './timepicker.scss';
 
 const hours = [...Array(24).keys()].map(h => h.toString().padStart(2, '0'));
 const minutes = [...Array(60).keys()].map(m => m.toString().padStart(2, '0'));
 
-function HourMinutePicker({ onTimeChange }) {
+const HourMinutePicker = forwardRef(({ onTimeChange }, ref) => {
   const [selectedHour, setSelectedHour] = useState(null);
   const [selectedMinute, setSelectedMinute] = useState(null);
+
+  useImperativeHandle(ref, () => ({
+    handleClearClick
+  }));
 
   const handleHourClick = (hour) => {
     setSelectedHour(hour);
@@ -20,6 +24,11 @@ function HourMinutePicker({ onTimeChange }) {
     if (selectedHour !== null) {
       onTimeChange(`${selectedHour}:${minute}`);
     }
+  };
+
+  const handleClearClick = () => {
+    setSelectedHour(null);
+    setSelectedMinute(null);
   };
 
   return (
@@ -48,6 +57,6 @@ function HourMinutePicker({ onTimeChange }) {
       </div>
     </div>
   );
-}
+});
 
 export default HourMinutePicker;

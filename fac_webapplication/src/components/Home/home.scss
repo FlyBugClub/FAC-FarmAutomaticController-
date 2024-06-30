@@ -740,19 +740,67 @@
                         display: flex;
                         align-items: center;
                         font-size: 20px;
+                        position: relative;
                         &_Input
                         {
                             height: 25px;
-                            width: 80px;
+                            width: 50px;
+                            display: flex;
+                            align-items: center;
                             margin-left: 10px;
-                            border: none;
                             outline: 2px solid rgba(255, 255, 255, 0.9);
                             background: $background_element;
                             color: $color_text;
-                            padding: 0px 10px;
+                            padding: 0px 5px;
                             box-sizing: border-box;
-                            font-size: 15px;
+                            font-size: 17px;
                             border-radius: 8px;
+                            cursor: pointer;
+                            &:hover {
+                                background-color: #686666;
+
+                            }
+
+                        }
+                        &_Dropbox
+                        {
+                            position: absolute;
+                            top : 35px;
+                            right: 0;
+                            height: 150px;
+                            width: 50px;
+                            background-color: #000000;
+                            border-radius: 8px;
+                            outline: 2px solid $outline_color;
+                            padding: 1px 0px;
+                            box-sizing: border-box;
+                            display: grid;
+                            justify-content: center;
+                            align-items: center;
+                            grid-template-columns: repeat(1, 1fr);
+                            overflow-y: auto;
+                            gap: 10px;                         
+                            &_Item
+                            {
+                                width: 100%;
+                                display: flex;
+                                align-items: center;
+                                color: $color_text;
+                                padding: 0px 5px;
+                                box-sizing: border-box;
+                                font-size: 17px;
+                                border-radius: 1px;
+                                cursor: pointer;
+                                &:hover {
+                                    background-color: #686666;
+    
+                                }
+                            }
+                            &::-webkit-scrollbar {
+                                height: 1px;
+
+                                scrollbar-width: thin;
+                            }
                         }
                     }
                     &_Icon
@@ -793,8 +841,8 @@
                         {
                             width: 100%;
                             height: calc(100% - 45px);
-                            overflow-y: auto;
-                            padding-left: 10px;
+                            overflow-y: scroll;
+                            padding: 0px 2px 0px 10px;
                             box-sizing: border-box;
                             &_Item
                             {
