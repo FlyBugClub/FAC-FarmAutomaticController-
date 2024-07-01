@@ -41,7 +41,7 @@ WiFiConnection wifiConn;
 MQTTConnection mqttConn(mqtt_server, mqtt_client_id, char_x_send_to_client, char_x_client_to_server, char_x_last_will_message);
 PumpController pumpControllers;
 struct Pump {
-  int index;
+  int index; 
   String action;
   String message;
   bool isOn;
@@ -230,6 +230,7 @@ void setup() {
       pump["index"] = pumps[i].index;
       pump["payload"]["action"] = pumps[i].action;
       pump["payload"]["messages"] = pumps[i].message;
+      pump["payload"]["status"] = pumps[i].isOn;
     }
     serializeJson(doc, initialPayload);
     savePayloadSumToEEPROM(initialPayload);
@@ -255,7 +256,9 @@ if (mqttConn.isMessagesArrive) {
 
   String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
   payload_sum = updatedPayload;
-  savePayloadSumToEEPROM(payload_sum);
+  
+  pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
+  updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
   mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
   // Serial.print("char_x_send_to_client: ");
   // Serial.println(char_x_send_to_client);
@@ -263,6 +266,7 @@ if (mqttConn.isMessagesArrive) {
   // Serial.println(char_x_client_to_server);
   // Serial.print("char_x_last_will_message: ");
   // Serial.println(char_x_last_will_message);
+  savePayloadSumToEEPROM(payload_sum);
   mqttConn.isMessagesArrive = false;
 }
 pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);

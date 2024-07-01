@@ -43,6 +43,7 @@ char* PumpController::handleNewMessages(String currentAction, String currentMess
       // Cập nhật action
       pump["payload"]["action"] = currentAction;
       pump["payload"]["messages"] = currentMessage;
+      pump["payload"]["status"] = pumpState[index -1];
       Serial.println(currentMessage);
       updated = true;
       break;
@@ -72,7 +73,6 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
     return;
   }
 
-  // Lặp qua từng phần tử trong payload_sum
   for (JsonObject pump : doc.as<JsonArray>()) {
     int index = pump["index"];
     String action = pump["payload"]["action"].as<String>();
@@ -173,12 +173,12 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
     unsigned long endWateringTime = scheduleMillis + wateringTimeMillis;
     unsigned long endWateringTimeSeconds = endWateringTime / 1000;
 
-    Serial.print("currentMillis Time Seconds: ");
-    Serial.println(currentMillis);
-    Serial.print("scheduleMillis Seconds    : ");
-    Serial.println(scheduleMillis);
-    Serial.print("End Watering Time         : ");
-    Serial.println(endWateringTime);
+    // Serial.print("currentMillis Time Seconds: ");
+    // Serial.println(currentMillis);
+    // Serial.print("scheduleMillis Seconds    : ");
+    // Serial.println(scheduleMillis);
+    // Serial.print("End Watering Time         : ");
+    // Serial.println(endWateringTime);
 
     // Check if current time is within the watering window
     if (currentMillis == scheduleMillis) {
