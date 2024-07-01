@@ -41,7 +41,7 @@ WiFiConnection wifiConn;
 MQTTConnection mqttConn(mqtt_server, mqtt_client_id, char_x_send_to_client, char_x_client_to_server, char_x_last_will_message);
 PumpController pumpControllers;
 struct Pump {
-  int index; 
+  int index;
   String action;
   String message;
   bool isOn;
@@ -190,7 +190,7 @@ unsigned long getCurrentSecondsFromMidnight() {
   int hour = currentTimeStruct->tm_hour;
   int minute = currentTimeStruct->tm_min;
   int second = currentTimeStruct->tm_sec;
-  
+
   totalSeconds = hour * 3600 + minute * 60 + second;
 
   return totalSeconds;
@@ -249,38 +249,57 @@ void loop() {
   }
 
   String payload_sum = loadPayloadSumFromEEPROM();
- unsigned long currentSeconds = getCurrentSecondsFromMidnight();
+  unsigned long currentSeconds = getCurrentSecondsFromMidnight();
 
 
-if (mqttConn.isMessagesArrive ) {
+  if (mqttConn.isMessagesArrive) {
 
-  String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-  payload_sum = updatedPayload;
-  
+    String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
+
+
+    pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
+    updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
+    mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
+    // Serial.print("char_x_send_to_client: ");
+    // Serial.println(char_x_send_to_client);
+    // Serial.print("char_x_client_to_server: ");
+    // Serial.println(char_x_client_to_server);
+    // Serial.print("char_x_last_will_message: ");
+    // Serial.println(char_x_last_will_message);
+    payload_sum = updatedPayload;
+    savePayloadSumToEEPROM(payload_sum);
+    mqttConn.isMessagesArrive = false;
+  }
+
+  if (pumpControllers.isPumStateChange) {
+    String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
+
+
+    pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
+    updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
+    mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
+    // Serial.print("char_x_send_to_client: ");
+    // Serial.println(char_x_send_to_client);
+    // Serial.print("char_x_client_to_server: ");
+    // Serial.println(char_x_client_to_server);
+    // Serial.print("char_x_last_will_message: ");
+    // Serial.println(char_x_last_will_message);
+    payload_sum = updatedPayload;
+    savePayloadSumToEEPROM(payload_sum);
+    pumpControllers.isPumStateChange = false;
+  }
   pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
-  updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-  mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
-  // Serial.print("char_x_send_to_client: ");
-  // Serial.println(char_x_send_to_client);
-  // Serial.print("char_x_client_to_server: ");
-  // Serial.println(char_x_client_to_server);
-  // Serial.print("char_x_last_will_message: ");
-  // Serial.println(char_x_last_will_message);
-  savePayloadSumToEEPROM(payload_sum);
-  mqttConn.isMessagesArrive = false;
-}
-pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
-// checkAndSendPumpState();
-unsigned long currentMillis = millis();
+  // checkAndSendPumpState();
+  unsigned long currentMillis = millis();
 
 
-// if (currentMillis - lastSendTime >= sendInterval) {
-//   lastSendTime = currentMillis;
+  // if (currentMillis - lastSendTime >= sendInterval) {
+  //   lastSendTime = currentMillis;
 
 
-//   checkAndSendSensorState();
-// }
-// Cập nhật payload_sum từ handleNewMessages
+  //   checkAndSendSensorState();
+  // }
+  // Cập nhật payload_sum từ handleNewMessages
 
-mqttConn.loop();
+  mqttConn.loop();
 }
