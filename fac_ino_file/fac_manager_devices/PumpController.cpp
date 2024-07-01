@@ -203,7 +203,7 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
     if (currentMillis == scheduleMillis) {
       if (pumpState[index - 1] == false)
       {
-        isPumStateChange = true;
+        isPumStateChange[index - 1] = true;
       }
       digitalWrite(pumpPin, HIGH);
       lastWateringTime[index - 1] = currentMillis;
@@ -213,11 +213,11 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
       Serial.println("đèn tắt");
       if (pumpState[index - 1] == true)
       {
-        isPumStateChange = true;
+         isPumStateChange[index - 1] = true;
       }
       digitalWrite(pumpPin, LOW);
       
-      pumpState[index - 1] = false;
+      isPumStateChange[index - 1] = false;
     }
   }
 }

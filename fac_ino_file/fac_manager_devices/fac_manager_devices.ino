@@ -195,6 +195,37 @@ unsigned long getCurrentSecondsFromMidnight() {
 
   return totalSeconds;
 }
+
+void checkAndProcessPumpStateChanges(String payload_sum, unsigned long currentSeconds) {
+  bool anyPumpStateChanged = false;
+
+  // Kiểm tra nếu có bất kỳ trạng thái bơm nào thay đổi
+  for (int i = 0; i < 4; i++) {
+    if (pumpControllers.isPumStateChange[i]) {
+      anyPumpStateChanged = true;
+      break;
+    }
+  }
+
+  // Nếu có thay đổi trạng thái bơm
+  if (anyPumpStateChanged) {
+    String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
+
+    pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
+    updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
+
+    if (payload_sum != updatedPayload) {
+      mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
+      payload_sum = updatedPayload;
+      savePayloadSumToEEPROM(payload_sum);
+    }
+
+    // Đặt lại trạng thái thay đổi của các bơm
+    for (int i = 0; i < 4; i++) {
+      pumpControllers.isPumStateChange[i] = false;
+    }
+  }
+}
 void setup() {
   Serial.begin(9600);
   EEPROM.begin(512);
@@ -253,41 +284,21 @@ void loop() {
 
 
   if (mqttConn.isMessagesArrive) {
-
     String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-
 
     pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
     updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-    mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
-    // Serial.print("char_x_send_to_client: ");
-    // Serial.println(char_x_send_to_client);
-    // Serial.print("char_x_client_to_server: ");
-    // Serial.println(char_x_client_to_server);
-    // Serial.print("char_x_last_will_message: ");
-    // Serial.println(char_x_last_will_message);
-    payload_sum = updatedPayload;
-    savePayloadSumToEEPROM(payload_sum);
+
+    if (payload_sum != updatedPayload) {
+      mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
+      payload_sum = updatedPayload;
+      savePayloadSumToEEPROM(payload_sum);
+    }
+
     mqttConn.isMessagesArrive = false;
   }
 
-  if (pumpControllers.isPumStateChange) {
-    String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-
-
-    pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
-    updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-    mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
-    // Serial.print("char_x_send_to_client: ");
-    // Serial.println(char_x_send_to_client);
-    // Serial.print("char_x_client_to_server: ");
-    // Serial.println(char_x_client_to_server);
-    // Serial.print("char_x_last_will_message: ");
-    // Serial.println(char_x_last_will_message);
-    payload_sum = updatedPayload;
-    savePayloadSumToEEPROM(payload_sum);
-    pumpControllers.isPumStateChange = false;
-  }
+  checkAndProcessPumpStateChanges(payload_sum, currentSeconds);
   pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
   // checkAndSendPumpState();
   unsigned long currentMillis = millis();
