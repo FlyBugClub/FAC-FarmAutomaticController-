@@ -43,7 +43,7 @@ char* PumpController::handleNewMessages(String currentAction, String currentMess
       // Cập nhật action
       pump["payload"]["action"] = currentAction;
       pump["payload"]["messages"] = currentMessage;
-      pump["payload"]["status"] = pumpState[index -1];
+      pump["payload"]["status"] = pumpState[index - 1];
       Serial.println(currentMessage);
       updated = true;
       break;
@@ -98,23 +98,36 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
       else if (action == "auto") {
         // Chọn cảm biến SHT31 tương ứng với máy bơm index
         Adafruit_SHT31& sht31 = getSHT31Sensor(index);
+        char msg[message.length() + 1];
+        message.toCharArray(msg, sizeof(msg));
+        // Serial.println(msg);
 
-        int threshold = message.toInt();  // Chuyển đổi ngưỡng từ chuỗi sang số nguyên
-
-        float humidity = sht31.readHumidity();
+        char* token = strtok(msg, " ");
+        int threshold = atoi(token);
+        char* status = strtok(NULL, " ");
+        String statusStr = String(status);
+        // float humidity = sht31.readHumidity();
+        float humidity = 0;
         // float humidity = 30; // Giả lập độ ẩm, bạn cần thay thế bằng đọc từ cảm biến thực tế
-        if (humidity < threshold) {
-          digitalWrite(pumpPin, HIGH);
-          pumpState[index - 1] = true;
-          // Serial.print("Pump ");
-          // Serial.print(index);
-          // Serial.println(" turned on (auto)");
+        if (statusStr == "on") {
+          if (humidity < threshold) {
+            digitalWrite(pumpPin, HIGH);
+            pumpState[index - 1] = true;
+            Serial.print("Pump ");
+            Serial.print(index);
+            Serial.println(" turned on (auto)");
+          } else {
+            digitalWrite(pumpPin, LOW);
+            pumpState[index - 1] = false;
+            // Serial.print("Pump ");
+            // Serial.print(index);
+            // Serial.println(" turned off (auto)");
+          }
         } else {
           digitalWrite(pumpPin, LOW);
-          pumpState[index - 1] = false;
-          // Serial.print("Pump ");
-          // Serial.print(index);
-          // Serial.println(" turned off (auto)");
+          Serial.print("Pump ");
+          Serial.print(index);
+          Serial.println(" turned off (auto)");
         }
       }
 
@@ -123,22 +136,26 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
         // Tách message thành từng thời điểm riêng biệt
         char msg[message.length() + 1];
         message.toCharArray(msg, sizeof(msg));
-        // Serial.println(msg);
 
         char* token = strtok(msg, " ");
         int numTimes = atoi(token);
-        String times[numTimes];
-        int count = 0;
-        int wateringTimeSeconds = atoi(strtok(NULL, " "));
-        token = strtok(NULL, " ");
-        while (token != NULL && count < numTimes) {
-          times[count++] = String(token);
+
+        if (numTimes == 0) {
+          // Tắt bơm nếu không có thời gian nào được cung cấp
+          digitalWrite(pumpPin, LOW);  // Giả sử LOW là trạng thái tắt bơm
+          Serial.println("Pump turned off due to no schedule times.");
+        } else {
+          // Nếu có thời gian, tiếp tục xử lý như bình thường
+          String times[numTimes];
+          int count = 0;
+          int wateringTimeSeconds = atoi(strtok(NULL, " "));
           token = strtok(NULL, " ");
+          while (token != NULL && count < numTimes) {
+            times[count++] = String(token);
+            token = strtok(NULL, " ");
+          }
+          handleScheduleTimes(pumpPin, index, times, numTimes, currentSeconds, wateringTimeSeconds);
         }
-
-
-        // In các phần tử trong mảng `times`
-        handleScheduleTimes(pumpPin, index, times, numTimes, currentSeconds, wateringTimeSeconds);
       } else {
         Serial.print("Invalid action '");
         Serial.print(action);
@@ -186,12 +203,11 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
       digitalWrite(pumpPin, HIGH);
       lastWateringTime[index - 1] = currentMillis;
       // Check if enough time has passed since last watering
-      
     }
     if (currentMillis - lastWateringTime[index - 1] == wateringTimeMillis) {
-        Serial.println("đèn tắt");
-        digitalWrite(pumpPin, LOW);
-      }
+      Serial.println("đèn tắt");
+      digitalWrite(pumpPin, LOW);
+    }
   }
 }
 
