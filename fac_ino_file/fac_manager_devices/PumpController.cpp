@@ -113,9 +113,9 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
           if (humidity < threshold) {
             digitalWrite(pumpPin, HIGH);
             pumpState[index - 1] = true;
-            Serial.print("Pump ");
-            Serial.print(index);
-            Serial.println(" turned on (auto)");
+            // Serial.print("Pump ");
+            // Serial.print(index);
+            // Serial.println(" turned on (auto)");
           } else {
             digitalWrite(pumpPin, LOW);
             pumpState[index - 1] = false;
@@ -125,9 +125,9 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
           }
         } else {
           digitalWrite(pumpPin, LOW);
-          Serial.print("Pump ");
-          Serial.print(index);
-          Serial.println(" turned off (auto)");
+          // Serial.print("Pump ");
+          // Serial.print(index);
+          // Serial.println(" turned off (auto)");
         }
       }
 
@@ -143,7 +143,7 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
         if (numTimes == 0) {
           // Tắt bơm nếu không có thời gian nào được cung cấp
           digitalWrite(pumpPin, LOW);  // Giả sử LOW là trạng thái tắt bơm
-          Serial.println("Pump turned off due to no schedule times.");
+          // Serial.println("Pump turned off due to no schedule times.");
         } else {
           // Nếu có thời gian, tiếp tục xử lý như bình thường
           String times[numTimes];
