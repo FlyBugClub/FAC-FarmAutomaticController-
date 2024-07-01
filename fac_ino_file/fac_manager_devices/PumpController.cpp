@@ -125,6 +125,7 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
           }
         } else {
           digitalWrite(pumpPin, LOW);
+          pumpState[index - 1] = false;
           // Serial.print("Pump ");
           // Serial.print(index);
           // Serial.println(" turned off (auto)");
@@ -143,6 +144,7 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
         if (numTimes == 0) {
           // Tắt bơm nếu không có thời gian nào được cung cấp
           digitalWrite(pumpPin, LOW);  // Giả sử LOW là trạng thái tắt bơm
+          pumpState[index - 1] = false;
           // Serial.println("Pump turned off due to no schedule times.");
         } else {
           // Nếu có thời gian, tiếp tục xử lý như bình thường
@@ -202,11 +204,15 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
       Serial.println("hehe");
       digitalWrite(pumpPin, HIGH);
       lastWateringTime[index - 1] = currentMillis;
-      // Check if enough time has passed since last watering
-    }
+      pumpState[index - 1] = true;0.
+..
+
+ 0     // Check if enough time has passed since last watering
+  5466  }
     if (currentMillis - lastWateringTime[index - 1] == wateringTimeMillis) {
       Serial.println("đèn tắt");
       digitalWrite(pumpPin, LOW);
+      pumpState[index - 1] = false;
     }
   }
 }

@@ -123,66 +123,66 @@ void checkAndSendPumpState() {
     }
   }
 }
-void checkAndSendSensorState() {
-  for (int i = 0; i < 4; i++) {
-    float temperature = 0.0;
-    float humidity = 0.0;
+// void checkAndSendSensorState() {
+//   for (int i = 0; i < 4; i++) {
+//     float temperature = 0.0;
+//     float humidity = 0.0;
 
-    // Lấy giá trị nhiệt độ và độ ẩm từ từng cảm biến SHT31
-    switch (i) {
-      case 0:
-        if (pumpControllers.sht31_1.begin(0x44)) {
-          temperature = pumpControllers.sht31_1.readTemperature();
-          humidity = pumpControllers.sht31_1.readHumidity();
-        } else {
-          Serial.println("Failed to initialize SHT31 sensor 1.");
-        }
-        break;
-      case 1:
-        if (pumpControllers.sht31_2.begin(0x44)) {
-          temperature = pumpControllers.sht31_2.readTemperature();
-          humidity = pumpControllers.sht31_2.readHumidity();
-        } else {
-          Serial.println("Failed to initialize SHT31 sensor 2.");
-        }
-        break;
-      case 2:
-        if (pumpControllers.sht31_3.begin(0x44)) {
-          temperature = pumpControllers.sht31_3.readTemperature();
-          humidity = pumpControllers.sht31_3.readHumidity();
-        } else {
-          Serial.println("Failed to initialize SHT31 sensor 3.");
-        }
-        break;
-      case 3:
-        if (pumpControllers.sht31_4.begin(0x44)) {
-          temperature = pumpControllers.sht31_4.readTemperature();
-          humidity = pumpControllers.sht31_4.readHumidity();
-        } else {
-          Serial.println("Failed to initialize SHT31 sensor 4.");
-        }
-        break;
-      default:
-        break;
-    }
+//     // Lấy giá trị nhiệt độ và độ ẩm từ từng cảm biến SHT31
+//     switch (i) {
+//       case 0:
+//         if (pumpControllers.sht31_1.begin(0x44)) {
+//           temperature = pumpControllers.sht31_1.readTemperature();
+//           humidity = pumpControllers.sht31_1.readHumidity();
+//         } else {
+//           Serial.println("Failed to initialize SHT31 sensor 1.");
+//         }
+//         break;
+//       case 1:
+//         if (pumpControllers.sht31_2.begin(0x44)) {
+//           temperature = pumpControllers.sht31_2.readTemperature();
+//           humidity = pumpControllers.sht31_2.readHumidity();
+//         } else {
+//           Serial.println("Failed to initialize SHT31 sensor 2.");
+//         }
+//         break;
+//       case 2:
+//         if (pumpControllers.sht31_3.begin(0x44)) {
+//           temperature = pumpControllers.sht31_3.readTemperature();
+//           humidity = pumpControllers.sht31_3.readHumidity();
+//         } else {
+//           Serial.println("Failed to initialize SHT31 sensor 3.");
+//         }
+//         break;
+//       case 3:
+//         if (pumpControllers.sht31_4.begin(0x44)) {
+//           temperature = pumpControllers.sht31_4.readTemperature();
+//           humidity = pumpControllers.sht31_4.readHumidity();
+//         } else {
+//           Serial.println("Failed to initialize SHT31 sensor 4.");
+//         }
+//         break;
+//       default:
+//         break;
+//     }
 
-    // Kiểm tra giá trị hợp lệ của nhiệt độ và độ ẩm
-    if (!isnan(temperature) && !isnan(humidity)) {
-      // Tạo JSON để gửi lên MQTT
-      StaticJsonDocument<200> doc;
-      doc["id_esp"] = id_esp;
-      doc["index"] = i + 1;
-      doc["temperature"] = temperature;
-      doc["humidity"] = humidity;
+//     // Kiểm tra giá trị hợp lệ của nhiệt độ và độ ẩm
+//     if (!isnan(temperature) && !isnan(humidity)) {
+//       // Tạo JSON để gửi lên MQTT
+//       StaticJsonDocument<200> doc;
+//       doc["id_esp"] = id_esp;
+//       doc["index"] = i + 1;
+//       doc["temperature"] = temperature;
+//       doc["humidity"] = humidity;
 
-      char buffer[256];
-      serializeJson(doc, buffer);
+//       char buffer[256];
+//       serializeJson(doc, buffer);
 
-      // Gửi JSON lên topic "sensorData" trên MQTT
-      mqttConn.publish("sensorData", buffer);
-    }
-  }
-}
+//       // Gửi JSON lên topic "sensorData" trên MQTT
+//       mqttConn.publish("sensorData", buffer);
+//     }
+//   }
+// }
 unsigned long getCurrentSecondsFromMidnight() {
   unsigned long totalSeconds;
   time_t currentEpochTime = timeClient.getEpochTime();  // Assume timeClient is accessible and defined elsewhere
@@ -252,7 +252,7 @@ void loop() {
  unsigned long currentSeconds = getCurrentSecondsFromMidnight();
 
 
-if (mqttConn.isMessagesArrive) {
+if (mqttConn.isMessagesArrive ) {
 
   String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
   payload_sum = updatedPayload;
@@ -270,7 +270,7 @@ if (mqttConn.isMessagesArrive) {
   mqttConn.isMessagesArrive = false;
 }
 pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
-checkAndSendPumpState();
+// checkAndSendPumpState();
 unsigned long currentMillis = millis();
 
 
