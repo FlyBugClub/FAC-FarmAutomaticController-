@@ -211,7 +211,7 @@ void checkAndProcessPumpStateChanges(String payload_sum, unsigned long currentSe
   if (anyPumpStateChanged) {
     String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
 
-    pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
+    pumpControllers.processPumpAction(updatedPayload.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
     updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
 
     if (payload_sum != updatedPayload) {
@@ -286,7 +286,7 @@ void loop() {
   if (mqttConn.isMessagesArrive) {
     String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
 
-    pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
+    pumpControllers.processPumpAction(updatedPayload.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
     updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
 
     if (payload_sum != updatedPayload) {

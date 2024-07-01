@@ -201,23 +201,15 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
 
     // Check if current time is within the watering window
     if (currentMillis == scheduleMillis) {
-      if (pumpState[index - 1] == false)
-      {
-        isPumStateChange[index - 1] = true;
-      }
       digitalWrite(pumpPin, HIGH);
       lastWateringTime[index - 1] = currentMillis;
       pumpState[index - 1] = true;
+      isPumStateChange[index - 1] = true;
       }
     if (currentMillis - lastWateringTime[index - 1] == wateringTimeMillis) {
       Serial.println("đèn tắt");
-      if (pumpState[index - 1] == true)
-      {
-         isPumStateChange[index - 1] = true;
-      }
       digitalWrite(pumpPin, LOW);
-      
-      isPumStateChange[index - 1] = false;
+      isPumStateChange[index - 1] = true;
     }
   }
 }
