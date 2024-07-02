@@ -113,7 +113,6 @@ const NewPassw = () => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Mật khẩu mới"
                       onChange={handleChangNewPass}
-                     
                     />
                   </div>
                   <div
@@ -179,72 +178,87 @@ const NewPassw = () => {
       </BrowserView>
 
       <MobileView className="Auth_MobileView">
-        <div style={{ width: "100%", height: "100%" }}>
-          <div className="Auth_MobileView_Logo">
-            <div className="Auth_MobileView_Logo_Image">
-              <img src="/icons/Bug(Trắng).png" alt="" />
-            </div>
-            <div>
-              <div className="div1">Tưới tiêu tự động</div>
-              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+        <div>
+          <div>
+            <div className="Auth_MobileView_Title">
+              <h1>Chào mừng bạn</h1>
+              <p>Đăng nhập vào tài khoản của bạn</p>
             </div>
           </div>
-          <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
-            <div className="Auth_MobileView_Region_Input ">
-              <div>
-                <FiLock color="white" size={24} />
+          <form className="Auth_MobileView_Container" onSubmit={handleSubmit}>
+            <div className="Auth_MobileView_Container_Form">
+              <div className="Auth_MobileView_Container_Form_Body">
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_MobileView_Container_Form_Body_Item_Content ${
+                      errorPass ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Input">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Mật khẩu mới"
+                        onChange={handleChangNewPass}
+                      />
+                    </div>
+                    <div
+                      onClick={handleOpenEye}
+                      className="Auth_MobileView_Container_Form_Body_Item_Content_IconEye"
+                    >
+                      {showPassword ? (
+                        <FiEyeOff size={20} />
+                      ) : (
+                        <FiEye size={20} />
+                      )}
+                    </div>
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Icon">
+                      <FiLock color={errorPass ? "red" : "white"} size={24} />
+                    </div>
+                  </div>
+                  <div className="Auth_MobileView_Container_Form_Body_Item_Validate">
+                    {errorPass}
+                  </div>
+                </div>
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_MobileView_Container_Form_Body_Item_Content ${
+                      errorPass1 ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Input">
+                      <input
+                        type={showPassword1 ? "text" : "password"}
+                        placeholder="Xác nhận mật khẩu"
+                        onChange={handleChangConfirmPass}
+                      />
+                    </div>
+                    <div
+                      onClick={handleOpenEye1}
+                      className="Auth_MobileView_Container_Form_Body_Item_Content_IconEye"
+                    >
+                      {showPassword1 ? (
+                        <FiEyeOff size={20} />
+                      ) : (
+                        <FiEye size={20} />
+                      )}
+                    </div>
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Icon">
+                      <FiLock color={errorPass1 ? "red" : "white"} size={24} />
+                    </div>
+                  </div>
+                  <div className="Auth_MobileView_Container_Form_Body_Item_Validate">
+                    {errorPass1}
+                  </div>
+                </div>
               </div>
-              <input
-                type={showPassword1 ? "text" : "password"}
-                placeholder="Mật khẩu mới"
-                onChange={handleChangNewPass}
-              ></input>
-              <div onClick={handleOpenEye1}>
-                {showPassword1 ? (
-                  <FiEye color="white" />
-                ) : (
-                  <FiEyeOff color="white" />
-                )}
-              </div>
-            </div>
-            <div className="Auth_MobileView_Region_Input">
-              <div>
-                <FiLock color="white" size={24} />
-              </div>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Xác nhận mật khẩu"
-                onChange={handleChangConfirmPass}
-              ></input>
-              <div onClick={handleOpenEye}>
-                {showPassword ? (
-                  <FiEye color="white" />
-                ) : (
-                  <FiEyeOff color="white" />
-                )}
-              </div>
-            </div>
-            <div className="Auth_MobileView_Region_Save">
-              <input type="checkbox" />
-              <div>Lưu đăng nhập</div>
-            </div>
-            <div className="Auth_MobileView_Region_Button">
-              <button type="submit">Xác nhận</button>
-            </div>
-            <div className="Auth_MobileView_Region_Stuff">
-              <div
-                onClick={() => {
-                  navigate("/login");
-                }}
-              >
-                Đăng nhập
-              </div>
-              <div
-                onClick={() => {
-                  navigate("/forgotpassword");
-                }}
-              >
-                Quên mật khẩu
+              <div className="Auth_MobileView_Container_Form_Footer">
+                <button type="submit">Xác nhận</button>
+                <div className="Auth_MobileView_Container_Form_Footer_Choice">
+                  <div onClick={() => navigate("/login")}>
+                    Bạn đã nhớ lại tài khoản!
+                  </div>
+                  <div onClick={() => navigate("/login")}>Đăng nhập</div>
+                </div>
               </div>
             </div>
           </form>
