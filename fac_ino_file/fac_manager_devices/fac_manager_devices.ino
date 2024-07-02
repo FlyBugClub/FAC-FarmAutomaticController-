@@ -202,20 +202,12 @@ void checkAndProcessPumpStateChanges(String payload_sum, unsigned long currentSe
   // Kiểm tra nếu có bất kỳ trạng thái bơm nào thay đổi
   for (int i = 0; i < 4; i++) {
     if (pumpControllers.isPumpStateChange[i]) {
-        String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-        pumpControllers.processPumpAction(updatedPayload.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
-        updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-        if (payload_sum != updatedPayload) {
-          mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
-          payload_sum = updatedPayload;
-          savePayloadSumToEEPROM(payload_sum);
-        }
-    }
-       pumpControllers.prevPumpState[i] = pumpControllers.pumpState[i];
+      mqttConn.publish(char_x_send_to_client, payload_sum.c_str());
+      savePayloadSumToEEPROM(payload_sum);
+      pumpControllers.prevPumpState[i] = pumpControllers.pumpState[i];
       pumpControllers.isPumpStateChange[i] = false;
+    }
   }
-
-  // Nếu có thay đổi trạng thái bơm
 }
 void setup() {
   Serial.begin(9600);
@@ -302,6 +294,26 @@ void loop() {
   //  mqttConn.publish(char_x_send_to_client, payload_sum.c_str());
   // }
   // Cập nhật payload_sum từ handleNewMessages
-  
+  StaticJsonDocument<1024> doc;
+  DeserializationError error = deserializeJson(doc, payload_sum);
+  for (JsonObject pump : doc.as<JsonArray>()) {
+    int index = pump["index"];
+    String action = pump["payload"]["action"].as<String>();
+    String message = pump["payload"]["messages"].as<String>();
+    bool status = pump["payload"]["status"];  // Assuming status is already in the JSON
+
+    // Update status based on index (example logic)
+    // Replace this with your actual logic to update status
+    status = pumpControllers.pumpState[index - 1];
+
+    // Update status in the JSON
+    pump["payload"]["status"] = status;
+  }
+
+  // Serialize updated JSON back to string
+  char updated_payload_sum[1024];
+  serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
+  savePayloadSumToEEPROM(updated_payload_sum);
+
   mqttConn.loop();
 }
