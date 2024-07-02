@@ -161,7 +161,10 @@ const Signup = () => {
           className="Auth_BrowserView_Container"
           style={{ marginTop: "100px" }}
         >
-          <form onSubmit={handleSubmit} className="Auth_BrowserView_Container_Form">
+          <form
+            onSubmit={handleSubmit}
+            className="Auth_BrowserView_Container_Form"
+          >
             <div className="Auth_BrowserView_Container_Form_Header">
               <div>Đăng ký</div>
             </div>
@@ -300,84 +303,169 @@ const Signup = () => {
               </div>
             </div>
           </form>
-
         </div>
       </BrowserView>
+
       <MobileView className="Auth_MobileView">
-        <div style={{ width: "100%", height: "100%" }}>
-          <div className="Auth_MobileView_Logo">
-            <div className="Auth_MobileView_Logo_Image">
-              <img src="/icons/Bug(Trắng).png" alt="" />
-            </div>
-            <div>
-              <div className="div1">Tưới tiêu tự động</div>
-              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+        <div>
+          <div>
+            <div className="Auth_MobileView_Title">
+              <h1>Chào mừng bạn</h1>
+              <p>Đăng nhập vào tài khoản của bạn</p>
             </div>
           </div>
-          <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
-            <div className="Auth_MobileView_Region_Input ">
-              <div>
-                <FiUser color="white" size={24} />
+          <form onSubmit={handleSubmit} className="Auth_MobileView_Container">
+            <div className="Auth_MobileView_Container_Form">
+              <div className="Auth_MobileView_Container_Form_Header">
+                <div>Đăng ký</div>
               </div>
-              <input
-                id="username"
-                type="text"
-                placeholder="Tên tài khoản"
-                onChange={handleChangeUsername}
-              ></input>
-            </div>
-            <div className="Auth_MobileView_Region_Input">
-              <div>
-                <FiMail color="white" size={24} />
-              </div>
-              <input
-                id="email"
-                type="text"
-                placeholder="Email"
-                onChange={handleChangeEmail}
-              ></input>
-            </div>
+              <div className="Auth_MobileView_Container_Form_Body">
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_MobileView_Container_Form_Body_Item_Content ${
+                      usernameErr ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Input">
+                      <div className="Auth_MobileView_Container_Form_Body_Item_Content_Icon">
+                        <FiUser
+                          color={usernameErr ? "red" : "white"}
+                          size={24}
+                        />
+                      </div>
+                      <input
+                        id="username"
+                        type="text"
+                        placeholder="Tên tài khoản"
+                        onChange={handleChangeUsername}
+                      />
+                    </div>
+                  </div>
+                  <div className="Auth_MobileView_Container_Form_Body_Item_Validate">
+                    {usernameErr}
+                  </div>
+                </div>
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_MobileView_Container_Form_Body_Item_Content ${
+                      emailErr ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Input">
+                      <div className="Auth_MobileView_Container_Form_Body_Item_Content_Icon">
+                        <FiMail color={emailErr ? "red" : "white"} size={24} />
+                      </div>
+                      <input
+                        id="email"
+                        type="email"
+                        placeholder="Email"
+                        onChange={handleChangeEmail}
+                      />
+                    </div>
+                  </div>
+                  <div className="Auth_MobileView_Container_Form_Body_Item_Validate">
+                    {emailErr}
+                  </div>
+                </div>
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_MobileView_Container_Form_Body_Item_Content ${
+                      phoneErr ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Input">
+                      <div className="Auth_MobileView_Container_Form_Body_Item_Content_Icon">
+                        <FiPhone color={phoneErr ? "red" : "white"} size={24} />
+                      </div>
+                      <input
+                        id="phone"
+                        type="text"
+                        placeholder="Số điện thoại"
+                        onChange={handleChangePhone}
+                      />
+                    </div>
+                  </div>
+                  <div className="Auth_MobileView_Container_Form_Body_Item_Validate">
+                    {phoneErr}
+                  </div>
+                </div>
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_MobileView_Container_Form_Body_Item_Content ${
+                      passwordErr ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Input">
+                      <div className="Auth_MobileView_Container_Form_Body_Item_Content_Icon">
+                        <FiLock
+                          color={passwordErr ? "red" : "white"}
+                          size={24}
+                        />
+                      </div>
+                      <input
+                        id="password"
+                        type={open ? "text" : "password"}
+                        placeholder="Mật khẩu"
+                        onChange={handleChangePassword}
+                      />
+                    </div>
+                    <div
+                      onClick={() => handleOpenEye()}
+                      className="Auth_MobileView_Container_Form_Body_Item_Content_IconEye"
+                    >
+                      {open ? <FiEye size={18} /> : <FiEyeOff size={18} />}
+                    </div>
+                  </div>
+                  <div className="Auth_MobileView_Container_Form_Body_Item_Validate">
+                    {passwordErr}
+                  </div>
+                </div>
 
-            <div className="Auth_MobileView_Region_Input">
-              <div>
-                <FiLock color="white" size={24} />
-              </div>
-              <input
-                id="password"
-                type={open ? "text" : "password"}
-                placeholder="Mật khẩu"
-                onChange={handleChangePassword}
-              ></input>
-              <div onClick={() => handleOpenEye()}>
-                {open ? <FiEye color="white" /> : <FiEyeOff color="white" />}
-              </div>
-            </div>
-            <div className="Auth_MobileView_Region_Input">
-              <div>
-                <FiLock color="white" size={24} />
-              </div>
-              <input
-                id="confirm_password"
-                type={open1 ? "text" : "password"}
-                placeholder="Xác nhận mật khẩu"
-                onChange={handleChangeRePassword}
-              ></input>
-              <div onClick={() => handleOpenEye1()}>
-                {open1 ? <FiEye color="white" /> : <FiEyeOff color="white" />}
-              </div>
-            </div>
-            <div className="Auth_MobileView_Region_Save">
-              <input type="checkbox" />
-              <div>Lưu đăng nhập</div>
-            </div>
-            <div className="Auth_MobileView_Region_Button">
-              <button
-                type="submit"
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_MobileView_Container_Form_Body_Item_Content ${
+                      rePasswordErr ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Input">
+                      <div className="Auth_MobileView_Container_Form_Body_Item_Content_Icon">
+                        <FiLock
+                          color={rePasswordErr ? "red" : "white"}
+                          size={24}
+                        />
+                      </div>
+                      <input
+                        id="confirm_password"
+                        type={open1 ? "text" : "password"}
+                        placeholder="Xác nhận mật khẩu"
+                        onChange={handleChangeRePassword}
+                      />
+                    </div>
+                    <div
+                      onClick={() => handleOpenEye1()}
+                      className="Auth_MobileView_Container_Form_Body_Item_Content_IconEye"
+                    >
+                      {open1 ? <FiEye size={18} /> : <FiEyeOff size={18} />}
+                    </div>
+                  </div>
+                  <div className="Auth_MobileView_Container_Form_Body_Item_Validate">
+                    {rePasswordErr}
+                  </div>
+                </div>
 
-                /*onClick={() => navigate('/login')} */
-              >
-                Đăng ký
-              </button>
+
+
+              </div>
+              <div className="Auth_MobileView_Container_Form_Footer">
+                <button type="submit">Đăng ký</button>
+
+                <div className="Auth_MobileView_Container_Form_Footer_Choice">
+                  <div onClick={() => navigate("/login")}>
+                    Bạn đã có tài khoản?
+                  </div>
+                  <div onClick={() => navigate("/login")}>Đăng nhập</div>
+                </div>
+              </div>
             </div>
           </form>
         </div>
