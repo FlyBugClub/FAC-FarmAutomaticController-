@@ -300,20 +300,15 @@ void loop() {
     int index = pump["index"];
     String action = pump["payload"]["action"].as<String>();
     String message = pump["payload"]["messages"].as<String>();
-    bool status = pump["payload"]["status"];  // Assuming status is already in the JSON
+    bool status = pump["payload"]["status"];  
 
-    // Update status based on index (example logic)
-    // Replace this with your actual logic to update status
     status = pumpControllers.pumpState[index - 1];
 
-    // Update status in the JSON
     pump["payload"]["status"] = status;
   }
 
-  // Serialize updated JSON back to string
   char updated_payload_sum[1024];
   serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
   savePayloadSumToEEPROM(updated_payload_sum);
-
   mqttConn.loop();
 }
