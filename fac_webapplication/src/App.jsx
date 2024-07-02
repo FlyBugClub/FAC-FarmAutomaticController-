@@ -18,12 +18,17 @@ import Weather from "./components/Weather/weather";
 import Farm from "./components/Home/farm";
 import Addfarm from "./components/Home/newfarm";
 import User from "./components/Home/user";
+import Editfarm from "./components/Home/editfarm";
 //
 import { AuthContext } from "./components/Context/AuthContext";
 function App() {
 
   const [weatherState, setWeatherState] = useState(true);
   const [addDeviceState, setAddDeviceState] = useState("");
+  const [location,setLocation] = useState({
+    lat: 10.8231,
+    lng: 106.6297,
+});
   const { URL, login, authDispatch } = useContext(AuthContext);
   const handleWeather = () => {
     setWeatherState(!weatherState);
@@ -78,6 +83,62 @@ function App() {
   }, []);
 
 
+  useEffect(() => {
+      //array index obj.key
+
+      // key and value
+      // let obj = {
+      //   data:{name:'loc', age:'29'},
+      //   2:{name:'duc', age:'49'},
+      //   info:{name:'cuong', age:'19'},
+      //   4:{name:'trieu', age:'18'},
+      // }
+
+      // Object.entries(obj).map((item) => {
+      //   // console.log(obj[key])
+      //   console.log(item[0], item[1])
+      // })
+
+      //read obj
+      // Object.entries(obj).map(([key, value]) => {
+      //   // console.log(obj[key])
+      //   console.log(value)
+      // })
+
+      // Object.keys(obj).map((key) => {
+      //   console.log(key, obj[key])
+      // })
+
+    //  // add
+    //   obj['5']={name:'tung', age:'19'}
+
+    //   console.log('add',obj)
+
+    //   //delete
+    //   delete obj['data']
+    //   console.log('delete',obj) 
+
+      //update
+      // obj['4']={
+      //   ...obj['4'],
+      //   name:'loc',
+      // }
+      // console.log('update',obj)
+
+
+      // for (const key in obj) {
+      //   console.log(key, obj[key])
+      // }
+
+      // console.log(obj['1'].name)
+
+      // obj.map((item) => {
+      //   console.log(item)
+      // })
+
+  },[])
+
+
   return (
     <div className="App">
       <header className="App-header">
@@ -106,7 +167,7 @@ function App() {
                 zIndex: "-1",
               }}
             >
-              <Weather weatherState={weatherState} />
+              <Weather weatherState={weatherState} location={location}/>
               <Routes>
                 <Route
                   path="/dashboard"
@@ -114,6 +175,7 @@ function App() {
                     <Dashboard
                       weatherState={weatherState}
                       handleAddDevice={handleAddDevice}
+                      setLocation={setLocation}
                     />
                   }
                 />
@@ -122,9 +184,18 @@ function App() {
                   element={<Farm weatherState={weatherState} handleAddDevice={handleAddDevice} />}
                 />
                 <Route
-                  path="/addfarm"
+                  path="/addfarm/:id"
                   element={
                     <Addfarm
+                      weatherState={weatherState}
+                      addDeviceState={addDeviceState}
+                    />
+                  }
+                />
+                <Route
+                  path="/editfarm/:id"
+                  element={
+                    <Editfarm
                       weatherState={weatherState}
                       addDeviceState={addDeviceState}
                     />

@@ -10,20 +10,33 @@ import { MdCircle } from "react-icons/md";
 import { callAPi } from "../../services/UserService";
 import { AuthContext } from "../Context/AuthContext";
 import dayjs from 'dayjs';
+import { FiSettings, FiPlus, FiXCircle, FiEdit3 } from "react-icons/fi"
 import { Client, Message } from 'paho-mqtt';
 import Loading from "./loading";
+import { TbDatabaseSearch } from "react-icons/tb";
+import HourMinutePicker from "../Time/timepicker";
+
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Farm = ({ weatherState, handleAddDevice }) => {
-    const { URL, farmct, authDispatch } = useContext(AuthContext);
+    const { URL, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const { id: paramId } = useParams(); // Sử dụng useParams để lấy tham số id từ URL nếu cần
-    const [id, setId] = useState(""); // Khởi tạo id từ paramId hoặc giá trị mặc định
+    const { id: paramId } = useParams();
+    const [id, setId] = useState("");
     const [listEquipmentState, setListEquipmentState] = useState(false);
     const [listEquipment, setListEquipment] = useState([]);
     const [equipment, setEquipment] = useState("Equipment 1");
     const [listModeState, setListModeState] = useState(false);
     const [mode, setMode] = useState("Manual");
-    const [modeState, setModeState] = useState(false);// state cho toogle
+    const [timeTableState, setTimeTableState] = useState(false);
+    const [timeState, setTimeState] = useState(true);
+    const [timeList, setTimeList] = useState([]);
+    const [offset, setOffset] = useState(5);
+    const [offsetState, setOffsetState] = useState(false);
+    const seconds = [...Array(59).keys()];
+
+    const [modeState, setModeState] = useState(false);// state cho to   ogle
     const [bumperState, setBumperState] = useState(false);
     const sliderRef = useRef(null);
     const [value, setValue] = useState(50); // value cho slider
@@ -34,13 +47,19 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [client, setClient] = useState(null);
     const [connectStatus, setConnectStatus] = useState("Disconnected");
 
+    const [time, setTime] = useState('');
+    const handleTimeChange = (newTime) => {
+        setTime(newTime);
+    };
 
-    // const mqttConnect = (host, id) => {
-    //     setConnectStatus('Connecting');
-    //     const mqttClient = mqtt.connect(host, { id });
-    //     setClient(mqttClient);
-    // };
 
+    const hourMinutePickerRef = useRef(null);
+
+    const handleClearClickFromParent = () => {
+        if (hourMinutePickerRef.current) {
+            hourMinutePickerRef.current.handleClearClick();
+        }
+    };
     useEffect(() => {
         const options = {
             clientId: "id_" + parseInt(Math.random() * 100000), // Tạo clientId ngẫu nhiên
@@ -53,6 +72,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
         setId(paramId || '')
     }, [])
+
     useEffect(() => {
         if (client !== null && connectStatus != "Connected" && connectStatus != "Connecting") {
             setConnectStatus("Connecting");
@@ -88,7 +108,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
     useEffect(() => {
         if (farm.length !== 0) {
-            setLoadingState(false)
+
             getLastStatus()
             if (farm[0]["Sensors"] != undefined) {
                 currentDateFunc()
@@ -98,9 +118,16 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                 setcurrentDate("___-___-___")
                 setData([])
             }
+            setLoadingState(false)
         }
     }, [farm])
 
+    useEffect(() => {
+        if (connectStatus == "Connected" && client.isConnected()) {
+            sendMessage();
+        }
+
+    }, [mode, modeState, bumperState, value])
 
     const disconnectMqtt = () => {
         if (connectStatus == "Connected" && client.isConnected()) {
@@ -109,18 +136,74 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     }
 
-
     const sendMessage = () => {
-        if (connectStatus == "Connected" && client.isConnected() && farmct !== undefined) {
-            
-            //     var message = new Message("{'vake':'cuong'}");
+        try {
+            // var message = new Message("{'vake':'cuong'}");
             // message.destinationName = "fac_iot";
             // client.send(message);
+            if (farm.length != 0) {
+                setLastStatus();
+            }
         }
-        else {
-            setConnectStatus("Disconnected1");
+        catch (e) {
+            alert(e);
         }
     };
+
+    const handleAddTime = async () => {
+        if (time != "") {
+            let flag = false;
+            timeList.forEach(element => {
+                if (element == time) {
+                    toast.error("time exist")
+                    flag = true;
+                    return
+                }
+            });
+            if (flag) return
+            let body = [
+                `${farm[0]["id"]}`, // id equipment
+                `${offset}`,
+                `${time}:00`, // mode state
+            ];
+            let res = await callAPi("post", `${URL}/data/insertschedule`, body)
+            if (!res.status) {
+                toast.error("add equipment fail");
+            }
+            else {
+                setTime("")
+                handleClearClickFromParent()
+                let timearray = timeList;
+                timearray.push(time)
+                timearray.sort((a, b) => {
+                    const [hoursA, minutesA] = a.split(':').map(Number);
+                    const [hoursB, minutesB] = b.split(':').map(Number);
+                    
+                    return hoursA - hoursB || minutesA - minutesB;
+                  });
+                setTimeList(timearray)
+                toast.info("add time success");
+            }
+        }
+    }
+
+    const handlEditOffset = async (offset) => {
+        console.log(offset)
+        let body = [
+            `${farm[0]["id"]}`, // id equipment
+            `${offset}` // mode state
+        ];
+        let res = await callAPi("post", `${URL}/data/editchedule`, body)
+        if (!res.status) {
+            toast.error("update offset fail");
+        }
+        else 
+        {
+            setOffset(offset)
+            toast.info("update offset success");
+        }
+
+    }
 
     const getFarm = async (id_esp, id_equipment) => {
         setLoadingState(true)
@@ -128,12 +211,11 @@ const Farm = ({ weatherState, handleAddDevice }) => {
             "get",
             `${URL}/data/getequipment/${id_esp}/${id_equipment}`,
         );
+
         if (res.status) {
             setFarm(res.data)
         }
-        else {
-            alert("get ting fail")
-        }
+        else setLoadingState(false)
     }
 
     const currentDateFunc = () => {
@@ -148,6 +230,49 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
 
 
+    }
+    function timeToMinutes(timeString) {
+        const [hours, minutes] = timeString.split(":").map(Number);
+        return hours * 60 + minutes;
+    }
+    const getSchedule = async () => {
+        let res = await callAPi(
+            "get",
+            `${URL}/data/getschedule/${farm[0]["id"]}`,
+        );
+
+        if (res.status && res["data"].length > 0) {
+            setOffset(res["data"][0]["times_offset"])
+            const sortedArray = [...res.data]
+                .sort((a, b) => {
+                    const timeA = timeToMinutes(a.time_string);
+                    const timeB = timeToMinutes(b.time_string);
+                    return timeA - timeB;
+                })
+                .map(item => item.time_string);
+            setTimeList(sortedArray)
+        }
+    }
+
+    const handleDeleteTime = async (time,index) => {
+        let body = [
+            `${farm[0]["id"]}`, // id equipment
+            `${time}:00` // mode state
+        ];
+        let res = await callAPi("post", `${URL}/data/deleteschedule`, body)
+        if (!res.status) {
+            toast.error("delete time fail");
+        }
+        else 
+        {
+
+            setTimeList(prevTimeList => {
+                const newTimeList = [...prevTimeList]; // Tạo bản sao của mảng
+                newTimeList.splice(index, 1); // Xóa phần tử
+                return newTimeList; // Trả về mảng mới
+              });
+            toast.info("delete time success");
+        }
     }
 
     const setFarmData = async () => {
@@ -194,42 +319,58 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     }
 
     const getLastStatus = async () => {
-        if (farmct !== undefined && farmct["json_esp_"] != null) {
 
-            const laststatus = JSON.parse(farmct["json_esp_"])["equipment"].find(e => e.id_bc === farm[0]["id"]);
-            if ( laststatus!= undefined)
-            {
-            
-                if (laststatus["control_status"] == false) {
-                    setModeState(false)
-                }
-                else setModeState(true)
-                if (laststatus["bump_status"] == false) {
-                    setBumperState(false)
-                }
-                else setBumperState(true)
-                if (laststatus["mode"] == 0) {
-                    setMode("Manual")
-                }
-                else if (laststatus["mode"] == 1) {
 
-                    setMode("Automatic")
-                    setValue(laststatus["expect_value"])
-                } 
-                else if (laststatus["mode"] == 2) {
-                    setMode("Timer")
-                } 
-
-            
+        const laststatus = farm[0]["laststatus"]
+        if (laststatus != undefined) {
+            // set toogle state
+            if (laststatus["btn_status"] == 0) {
+                setModeState(false)
             }
-            else 
-            {
-                setModeState(false);
-                setMode("Manual");
+            else setModeState(true)
+
+            if (laststatus["last_status"] == 0 || laststatus["last_status"] == null) {
                 setBumperState(false)
-                setValue(50)
             }
-            
+            else setBumperState(true)
+            if (laststatus["mode"] == 0) {
+                setMode("Manual")
+            }
+            else if (laststatus["mode"] == 1) {
+                setMode("Automatic")
+            }
+            else if (laststatus["mode"] == 2) {
+
+                setMode("Timer")
+                getSchedule()
+            }
+            setValue(laststatus["expect_sensor_value"])
+
+        }
+        else {
+            setModeState(false);
+            setMode("Manual");
+            setBumperState(false)
+            setValue(50)
+        }
+
+
+    }
+
+    const setLastStatus = async () => {
+        let body = [
+            `${farm[0]["id"]}`, // id equipment
+            `${modeState ? 1 : 0}`, // toogle state
+            `${mode == "Manual" ? 0 : mode == "Automatic" ? 1 : 2}`, // mode state
+            `${value}`, // expect sensor value
+        ];
+        let res = await callAPi("post", `${URL}/data/editlaststatus`, body)
+
+        if (!res.status) {
+            alert("seting last status fail")
+        }
+        else {
+            console.log("ok")
         }
     }
 
@@ -254,9 +395,10 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
 
     const CustomTooltip = ({ active, payload, label }) => {
-        if (active && payload && payload.length) {
+        if (active && payload && payload.length && !timeTableState) {
             const data = payload[0].payload;
             return (
+
                 <div className="custom-tooltip" style={{ backgroundColor: 'black', border: '1px solid #ccc', padding: '10px', borderRadius: "15px" }}>
                     <p className="label">{`Date: ${data.date}`}</p>
                     <p className="label">{`Humidity: ${data.sht_humid}%`}</p>
@@ -269,30 +411,58 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         return null;
     };
 
+    const navigateToSetting = () => {
+        authDispatch({
+            type: "SET_CURRENT_DEVICE",
+            payload: farm[0],
+        });
+        handleAddDevice("equipment")
+        navigate(`/editfarm/${id}`)
+    };
+
     return (
         <div className="Fac_Home_Web" >
             <BrowserView className="Fac_Home_Web" style={weatherState ? { paddingLeft: "15px" } : { paddingLeft: "0px" }} >
-                {farm.length == 0 ? <></>
-                    :
-                    <div className="Fac_Home_Web_Farmcontainer">
-                        <div className="Fac_Home_Web_Farmcontainer_Chart">
-                            <div className="Fac_Home_Web_Farmcontainer_Chart_Left">
-                                <div style={{ display: "flex", width: "100%", justifyContent: "space-between" }}>
-                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Left_Title">
-                                        <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => { navigate("/dashboard"); disconnectMqtt() }} />
-                                        <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                            Farm name
-                                        </div>
+                {loadingState ?
+                    <div className="Fac_Home_Web_Farmcontainer center">
+                        <Loading />
+                    </div>
+                    : (farm.length != 0 ?
+                        <div className="Fac_Home_Web_Farmcontainer">
+                            <div className="Fac_Home_Web_Farmcontainer_Header">
+                                <div className="Fac_Home_Web_Farmcontainer_Header_Left">
 
+                                    <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => { navigate("/dashboard"); disconnectMqtt() }} />
+                                    <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        Farm name
                                     </div>
-                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Left_Status">
+
+                                </div>
+                                <div className="Fac_Home_Web_Farmcontainer_Header_Right">
+                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigate(`/addfarm/${id}`); }} >
+                                        <TbDatabaseSearch size={20} className="Icon" />
+                                        History
+                                    </button>
+                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigateToSetting() }} >
+                                        <FiSettings size={20} className="Icon" />
+                                        Setting
+                                    </button>
+                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigate(`/addfarm/${id}`); }} >
+                                        <IoIosAddCircleOutline size={26} className="Icon" />
+                                        Add device
+                                    </button>
+                                    <div className="Fac_Home_Web_Farmcontainer_Header_Right_Status">
 
                                         <MdCircle size={18} color="#8AFF02" style={{ marginRight: "5px", marginTop: "3px" }} />
                                         Connected
                                     </div>
 
                                 </div>
-                                <div className="Fac_Home_Web_Farmcontainer_Chart_Left_Chart">
+                            </div>
+
+                            <div className="Fac_Home_Web_Farmcontainer_Chart">
+                                <div className="Fac_Home_Web_Farmcontainer_Chart_Left">
+
                                     {
                                         data.length != 0 ? <ResponsiveContainer width="100%" height="100%">
                                             <AreaChart
@@ -319,7 +489,14 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                                     tickLine={false} // Configures tick line color
                                                     axisLine={{ stroke: '#fff', strokeWidth: 2 }}
                                                 />
-                                                <Tooltip content={<CustomTooltip />} cursor={false} contentStyle={{ borderRadius: '0.1px' }} />
+
+                                                <Tooltip
+                                                    content={<CustomTooltip />}
+                                                    cursor={false}
+                                                    contentStyle={{ borderRadius: '0.1px' }}
+
+                                                />
+
 
                                                 <Area type="monotone"
                                                     dataKey="sht_humid"
@@ -348,38 +525,27 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                     }
 
                                 </div>
+                                <div className="Fac_Home_Web_Farmcontainer_Chart_Right">
 
-                            </div>
-                            <div className="Fac_Home_Web_Farmcontainer_Chart_Right">
-
-
-                                <button className="Fac_Home_Web_Farmcontainer_Chart_Right_Button" onClick={() => { handleAddDevice("equipment"); navigate("/addfarm") }} >
-                                    <IoIosAddCircleOutline size={30} style={{ marginRight: "15px" }} />
-                                    Add device
-                                </button>
-                                <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation">
-                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Header" onClick={() => handleEquipmentButton()}>
-
+                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Header" onClick={() => handleEquipmentButton()}>
                                         {equipment}
-
                                     </div>
                                     {
                                         listEquipmentState ?
-                                            <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Dropbox">
+                                            <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Dropbox">
                                                 {
                                                     listEquipment.map((item, index) => (
-                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Dropbox_Item" key={item.id_equipment} onClick={() => { getFarm(id, item.id_equipment); setEquipment("Equipment " + (index + 1)); setListEquipmentState(false); setListModeState(false) }}>
+                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Dropbox_Item" key={item.id_equipment} onClick={() => { getFarm(id, item.id_equipment); setEquipment("Equipment " + (index + 1)); setListEquipmentState(false); setListModeState(false) }}>
                                                             Equipment {index + 1}
                                                         </div>
                                                     ))}
-
                                             </div>
                                             :
                                             <></>
                                     }
 
                                     <div style={{ width: "100%", height: "1px", borderTop: "2px solid white", marginTop: "10px" }}></div>
-                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Date">
+                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Date">
                                         Date : {currentDate}
                                     </div>
                                     <div style={{ marginTop: "10px", marginRight: "auto" }}>
@@ -388,101 +554,68 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                             (farm[0]["Sensors"]).map((item) => (
                                                 item.category === "sht" ?
                                                     <div key={item.id}>
-                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
+                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Content">
                                                             <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
-                                                            {item.name}
+                                                            Humidity
                                                         </div>
-                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
+                                                        <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Content">
                                                             <MdCircle size={15} color="#FF2828" style={{ marginRight: "5px" }} />
-                                                            {item.name}
+                                                            Temperature
                                                         </div>
                                                     </div>
 
                                                     :
-                                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content" key={item.id}>
+                                                    <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Content" key={item.id}>
                                                         <MdCircle size={15} color="#33A829" style={{ marginRight: "5px" }} />
-                                                        {item.name}
+                                                        Ph
                                                     </div>
 
                                             )
                                             ) : <></>}
-                                        {/* <div className="Fac_Home_Web_Farmcontainer_Chart_Right_Annotation_Content">
-                                        <MdCircle size={15} color="#0061f2" style={{ marginRight: "5px" }} />
-                                        Humidity
                                     </div>
-                                    
-                                    */}
-                                    </div>
+
+
 
                                 </div>
-
-
-
                             </div>
-                        </div>
-                        <div className="Fac_Home_Web_Farmcontainer_Controller">
-                            <div className="Fac_Home_Web_Farmcontainer_Controller_Header">
-                                {farm[0].name}
-                                <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode">
-                                    Mode:
-                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State" onClick={() => setListModeState(!listModeState)}>
-                                        {mode}
-                                    </div>
-                                    {
-                                        listModeState
-                                            ?
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox">
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox_Item" onClick={() => setMode("Manual")}>
-                                                    Manual
-                                                </div>
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox_Item" onClick={() => setMode("Automatic")}>
-                                                    Automatic
-                                                </div>
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox_Item" onClick={() => setMode("Timer")}>
-                                                    Timer
-                                                </div>
-
-                                            </div>
-                                            :
-                                            <></>
-                                    }
-
-                                </div>
-
-
-
-                            </div>
-                            {
-                                mode == "Manual" ?
-                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
-                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
-                                            <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState); sendMessage() }} />
-                                                <span className="slider round"></span>
-                                            </label>
-
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
-                                                Bump:
-                                                {bumperState ?
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                                                        ON
-                                                        <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
-                                                    </div>
-                                                    :
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                                                        OFF
-                                                        <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
-                                                    </div>
-                                                }
-                                            </div>
+                            <div className="Fac_Home_Web_Farmcontainer_Controller">
+                                <div className="Fac_Home_Web_Farmcontainer_Controller_Header">
+                                    {farm[0].name}
+                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode">
+                                        Mode:
+                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State" onClick={() => setListModeState(!listModeState)}>
+                                            {mode}
                                         </div>
+                                        {
+                                            listModeState
+                                                ?
+                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox">
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox_Item" onClick={() => { setMode("Manual"); setListModeState(false) }}>
+                                                        Manual
+                                                    </div>
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox_Item" onClick={() => { setMode("Automatic"); setListModeState(false) }}>
+                                                        Automatic
+                                                    </div>
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox_Item" onClick={() => { setMode("Timer"); setListModeState(false) }}>
+                                                        Timer
+                                                    </div>
+
+                                                </div>
+                                                :
+                                                <></>
+                                        }
+
                                     </div>
 
-                                    : mode == "Automatic" ?
+
+
+                                </div>
+                                {
+                                    mode == "Manual" ?
                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
                                             <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
                                                 <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState); sendMessage() }} />
+                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState) }} />
                                                     <span className="slider round"></span>
                                                 </label>
 
@@ -492,80 +625,182 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                             ON
                                                             <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
-
                                                         </div>
                                                         :
                                                         <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
                                                             OFF
                                                             <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
-
                                                         </div>
                                                     }
                                                 </div>
                                             </div>
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Slidecontainer">
-                                                <input
-                                                    type="range"
-                                                    min="60"
-                                                    max="100"
-                                                    value={value}
-                                                    onChange={handleChange}
-                                                    ref={sliderRef} // Sử dụng ref ở đây
-                                                    className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Slidecontainer_Slider"
-                                                />
-                                                <div style={{ marginLeft: "10px", fontSize: "20px" }}>{value}</div>
+                                        </div>
+
+                                        : mode == "Automatic" ?
+                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
+                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
+                                                    <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
+                                                        <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState) }} />
+                                                        <span className="slider round"></span>
+                                                    </label>
+
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
+                                                        Bump:
+                                                        {bumperState ?
+                                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                                                                ON
+                                                                <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
+
+                                                            </div>
+                                                            :
+                                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                                                                OFF
+                                                                <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
+
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Slidecontainer">
+                                                    <input
+                                                        type="range"
+                                                        min="60"
+                                                        max="100"
+                                                        value={value}
+                                                        onChange={handleChange}
+                                                        ref={sliderRef} // Sử dụng ref ở đây
+                                                        className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Slidecontainer_Slider"
+                                                    />
+                                                    <div style={{ marginLeft: "10px", fontSize: "20px" }}>{value}</div>
+                                                </div>
+                                            </div>
+                                            :
+                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
+                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
+                                                    <label className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
+                                                        <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState) }} />
+                                                        <span className="slider round"></span>
+                                                    </label>
+
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
+                                                        Bump:
+                                                        {bumperState ?
+                                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                                                                ON
+                                                                <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
+                                                            </div>
+                                                            :
+                                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                                                                OFF
+                                                                <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer" onClick={() => { setTimeTableState(!timeTableState) }}>
+                                                    {timeList.map((time, index) => (
+                                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
+                                                            {time}
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                            </div>
+                                }
+
+                            </div>
+                            {timeTableState ?
+                                <div className="Fac_Home_Web_Farmcontainer_Settime" style={timeState ? { width: "220px" } : { width: "350px" }}>
+                                    <div className="Fac_Home_Web_Farmcontainer_Settime_Title">
+                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset">
+                                            Offset:                                            
+                                            <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Input" onClick={() => { setOffsetState(!offsetState) }}>
+                                                {offset}
+                                            </div>
+                                            {
+                                                offsetState && 
+                                                <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Dropbox">
+                                                    {seconds.map((item) => (
+                                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Dropbox_Item" key={item}  onClick={() => { handlEditOffset(item+1) ; setOffsetState(false)}}>
+                                                            {item +1}
+                                                    </div>
+                                                    ))}
+                                                    
+                                                    
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Icon" onClick={() => { setTimeTableState(!timeTableState) }}>
+                                            <FiPlus size={30} />
+                                        </div>
+                                    </div>
+                                    <div className="Fac_Home_Web_Farmcontainer_Settime_Body">
+                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Left" style={timeState ? {} : { borderRight: "2px solid white" }}>
+                                            <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Left_Title">
+                                                Time:
+                                                <FiPlus className="Icon" onClick={() => { setTimeState(!timeState) }} size={28} />
+                                            </div>
+                                            <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Left_Times">
+                                                {timeList.map((item, index) => (
+
+                                                    <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Left_Times_Item" key={index}>
+                                                        {item}
+                                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Left_Times_Item_Edit">
+                                                            <FiXCircle className="Icon" onClick={() => { handleDeleteTime(item, index) }} size={28} />
+                                                        </div>
+                                                    </div>
+                                                ))}
+
                                             </div>
                                         </div>
-                                        :
-                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body">
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control">
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch">
-                                                    <input className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { setModeState(!modeState); sendMessage() }} />
-                                                    <span className="slider round"></span>
-                                                </div>
+                                        {!timeState ? <div className="Fac_Home_Web_Farmcontainer_Settime_Body_Right">
+                                            <HourMinutePicker onTimeChange={handleTimeChange} ref={hourMinutePickerRef} />
+                                            <button className="Fac_Home_Web_Farmcontainer_Settime_Body_Right_Button" onClick={() => { handleAddTime() }}>Add</button>
+                                        </div> : <></>}
 
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer">
-                                                    Bump:
-                                                    {bumperState ?
-                                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                                                            ON
-                                                            <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
+                                    </div>
+                                </div>
+                                : <></>}
 
-                                                        </div>
-                                                        :
-                                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                                                            OFF
-                                                            <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
+                        </div> :
+                        <div className="Fac_Home_Web_Farmcontainer">
+                            <div className="Fac_Home_Web_Farmcontainer_Header">
+                                <div className="Fac_Home_Web_Farmcontainer_Header_Left">
 
-                                                        </div>
-                                                    }
-                                                </div>
-                                            </div>
-                                            <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer">
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                    12:08
-                                                </div>
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                    12:08
-                                                </div>
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                    12:08
-                                                </div>
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                    12:08
-                                                </div>
-                                                <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
-                                                    12:08
-                                                </div>
-                                            </div>
-                                        </div>
-                            }
+                                    <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => { navigate("/dashboard"); disconnectMqtt() }} />
+                                    <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                        Farm name
+                                    </div>
 
-                        </div>
-                    </div>
+                                </div>
+                                <div className="Fac_Home_Web_Farmcontainer_Header_Right">
+                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigate(`/addfarm/${id}`); }} >
+                                        <TbDatabaseSearch size={20} className="Icon" />
+                                        History
+                                    </button>
+                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigateToSetting() }} >
+                                        <FiSettings size={20} className="Icon" />
+                                        Setting
+                                    </button>
+                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigate(`/addfarm/${id}`); }} >
+                                        <IoIosAddCircleOutline size={26} className="Icon" />
+                                        Add device
+                                    </button>
+                                    <div className="Fac_Home_Web_Farmcontainer_Header_Right_Status">
+
+                                        <MdCircle size={18} color="#8AFF02" style={{ marginRight: "5px", marginTop: "3px" }} />
+                                        Connected
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div className="Fac_Home_Web_Farmcontainer_Nofarm">No farm to display!</div>
+                        </div>)
+
+
 
                 }
-
             </BrowserView>
             <MobileView>
 
