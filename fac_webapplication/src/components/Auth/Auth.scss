@@ -292,7 +292,7 @@ $font-size-small: 18px;
       }
     }
     &_Container {
-      
+      padding-top: 3rem;
       overflow-y: scroll;
       box-shadow: 0px 0px 16px white;
       
@@ -305,47 +305,6 @@ $font-size-small: 18px;
       margin-bottom: 100px;
       &_Form {
         width: 450px;
-        &_Header {
-          margin-bottom: 3rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          & div {
-            position: relative;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 1.5rem;
-            padding: 0 1rem;
-            height: 65px;
-            background-color: rgba(0, 0, 0, 0.4);
-            border-radius: 0px 0px 20px 20px;
-            color: rgb(255, 255, 255);
-            box-shadow: 0px 0px 16px white;
-            // &:after{
-            //   content: "";
-            //   position: absolute;
-            //   right: -5px;
-            //   top: 0;
-            //   border-left: 15px solid transparent;
-            //   border-right: 10px solid transparent;
-            //   border-top: 10px solid rgb(0, 0, 0, 0.4);
-
-            // }
-            // &:before{
-            //   content: "";
-            //   position: absolute;
-            //   left: -8px;
-            //   top: 0;
-            //   border-left: 15px solid transparent;
-            //   border-right: 10px solid transparent;
-            //   border-top: 10px solid rgb(0, 0, 0, 0.4);
-            // }
-          }
-        }
-
         &_Body {
           padding: 0 2rem;
           &_Item {
