@@ -243,9 +243,6 @@ const Login = () => {
 
           <form onSubmit={handleSubmit} className="Auth_MobileView_Container">
             <div className="Auth_MobileView_Container_Form">
-              <div className="Auth_MobileView_Container_Form_Header">
-                <div>Đăng nhập</div>
-              </div>
               <div className="Auth_MobileView_Container_Form_Body">
                 <div className="Auth_MobileView_Container_Form_Body_Item">
                   <div
