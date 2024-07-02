@@ -26,7 +26,7 @@ PumpController::PumpController() {
   }
 }
 char* PumpController::handleNewMessages(String currentAction, String currentMessage, int currentIndex, const char* payload_sum) {
-  StaticJsonDocument<1024> doc;  // Dung lượng tối đa cho bộ nhớ tạm thời
+  StaticJsonDocument<2048> doc;  // Dung lượng tối đa cho bộ nhớ tạm thời
   DeserializationError error = deserializeJson(doc, payload_sum);
 
   if (error) {
@@ -56,7 +56,7 @@ char* PumpController::handleNewMessages(String currentAction, String currentMess
   }
 
   // Chuyển đổi doc trở lại thành chuỗi JSON
-  static char updated_payload_sum[1024];  // Dung lượng tối đa cho bộ nhớ tạm thời
+  static char updated_payload_sum[2048];  // Dung lượng tối đa cho bộ nhớ tạm thời
   serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
 
 
@@ -204,12 +204,17 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
       digitalWrite(pumpPin, HIGH);
       lastWateringTime[index - 1] = currentMillis;
       pumpState[index - 1] = true;
-      isPumStateChange[index - 1] = true;
-      }
+    }
     if (currentMillis - lastWateringTime[index - 1] == wateringTimeMillis) {
-      Serial.println("đèn tắt");
       digitalWrite(pumpPin, LOW);
-      isPumStateChange[index - 1] = true;
+      pumpState[index - 1] = false;
+    }
+    if (pumpState[index - 1] != prevPumpState[index - 1]) {
+      Serial.println(pumpState[index - 1]);
+      isPumpStateChange[index - 1] = true;
+    } else {
+      isPumpStateChange[index - 1] = false;
+      Serial.println(pumpState[index - 1]);
     }
   }
 }
