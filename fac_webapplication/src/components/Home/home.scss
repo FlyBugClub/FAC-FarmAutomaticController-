@@ -1320,11 +1320,12 @@
           }
 
           &_Description {
+            overflow: auto;
             margin-top: 5px;
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
-            font-size: 20px;
+            font-size: 18px;
             height: 65px;
           }
 
