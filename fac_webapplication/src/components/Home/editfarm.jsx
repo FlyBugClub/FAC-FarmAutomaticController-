@@ -271,7 +271,7 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
                 </div>
             </BrowserView>
             <MobileView>
-
+<h1>edit farm page</h1>
             </MobileView>
         </div>
     )

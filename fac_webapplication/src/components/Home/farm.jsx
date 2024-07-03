@@ -715,7 +715,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                 }
             </BrowserView>
             <MobileView>
-
+<h1>farm page</h1>
             </MobileView>
         </div>
     )
