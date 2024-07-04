@@ -91,7 +91,7 @@ const User = ({ weatherState }) => {
 
             </BrowserView>
             <MobileView>
-
+                <h1>User page</h1>
             </MobileView>
 
         </div>
