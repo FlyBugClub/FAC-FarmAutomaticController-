@@ -18,10 +18,11 @@ import HourMinutePicker from "../Time/timepicker";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { stringify } from "ajv";
 const Farm = ({ weatherState, handleAddDevice }) => {
     const { URL, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
-
+    let flag = 0
     const { id: paramId } = useParams();
     const [id, setId] = useState("");
     const [listEquipmentState, setListEquipmentState] = useState(false);
@@ -35,8 +36,9 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [offset, setOffset] = useState(5);
     const [offsetState, setOffsetState] = useState(false);
     const seconds = [...Array(59).keys()];
+    const [farmConnected, setFarmConnected] = useState(false);
 
-    const [modeState, setModeState] = useState(false);// state cho to   ogle
+    const [modeState, setModeState] = useState(false);// state cho to toogle
     const [bumperState, setBumperState] = useState(false);
     const sliderRef = useRef(null);
     const [value, setValue] = useState(50); // value cho slider
@@ -45,13 +47,13 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [data, setData] = useState([]);
     const [currentDate, setcurrentDate] = useState("___-___-___");
     const [client, setClient] = useState(null);
+
     const [connectStatus, setConnectStatus] = useState("Disconnected");
 
     const [time, setTime] = useState('');
     const handleTimeChange = (newTime) => {
         setTime(newTime);
     };
-
 
     const hourMinutePickerRef = useRef(null);
 
@@ -61,26 +63,22 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     };
     useEffect(() => {
-        const options = {
-            clientId: "id_" + parseInt(Math.random() * 100000), // Tạo clientId ngẫu nhiên
-            host: 'broker.emqx.io',
-            port: 8083,
-            path: '/mqtt',
-        };
-        const newClient = new Client(options.host, options.port, options.clientId);
-        setClient(newClient);
-
         setId(paramId || '')
+        return () => {
+
+        }
     }, [])
 
     useEffect(() => {
         if (client !== null && connectStatus != "Connected" && connectStatus != "Connecting") {
             setConnectStatus("Connecting");
             client.connect({
-
                 onSuccess: () => {
                     console.log('Connected to MQTT broker');
-                    client.subscribe('fac_iot');
+                    const lastwillmessage_topic = id + "LastWillMessage";
+                    const ServerToClient_topic = id + "ServerToClient";
+                    client.subscribe(lastwillmessage_topic);
+                    client.subscribe(ServerToClient_topic)
                     setConnectStatus("Connected");
                 },
                 onFailure: (message) => {
@@ -90,7 +88,19 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
             });
             client.onMessageArrived = (message) => {
-                console.log(`Received message on topic ${message.destinationName}: ${message.payloadString}`);
+
+                if (message.destinationName == id + "LastWillMessage") {
+
+
+                    if (JSON.parse(message.payloadString)["status"] == true) {
+                        setFarmConnected(true)
+                    }
+                    else setFarmConnected(false)
+
+                }
+                else if (message.destinationName == id + "ServerToClient") {
+                    getLastStatus(message.payloadString)
+                }
             };
             client.onConnectionLost = (responseObject) => {
                 console.log("connection lost : " + responseObject.errorCode);
@@ -102,14 +112,14 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     useEffect(() => {
         if (id !== '') {
             getFarm(id, 1)
+
         }
     }, [id])
 
 
     useEffect(() => {
         if (farm.length !== 0) {
-
-            getLastStatus()
+            connectMqtt();
             if (farm[0]["Sensors"] != undefined) {
                 currentDateFunc()
                 setFarmData()
@@ -124,11 +134,36 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
     useEffect(() => {
         if (connectStatus == "Connected" && client.isConnected()) {
-            sendMessage();
+            sendMessage()
         }
+    }, [modeState])
 
-    }, [mode, modeState, bumperState, value])
+    useEffect(() => {
+        if (connectStatus == "Connected" && client.isConnected() && mode == "Automatic") {
+            if (modeState == true) {
+                sendMessage()
+            }
+        }
+    }, [value])
 
+    useEffect(() => {
+        if (connectStatus == "Connected" && client.isConnected() && mode == "Timer") {
+            if (modeState == true) {
+                sendMessage()
+            }
+        }
+    }, [timeList, offset])
+
+    const connectMqtt = () => {
+        const options = {
+            clientId: "id_" + parseInt(Math.random() * 100000), // Tạo clientId ngẫu nhiên
+            host: 'broker.emqx.io',
+            port: 8083,
+            path: '/mqtt',
+        };
+        const newClient = new Client(options.host, options.port, options.clientId);
+        setClient(newClient);
+    }
     const disconnectMqtt = () => {
         if (connectStatus == "Connected" && client.isConnected()) {
             client.disconnect();
@@ -138,12 +173,49 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
     const sendMessage = () => {
         try {
-            // var message = new Message("{'vake':'cuong'}");
-            // message.destinationName = "fac_iot";
-            // client.send(message);
-            if (farm.length != 0) {
-                setLastStatus();
+
+            if (farmConnected) {
+                let body = {}
+                let payload = {}
+                if (mode == "Manual") {
+                    body["index"] = farm[0]["_index"].toString()
+                    payload["action"] = "manual"
+                    if (modeState == true) {
+                        payload["messages"] = "on"
+                    }
+                    else payload["messages"] = "off"
+                }
+                else if (mode == "Automatic") {
+                    body["index"] = farm[0]["_index"].toString()
+                    payload["action"] = "auto"
+                    if (modeState == true) {
+                        payload["messages"] = value.toString() + " on"
+                    }
+                    else payload["messages"] = value.toString() + " off"
+                }
+                else if (mode == "Timer") {
+                    body["index"] = farm[0]["_index"].toString()
+                    payload["action"] = "schedule"
+                    if (modeState == true) {
+                        const time = timeList.length.toString() + " " + offset.toString() + " " + timeList.join(' ')
+                        payload["messages"] = time
+                    }
+                    else {
+                        const time = "0" + " " + offset.toString()
+                        payload["messages"] = time
+                    }
+                }
+                body["payload"] = payload
+                var message = new Message(JSON.stringify(body));
+                const clientToServer_topic = id + "ClientToServer";
+                message.destinationName = clientToServer_topic;
+                client.send(message);
             }
+            else {
+                setModeState(false)
+                toast.error("Farm is not connected")
+            }
+
         }
         catch (e) {
             alert(e);
@@ -173,33 +245,31 @@ const Farm = ({ weatherState, handleAddDevice }) => {
             else {
                 setTime("")
                 handleClearClickFromParent()
-                let timearray = timeList;
-                timearray.push(time)
-                timearray.sort((a, b) => {
-                    const [hoursA, minutesA] = a.split(':').map(Number);
-                    const [hoursB, minutesB] = b.split(':').map(Number);
-                    
-                    return hoursA - hoursB || minutesA - minutesB;
-                  });
-                setTimeList(timearray)
+                setTimeList(prevTimeList => {
+                    const updatedTimeList = [...prevTimeList, time];
+                    updatedTimeList.sort((a, b) => {
+                        const [hoursA, minutesA] = a.split(':').map(Number);
+                        const [hoursB, minutesB] = b.split(':').map(Number);
+                        return hoursA - hoursB || minutesA - minutesB;
+                    });
+                    return updatedTimeList;
+                });
                 toast.info("add time success");
             }
         }
     }
 
-    const handlEditOffset = async (offset) => {
-        console.log(offset)
+    const handlEditOffset = async (currentOffset) => {
         let body = [
             `${farm[0]["id"]}`, // id equipment
-            `${offset}` // mode state
+            `${currentOffset}`
         ];
         let res = await callAPi("post", `${URL}/data/editchedule`, body)
         if (!res.status) {
             toast.error("update offset fail");
         }
-        else 
-        {
-            setOffset(offset)
+        else {
+            setOffset(currentOffset)
             toast.info("update offset success");
         }
 
@@ -254,7 +324,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     }
 
-    const handleDeleteTime = async (time,index) => {
+    const handleDeleteTime = async (time, index) => {
         let body = [
             `${farm[0]["id"]}`, // id equipment
             `${time}:00` // mode state
@@ -263,14 +333,13 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         if (!res.status) {
             toast.error("delete time fail");
         }
-        else 
-        {
+        else {
 
             setTimeList(prevTimeList => {
                 const newTimeList = [...prevTimeList]; // Tạo bản sao của mảng
                 newTimeList.splice(index, 1); // Xóa phần tử
                 return newTimeList; // Trả về mảng mới
-              });
+            });
             toast.info("delete time success");
         }
     }
@@ -318,61 +387,76 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     }
 
-    const getLastStatus = async () => {
-
-
-        const laststatus = farm[0]["laststatus"]
+    const getLastStatus = async (message) => {
+        let laststatus = JSON.parse(message).find((item) => item["index"] == farm[0]["_index"])["payload"]
         if (laststatus != undefined) {
-            // set toogle state
-            if (laststatus["btn_status"] == 0) {
-                setModeState(false)
-            }
-            else setModeState(true)
-
-            if (laststatus["last_status"] == 0 || laststatus["last_status"] == null) {
-                setBumperState(false)
-            }
-            else setBumperState(true)
-            if (laststatus["mode"] == 0) {
+            if (laststatus["action"] == "manual") {
                 setMode("Manual")
+                if (laststatus["messages"] == "on") {
+                    setModeState(true)
+                }
+                else setBumperState(false)
+                if (laststatus["status"] == true) {
+                    setBumperState(true)
+                }
+                else setBumperState(false)
             }
-            else if (laststatus["mode"] == 1) {
+            else if (laststatus["action"] == "auto") {
                 setMode("Automatic")
+                if (laststatus["status"] == true) {
+                    setBumperState(true)
+                }
+                else setBumperState(false)
+                if (laststatus["messages"].split(' ')[1] == 'off') {
+                    setModeState(false)
+                }
+                else {
+                    setModeState(true)
+                }
+                const value = parseInt(laststatus["messages"].split(' ')[0], 10);
+                setValue(value)
             }
-            else if (laststatus["mode"] == 2) {
-
+            else if (laststatus["action"] == "schedule") {
                 setMode("Timer")
+                if (laststatus["status"] == true) {
+                    setBumperState(true)
+                }
+                else setBumperState(false)
+                const toggleState = laststatus["messages"].split(' ')[0]
+                if (toggleState == '0') {
+                    setModeState(false)
+                }
+                else {
+                    setModeState(true)
+                }
                 getSchedule()
             }
-            setValue(laststatus["expect_sensor_value"])
+            else {
+                setModeState(false);
+                setMode("Manual");
+                setBumperState(false)
+                setValue(80)
+            }
 
         }
-        else {
-            setModeState(false);
-            setMode("Manual");
-            setBumperState(false)
-            setValue(50)
-        }
-
-
     }
 
-    const setLastStatus = async () => {
-        let body = [
-            `${farm[0]["id"]}`, // id equipment
-            `${modeState ? 1 : 0}`, // toogle state
-            `${mode == "Manual" ? 0 : mode == "Automatic" ? 1 : 2}`, // mode state
-            `${value}`, // expect sensor value
-        ];
-        let res = await callAPi("post", `${URL}/data/editlaststatus`, body)
+    // const setLastStatus = async () => {
+    //     let body = [
+    //         `${farm[0]["id"]}`, // id equipment
+    //         `${modeState ? 1 : 0}`, // toogle state
+    //         `${mode == "Manual" ? 0 : mode == "Automatic" ? 1 : 2}`, // mode state
+    //         `${value}`, // expect sensor value
+    //     ];
+    //     let res = await callAPi("post", `${URL}/data/editlaststatus`, body)
 
-        if (!res.status) {
-            alert("seting last status fail")
-        }
-        else {
-            console.log("ok")
-        }
-    }
+    //     if (!res.status) {
+    //         alert("seting last status fail")
+    //     }
+    //     else {
+    //         console.log("ok")
+    //     }
+    // }
 
     const handleEquipmentButton = async () => {
         setListEquipmentState(!listEquipmentState)
@@ -451,11 +535,21 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                         <IoIosAddCircleOutline size={26} className="Icon" />
                                         Add device
                                     </button>
-                                    <div className="Fac_Home_Web_Farmcontainer_Header_Right_Status">
 
-                                        <MdCircle size={18} color="#8AFF02" style={{ marginRight: "5px", marginTop: "3px" }} />
-                                        Connected
-                                    </div>
+                                    {farmConnected ?
+                                        <div className="Fac_Home_Web_Farmcontainer_Header_Right_Status">
+
+                                            <MdCircle size={18} color="#8AFF02" style={{ marginRight: "5px", marginTop: "3px" }} />
+                                            Connected
+                                        </div>
+                                        :
+                                        <div className="Fac_Home_Web_Farmcontainer_Header_Right_Status">
+
+                                            <MdCircle size={18} color="#ff0000" style={{ marginRight: "5px", marginTop: "3px" }} />
+                                            Disconnected
+                                        </div>
+                                    }
+
 
                                 </div>
                             </div>
@@ -596,7 +690,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                                     <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox_Item" onClick={() => { setMode("Automatic"); setListModeState(false) }}>
                                                         Automatic
                                                     </div>
-                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox_Item" onClick={() => { setMode("Timer"); setListModeState(false) }}>
+                                                    <div className="Fac_Home_Web_Farmcontainer_Controller_Header_Mode_State_Dropbox_Item" onClick={() => { setMode("Timer"); setListModeState(false); getSchedule() }}>
                                                         Timer
                                                     </div>
 
@@ -699,7 +793,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                                 </div>
                                                 <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer" onClick={() => { setTimeTableState(!timeTableState) }}>
                                                     {timeList.map((time, index) => (
-                                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
+                                                        <div className="Fac_Home_Web_Farmcontainer_Controller_Body_Control_Timecontainer_Times" key={index}>
                                                             {time}
                                                         </div>
                                                     ))}
@@ -713,20 +807,20 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                 <div className="Fac_Home_Web_Farmcontainer_Settime" style={timeState ? { width: "220px" } : { width: "350px" }}>
                                     <div className="Fac_Home_Web_Farmcontainer_Settime_Title">
                                         <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset">
-                                            Offset:                                            
+                                            Offset:
                                             <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Input" onClick={() => { setOffsetState(!offsetState) }}>
                                                 {offset}
                                             </div>
                                             {
-                                                offsetState && 
+                                                offsetState &&
                                                 <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Dropbox">
                                                     {seconds.map((item) => (
-                                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Dropbox_Item" key={item}  onClick={() => { handlEditOffset(item+1) ; setOffsetState(false)}}>
-                                                            {item +1}
-                                                    </div>
+                                                        <div className="Fac_Home_Web_Farmcontainer_Settime_Title_Offset_Dropbox_Item" key={item} onClick={() => { handlEditOffset(item + 1); setOffsetState(false) }}>
+                                                            {item + 1}
+                                                        </div>
                                                     ))}
-                                                    
-                                                    
+
+
                                                 </div>
                                             }
                                         </div>

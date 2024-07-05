@@ -21,6 +21,8 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
     const { id: paramId } = useParams();
     const [qrcodeState, setQrcodeState] = useState(false)
     const [authQrState, setAuthQrState] = useState(false)
+   
+
     const [farmSeletedState, setFarmSelectedState] = useState(false)
     const [qrData, setQrData] = useState([])
     const navigate = useNavigate();
@@ -255,14 +257,6 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                             Bump name:
                                             <textarea className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={nameEquipmentRef} ></textarea>
                                         </div>
-                                        {/* <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{marginTop:"15px"}} maxLength="30">
-                                        SHT name:
-                                        <textarea className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input"></textarea>
-                                    </div>
-                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items"  style={{marginTop:"15px"}} maxLength="30">
-                                        Ph name: 
-                                        <textarea className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input"></textarea>
-                                    </div> */}
                                     </div>
                                     <div className="Fac_Home_Web_Addfarmcontainer_Body_Right">
 

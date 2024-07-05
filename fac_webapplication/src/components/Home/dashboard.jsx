@@ -9,17 +9,26 @@ import { FiSettings } from "react-icons/fi";
 import { callAPi } from "../../services/UserService";
 import Loading from "./loading";
 import { AuthContext } from "../Context/AuthContext";
+import { FaRegAddressBook } from "react-icons/fa6";
 
-export const Dashboard = ({ weatherState, handleAddDevice, setLocation }) => {
-  const { URL, login, user, farmsct, authDispatch } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [farms, setFarms] = useState([]);
-  const [totalfarms, setTotalFarms] = useState([]);
-  const [loadingState, setLoadingState] = useState(true);
+export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
+    const { URL, login, user, farmsct, authDispatch } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const [farms, setFarms] = useState([]);
+    const [totalfarms, setTotalFarms] = useState([]);
+    const [loadingState, setLoadingState] = useState(true)
+    useEffect(() => {
+        if (login.status === true) { getDashboard() }
+    }, [login.status])
 
-  useEffect(() => {
-    if (login.status === true) {
-      getDashboard();
+    const getDashboard = async () => {
+        let res = await callAPi(
+            "get",
+            `${URL}/data/getDashboard/${user.id_user_}`,
+        );
+        setLoadingState(false)
+        setTotalFarms(res.data)
+        setFarms(res.data)
     }
   }, [login.status]);
 

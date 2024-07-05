@@ -77,7 +77,6 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
 
     useEffect(() => {
         if (Object.keys(currentDevice).length > 0) {
-
             setEquipmentName(currentDevice["name"])
         }
     }, [currentDevice])
