@@ -46,6 +46,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [data, setData] = useState([]);
     const [currentDate, setcurrentDate] = useState("___-___-___");
     const [client, setClient] = useState(null);
+
     const [connectStatus, setConnectStatus] = useState("Disconnected");
 
     const [time, setTime] = useState('');

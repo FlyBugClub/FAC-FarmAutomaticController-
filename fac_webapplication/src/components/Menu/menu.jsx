@@ -5,6 +5,7 @@ import { WiDayCloudy } from "react-icons/wi";
 import { BrowserView, MobileView } from "react-device-detect";
 import "./menu.scss";
 import { useNavigate } from "react-router-dom";
+import { FaRegAddressBook } from "react-icons/fa6";
 
 import { AuthContext } from "../Context/AuthContext";
 const Menu = ({ handleWeather, weatherState }) => {
