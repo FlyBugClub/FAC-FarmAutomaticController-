@@ -30,15 +30,7 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
         setTotalFarms(res.data)
         setFarms(res.data)
     }
-  }, [login.status]);
-
-  const getDashboard = async () => {
-    let res = await callAPi("get", `${URL}/data/getDashboard/${user.id_user_}`);
-    setLoadingState(false);
-    setTotalFarms(res.data);
-    setFarms(res.data);
-  };
-
+  
   const navigateToFarm = (id_esp) => {
     let farms_temp = [];
     totalfarms.map((item) => {
@@ -313,4 +305,5 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
       </MobileView>
     </div>
   );
-};
+
+}

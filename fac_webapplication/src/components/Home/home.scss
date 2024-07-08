@@ -568,11 +568,11 @@
                 transition: 0.2s;
               }
 
-              input:checked + .slider {
+              input:checked+.slider {
                 background-color: #000000;
               }
 
-              input:checked + .slider:before {
+              input:checked+.slider:before {
                 -webkit-transform: translateX(40px);
                 -ms-transform: translateX(40px);
                 transform: translateX(40px);
@@ -711,20 +711,71 @@
             display: flex;
             align-items: center;
             font-size: 20px;
+            position: relative;
+
             &_Input {
               height: 25px;
-              width: 80px;
+              width: 50px;
+              display: flex;
+              align-items: center;
               margin-left: 10px;
-              border: none;
               outline: 2px solid rgba(255, 255, 255, 0.9);
               background: $background_element;
               color: $color_text;
-              padding: 0px 10px;
+              padding: 0px 5px;
               box-sizing: border-box;
-              font-size: 15px;
+              font-size: 17px;
               border-radius: 8px;
+              cursor: pointer;
+
+              &:hover {
+                background-color: #686666;
+
+              }
+
             }
+            &_Dropbox
+                        {
+                            position: absolute;
+                            top : 35px;
+                            right: 0;
+                            height: 150px;
+                            width: 50px;
+                            background-color: #000000;
+                            border-radius: 8px;
+                            outline: 2px solid $outline_color;
+                            padding: 1px 0px;
+                            box-sizing: border-box;
+                            display: grid;
+                            justify-content: center;
+                            align-items: center;
+                            grid-template-columns: repeat(1, 1fr);
+                            overflow-y: auto;
+                            gap: 10px;                         
+                            &_Item
+                            {
+                                width: 100%;
+                                display: flex;
+                                align-items: center;
+                                color: $color_text;
+                                padding: 0px 5px;
+                                box-sizing: border-box;
+                                font-size: 17px;
+                                border-radius: 1px;
+                                cursor: pointer;
+                                &:hover {
+                                    background-color: #686666;
+    
+                                }
+                            }
+                            &::-webkit-scrollbar {
+                                height: 1px;
+
+                                scrollbar-width: thin;
+                            }
+                        }
           }
+
           &_Icon {
             rotate: 45deg;
             cursor: pointer;
@@ -741,6 +792,7 @@
             height: 100%;
 
             box-sizing: border-box;
+
             &_Title {
               padding-top: 10px;
               padding-left: 10px;
@@ -749,16 +801,19 @@
               align-items: center;
               justify-content: space-between;
               font-size: 20px;
+
               .Icon {
                 cursor: pointer;
               }
             }
+
             &_Times {
               width: 100%;
               height: calc(100% - 45px);
               overflow-y: auto;
               padding-left: 10px;
               box-sizing: border-box;
+
               &_Item {
                 display: flex;
                 align-items: center;
@@ -775,12 +830,14 @@
                 &_Edit {
                   display: flex;
                   align-items: center;
+
                   .Icon {
                     margin-left: 10px;
                     cursor: pointer;
                   }
                 }
               }
+
               &::-webkit-scrollbar {
                 height: 1px;
                 scrollbar-width: thin;
@@ -792,6 +849,7 @@
             flex: 3;
             height: 100%;
             position: relative;
+
             &_Button {
               width: 60px;
               height: 25px;
@@ -805,6 +863,7 @@
           }
         }
       }
+
       &_Nofarm {
         display: flex;
         align-items: center;
@@ -814,11 +873,13 @@
         font-weight: 500;
       }
     }
+
     .center {
       display: flex;
       align-items: center;
       justify-content: center;
     }
+
     &_Addfarmcontainer {
       height: 100%;
       width: 100%;
@@ -1713,11 +1774,11 @@
                 transition: 0.2s;
               }
 
-              input:checked + .slider {
+              input:checked+.slider {
                 background-color: #000000;
               }
 
-              input:checked + .slider:before {
+              input:checked+.slider:before {
                 -webkit-transform: translateX(40px);
                 -ms-transform: translateX(40px);
                 transform: translateX(40px);
@@ -1856,6 +1917,7 @@
             display: flex;
             align-items: center;
             font-size: 20px;
+
             &_Input {
               height: 25px;
               width: 80px;
@@ -1870,6 +1932,7 @@
               border-radius: 8px;
             }
           }
+
           &_Icon {
             rotate: 45deg;
             cursor: pointer;
@@ -1886,6 +1949,7 @@
             height: 100%;
 
             box-sizing: border-box;
+
             &_Title {
               padding-top: 10px;
               padding-left: 10px;
@@ -1894,16 +1958,19 @@
               align-items: center;
               justify-content: space-between;
               font-size: 20px;
+
               .Icon {
                 cursor: pointer;
               }
             }
+
             &_Times {
               width: 100%;
               height: calc(100% - 45px);
               overflow-y: auto;
               padding-left: 10px;
               box-sizing: border-box;
+
               &_Item {
                 display: flex;
                 align-items: center;
@@ -1920,12 +1987,14 @@
                 &_Edit {
                   display: flex;
                   align-items: center;
+
                   .Icon {
                     margin-left: 10px;
                     cursor: pointer;
                   }
                 }
               }
+
               &::-webkit-scrollbar {
                 height: 1px;
                 scrollbar-width: thin;
@@ -1937,6 +2006,7 @@
             flex: 3;
             height: 100%;
             position: relative;
+
             &_Button {
               width: 60px;
               height: 25px;
@@ -1950,6 +2020,7 @@
           }
         }
       }
+
       &_Nofarm {
         display: flex;
         align-items: center;
@@ -1959,11 +2030,13 @@
         font-weight: 500;
       }
     }
+
     .center {
       display: flex;
       align-items: center;
       justify-content: center;
     }
+
     &_Addfarmcontainer {
       height: 100%;
       width: 100%;

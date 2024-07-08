@@ -13,8 +13,11 @@ NTPClient timeClient(ntpUDP, ntpServer, ntpPort);
 
 const long timeZoneOffset = 7 * 3600;  // Đổi thành số giây
 
-String ssid = "DAT_MOBILE";
-String password = "ktd01042013";
+// String ssid = "DAT_MOBILE";
+// String password = "ktd01042013";
+
+String ssid = "Basic Coffee";
+String password = "";
 
 const char* mqtt_server = "broker.emqx.io";
 const uint16_t mqtt_port = 1883;
