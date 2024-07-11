@@ -6,12 +6,23 @@ import { HiOutlineCpuChip } from "react-icons/hi2";
 import { PiPokerChipLight } from "react-icons/pi";
 
 const Adminpage = () => {
+
+    const [adminState, setAdminState] = useState("cuong")
+
+    const handleQrCode = () => {
+        setAdminState("Khoi")
+    }
+
+    // useEffect(() => {
+    //     console.log("hehe")
+    // },[adminState,])
+
     return (
         <div className="Fac_Admin">
             <BrowserView className="Fac_Admin_Web">
                 <div className="Fac_Admin_Web_Menu">
-                    <div className="Fac_Admin_Web_Menu_Items">
-                        <BsQrCode className="Icon"/>
+                    <div className="Fac_Admin_Web_Menu_Items" onClick={() => handleQrCode()}>
+                        <BsQrCode className="Icon" />
                         Create Qr Code
                     </div>
                     <div className="Fac_Admin_Web_Menu_Items">
@@ -23,7 +34,10 @@ const Adminpage = () => {
                         Equipment
                     </div>
                 </div>
-                <div className="Fac_Admin_Web_Manager"></div>
+                <div className="Fac_Admin_Web_Manager">
+                    {adminState === "cuong" && <div>cuong</div>}
+
+                </div>
 
             </BrowserView>
             <MobileView>

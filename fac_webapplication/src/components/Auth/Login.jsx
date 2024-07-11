@@ -107,6 +107,7 @@ const Login = () => {
         let token = res.asscessToken;
         if (res.data[0].status_ === 200) {
           console.log("dang nhap thanh cong");
+          sessionStorage.setItem("last_click", 1);
           sendToken(checkSavePassword, token);
           authDispatch({
             type: "SET_LOGIN",

@@ -208,9 +208,14 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                 <div className="Fac_Home_Web_Addfarmcontainer">
                     <div className="Fac_Home_Web_Addfarmcontainer_Title">
                         <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => navigate(-1)} />
-                        <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                            Add farm
-                        </div>
+                        {addDeviceState == "farm" ?
+                            <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                Add farm
+                            </div> :
+                            <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                Add equipment
+                            </div>
+                        }
                     </div>
                     {
                         (qrcodeState && addDeviceState == "farm") ?

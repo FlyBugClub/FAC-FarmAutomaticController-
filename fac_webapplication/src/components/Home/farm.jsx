@@ -509,6 +509,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
             payload: farm[0],
         });
         handleAddDevice("equipment")
+
         navigate(`/editfarm/${id}`)
     };
 
@@ -524,7 +525,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                             <div className="Fac_Home_Web_Farmcontainer_Header">
                                 <div className="Fac_Home_Web_Farmcontainer_Header_Left">
 
-                                    <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => { navigate("/dashboard"); disconnectMqtt() }} />
+                                    <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => { navigate("/dashboard");sessionStorage.setItem("last_click",1 ); disconnectMqtt() }} />
                                     <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                                         Farm name
                                     </div>
@@ -539,7 +540,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                         <FiSettings size={20} className="Icon" />
                                         Setting
                                     </button>
-                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigate(`/addfarm/${id}`); }} >
+                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt();sessionStorage.setItem("last_click",3 );sessionStorage.setItem("last_service","equipment" ); ;navigate(`/addfarm/${id}`); }} >
                                         <IoIosAddCircleOutline size={26} className="Icon" />
                                         Add device
                                     </button>
