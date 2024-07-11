@@ -46,10 +46,9 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     const [data, setData] = useState([]);
     const [currentDate, setcurrentDate] = useState("___-___-___");
     const [client, setClient] = useState(null);
-
     const [connectStatus, setConnectStatus] = useState("Disconnected");
-
     const [time, setTime] = useState('');
+
     const handleTimeChange = (newTime) => {
         setTime(newTime);
     };
@@ -63,10 +62,9 @@ const Farm = ({ weatherState, handleAddDevice }) => {
     };
     useEffect(() => {
         setId(paramId || '')
-        return () => {
-
-        }
+      
     }, [])
+
 
     useEffect(() => {
         if (client !== null && connectStatus != "Connected" && connectStatus != "Connecting") {
@@ -86,7 +84,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
             });
             client.onMessageArrived = (message) => {
-
+                
                 if (message.destinationName == id + "LastWillMessage") {
 
 
@@ -114,7 +112,6 @@ const Farm = ({ weatherState, handleAddDevice }) => {
         }
     }, [id])
 
-
     useEffect(() => {
         if (farm.length !== 0) {
             connectMqtt();
@@ -129,28 +126,6 @@ const Farm = ({ weatherState, handleAddDevice }) => {
             setLoadingState(false)
         }
     }, [farm])
-
-    // useEffect(() => {
-    //     if (connectStatus == "Connected" && client.isConnected()) {
-    //         sendMessage()
-    //     }
-    // }, [modeState])
-
-    // useEffect(() => {
-    //     if (connectStatus == "Connected" && client.isConnected() && mode == "Automatic") {
-    //         if (modeState == true || modeState == false) {
-    //             sendMessage()
-    //         }
-    //     }
-    // }, [value])
-
-    // useEffect(() => {
-    //     if (connectStatus == "Connected" && client.isConnected() && mode == "Timer") {
-    //         if (modeState == true || modeState == false) {
-    //             sendMessage()
-    //         }
-    //     }
-    // }, [timeList, offset])
 
 
     const handleModeToggleChange = () => {
@@ -902,11 +877,11 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
                                 </div>
                                 <div className="Fac_Home_Web_Farmcontainer_Header_Right">
-                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigate(`/addfarm/${id}`); }} >
+                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button block"  >
                                         <TbDatabaseSearch size={20} className="Icon" />
                                         History
                                     </button>
-                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button" onClick={() => { handleAddDevice("equipment"); disconnectMqtt(); navigateToSetting() }} >
+                                    <button className="Fac_Home_Web_Farmcontainer_Header_Right_Button block"  >
                                         <FiSettings size={20} className="Icon" />
                                         Setting
                                     </button>
@@ -916,9 +891,9 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                                     </button>
                                     <div className="Fac_Home_Web_Farmcontainer_Header_Right_Status">
 
-                                        <MdCircle size={18} color="#8AFF02" style={{ marginRight: "5px", marginTop: "3px" }} />
-                                        Connected
-                                    </div>
+                                            <MdCircle size={18} color="#ff0000" style={{ marginRight: "5px", marginTop: "3px" }} />
+                                            Disconnected
+                                        </div>
 
                                 </div>
                             </div>

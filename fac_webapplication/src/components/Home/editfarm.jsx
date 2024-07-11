@@ -11,6 +11,8 @@ import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { stringify } from "ajv";
+const libraries = ['places']
+
 const EditFarm = ({ weatherState, addDeviceState }) => {
     const { id: paramId } = useParams();
     const [farmSeleted, setFarmSelected] = useState("")
@@ -23,15 +25,18 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
     const [farmAddress, setFarmAddress] = useState("");
     const [selectedLocation, setSelectedLocation] = useState({});
     const [query, setQuery] = useState("");
+    const [pinState, setPinState] = useState(false)
+    const [pin, setPin] = useState("")
+    const [pinAvailable, setPinAvalable] = useState({})
+    
     const autoCompleteRef = useRef(null);
     const farmNameRef = useRef(null);
     const farmDescriptionRef = useRef(null);
     const equipmentNameRef = useRef(null);
     const googleMapsApiKey = "AIzaSyBF_aYE1ude5Qh1-SEoX1yMVAKz7Z46r7o";
-
             const { isLoaded, loadError } = useLoadScript({
                 googleMapsApiKey,
-                libraries: ["places"]
+                libraries
             });
 
     let autoComplete;
@@ -40,11 +45,20 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
         mapRef.current = map;
         mapRef.current.setZoom(20);
     }, []);
-
+    const getAvailableIndex = async (id) => {
+        let res = await callAPi(
+            "get",
+            `${URL}/data/getavailableindex/${id}`,
+        );
+        if (res.status) {
+            setPinAvalable((res.data)[0])
+        }
+    }
     useEffect(() => {
         if (farmsct.length != 0) {
 
             const currentFarm = farmsct.find(farm => farm.id_esp == paramId)
+            getAvailableIndex(paramId)
             setFarmSelected(currentFarm["name"])
         }
     }, [farmsct]);
@@ -77,6 +91,7 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
 
     useEffect(() => {
         if (Object.keys(currentDevice).length > 0) {
+            setPin(currentDevice["_index"])
             setEquipmentName(currentDevice["name"])
         }
     }, [currentDevice])
@@ -113,15 +128,16 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
     }
 
     const handleEditEquipmentClick = async () => {
-        if (equipmentName != "") {
+        if (equipmentNameRef.current.value != "") {
             const selectedFarm = farmsct.find(farm => farm.name == farmSeleted)
             let body = [
                 currentDevice["id"],
                 selectedFarm["id_esp"],
-                equipmentName
-            ];
+                equipmentNameRef.current.value,
+                parseInt(pin,10)
+            ];  
             console.log(body)
-            let res = await callAPi("post", `${URL}/data/editdevice`, body)
+            let res = await callAPi("post", `${URL}/data/editequipment`, body)
             if (!res.status) {
                 alert("update fail")
             }
@@ -148,6 +164,7 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
         }
         else toast.error("please enter infomation");
     }
+   
 
     return (
         <div className="Fac_Home">
@@ -233,6 +250,29 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
                                         Bump name:
                                         <input className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={equipmentNameRef}></input>
                                     </div>
+                                    <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Index" onClick={() => { setPinState(!pinState) }}>
+                                            Pin:
+                                            <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Index_Selection">
+                                                {pin}
+                                                {pinState ? <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Index_Selection_Dropbox">
+                                                    {Object.entries(pinAvailable).map(([key, value], index) => (
+                                                        value ?(<div className="Items" onClick={() => setPin((index + 1).toString())} key={index}>
+                                                        {index + 1}
+                                                    </div>)
+                                                        
+
+                                                        :
+                                                        (<div className="Itemsdisable" key={index}>
+                                                        {index + 1}
+                                                    </div>)
+                                                    ))}
+
+
+                                                </div> : <></>}
+
+                                            </div>
+
+                                        </div>
                                 </div>
                                 <div className="Fac_Home_Web_Addfarmcontainer_Body_Right">
 
@@ -270,7 +310,7 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
                 </div>
             </BrowserView>
             <MobileView>
-<h1>edit farm page</h1>
+                <h1>edit farm page</h1>
             </MobileView>
         </div>
     )

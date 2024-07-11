@@ -272,6 +272,15 @@
             }
           }
 
+          .block {
+            opacity: 0.7;
+            cursor: not-allowed;
+
+            &:hover {
+              background-color: $background_element
+            }
+          }
+
           .Icon {
             margin-right: 5px;
           }
@@ -734,46 +743,48 @@
               }
 
             }
-            &_Dropbox
-                        {
-                            position: absolute;
-                            top : 35px;
-                            right: 0;
-                            height: 150px;
-                            width: 50px;
-                            background-color: #000000;
-                            border-radius: 8px;
-                            outline: 2px solid $outline_color;
-                            padding: 1px 0px;
-                            box-sizing: border-box;
-                            display: grid;
-                            justify-content: center;
-                            align-items: center;
-                            grid-template-columns: repeat(1, 1fr);
-                            overflow-y: auto;
-                            gap: 10px;                         
-                            &_Item
-                            {
-                                width: 100%;
-                                display: flex;
-                                align-items: center;
-                                color: $color_text;
-                                padding: 0px 5px;
-                                box-sizing: border-box;
-                                font-size: 17px;
-                                border-radius: 1px;
-                                cursor: pointer;
-                                &:hover {
-                                    background-color: #686666;
-    
-                                }
-                            }
-                            &::-webkit-scrollbar {
-                                height: 1px;
 
-                                scrollbar-width: thin;
-                            }
-                        }
+            &_Dropbox {
+              position: absolute;
+              top: 35px;
+              right: 0;
+              height: 150px;
+              width: 50px;
+              background-color: #000000;
+              border-radius: 8px;
+              outline: 2px solid $outline_color;
+              padding: 1px 0px;
+              box-sizing: border-box;
+              display: grid;
+              justify-content: center;
+              align-items: center;
+              grid-template-columns: repeat(1, 1fr);
+              overflow-y: auto;
+              gap: 10px;
+
+              &_Item {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                color: $color_text;
+                padding: 0px 5px;
+                box-sizing: border-box;
+                font-size: 17px;
+                border-radius: 1px;
+                cursor: pointer;
+
+                &:hover {
+                  background-color: #686666;
+
+                }
+              }
+
+              &::-webkit-scrollbar {
+                height: 1px;
+
+                scrollbar-width: thin;
+              }
+            }
           }
 
           &_Icon {
@@ -943,6 +954,65 @@
               border: 2px solid transparent;
             }
           }
+
+          &_Index {
+            width: 190px;
+            height: 40px;
+            margin-top: 15px;
+            font-size: 23px;
+            display: flex;
+            align-items: center;
+
+            &_Selection {
+              position: relative;
+              width: 70px;
+              height: 35px;
+              outline: #fff 2px solid;
+              border-radius: 8px;
+              font-size: 20px;
+              margin-left: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              user-select: none;
+              cursor: pointer;
+
+              &_Dropbox {
+                position: absolute;
+                top: 44px;
+                left: 0;
+                width: 70px;
+                height: 130px;
+                outline: #fff 2px solid;
+                border-radius: 8px;
+
+                .Items {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin-top: 5px;
+                  cursor: pointer;
+
+                  &:hover {
+                    background: rgba(255, 255, 255, 0.6);
+                    color: black;
+                    border-color: rgb(33, 32, 32);
+                  }
+                }
+                  .Itemsdisable {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-top: 5px;
+                    cursor: not-allowed;
+
+                    background: rgba(255, 255, 255, 0.2);
+
+                  }
+                
+              }
+            }
+          }
         }
 
         &_Right {
@@ -969,7 +1039,7 @@
             font-size: 23px;
             margin-right: auto;
             position: relative;
-
+            cursor: pointer;
             &_Input {
               color: $color_text;
               margin-top: 10px;

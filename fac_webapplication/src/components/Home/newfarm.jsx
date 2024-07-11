@@ -16,15 +16,19 @@ import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { stringify } from "ajv";
-
+const libraries = ['places']
 const AddFarm = ({ weatherState, addDeviceState }) => {
     const { id: paramId } = useParams();
     const [qrcodeState, setQrcodeState] = useState(false)
     const [authQrState, setAuthQrState] = useState(false)
-   
+
 
     const [farmSeletedState, setFarmSelectedState] = useState(false)
     const [qrData, setQrData] = useState([])
+    const [pinState, setPinState] = useState(false)
+    const [pin, setPin] = useState("")
+    const [pinAvailable, setPinAvalable] = useState({})
+
     const navigate = useNavigate();
     const [query, setQuery] = useState("");
     const autoCompleteRef = useRef(null);
@@ -34,17 +38,16 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
     const DesciptionRef = useRef(null);
     const { URL, farmsct } = useContext(AuthContext);
 
-    
     const googleMapsApiKey = "AIzaSyBF_aYE1ude5Qh1-SEoX1yMVAKz7Z46r7o";
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey,
-        libraries: ["places"]
+        libraries
     });
     const [selectedLocation, setSelectedLocation] = useState({
         lat: 10.8231,
         lng: 106.6297,
     });
-    
+
     let autoComplete;
     const mapRef = React.useRef();
     const onMapLoad = React.useCallback((map) => {
@@ -60,6 +63,10 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
         }
     }, [farmsct]);
 
+
+    useEffect(() => {
+        console.log(pinAvailable)
+    }, [pinAvailable]);
     const handleScriptLoad = (updateQuery, autoCompleteRef) => {
         autoComplete = new window.google.maps.places.Autocomplete(
             autoCompleteRef.current,
@@ -101,6 +108,9 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                 if (splitResult[1] == addDeviceState) {
                     setQrData(splitResult)
                     setQrcodeState(true)
+                    if (splitResult[1] == "equipment") {
+                        getAvailableIndex(paramId)
+                    }
                 }
                 else alert("this qr code for add equipment")
 
@@ -149,16 +159,26 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
 
     }
 
+    const getAvailableIndex = async (id) => {
+        let res = await callAPi(
+            "get",
+            `${URL}/data/getavailableindex/${id}`,
+        );
+        if (res.status) {
+            setPinAvalable((res.data)[0])
+        }
+    }
+
     const handleAddFarmClick = async () => {
         if (DesciptionRef.current.value != "" && nameFarmRef.current.value != "" && autoCompleteRef.current.value != "") {
             let body = [
-            qrData[2],
-             paramId,
-            nameFarmRef.current.value,
-            DesciptionRef.current.value,
-            selectedLocation.lat,
-            selectedLocation.lng,
-            autoCompleteRef.current.value
+                qrData[2],
+                paramId,
+                nameFarmRef.current.value,
+                DesciptionRef.current.value,
+                selectedLocation.lat,
+                selectedLocation.lng,
+                autoCompleteRef.current.value
             ];
             let res = await callAPi("post", `${URL}/data/insertfarm`, body)
 
@@ -212,7 +232,7 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                     <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }}>
                                         Description:
                                         <textarea
-                                         maxLength="150"
+                                            maxLength="150"
                                             className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input"
                                             ref={DesciptionRef}
                                             style={{ height: "100px", textAlign: "left" }}
@@ -255,14 +275,37 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                     <div className="Fac_Home_Web_Addfarmcontainer_Body_Left">
                                         <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items">
                                             Bump name:
-                                            <textarea className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={nameEquipmentRef} ></textarea>
+                                            <input className="Fac_Home_Web_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={nameEquipmentRef} ></input>
+                                        </div>
+                                        <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Index" onClick={() => { setPinState(!pinState) }}>
+                                            Pin:
+                                            <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Index_Selection">
+                                                {pin}
+                                                {pinState ? <div className="Fac_Home_Web_Addfarmcontainer_Body_Left_Index_Selection_Dropbox">
+                                                    {Object.entries(pinAvailable).map(([key, value], index) => (
+                                                        value ?(<div className="Items" onClick={() => setPin((index + 1).toString())} key={index}>
+                                                        {index + 1}
+                                                    </div>)
+                                                        
+
+                                                        :
+                                                        (<div className="Itemsdisable" key={index}>
+                                                        {index + 1}
+                                                    </div>)
+                                                    ))}
+
+
+                                                </div> : <></>}
+
+                                            </div>
+
                                         </div>
                                     </div>
                                     <div className="Fac_Home_Web_Addfarmcontainer_Body_Right">
 
                                         <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Farmselection">
                                             Farm selection:
-                                            <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Farmselection_Input " onClick={() => setFarmSelectedState(!farmSeletedState)} style={{ cursor: "pointer" }}>
+                                            <div className="Fac_Home_Web_Addfarmcontainer_Body_Right_Farmselection_Input " onClick={() => setFarmSelectedState(!farmSeletedState)}>
                                                 {farmSeleted}
                                             </div>
                                             {
@@ -298,7 +341,7 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                     <button className="Fac_Home_Web_Addfarmcontainer_Body_Qrbutton" style={authQrState ? { outline: " 2px solid rgba(255, 0, 0, 0.9)" } : { outline: " 2px solid rgba(255, 255, 255, 0.9)" }} onClick={() => handleButtonClick()}>
                                         <BsQrCode size={26} style={{ marginRight: "10px" }} />
                                         Add Qr code file
-                                    </button>   
+                                    </button>
                                     <input
                                         type="file"
                                         ref={fileInputRef}
@@ -321,7 +364,7 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                 </div>
             </BrowserView>
             <MobileView>
-                    <h1>New farm page</h1>
+                <h1>New farm page</h1>
             </MobileView>
         </div>
     )
