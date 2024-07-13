@@ -7,6 +7,8 @@ import "./menu.scss";
 import { useNavigate } from "react-router-dom";
 
 import { AuthContext } from "../Context/AuthContext";
+import { FaRegAddressBook } from "react-icons/fa6";
+
 const Menu = ({ handleWeather, weatherState }) => {
   const { URL, login, user, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
