@@ -274,16 +274,8 @@ export const Dashboard = ({ weatherState, handleAddDevice, setLocation }) => {
       >
         <div className="Fac_Home_Mobile_Dashboardcontainer">
           <div className="Fac_Home_Mobile_Dashboardcontainer_Header">
-            Farms
-            <div className="center">
-              <input
-                className="Fac_Home_Mobile_Dashboardcontainer_Header_Input"
-                type="text"
-                onChange={(e) => {
-                  handleChange(e);
-                }}
-                placeholder="Search..."
-              ></input>
+            <div className="Fac_Home_Mobile_Dashboardcontainer_Header_Content">
+              Farms
               <button
                 className="Fac_Home_Mobile_Dashboardcontainer_Header_Button"
                 onClick={() => {
@@ -298,6 +290,14 @@ export const Dashboard = ({ weatherState, handleAddDevice, setLocation }) => {
                 New farm
               </button>
             </div>
+            <input
+              className="Fac_Home_Mobile_Dashboardcontainer_Header_Input"
+              type="text"
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              placeholder="Search..."
+            ></input>
           </div>
           {loadingState ? (
             <div
@@ -353,7 +353,6 @@ export const Dashboard = ({ weatherState, handleAddDevice, setLocation }) => {
                           className="Fac_Home_Mobile_Dashboardcontainer_Farms_Item_Header_Edit"
                           onClick={(e) => navigateToSetting(e, item.id_esp_)}
                         >
-                          Setting
                           <FiSettings className="Icon" size={20} />
                         </div>
                       </div>

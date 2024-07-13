@@ -1326,14 +1326,15 @@
         font-size: 40px;
         font-weight: bold;
 
-        .center {
+        &_Content {
           display: flex;
+          align-items: center;
+          justify-content: space-between;
           align-items: center;
         }
 
         &_Button {
-          width: 150px;
-          height: 40px;
+          padding: 6px 12PX;
           font-size: 16px;
           font-weight: 500;
           border-radius: 8px;
@@ -1353,6 +1354,7 @@
         }
 
         &_Input {
+          width: 100%;
           margin-right: 15px;
           border-radius: 8px;
           padding: 5px 10px;
@@ -1372,12 +1374,16 @@
       &_Farms {
         width: 100%;
         // height: calc(100% - 54px);
-        height: 87%;
+        height: 80%;
         padding: 2px 2px;
-        box-sizing: border-box;
+        // box-sizing: border-box;
         overflow-y: auto;
         white-space: nowrap;
         text-overflow: ellipsis;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
 
         &_Item {
           margin-top: 15px;
@@ -1415,17 +1421,17 @@
             }
 
             &_Edit {
-              padding: 5px 10px;
+              // padding: 5px 10px;
               box-sizing: border-box;
-              height: 35px;
-              border-radius: 8px;
-              background-color: rgba(255, 255, 255, 0.5);
+              // height: 35px;
+              // border-radius: 8px;
+              // background-color: rgba(255, 255, 255, 0.5);
               display: flex;
               align-items: center;
               justify-content: center;
               font-size: 20px;
-              border: 2px solid transparent;
-              z-index: 50;
+              // border: 2px solid transparent;
+              // z-index: 50;
 
               &:hover {
                 background: rgba(255, 255, 255, 0.9);
@@ -1473,7 +1479,7 @@
     }
 
     &_Farmcontainer {
-      height: 90%;
+      height: 95%;
       background: $background;
       border-radius: 8px;
       backdrop-filter: blur(2px);
@@ -1485,6 +1491,10 @@
       position: relative;
       box-sizing: border-box;
       overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       &_Header {
         width: 100%;
@@ -1906,7 +1916,7 @@
 
             &_Timecontainer {
               width: 100%;
-              // height: 30px;
+              height: 30px;
               margin-top: 18px;
               padding: 5px;
               background-color: rgba(255, 255, 255, 0.5);
@@ -1939,7 +1949,7 @@
         position: relative;
         overflow: auto;
         // width: 350px;
-        // height: 350px;
+        height: 250px;
         // position: fixed;
         // bottom: 0;
         // left: 50%;
@@ -1988,9 +1998,9 @@
                 outline: 2px solid $outline_color;
                 box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px,
                   rgba($color_text, 0.3) 0px 30px 60px -30px;
-                // &_Item {
+                &_Item {
                   
-                // }
+                }
               }
             }
           }
@@ -2061,13 +2071,13 @@
             height: 100%;
             position: relative;
             &_Button {
-              width: 60px;
-              height: 25px;
+              width: 100%;
+              padding: 5px 16px;
               position: absolute;
-              border-radius: 8px;
-              bottom: 10px;
-              right: 10px;
-              margin-left: 10px;
+              border-bottom-right-radius: 8px;
+              bottom: 0%;
+              // right: 20%;
+              // margin-left: 10px;
               cursor: pointer;
             }
           }
@@ -2311,6 +2321,7 @@
 
     &_Editfarmcontainer {
       width: 100%;
+      height: 97%;
       background: $background;
       border-radius: 8px;
 
@@ -2332,6 +2343,8 @@
 
       &_Body {
         width: 100%;
+        height: 89%;
+        overflow-y: scroll;
         background: $background_element;
         backdrop-filter: blur(4px);
         box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px,
@@ -2340,6 +2353,10 @@
         outline: 2px solid $outline_color;
         padding: 15px 25px 15px 30px;
         box-sizing: border-box;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
 
         &_Left {
           margin: 10px 0;

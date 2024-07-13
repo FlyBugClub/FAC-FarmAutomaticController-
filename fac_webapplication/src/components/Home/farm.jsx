@@ -513,7 +513,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
   };
 
   return (
-    <div className="Fac_Home_Web" >
+    <div className="Fac_Home" >
       <BrowserView className="Fac_Home_Web" style={weatherState ? { paddingLeft: "15px" } : { paddingLeft: "0px" }} >
         {loadingState ?
           <div className="Fac_Home_Web_Farmcontainer center">
@@ -904,6 +904,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
 
         }
       </BrowserView>
+
       <MobileView
         className="Fac_Home_Mobile"
         style={weatherState ? { paddingLeft: "0" } : { paddingLeft: "0px" }}
@@ -1326,7 +1327,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                     }}
                   >
                     {timeList.map((time, index) => (
-                      <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Timecontainer_Times">
+                      <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Timecontainer_Times" key={index}>
                         {time}
                       </div>
                     ))}
@@ -1337,7 +1338,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
             {timeTableState ? (
               <div
                 className="Fac_Home_Mobile_Farmcontainer_Settime"
-              // style={timeState ? { width: "220px" } : { width: "350px" }}
+                // style={timeState ? { width: "220px" } : { width: "350px" }}
               >
                 <div className="Fac_Home_Mobile_Farmcontainer_Settime_Title">
                   <div className="Fac_Home_Mobile_Farmcontainer_Settime_Title_Offset">
@@ -1374,7 +1375,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                         {seconds.map((item) => (
                           <div
                             className="Fac_Home_Mobile_Farmcontainer_Settime_Title_Offset_Dropbox_Item"
-                            style={{ textAlign: "center" }}
+                            style={{textAlign: "center"}}
                             key={item}
                             onClick={() => {
                               handlEditOffset(item + 1);
