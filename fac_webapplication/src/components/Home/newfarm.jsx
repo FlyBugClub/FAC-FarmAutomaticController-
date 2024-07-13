@@ -7,7 +7,7 @@ import { BsQrCode } from "react-icons/bs";
 import { PiPlusBold } from "react-icons/pi";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { hover } from "@testing-library/user-event/dist/hover";
-
+import {Html5QrcodeScanner, Html5Qrcode } from "html5-qrcode";
 import { AuthContext } from "../Context/AuthContext";
 import QrScanner from 'qr-scanner';
 import { callAPi } from "../../services/UserService";
@@ -28,6 +28,7 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
     const [pinState, setPinState] = useState(false)
     const [pin, setPin] = useState("")
     const [pinAvailable, setPinAvalable] = useState({})
+    const [scanResult, setScanResult] = useState(null);
 
     const navigate = useNavigate();
     const [query, setQuery] = useState("");
@@ -58,13 +59,50 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
     const [farmSeleted, setFarmSelected] = useState("");
 
     useEffect(() => {
+        
+          // Get cameras and start scanning with the first camera
+          Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+              const cameraId = devices[0].id;
+              const scanner = new Html5QrcodeScanner('reader', {
+                qrbox: {
+                  width: 250,
+                  height: 250,
+                },
+                fps: 5,
+                cameraId: cameraId, // Specify the cameraId here
+              });
+    
+              const success = (result) => {
+                scanner.clear();
+                setScanResult(result);
+              };
+    
+              const error = (err) => {
+                console.warn(err);
+              };
+    
+              scanner.render(success, error);
+    
+              // Cleanup scanner on component unmount
+              return () => {
+                scanner.clear();
+              };
+            }
+          }).catch(err => {
+            console.error("Error getting cameras: ", err);
+          });
+        
+      }, []);
+
+    useEffect(() => {
         if (farmsct.length !== 0) {
             setFarmSelected(farmsct[0]["name"]);
         }
     }, [farmsct]);
 
 
-    useEffect(() => {
+    useEffect(() => {       
         console.log(pinAvailable)
     }, [pinAvailable]);
     const handleScriptLoad = (updateQuery, autoCompleteRef) => {
@@ -202,6 +240,8 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
         }
     };
 
+    
+    
     return (
         <div className="Fac_Home">
             <BrowserView className="Fac_Home_Web" style={weatherState ? { paddingLeft: "15px" } : { paddingLeft: "0px" }}>
@@ -368,13 +408,162 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
 
                 </div>
             </BrowserView>
+
             <MobileView className="Fac_Home_Mobile" style={weatherState ? { paddingLeft: "0" } : { paddingLeft: "0px" }}>
                 <div className="Fac_Home_Mobile_Addfarmcontainer">
                     <div className="Fac_Home_Mobile_Addfarmcontainer_Title">
-                        <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => navigate(-1)} />
-                        <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                            Add farm
+                        <div className="Fac_Home_Mobile_Addfarmcontainer_Title_Header">
+                            <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => navigate(-1)} />
+                            <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                Add farm
+                            </div>
                         </div>
+                        {
+                        (qrcodeState && addDeviceState == "farm") ?
+                            <div className="Fac_Home_Mobile_Addfarmcontainer_Title_ButtonAdd" style={{ justifyContent: "space-between" }}>
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left">
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items">
+                                        Name:
+                                        <input className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input" ref={nameFarmRef} maxLength="30" ></input>
+                                    </div>
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }} maxLength="30">
+                                        Address:
+                                        <input className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"
+                                            maxLength="30"
+                                            placeholder="Search Places ..."
+                                            ref={autoCompleteRef}
+                                            onFocus={() => Focus()}
+                                        ></input>
+                                    </div>
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }}>
+                                        Description:
+                                        <textarea
+                                         maxLength="150"
+                                            className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"
+                                            ref={DesciptionRef}
+                                            style={{ height: "100px", textAlign: "left" }}
+                                        ></textarea>
+                                    </div>
+                                </div>
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right">
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Map" >
+                                        <GoogleMap
+                                            mapContainerStyle={{
+                                                height: "320px",
+                                            }}
+                                            center={selectedLocation}
+                                            zoom={13}
+                                            onLoad={onMapLoad}
+                                        >
+                                            <MarkerF
+                                                position={selectedLocation}
+                                                icon={"http://maps.google.com/mapfiles/ms/icons/green-dot.png"}
+                                            />        
+
+
+
+
+                                                 
+                                        </GoogleMap>
+                                    </div>
+
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
+                                        
+                                        
+                                        {
+                                            scanResult ? 
+                                            <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
+                                            : 
+                                            <div id="reader"></div>
+                                        }
+
+                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
+                                            <BsQrCode size={20} style={{ marginRight: "10px" }} />
+                                            Add QR code again
+                                        </button>
+                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddFarmClick()}>
+                                            <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
+                                            Add farm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            : (qrcodeState && addDeviceState == "equipment") ?
+                            <div className="Fac_Home_Mobile_Addfarmcontainer_Title_ButtonAdd" style={{ justifyContent: "space-between" }}>
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left">
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items">
+                                        Bump name:
+                                        <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={nameEquipmentRef} ></textarea>
+                                    </div>
+                                    {/* <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{marginTop:"15px"}} maxLength="30">
+                                    SHT name:
+                                    <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"></textarea>
+                                </div>
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items"  style={{marginTop:"15px"}} maxLength="30">
+                                    Ph name: 
+                                    <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"></textarea>
+                                </div> */}
+                                </div>
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right">
+
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection">
+                                        Farm selection:
+                                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Input " onClick={() => setFarmSelectedState(!farmSeletedState)} style={{ cursor: "pointer" }}>
+                                            {farmSeleted}
+                                        </div>
+                                        {
+                                            farmSeletedState ?
+                                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Dropbox">
+
+                                                    {farmsct != undefined && farmsct.map((item, index) => {
+                                                        return (
+                                                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Dropbox_Items" key={item.id_esp} onClick={() => { setFarmSelected(item.name); setFarmSelectedState(false) }}>
+                                                                {item.name}
+                                                            </div>
+                                                        )
+                                                    })
+                                                    }
+                                                </div>
+                                                : <></>
+                                        }
+                                    </div>
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
+                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
+                                            <BsQrCode size={20} style={{ marginRight: "10px" }} />
+                                            Add QR code again
+                                        </button>
+                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddEquipmentClick()}>
+                                            <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
+                                            Add equipment
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            :
+                            <div className="Fac_Home_Mobile_Addfarmcontainer_Title_ButtonAdd" style={{ justifyContent: "center", flexDirection: "column" }}>
+                                <button className="Fac_Home_Mobile_Addfarmcontainer_Title_ButtonAdd_Text"  onClick={() => handleButtonClick()}>
+                                    <BsQrCode size={26} style={{ marginRight: "10px" }} />
+                                    Add Qr
+                                </button>   
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                />
+                                {authQrState ?
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_State">
+                                        <PiPlusBold size={29} color="#FF0000" style={{ marginRight: "5px", marginTop: "3px", rotate: "45deg" }} /> Invalid Qr code
+
+                                    </div> :
+
+                                    <></>
+                                }
+
+
+                            </div>
+                        }
+
                     </div>
                     {
                         (qrcodeState && addDeviceState == "farm") ?
@@ -426,6 +615,15 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                     </div>
 
                                     <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
+                                        
+                                        <h1>Heelo</h1>
+                                        {/* {
+                                            scanResult ? 
+                                            <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
+                                            : 
+                                            <div id="reader"></div>
+                                        } */}
+
                                         <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
                                             <BsQrCode size={20} style={{ marginRight: "10px" }} />
                                             Add QR code again
@@ -477,20 +675,37 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                             }
                                         </div>
                                         <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
-                                            <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
+
+                                            {/* <h1>Hello</h1> */}
+                                            {
+                                                scanResult ? 
+                                                <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
+                                                : 
+                                                <div id="reader"></div>
+                                            }
+
+                                            {/* <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
                                                 <BsQrCode size={20} style={{ marginRight: "10px" }} />
                                                 Add QR code again
                                             </button>
                                             <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddEquipmentClick()}>
                                                 <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
                                                 Add equipment
-                                            </button>
+                                            </button> */}
                                         </div>
                                     </div>
                                 </div>
                                 :
                                 <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "center", flexDirection: "column" }}>
-                                    <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Qrbutton" style={authQrState ? { outline: " 2px solid rgba(255, 0, 0, 0.9)" } : { outline: " 2px solid rgba(255, 255, 255, 0.9)" }} onClick={() => handleButtonClick()}>
+                                    
+                                    {
+                                        scanResult ? 
+                                        <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
+                                        : 
+                                        <div id="reader"></div>
+                                    }
+
+                                    {/* <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Qrbutton" style={authQrState ? { outline: " 2px solid rgba(255, 0, 0, 0.9)" } : { outline: " 2px solid rgba(255, 255, 255, 0.9)" }} onClick={() => handleButtonClick()}>
                                         <BsQrCode size={26} style={{ marginRight: "10px" }} />
                                         Add Qr code file
                                     </button>   
@@ -507,7 +722,7 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                         </div> :
 
                                         <></>
-                                    }
+                                    } */}
 
 
                                 </div>

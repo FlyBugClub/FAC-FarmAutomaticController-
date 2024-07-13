@@ -2116,10 +2116,39 @@
       &_Title {
         height: 60px;
         display: flex;
+        justify-content: space-between;
         font-size: 28px;
         padding-bottom: 8px;
         box-sizing: border-box;
         font-weight: 500;
+
+        &_Header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        &_ButtonAdd {
+          padding: 1px 4px;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          border-radius: 8px;
+          border: 2px solid transparent;
+          background: $background_element;
+          color: $color_text;
+          cursor: pointer;
+
+          &_Text {
+            display: flex;
+            align-items: center;
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            font-weight: 500;
+          }
+        }
       }
 
       &_Body {

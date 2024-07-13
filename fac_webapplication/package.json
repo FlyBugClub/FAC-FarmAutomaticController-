@@ -53,6 +53,7 @@
     ]
   },
   "devDependencies": {
-    "ajv": "^7.2.4"
+    "ajv": "^7.2.4",
+    "html5-qrcode": "^2.2.7"
   }
 }
