@@ -404,7 +404,6 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                     </div>
                                 </div>
                                 <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right">
-
                                     <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Map" >
                                         <GoogleMap
                                             mapContainerStyle={{
@@ -417,7 +416,12 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                             <MarkerF
                                                 position={selectedLocation}
                                                 icon={"http://maps.google.com/mapfiles/ms/icons/green-dot.png"}
-                                            />
+                                            />        
+
+
+
+
+                                                 
                                         </GoogleMap>
                                     </div>
 
