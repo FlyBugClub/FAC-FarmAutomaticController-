@@ -270,7 +270,7 @@ export const Dashboard = ({ weatherState, handleAddDevice, setLocation }) => {
 
       <MobileView
         className="Fac_Home_Mobile"
-        style={weatherState ? { paddingLeft: "15px" } : { paddingLeft: "0px" }}
+        style={weatherState ? { paddingLeft: "0" } : { paddingLeft: "0px" }}
       >
         <div className="Fac_Home_Mobile_Dashboardcontainer">
           <div className="Fac_Home_Mobile_Dashboardcontainer_Header">

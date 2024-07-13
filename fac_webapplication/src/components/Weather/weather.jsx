@@ -121,9 +121,46 @@ const Weather = ({ weatherState, location }) => {
             </BrowserView>
 
 
-            <MobileView>
-                <h1>This is rendered only on mobile</h1>
-            </MobileView>
+            <MobileView
+        className="Fac_Weather"
+        style={
+          weatherState
+            ? { width: "100%", animation: "SlideMenuLeft 0.2s ease-in-out" }
+            : { display: "none" }
+        }
+      >
+        <div className="Fac_Weather_Mobile">
+          {loading ? (
+            <div className="Fac_Weather_Mobile_Container center">
+              <Loading />
+            </div>
+          ) : (
+            <div className="Fac_Weather_Mobile_Container">
+              <div className="Fac_Weather_Mobile_Container_Location">
+                {city}
+              </div>
+              <div className="Fac_Weather_Web_Container_Weather"
+              style={{display: "flex", width: "100%", overflowX: "auto"}}>
+                {weatherData.map((item) => (
+                  <div
+                    className="Fac_Weather_Mobile_Container_Elements"
+                    key={item.id}
+                  >
+                    <img
+                      className="Fac_Weather_Mobile_Container_Elements_Icon"
+                      src={item.img}
+                      alt=""
+                    ></img>
+                    <div className="Date">{item.date}</div>
+                    <div className="Date">{item.time}</div>
+                    <div>{item.temp}°</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </MobileView>
 
 
 

@@ -21,6 +21,7 @@ import Addfarm from "./components/Home/newfarm";
 import User from "./components/Home/user";
 import Editfarm from "./components/Home/editfarm";
 import Adminpage from "./components/Admin/admin";
+import History from "./components/History/History";
 //
 import { AuthContext } from "./components/Context/AuthContext";
 function App() {
@@ -89,6 +90,10 @@ function App() {
        }
        else if (sessionStorage.getItem("last_click") == 4) {
         navigate("/usersetting");
+       }
+       else if (sessionStorage.getItem("last_click") == 5) {
+        const id_esp = sessionStorage.getItem("last_farm")
+        navigate(`/history/${id_esp}`);
        }
 
      }};
@@ -242,6 +247,10 @@ function App() {
                 <Route
                   path="/usersetting"
                   element={<User weatherState={weatherState} />}
+                />
+                <Route
+                  path="/history/:id"
+                  element={<History weatherState={weatherState} />}
                 />
                 <Route path="*" element={<Navigate to="/dashboard" />} />
               </Routes>

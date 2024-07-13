@@ -309,9 +309,188 @@ const EditFarm = ({ weatherState, addDeviceState }) => {
                     }
                 </div>
             </BrowserView>
-            <MobileView>
-                <h1>edit farm page</h1>
-            </MobileView>
+            <MobileView
+        className="Fac_Home_Mobile"
+        style={weatherState ? { paddingLeft: "0" } : { paddingLeft: "0px" }}
+      >
+        <div className="Fac_Home_Mobile_Editfarmcontainer">
+          <div className="Fac_Home_Mobile_Editfarmcontainer_Title">
+            <MdArrowBackIosNew
+              size={28}
+              style={{
+                marginRight: "10px",
+                paddingTop: "7px",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate(-1)}
+            />
+            {addDeviceState == "farm" ? (
+              <div
+                style={{
+                  width: "100%",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                Edit farm
+              </div>
+            ) : (
+              <div
+                style={{
+                  width: "100%",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                Edit equipment
+              </div>
+            )}
+          </div>
+          {currentFarm != undefined && addDeviceState == "farm" ? (
+            <div
+              className="Fac_Home_Mobile_Editfarmcontainer_Body"
+              style={{ justifyContent: "space-between" }}
+            >
+              <div>
+                <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Left">
+                  <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Left_Items">
+                    Name:
+                    <input
+                      className="Fac_Home_Mobile_Editfarmcontainer_Body_Left_Items_Input"
+                      maxLength="30"
+                      ref={farmNameRef}
+                    ></input>
+                  </div>
+                  <div
+                    className="Fac_Home_Mobile_Editfarmcontainer_Body_Left_Items"
+                    style={{ marginTop: "15px" }}
+                  >
+                    Address:
+                    <input
+                      id="autocomplete"
+                      maxLength="30"
+                      className="Fac_Home_Mobile_Editfarmcontainer_Body_Left_Items_Input"
+                      ref={autoCompleteRef}
+                      onFocus={Focus}
+                    ></input>
+                  </div>
+                  <div
+                    className="Fac_Home_Mobile_Editfarmcontainer_Body_Left_Items"
+                    style={{ marginTop: "15px" }}
+                  >
+                    Description:
+                    <textarea
+                      maxLength="150"
+                      className="Fac_Home_Mobile_Editfarmcontainer_Body_Left_Items_Input"
+                      style={{ height: "100px", textAlign: "left" }}
+                      ref={farmDescriptionRef}
+                    ></textarea>
+                  </div>
+                </div>
+                <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Right">
+                  {Object.keys(selectedLocation).length > 0 ? (
+                    <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Right_Map">
+                      <GoogleMap
+                        mapContainerStyle={{
+                          height: "320px",
+                        }}
+                        center={selectedLocation}
+                        zoom={13}
+                        onLoad={onMapLoad}
+                      >
+                        <MarkerF
+                          position={selectedLocation}
+                          icon={
+                            "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+                          }
+                        />
+                      </GoogleMap>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+
+                  <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Right_Buttons">
+                    <button
+                      className="Fac_Home_Mobile_Editfarmcontainer_Body_Right_Buttons_Items"
+                      onClick={() => handleEditFarmClick()}
+                    >
+                      <AiOutlinePlusCircle
+                        size={20}
+                        style={{ marginRight: "10px" }}
+                      />
+                      Update farm
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              className="Fac_Home_Mobile_Editfarmcontainer_Body"
+              style={{ justifyContent: "space-between" }}
+            >
+              <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Left">
+                <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Left_Items">
+                  Bump name:
+                  <input
+                    className="Fac_Home_Mobile_Editfarmcontainer_Body_Left_Items_Input"
+                    maxLength="30"
+                    ref={equipmentNameRef}
+                  ></input>
+                </div>
+              </div>
+              <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Right">
+                <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Right_Farmselection">
+                  Farm selection:
+                  <div
+                    className="Fac_Home_Mobile_Editfarmcontainer_Body_Right_Farmselection_Input "
+                    onClick={() => setFarmSelectedState(!farmSeletedState)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {farmSeleted}
+                  </div>
+                  {farmSeletedState ? (
+                    <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Right_Farmselection_Dropbox">
+                      {farmsct != undefined &&
+                        farmsct.map((item, index) => {
+                          return (
+                            <div
+                              className="Fac_Home_Mobile_Editfarmcontainer_Body_Right_Farmselection_Dropbox_Items"
+                              key={item.id_esp}
+                              onClick={() => {
+                                setFarmSelected(item.name);
+                                setFarmSelectedState(false);
+                              }}
+                            >
+                              {item.name}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+                <div className="Fac_Home_Mobile_Editfarmcontainer_Body_Right_Buttons">
+                  <button
+                    className="Fac_Home_Mobile_Editfarmcontainer_Body_Right_Buttons_Items"
+                    onClick={() => handleEditEquipmentClick()}
+                  >
+                    <AiOutlinePlusCircle
+                      size={20}
+                      style={{ marginRight: "10px" }}
+                    />
+                    Update equipment
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </MobileView>
         </div>
     )
 }
