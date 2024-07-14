@@ -8,6 +8,7 @@ import { PiPlusBold } from "react-icons/pi";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { hover } from "@testing-library/user-event/dist/hover";
 import {Html5QrcodeScanner, Html5Qrcode } from "html5-qrcode";
+import QrReader from 'react-qr-scanner';
 import { AuthContext } from "../Context/AuthContext";
 import QrScanner from 'qr-scanner';
 import { callAPi } from "../../services/UserService";
@@ -29,7 +30,10 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
     const [pin, setPin] = useState("")
     const [pinAvailable, setPinAvalable] = useState({})
     const [scanResult, setScanResult] = useState(null);
+    const [delay, setDelay] = useState(100);
+    const [result, setResult] = useState('No result');
 
+    
     const navigate = useNavigate();
     const [query, setQuery] = useState("");
     const autoCompleteRef = useRef(null);
@@ -37,6 +41,8 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
     const nameEquipmentRef = useRef(null);
     const nameFarmRef = useRef(null);
     const DesciptionRef = useRef(null);
+    const readerRef = useRef(null);
+    const scannerRef = useRef(null);
     const { URL, farmsct } = useContext(AuthContext);
 
     const googleMapsApiKey = "AIzaSyBF_aYE1ude5Qh1-SEoX1yMVAKz7Z46r7o";
@@ -69,8 +75,10 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                   width: 250,
                   height: 250,
                 },
-                fps: 5,
-                cameraId: cameraId, // Specify the cameraId here
+                fps: 10,
+                cameraId: cameraId, // Specify the cameraId here,
+                rememberLastUsedCamera: true,
+                
               });
     
               const success = (result) => {
@@ -157,6 +165,40 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
         }
     };
 
+    const handleScanPhone = (data) => {
+        if (data && data.text) { // Check if data and data.text are not null or undefined
+            const resultString = data.text; // Get the text property
+            const splitResult = resultString.split(','); // Split the text into an array
+        
+            console.log(data); // Log the raw data
+            console.log("splitResult[0]: " + splitResult[0]); // Log the split result
+        
+            if (splitResult[0] === "fac") {
+              if (splitResult[1] === addDeviceState) {
+                setQrData(splitResult);
+                setQrcodeState(true);
+                
+                if (splitResult[1] === "equipment") {
+                  getAvailableIndex(paramId);
+                }
+              } else {
+                alert("this QR code is for adding equipment");
+              }
+            } else {
+              alert("invalid QR code");
+            }
+          }
+      };
+
+    const handleError = (err) => {
+        console.error(err);
+      };
+    
+      const previewStyle = {
+        // height: 240,
+        width: "100%",
+      };
+
     const handleButtonClick = () => {
         fileInputRef.current.click();
     };
@@ -240,7 +282,6 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
         }
     };
 
-    
     
     return (
         <div className="Fac_Home">
@@ -418,129 +459,7 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                 Add farm
                             </div>
                         </div>
-                        {
-                        (qrcodeState && addDeviceState == "farm") ?
-                            <div className="Fac_Home_Mobile_Addfarmcontainer_Title_ButtonAdd" style={{ justifyContent: "space-between" }}>
-                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left">
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items">
-                                        Name:
-                                        <input className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input" ref={nameFarmRef} maxLength="30" ></input>
-                                    </div>
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }} maxLength="30">
-                                        Address:
-                                        <input className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"
-                                            maxLength="30"
-                                            placeholder="Search Places ..."
-                                            ref={autoCompleteRef}
-                                            onFocus={() => Focus()}
-                                        ></input>
-                                    </div>
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }}>
-                                        Description:
-                                        <textarea
-                                         maxLength="150"
-                                            className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"
-                                            ref={DesciptionRef}
-                                            style={{ height: "100px", textAlign: "left" }}
-                                        ></textarea>
-                                    </div>
-                                </div>
-                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right">
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Map" >
-                                        <GoogleMap
-                                            mapContainerStyle={{
-                                                height: "320px",
-                                            }}
-                                            center={selectedLocation}
-                                            zoom={13}
-                                            onLoad={onMapLoad}
-                                        >
-                                            <MarkerF
-                                                position={selectedLocation}
-                                                icon={"http://maps.google.com/mapfiles/ms/icons/green-dot.png"}
-                                            />        
-
-
-
-
-                                                 
-                                        </GoogleMap>
-                                    </div>
-
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
-                                        
-                                        
-                                        {
-                                            scanResult ? 
-                                            <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
-                                            : 
-                                            <div id="reader"></div>
-                                        }
-
-                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
-                                            <BsQrCode size={20} style={{ marginRight: "10px" }} />
-                                            Add QR code again
-                                        </button>
-                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddFarmClick()}>
-                                            <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
-                                            Add farm
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            : (qrcodeState && addDeviceState == "equipment") ?
-                            <div className="Fac_Home_Mobile_Addfarmcontainer_Title_ButtonAdd" style={{ justifyContent: "space-between" }}>
-                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left">
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items">
-                                        Bump name:
-                                        <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={nameEquipmentRef} ></textarea>
-                                    </div>
-                                    {/* <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{marginTop:"15px"}} maxLength="30">
-                                    SHT name:
-                                    <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"></textarea>
-                                </div>
-                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items"  style={{marginTop:"15px"}} maxLength="30">
-                                    Ph name: 
-                                    <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"></textarea>
-                                </div> */}
-                                </div>
-                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right">
-
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection">
-                                        Farm selection:
-                                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Input " onClick={() => setFarmSelectedState(!farmSeletedState)} style={{ cursor: "pointer" }}>
-                                            {farmSeleted}
-                                        </div>
-                                        {
-                                            farmSeletedState ?
-                                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Dropbox">
-
-                                                    {farmsct != undefined && farmsct.map((item, index) => {
-                                                        return (
-                                                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Dropbox_Items" key={item.id_esp} onClick={() => { setFarmSelected(item.name); setFarmSelectedState(false) }}>
-                                                                {item.name}
-                                                            </div>
-                                                        )
-                                                    })
-                                                    }
-                                                </div>
-                                                : <></>
-                                        }
-                                    </div>
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
-                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
-                                            <BsQrCode size={20} style={{ marginRight: "10px" }} />
-                                            Add QR code again
-                                        </button>
-                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddEquipmentClick()}>
-                                            <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
-                                            Add equipment
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            :
-                            <div className="Fac_Home_Mobile_Addfarmcontainer_Title_ButtonAdd" style={{ justifyContent: "center", flexDirection: "column" }}>
+                        <div className="Fac_Home_Mobile_Addfarmcontainer_Title_ButtonAdd" style={{ justifyContent: "center", flexDirection: "column" }}>
                                 <button className="Fac_Home_Mobile_Addfarmcontainer_Title_ButtonAdd_Text"  onClick={() => handleButtonClick()}>
                                     <BsQrCode size={26} style={{ marginRight: "10px" }} />
                                     Add Qr
@@ -554,150 +473,116 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                 {authQrState ?
                                     <div className="Fac_Home_Mobile_Addfarmcontainer_Body_State">
                                         <PiPlusBold size={29} color="#FF0000" style={{ marginRight: "5px", marginTop: "3px", rotate: "45deg" }} /> Invalid Qr code
-
                                     </div> :
-
                                     <></>
                                 }
-
-
-                            </div>
-                        }
+                        </div>
+                        
 
                     </div>
                     {
                         (qrcodeState && addDeviceState == "farm") ?
-                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "space-between" }}>
-                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left">
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items">
-                                        Name:
-                                        <input className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input" ref={nameFarmRef} maxLength="30" ></input>
-                                    </div>
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }} maxLength="30">
-                                        Address:
-                                        <input className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"
-                                            maxLength="30"
-                                            placeholder="Search Places ..."
-                                            ref={autoCompleteRef}
-                                            onFocus={() => Focus()}
-                                        ></input>
-                                    </div>
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }}>
-                                        Description:
-                                        <textarea
-                                         maxLength="150"
-                                            className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"
-                                            ref={DesciptionRef}
-                                            style={{ height: "100px", textAlign: "left" }}
-                                        ></textarea>
-                                    </div>
+                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "space-between" }}>
+                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left">
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items">
+                                    Name:
+                                    <input className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input" ref={nameFarmRef} maxLength="30" ></input>
                                 </div>
-                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right">
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Map" >
-                                        <GoogleMap
-                                            mapContainerStyle={{
-                                                height: "320px",
-                                            }}
-                                            center={selectedLocation}
-                                            zoom={13}
-                                            onLoad={onMapLoad}
-                                        >
-                                            <MarkerF
-                                                position={selectedLocation}
-                                                icon={"http://maps.google.com/mapfiles/ms/icons/green-dot.png"}
-                                            />        
-
-
-
-
-                                                 
-                                        </GoogleMap>
-                                    </div>
-
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
-                                        
-                                        <h1>Heelo</h1>
-                                        {/* {
-                                            scanResult ? 
-                                            <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
-                                            : 
-                                            <div id="reader"></div>
-                                        } */}
-
-                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
-                                            <BsQrCode size={20} style={{ marginRight: "10px" }} />
-                                            Add QR code again
-                                        </button>
-                                        <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddFarmClick()}>
-                                            <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
-                                            Add farm
-                                        </button>
-                                    </div>
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }} maxLength="30">
+                                    Address:
+                                    <input className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"
+                                        maxLength="30"
+                                        placeholder="Search Places ..."
+                                        ref={autoCompleteRef}
+                                        onFocus={() => Focus()}
+                                    ></input>
+                                </div>
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{ marginTop: "15px" }}>
+                                    Description:
+                                    <textarea
+                                        maxLength="150"
+                                        className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"
+                                        ref={DesciptionRef}
+                                        style={{ height: "100px", textAlign: "left" }}
+                                    ></textarea>
                                 </div>
                             </div>
-                            : (qrcodeState && addDeviceState == "equipment") ?
-                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "space-between" }}>
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left">
-                                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items">
-                                            Bump name:
-                                            <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={nameEquipmentRef} ></textarea>
-                                        </div>
-                                        {/* <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{marginTop:"15px"}} maxLength="30">
-                                        SHT name:
-                                        <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"></textarea>
-                                    </div>
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items"  style={{marginTop:"15px"}} maxLength="30">
-                                        Ph name: 
-                                        <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"></textarea>
-                                    </div> */}
-                                    </div>
-                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right">
+                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right">
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Map" >
+                                    <GoogleMap
+                                        mapContainerStyle={{
+                                            height: "320px",
+                                        }}
+                                        center={selectedLocation}
+                                        zoom={13}
+                                        onLoad={onMapLoad}
+                                    >
+                                        <MarkerF
+                                            position={selectedLocation}
+                                            icon={"http://maps.google.com/mapfiles/ms/icons/green-dot.png"}
+                                        />        
 
-                                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection">
-                                            Farm selection:
-                                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Input " onClick={() => setFarmSelectedState(!farmSeletedState)} style={{ cursor: "pointer" }}>
-                                                {farmSeleted}
-                                            </div>
-                                            {
-                                                farmSeletedState ?
-                                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Dropbox">
 
-                                                        {farmsct != undefined && farmsct.map((item, index) => {
-                                                            return (
-                                                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Dropbox_Items" key={item.id_esp} onClick={() => { setFarmSelected(item.name); setFarmSelectedState(false) }}>
-                                                                    {item.name}
-                                                                </div>
-                                                            )
-                                                        })
-                                                        }
-                                                    </div>
-                                                    : <></>
-                                            }
-                                        </div>
-                                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
 
-                                            {/* <h1>Hello</h1> */}
-                                            {
-                                                scanResult ? 
-                                                <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
-                                                : 
-                                                <div id="reader"></div>
-                                            }
 
-                                            {/* <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
-                                                <BsQrCode size={20} style={{ marginRight: "10px" }} />
-                                                Add QR code again
-                                            </button>
-                                            <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddEquipmentClick()}>
-                                                <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
-                                                Add equipment
-                                            </button> */}
-                                        </div>
-                                    </div>
+                                                
+                                    </GoogleMap>
                                 </div>
-                                :
-                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "center", flexDirection: "column" }}>
-                                    
+
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
+                                    <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
+                                        <BsQrCode size={20} style={{ marginRight: "10px" }} />
+                                        Add QR code again
+                                    </button>
+                                    <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddFarmClick()}>
+                                        <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
+                                        Add farm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        : (qrcodeState && addDeviceState == "equipment") ?
+                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "space-between" }}>
+                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left">
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items">
+                                    Bump name:
+                                    <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input" maxLength="30" ref={nameEquipmentRef} ></textarea>
+                                </div>
+                                {/* <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items" style={{marginTop:"15px"}} maxLength="30">
+                                SHT name:
+                                <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"></textarea>
+                            </div>
+                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items"  style={{marginTop:"15px"}} maxLength="30">
+                                Ph name: 
+                                <textarea className="Fac_Home_Mobile_Addfarmcontainer_Body_Left_Items_Input"></textarea>
+                            </div> */}
+                            </div>
+                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right">
+
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection">
+                                    Farm selection:
+                                    <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Input " onClick={() => setFarmSelectedState(!farmSeletedState)} style={{ cursor: "pointer" }}>
+                                        {farmSeleted}
+                                    </div>
+                                    {
+                                        farmSeletedState ?
+                                            <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Dropbox">
+
+                                                {farmsct != undefined && farmsct.map((item, index) => {
+                                                    return (
+                                                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Farmselection_Dropbox_Items" key={item.id_esp} onClick={() => { setFarmSelected(item.name); setFarmSelectedState(false) }}>
+                                                            {item.name}
+                                                        </div>
+                                                    )
+                                                })
+                                                }
+                                            </div>
+                                            : <></>
+                                    }
+                                </div>
+                                <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
+
+                                    {/* <h1>Hello</h1> */}
                                     {
                                         scanResult ? 
                                         <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
@@ -705,27 +590,35 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                         <div id="reader"></div>
                                     }
 
-                                    {/* <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Qrbutton" style={authQrState ? { outline: " 2px solid rgba(255, 0, 0, 0.9)" } : { outline: " 2px solid rgba(255, 255, 255, 0.9)" }} onClick={() => handleButtonClick()}>
-                                        <BsQrCode size={26} style={{ marginRight: "10px" }} />
-                                        Add Qr code file
-                                    </button>   
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        style={{ display: 'none' }}
-                                        onChange={handleFileChange}
-                                    />
-                                    {authQrState ?
-                                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body_State">
-                                            <PiPlusBold size={29} color="#FF0000" style={{ marginRight: "5px", marginTop: "3px", rotate: "45deg" }} /> Invalid Qr code
-
-                                        </div> :
-
-                                        <></>
-                                    } */}
-
-
+                                    {/* <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
+                                        <BsQrCode size={20} style={{ marginRight: "10px" }} />
+                                        Add QR code again
+                                    </button>
+                                    <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddEquipmentClick()}>
+                                        <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
+                                        Add equipment
+                                    </button> */}
                                 </div>
+                            </div>
+                        </div>
+                        :
+                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "center", flexDirection: "column" }}>
+                            
+                            {/* {
+                                scanResult ? 
+                                <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
+                                : 
+                                <div id="reader"></div>
+                            } */}
+
+                            <QrReader
+                                delay={delay}
+                                style={previewStyle}
+                                onError={handleError}
+                                onScan={handleScanPhone}
+                            />
+                            {/* <p>{result}</p> */}
+                        </div>
                     }
 
                 </div>
