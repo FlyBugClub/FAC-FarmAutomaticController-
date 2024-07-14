@@ -563,7 +563,7 @@ const Farm = ({ weatherState, handleAddDevice }) => {
               </div>
 
               <div className="Fac_Home_Web_Farmcontainer_Chart">
-                <div className="Fac_Home_Web_Farmcontainer_Chart_Left">
+                <div className="Fac_Home_Web_Farmcontainer_Chart_Left" style={{padding: 0}}>
 
                   {
                     data.length != 0 ? <ResponsiveContainer width="100%" height="100%">

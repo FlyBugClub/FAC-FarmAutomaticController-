@@ -1378,11 +1378,18 @@
         padding: 2px 2px;
         // box-sizing: border-box;
         overflow-y: auto;
-        white-space: nowrap;
+        // white-space: nowrap;
         text-overflow: ellipsis;
+        display: "flex";
+        justify-content: "center";
+        align-items: "center";
 
         &::-webkit-scrollbar {
           display: none;
+        }
+
+        h1 {
+          text-align: center;
         }
 
         &_Item {
@@ -2108,7 +2115,7 @@
     }
 
     &_Addfarmcontainer {
-      height: fit-content;
+      height: 90%;
       width: 100%;
       background: $background;
       border-radius: 8px;
@@ -2160,7 +2167,7 @@
 
       &_Body {
         width: 100%;
-        height: fit-content;
+        height: 90%;
         padding: 15px 25px 15px 30px;
         background: $background_element;
         backdrop-filter: blur(4px);
@@ -2172,6 +2179,10 @@
         // display: flex;
         overflow: auto;
         align-items: center;
+
+        &::-webkit-scrollbar {
+          display: none; /* Chrome, Safari và Opera */
+        }
 
         &_Left {
           &_Items {
