@@ -332,7 +332,7 @@ export const Dashboard = ({ weatherState, handleAddDevice, setLocation }) => {
                       onClick={() => navigateToFarm(item.id_esp_)}
                     >
                       <div className="Fac_Home_Mobile_Dashboardcontainer_Farms_Item_Header">
-                        <div className="center">
+                        <div style={{display:"flex", alignItems: "center", fontSize: "24px", fontWeight: 500, width: "90%",}}>
                           {item.state ? (
                             <MdCircle
                               size={20}
@@ -346,7 +346,10 @@ export const Dashboard = ({ weatherState, handleAddDevice, setLocation }) => {
                               style={{ marginTop: "1px", marginRight: "5px" }}
                             />
                           )}
-                          {item.name_esp_}
+                          <span>
+                            {item.name_esp_}
+                          </span>
+                          
                         </div>
 
                         <div
