@@ -64,44 +64,46 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
 
     const [farmSeleted, setFarmSelected] = useState("");
 
-    useEffect(() => {
+
+
+    // useEffect(() => {
         
-          // Get cameras and start scanning with the first camera
-          Html5Qrcode.getCameras().then(devices => {
-            if (devices && devices.length) {
-              const cameraId = devices[0].id;
-              const scanner = new Html5QrcodeScanner('reader', {
-                qrbox: {
-                  width: 250,
-                  height: 250,
-                },
-                fps: 10,
-                cameraId: cameraId, // Specify the cameraId here,
-                rememberLastUsedCamera: true,
+    //       // Get cameras and start scanning with the first camera
+    //       Html5Qrcode.getCameras().then(devices => {
+    //         if (devices && devices.length) {
+    //           const cameraId = devices[0].id;
+    //           const scanner = new Html5QrcodeScanner('reader', {
+    //             qrbox: {
+    //               width: 250,
+    //               height: 250,
+    //             },
+    //             fps: 10,
+    //             cameraId: cameraId, // Specify the cameraId here,
+    //             rememberLastUsedCamera: true,
                 
-              });
+    //           });
     
-              const success = (result) => {
-                scanner.clear();
-                setScanResult(result);
-              };
+    //           const success = (result) => {
+    //             scanner.clear();
+    //             setScanResult(result);
+    //           };
     
-              const error = (err) => {
-                console.warn(err);
-              };
+    //           const error = (err) => {
+    //             console.warn(err);
+    //           };
     
-              scanner.render(success, error);
+    //           scanner.render(success, error);
     
-              // Cleanup scanner on component unmount
-              return () => {
-                scanner.clear();
-              };
-            }
-          }).catch(err => {
-            console.error("Error getting cameras: ", err);
-          });
+    //           // Cleanup scanner on component unmount
+    //           return () => {
+    //             scanner.clear();
+    //           };
+    //         }
+    //       }).catch(err => {
+    //         console.error("Error getting cameras: ", err);
+    //       });
         
-      }, []);
+    //   }, []);
 
     useEffect(() => {
         if (farmsct.length !== 0) {
@@ -581,43 +583,25 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                                     }
                                 </div>
                                 <div className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons">
-
-                                    {/* <h1>Hello</h1> */}
-                                    {
-                                        scanResult ? 
-                                        <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
-                                        : 
-                                        <div id="reader"></div>
-                                    }
-
-                                    {/* <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
+                                    <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => setQrcodeState(false)} style={{ marginRight: "20px" }}>
                                         <BsQrCode size={20} style={{ marginRight: "10px" }} />
                                         Add QR code again
                                     </button>
                                     <button className="Fac_Home_Mobile_Addfarmcontainer_Body_Right_Buttons_Items" onClick={() => handleAddEquipmentClick()}>
                                         <AiOutlinePlusCircle size={20} style={{ marginRight: "10px" }} />
                                         Add equipment
-                                    </button> */}
+                                    </button>
                                 </div>
                             </div>
                         </div>
                         :
-                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "center", flexDirection: "column" }}>
-                            
-                            {/* {
-                                scanResult ? 
-                                <div>Success: <a href={"https//" + scanResult}>{scanResult}</a></div> 
-                                : 
-                                <div id="reader"></div>
-                            } */}
-
+                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "center", flexDirection: "column", padding: 0 }}>
                             <QrReader
                                 delay={delay}
                                 style={previewStyle}
                                 onError={handleError}
                                 onScan={handleScanPhone}
                             />
-                            {/* <p>{result}</p> */}
                         </div>
                     }
 
