@@ -197,7 +197,6 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
       };
     
       const previewStyle = {
-        // height: 240,
         width: "100%",
       };
 
@@ -596,12 +595,13 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                         </div>
                         :
                         <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "center", flexDirection: "column", padding: 0 }}>
-                            <QrReader
+                            
+                            {/* <QrReader
                                 delay={delay}
                                 style={previewStyle}
                                 onError={handleError}
                                 onScan={handleScanPhone}
-                            />
+                            /> */}
                         </div>
                     }
 
