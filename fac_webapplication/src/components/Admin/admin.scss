@@ -29,6 +29,12 @@
             display: flex;
             flex-direction: column;
            
+
+            .Device
+            {
+                margin-top: 0px !important;
+            }
+
             &_Items
             {
                 font-size: 20px;
@@ -38,6 +44,8 @@
                 margin-top: 15px;
                 box-sizing: border-box;
                 cursor: pointer;
+
+                
                 .Icon
                 {
                     margin-right: 10px;
@@ -58,6 +66,146 @@
             margin-left: 15px;
             outline: 2px solid rgba(255, 255, 255, 0.9);
             border-radius: 8px;
+            $header_height: 40px;
+            $header_margin: 10px;
+            &_Qrcode
+            {
+                margin: 15px;
+                height: 100%;               
+                &_Header
+                {
+                    height: $header_height;
+                    margin-bottom: 10px;
+                    &_Title
+                    {
+                        color: $color_text;
+                        font-size: 32px;
+                        font-weight: bold;
+                        overflow: hidden;
+                    }
+                }
+                &_Body
+                {
+                    background-color: #FFFFFF;
+                    width: 100% ;
+                    height: calc(100% - $header_height - $header_margin - 15px - 15px); // 15px: padding , 15px 
+                    border-radius: 8px;
+
+                    &_Content
+                    {
+                        display: flex;
+                        padding: 20px;
+                        height: calc(100% - 32.06px);
+                        &_Left
+                        {
+                            flex: 6;   
+                            // background-color: red;
+                            position: relative;
+                                .Text
+                                {
+                                    color: #000000 ;
+                                    font-size: 23px;
+                                    margin-top: 0;
+                                    margin-bottom: 16px;
+                                    font-weight: 450;
+                                }
+                                &_DropboxHeader
+                                {
+                                    box-sizing: border-box;
+                                    outline: 2px solid #000000;
+                                    color: #000000;
+                                    width: 90%;
+                                    height: 39px;
+                                    border-radius: 10px;
+                                    margin-top: 11.03px;
+                                    &_Item
+                                    {
+                                        position: absolute;
+                                        color: #000000  ;
+                                        font-weight: 450;
+                                    }
+                                }
+                                .Dropbox
+                                {
+                                    // box-sizing: border-box;
+                                    // padding-left:20px ;
+                                    // padding-top:20px ;
+                                    position: absolute;
+                                    color: $color_text;
+                                    background-color: rgba(0, 0, 0, 0.85);
+                                    width: 90%;
+                                    border-radius: 10px;
+                                    margin-bottom: 30px;
+                                    &_Item
+                                    {
+                                        color: #FFFFFF  ;
+                                        margin-bottom: 20px;
+                                        font-weight: 450;
+                                        box-sizing: border-box ;
+                                        padding-left: 20px;
+                                        margin-top: 15px ;
+                                        border-radius: 2.5px;
+                                        &:hover
+                                        {
+                                            cursor: pointer;
+                                            background-color: #FFFFFF;
+                                            color: #000000;
+                                        }
+                                    }
+                                }
+                                .Button
+                                {
+                                    position: absolute;
+                                    right: 10%;
+                                    bottom: 0;
+                                    height: 38px;
+                                    width: 200px;
+                                    background-color: #F075AA;
+                                    border-radius: 8px;
+                                    border: none;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    
+                                    &:hover
+                                    {
+                                        background-color: darken($color: #F075AA, $amount: 5%);
+                                        cursor: pointer;
+                                    }
+                                
+                                    .Icon
+                                    {
+                                        margin-right: 3px;
+                                    }
+                                    
+                                }
+                                
+                            
+                            
+                        }
+                        &_Right
+                        {
+                            flex: 4;
+                            background-color: green;
+                            outline: 2px solid #000000;
+                            border-radius: 10px;
+                            display: flex;
+                            flex-direction: column;
+
+                            &_Top
+                            {
+                                flex: 7.76;    
+                                border-bottom: #000000;
+
+                            }
+                        
+
+                            
+
+                        }
+                    }
+                }
+            }
 
         }
     }   
