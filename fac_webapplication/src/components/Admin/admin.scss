@@ -70,7 +70,8 @@
             $header_margin: 10px;
             &_Qrcode
             {
-                margin: 15px;
+                padding-left: 15px;
+                padding-right: 15px;
                 height: 100%;               
                 &_Header
                 {
@@ -88,7 +89,7 @@
                 {
                     background-color: #FFFFFF;
                     width: 100% ;
-                    height: calc(100% - $header_height - $header_margin - 15px - 15px); // 15px: padding , 15px 
+                    height: calc(100% - $header_height - $header_margin - 15px ); // 15px: padding , 15px 
                     border-radius: 8px;
 
                     &_Content
@@ -124,6 +125,13 @@
                                         color: #000000  ;
                                         font-weight: 450;
                                     }
+                                    &_Content
+                                    {
+                                        padding-left: 10px;
+                                        padding-top: 7px;
+                                        font-size: 20px;
+                                        font-weight: 450;
+                                    }
                                 }
                                 .Dropbox
                                 {
@@ -136,6 +144,7 @@
                                     width: 90%;
                                     border-radius: 10px;
                                     margin-bottom: 30px;
+                                   
                                     &_Item
                                     {
                                         color: #FFFFFF  ;
@@ -205,6 +214,13 @@
                         }
                     }
                 }
+            }
+
+            &_Esp
+            {
+                
+                height: 100%;
+                background-color: green;
             }
 
         }
