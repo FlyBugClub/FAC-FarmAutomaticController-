@@ -316,9 +316,7 @@ export const Dashboard = ({ weatherState, handleAddDevice, setLocation }) => {
                 <div
                   className="Fac_Home_Mobile_Dashboardcontainer_Farms"
                   style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    
                   }}
                 >
                   <h1>You haven't added farm yet</h1>

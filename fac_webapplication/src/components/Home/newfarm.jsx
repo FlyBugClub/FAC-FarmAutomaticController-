@@ -7,7 +7,7 @@ import { BsQrCode } from "react-icons/bs";
 import { PiPlusBold } from "react-icons/pi";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { hover } from "@testing-library/user-event/dist/hover";
-import {Html5QrcodeScanner, Html5Qrcode } from "html5-qrcode";
+import { Html5QrcodeScanner, Html5Qrcode } from "html5-qrcode";
 import QrReader from 'react-qr-scanner';
 import { AuthContext } from "../Context/AuthContext";
 import QrScanner from 'qr-scanner';
@@ -65,45 +65,51 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
     const [farmSeleted, setFarmSelected] = useState("");
 
 
+    const [error, setError] = useState(null);
+    useEffect(() => {
+        const isSecureContext = window.isSecureContext || window.location.protocol == 'https:';
+    
+        if (!isSecureContext) {
+        setError("Camera access is only supported in secure context like HTTPS or localhost.");
+        return;
+        }
+        
+        // Get cameras and start scanning with the first camera
+        Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+            const cameraId = devices[0].id;
+            const scanner = new Html5QrcodeScanner('reader', {
+            qrbox: {
+                width: 250,
+                height: 250,
+            },
+            fps: 10,
+            cameraId: cameraId, // Specify the cameraId here,
+            rememberLastUsedCamera: true,
+            
+            });
 
-    // useEffect(() => {
+            const success = (result) => {
+            scanner.clear();
+            setScanResult(result);
+            };
+
+            const error = (err) => {
+            console.warn(err);
+            };
+
+            scanner.render(success, error);
+
+            // Cleanup scanner on component unmount
+            return () => {
+            scanner.clear();
+            };
+        }
+        }).catch(err => {
+        console.error("Error getting cameras: ", err);
+        });
         
-    //       // Get cameras and start scanning with the first camera
-    //       Html5Qrcode.getCameras().then(devices => {
-    //         if (devices && devices.length) {
-    //           const cameraId = devices[0].id;
-    //           const scanner = new Html5QrcodeScanner('reader', {
-    //             qrbox: {
-    //               width: 250,
-    //               height: 250,
-    //             },
-    //             fps: 10,
-    //             cameraId: cameraId, // Specify the cameraId here,
-    //             rememberLastUsedCamera: true,
-                
-    //           });
-    
-    //           const success = (result) => {
-    //             scanner.clear();
-    //             setScanResult(result);
-    //           };
-    
-    //           const error = (err) => {
-    //             console.warn(err);
-    //           };
-    
-    //           scanner.render(success, error);
-    
-    //           // Cleanup scanner on component unmount
-    //           return () => {
-    //             scanner.clear();
-    //           };
-    //         }
-    //       }).catch(err => {
-    //         console.error("Error getting cameras: ", err);
-    //       });
-        
-    //   }, []);
+      }, []);
 
     useEffect(() => {
         if (farmsct.length !== 0) {
@@ -594,17 +600,26 @@ const AddFarm = ({ weatherState, addDeviceState }) => {
                             </div>
                         </div>
                         :
-                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ justifyContent: "center", flexDirection: "column", padding: 0 }}>
+                        <div className="Fac_Home_Mobile_Addfarmcontainer_Body" style={{ maxHeight: "96%",  height: "fit-content", justifyContent: "center", flexDirection: "column", padding: 0 }}>
                             
-                            {/* <QrReader
+                            {/* {navigator.mediaDevices && navigator.mediaDevices.getUserMedia ? (
+                                <QrReader
                                 delay={delay}
                                 style={previewStyle}
                                 onError={handleError}
                                 onScan={handleScanPhone}
-                            /> */}
+                                />
+                            ) : (
+                                <h1>Hello</h1> // Hiển thị thông báo thay thế nếu không hỗ trợ getUserMedia
+                            )} */}
+                            
+                            {scanResult
+                            ? <div>Success: <a href={"http://" + scanResult}>{scanResult}</a></div>
+                            : <div id="reader"></div>
+                            }
+                            {error && <div>Error: {error}</div>}
                         </div>
                     }
-
                 </div>
             </MobileView>
         </div>
