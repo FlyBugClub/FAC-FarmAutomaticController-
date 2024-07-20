@@ -7,7 +7,8 @@ import { PiPokerChipLight } from "react-icons/pi";
 import { FiChevronRight } from "react-icons/fi";
 import { FiChevronDown } from "react-icons/fi";
 import"./qrcode.jsx"
-import Qrcode from "./qrcode.jsx";
+import QrcodeView from "./qrcode.jsx";
+import { EspView } from "./esp.jsx";
 
 
 const Adminpage = () => {
@@ -28,21 +29,20 @@ const Adminpage = () => {
         switch(menuState){
             case 1:
                 console.log("Create Qr Code");
-                return <Qrcode/>
+                return <QrcodeView/>
             case 2:
                 console.log("Esp");
-                return <Qrcode/>
+                return <EspView />
             case 3:
                 console.log("Equipment");
-                return <Qrcode/>
+                return <QrcodeView/>
+            case 4:
+                console.log("Sensor");
+                return <QrcodeView/>
             default:
                 return ;
         }
     }
-
-
-   
-
 
     return (
         <div className="Fac_Admin">
@@ -74,6 +74,11 @@ const Adminpage = () => {
                                 <div className="Fac_Admin_Web_Menu_Items Device" onClick={()=>{handleMenuState(3)}} >
                                     <PiPokerChipLight style={{marginLeft:"20px"}} size={24} className="Icon"/>
                                     Equipment
+                                </div>
+                                
+                                <div className="Fac_Admin_Web_Menu_Items Device" onClick={()=>{handleMenuState(4)}} >
+                                    <PiPokerChipLight style={{marginLeft:"20px"}} size={24} className="Icon"/>
+                                    Sensor
                                 </div>
                             </div>
                             ) : (<div></div>)}
