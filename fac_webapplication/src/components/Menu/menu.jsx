@@ -75,7 +75,7 @@ const Menu = ({ handleWeather, weatherState }) => {
                                     </div>
 
                                 </div>
-                                <div className="Fac_Menu_Web_Container_Dropbox_Options" onClick={() => { navigate("/usersetting"); setUserState("") }}>
+                                <div className="Fac_Menu_Web_Container_Dropbox_Options" onClick={() => { navigate("/usersetting"); sessionStorage.setItem("last_click",4 );;setUserState("") }}>
                                     <FiSettings style={{ marginRight: "10px" }} />
                                     Account
                                 </div>

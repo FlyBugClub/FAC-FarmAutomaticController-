@@ -10,33 +10,100 @@ import { callAPi } from "../../services/UserService";
 import Loading from "./loading";
 import { AuthContext } from "../Context/AuthContext";
 import { FaRegAddressBook } from "react-icons/fa6";
+import { Client, Message } from 'paho-mqtt';
 
-export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
-    const { URL, login, user, farmsct, authDispatch } = useContext(AuthContext);
-    const navigate = useNavigate();
-    const [farms, setFarms] = useState([]);
-    const [totalfarms, setTotalFarms] = useState([]);
-    const [loadingState, setLoadingState] = useState(true)
-    useEffect(() => {
-        if (login.status === true) { getDashboard() }
-    }, [login.status])
+export const Dashboard = ({ weatherState, handleAddDevice, setLocation }) => {
+  const { URL, login, user, farmsct, authDispatch } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [farms, setFarms] = useState([]);
+  const [totalfarms, setTotalFarms] = useState([]);
+  const [loadingState, setLoadingState] = useState(true)
+  const [client, setClient] = useState(null);
+  const [connectStatus, setConnectStatus] = useState("Disconnected");
 
-    const getDashboard = async () => {
-        let res = await callAPi(
-            "get",
-            `${URL}/data/getDashboard/${user.id_user_}`,
-        );
-        setLoadingState(false)
-        setTotalFarms(res.data)
-        setFarms(res.data)
+  useEffect(() => {
+    if (login.status === true) { getDashboard() }
+  }, [login.status])
+
+
+  useEffect(() => {
+    if (client !== null && connectStatus != "Connected" && connectStatus != "Connecting") {
+      setConnectStatus("Connecting");
+      client.connect({
+        onSuccess: () => {
+
+          subcribeFarmTopic();
+          setConnectStatus("Connected");
+        },
+        onFailure: (message) => {
+          console.log("Connect fail : " + message);
+          setConnectStatus("Disconected");
+        },
+
+      });
+      client.onMessageArrived = (message) => {
+        const index = (message.destinationName).indexOf("LastWillMessage");
+
+        if (index !== -1)  {
+          const id_farm = (message.destinationName).substring(0, index);
+          console.log(id_farm)
+        }
+      };
+      client.onConnectionLost = (responseObject) => {
+        console.log("connection lost : " + responseObject.errorCode);
+        setConnectStatus("Disconected");
+      }
     }
-  
+  }, [client, connectStatus])
+
+  useEffect(() => {
+    if (Object.keys(farms).length > 0) {
+      connectMqtt();
+    }
+  }, [farms])
+
+
+  const connectMqtt = () => {
+    const options = {
+      clientId: "id_" + parseInt(Math.random() * 100000), // Tạo clientId ngẫu nhiên
+      host: 'broker.emqx.io',
+      port: 8083,
+      path: '/mqtt',
+    };
+    const newClient = new Client(options.host, options.port, options.clientId);
+    setClient(newClient);
+  }
+  const disconnectMqtt = () => {
+    if (connectStatus == "Connected" && client.isConnected()) {
+      client.disconnect();
+      setConnectStatus("Disconnected");
+    }
+  }
+  const subcribeFarmTopic = () => {
+    console.log(farms)
+    farms.map((farm) => {
+      const lastwillmessage_topic = farm.id_esp_ + "LastWillMessage";
+      client.subscribe(lastwillmessage_topic);
+    })
+  }
+
+  const getDashboard = async () => {
+    let res = await callAPi(
+      "get",
+      `${URL}/data/getDashboard/${user.id_user_}`,
+    );
+    setLoadingState(false)
+    setTotalFarms(res.data)
+    setFarms(res.data)
+  }
+
   const navigateToFarm = (id_esp) => {
     let farms_temp = [];
     totalfarms.map((item) => {
       const info = {
         id_esp: item.id_esp_,
         name: item.name_esp_,
+
       };
       farms_temp = [...farms_temp, info];
     });
@@ -45,6 +112,8 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
       type: "SET_FARM",
       payload: farms_temp,
     });
+    sessionStorage.setItem("last_click", 2);
+    sessionStorage.setItem("last_farm", id_esp);
     navigate(`/farm/${id_esp}`);
   };
 
@@ -100,6 +169,8 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
               <button
                 className="Fac_Home_Web_Dashboardcontainer_Header_Button"
                 onClick={() => {
+                  sessionStorage.setItem("last_click", 3);
+                  sessionStorage.setItem("last_service", "farm");
                   handleAddDevice("farm");
                   navigate(`/addfarm/${user.id_user_}`);
                 }}
@@ -183,9 +254,9 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
                         {item.description_}
                       </div>
                       <div className="Fac_Home_Web_Dashboardcontainer_Farms_Item_Amount">
-                        <div>sensors: {item.number_of_sensor_}</div>
+                        <div>sensors: {item.number_of_sensor_ != undefined ? item.number_of_sensor_ : 0}</div>
                         <div style={{ marginLeft: "10px" }}>
-                          equipments: {item.number_of_equipment_}
+                          equipments: {item.number_of_equipment_ != undefined ? item.number_of_equipment_ : 0}
                         </div>
                       </div>
                     </div>
@@ -199,20 +270,12 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
 
       <MobileView
         className="Fac_Home_Mobile"
-        style={weatherState ? { paddingLeft: "15px" } : { paddingLeft: "0px" }}
+        style={weatherState ? { paddingLeft: "0" } : { paddingLeft: "0px" }}
       >
         <div className="Fac_Home_Mobile_Dashboardcontainer">
           <div className="Fac_Home_Mobile_Dashboardcontainer_Header">
-            Farms
-            <div className="center">
-              <input
-                className="Fac_Home_Mobile_Dashboardcontainer_Header_Input"
-                type="text"
-                onChange={(e) => {
-                  handleChange(e);
-                }}
-                placeholder="Search..."
-              ></input>
+            <div className="Fac_Home_Mobile_Dashboardcontainer_Header_Content">
+              Farms
               <button
                 className="Fac_Home_Mobile_Dashboardcontainer_Header_Button"
                 onClick={() => {
@@ -227,6 +290,14 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
                 New farm
               </button>
             </div>
+            <input
+              className="Fac_Home_Mobile_Dashboardcontainer_Header_Input"
+              type="text"
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              placeholder="Search..."
+            ></input>
           </div>
           {loadingState ? (
             <div
@@ -245,9 +316,7 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
                 <div
                   className="Fac_Home_Mobile_Dashboardcontainer_Farms"
                   style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    
                   }}
                 >
                   <h1>You haven't added farm yet</h1>
@@ -261,7 +330,7 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
                       onClick={() => navigateToFarm(item.id_esp_)}
                     >
                       <div className="Fac_Home_Mobile_Dashboardcontainer_Farms_Item_Header">
-                        <div className="center">
+                        <div style={{display:"flex", alignItems: "center", fontSize: "24px", fontWeight: 500, width: "90%",}}>
                           {item.state ? (
                             <MdCircle
                               size={20}
@@ -275,14 +344,16 @@ export const Dashboard = ({ weatherState, handleAddDevice,setLocation }) => {
                               style={{ marginTop: "1px", marginRight: "5px" }}
                             />
                           )}
-                          {item.name_esp_}
+                          <span>
+                            {item.name_esp_}
+                          </span>
+                          
                         </div>
 
                         <div
                           className="Fac_Home_Mobile_Dashboardcontainer_Farms_Item_Header_Edit"
                           onClick={(e) => navigateToSetting(e, item.id_esp_)}
                         >
-                          Setting
                           <FiSettings className="Icon" size={20} />
                         </div>
                       </div>

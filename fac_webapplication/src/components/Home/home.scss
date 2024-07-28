@@ -272,6 +272,15 @@
             }
           }
 
+          .block {
+            opacity: 0.7;
+            cursor: not-allowed;
+
+            &:hover {
+              background-color: $background_element
+            }
+          }
+
           .Icon {
             margin-right: 5px;
           }
@@ -734,46 +743,48 @@
               }
 
             }
-            &_Dropbox
-                        {
-                            position: absolute;
-                            top : 35px;
-                            right: 0;
-                            height: 150px;
-                            width: 50px;
-                            background-color: #000000;
-                            border-radius: 8px;
-                            outline: 2px solid $outline_color;
-                            padding: 1px 0px;
-                            box-sizing: border-box;
-                            display: grid;
-                            justify-content: center;
-                            align-items: center;
-                            grid-template-columns: repeat(1, 1fr);
-                            overflow-y: auto;
-                            gap: 10px;                         
-                            &_Item
-                            {
-                                width: 100%;
-                                display: flex;
-                                align-items: center;
-                                color: $color_text;
-                                padding: 0px 5px;
-                                box-sizing: border-box;
-                                font-size: 17px;
-                                border-radius: 1px;
-                                cursor: pointer;
-                                &:hover {
-                                    background-color: #686666;
-    
-                                }
-                            }
-                            &::-webkit-scrollbar {
-                                height: 1px;
 
-                                scrollbar-width: thin;
-                            }
-                        }
+            &_Dropbox {
+              position: absolute;
+              top: 35px;
+              right: 0;
+              height: 150px;
+              width: 50px;
+              background-color: #000000;
+              border-radius: 8px;
+              outline: 2px solid $outline_color;
+              padding: 1px 0px;
+              box-sizing: border-box;
+              display: grid;
+              justify-content: center;
+              align-items: center;
+              grid-template-columns: repeat(1, 1fr);
+              overflow-y: auto;
+              gap: 10px;
+
+              &_Item {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                color: $color_text;
+                padding: 0px 5px;
+                box-sizing: border-box;
+                font-size: 17px;
+                border-radius: 1px;
+                cursor: pointer;
+
+                &:hover {
+                  background-color: #686666;
+
+                }
+              }
+
+              &::-webkit-scrollbar {
+                height: 1px;
+
+                scrollbar-width: thin;
+              }
+            }
           }
 
           &_Icon {
@@ -943,6 +954,65 @@
               border: 2px solid transparent;
             }
           }
+
+          &_Index {
+            width: 190px;
+            height: 40px;
+            margin-top: 15px;
+            font-size: 23px;
+            display: flex;
+            align-items: center;
+
+            &_Selection {
+              position: relative;
+              width: 70px;
+              height: 35px;
+              outline: #fff 2px solid;
+              border-radius: 8px;
+              font-size: 20px;
+              margin-left: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              user-select: none;
+              cursor: pointer;
+
+              &_Dropbox {
+                position: absolute;
+                top: 44px;
+                left: 0;
+                width: 70px;
+                height: 130px;
+                outline: #fff 2px solid;
+                border-radius: 8px;
+
+                .Items {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin-top: 5px;
+                  cursor: pointer;
+
+                  &:hover {
+                    background: rgba(255, 255, 255, 0.6);
+                    color: black;
+                    border-color: rgb(33, 32, 32);
+                  }
+                }
+                  .Itemsdisable {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-top: 5px;
+                    cursor: not-allowed;
+
+                    background: rgba(255, 255, 255, 0.2);
+
+                  }
+                
+              }
+            }
+          }
         }
 
         &_Right {
@@ -969,7 +1039,7 @@
             font-size: 23px;
             margin-right: auto;
             position: relative;
-
+            cursor: pointer;
             &_Input {
               color: $color_text;
               margin-top: 10px;
@@ -1243,7 +1313,6 @@
     &_Dashboardcontainer {
       height: 97%;
       width: 100%;
-      margin-top: -50px;
       background: $background;
       border-radius: 8px;
       backdrop-filter: blur(2px);
@@ -1257,14 +1326,15 @@
         font-size: 40px;
         font-weight: bold;
 
-        .center {
+        &_Content {
           display: flex;
+          align-items: center;
+          justify-content: space-between;
           align-items: center;
         }
 
         &_Button {
-          width: 150px;
-          height: 40px;
+          padding: 6px 12PX;
           font-size: 16px;
           font-weight: 500;
           border-radius: 8px;
@@ -1284,6 +1354,7 @@
         }
 
         &_Input {
+          width: 100%;
           margin-right: 15px;
           border-radius: 8px;
           padding: 5px 10px;
@@ -1303,13 +1374,23 @@
       &_Farms {
         width: 100%;
         // height: calc(100% - 54px);
-        height: 87%;
-        overflow-y: auto;
+        height: 80%;
         padding: 2px 2px;
-        box-sizing: border-box;
+        // box-sizing: border-box;
         overflow-y: auto;
-        white-space: nowrap;
+        // white-space: nowrap;
         text-overflow: ellipsis;
+        display: "flex";
+        justify-content: "center";
+        align-items: "center";
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        h1 {
+          text-align: center;
+        }
 
         &_Item {
           margin-top: 15px;
@@ -1346,18 +1427,25 @@
               justify-content: center;
             }
 
+            span {
+              width: 90%;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
             &_Edit {
-              padding: 5px 10px;
+              // padding: 5px 10px;
               box-sizing: border-box;
-              height: 35px;
-              border-radius: 8px;
-              background-color: rgba(255, 255, 255, 0.5);
+              // height: 35px;
+              // border-radius: 8px;
+              // background-color: rgba(255, 255, 255, 0.5);
               display: flex;
               align-items: center;
               justify-content: center;
               font-size: 20px;
-              border: 2px solid transparent;
-              z-index: 50;
+              // border: 2px solid transparent;
+              // z-index: 50;
 
               &:hover {
                 background: rgba(255, 255, 255, 0.9);
@@ -1405,8 +1493,7 @@
     }
 
     &_Farmcontainer {
-      height: 100%;
-      width: 100%;
+      height: 95%;
       background: $background;
       border-radius: 8px;
       backdrop-filter: blur(2px);
@@ -1416,15 +1503,18 @@
       padding: 15px 15px;
       box-sizing: border-box;
       position: relative;
+      box-sizing: border-box;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       &_Header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         width: 100%;
-        height: 40px;
 
         &_Left {
+          margin-bottom: 8px;
           display: flex;
           font-size: 28px;
           padding-bottom: 8px;
@@ -1433,36 +1523,31 @@
         }
 
         &_Right {
+          margin-top: 5px;
+          margin-bottom: 10px;
           display: flex;
+          flex-wrap: wrap;
           align-items: center;
 
           &_Status {
-            height: 40px;
-            padding: 0px 10px;
+            padding: 8px;
             box-sizing: border-box;
-            background: $background_element;
-            backdrop-filter: blur(4px);
-            box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px,
-              rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
-            border-radius: 8px;
             font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 500;
-            outline: 2px solid $outline_color;
           }
 
           &_Button {
-            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 40px;
+            padding: 10px 5px;
             font-size: 20px;
             font-weight: 500;
             border-radius: 8px;
-            margin-right: 15px;
+            margin: 10px 15px 10px 0;
             border: none;
             outline: 2px solid $outline_color;
             background: $background_element;
@@ -1485,16 +1570,11 @@
       }
 
       &_Chart {
-        display: flex;
         width: 100%;
-        height: calc(70% - 40px);
 
         &_Left {
-          width: calc(100% - 185px);
-          // height: 100%;
           margin-top: 15px;
-
-          height: calc(100% - 35px + 2px);
+          height: 300px;
           background: $background_element;
           backdrop-filter: blur(4px);
           box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px,
@@ -1508,15 +1588,9 @@
         }
 
         &_Right {
-          width: 200px;
-          margin-left: 15px;
-
-          // background-color: $color_text;
-
-          margin-top: 15px;
-
+          margin: 15px 0;
           position: relative;
-          height: calc(100% - 35px + 2px);
+          // height: 100%;
           background: $background_element;
           backdrop-filter: blur(4px);
           box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px,
@@ -1526,7 +1600,6 @@
           display: flex;
           overflow: auto;
           overflow-x: hidden;
-
           flex-direction: column;
           align-items: center;
           padding: 15px 10px;
@@ -1625,15 +1698,13 @@
       }
 
       &_Controller {
-        height: 30%;
-        width: 40%;
         background: $background_element;
         backdrop-filter: blur(4px);
         box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px,
           rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
         border-radius: 8px;
-        min-width: 330px;
-        padding: 0px 10px 5px 10px;
+        margin: 15px 0;
+        padding: 10px 10px 0 10px;
         box-sizing: border-box;
         outline: 2px solid $outline_color;
         overflow: auto;
@@ -1644,7 +1715,7 @@
 
         &_Header {
           width: 100%;
-          height: 30px;
+          margin-bottom: 20px;
           display: flex;
           position: relative;
           align-items: center;
@@ -1720,9 +1791,7 @@
 
         &_Body {
           width: 100%;
-          height: calc(100% - 30px);
-
-          padding: 0 15%;
+          padding: 16px 0;
           box-sizing: border-box;
           display: flex;
           align-items: center;
@@ -1774,11 +1843,11 @@
                 transition: 0.2s;
               }
 
-              input:checked+.slider {
+              input:checked + .slider {
                 background-color: #000000;
               }
 
-              input:checked+.slider:before {
+              input:checked + .slider:before {
                 -webkit-transform: translateX(40px);
                 -ms-transform: translateX(40px);
                 transform: translateX(40px);
@@ -1808,7 +1877,7 @@
 
             &_Slidecontainer {
               width: 100%;
-              margin-top: 10px;
+              margin-top: 18px;
               display: flex;
               align-items: center;
               justify-content: space-between;
@@ -1862,8 +1931,8 @@
             &_Timecontainer {
               width: 100%;
               height: 30px;
-              margin-top: 10px;
-
+              margin-top: 18px;
+              padding: 5px;
               background-color: rgba(255, 255, 255, 0.5);
               border-radius: 8px;
               display: flex;
@@ -1891,12 +1960,14 @@
       }
 
       &_Settime {
-        width: 350px;
-        top: 50%;
-        left: 50%;
-        height: 350px;
-        transform: translate(-50%, -50%);
-        position: absolute;
+        position: relative;
+        overflow: auto;
+        // width: 350px;
+        height: 250px;
+        // position: fixed;
+        // bottom: 0;
+        // left: 50%;
+        // transform: translate(-50%, 100%);
         background-color: #000000;
         border-radius: 8px;
         outline: 2px solid $outline_color;
@@ -1930,9 +2001,23 @@
               box-sizing: border-box;
               font-size: 15px;
               border-radius: 8px;
+
+              &_Dropbox {
+                height: 50px;
+                margin-top: 8px;
+                padding: 10px;
+                overflow-y: auto;
+                background-color: #000000;
+                border-radius: 8px;
+                outline: 2px solid $outline_color;
+                box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px,
+                  rgba($color_text, 0.3) 0px 30px 60px -30px;
+                &_Item {
+                  
+                }
+              }
             }
           }
-
           &_Icon {
             rotate: 45deg;
             cursor: pointer;
@@ -1949,28 +2034,23 @@
             height: 100%;
 
             box-sizing: border-box;
-
             &_Title {
-              padding-top: 10px;
-              padding-left: 10px;
-              padding-right: 10px;
+              padding: 10px;
               display: flex;
               align-items: center;
               justify-content: space-between;
               font-size: 20px;
-
               .Icon {
                 cursor: pointer;
               }
             }
-
             &_Times {
               width: 100%;
-              height: calc(100% - 45px);
+              // height: calc(100% - 45px);
+              height: 120px;
               overflow-y: auto;
-              padding-left: 10px;
+              padding: 10px;
               box-sizing: border-box;
-
               &_Item {
                 display: flex;
                 align-items: center;
@@ -1987,14 +2067,12 @@
                 &_Edit {
                   display: flex;
                   align-items: center;
-
                   .Icon {
                     margin-left: 10px;
                     cursor: pointer;
                   }
                 }
               }
-
               &::-webkit-scrollbar {
                 height: 1px;
                 scrollbar-width: thin;
@@ -2006,15 +2084,14 @@
             flex: 3;
             height: 100%;
             position: relative;
-
             &_Button {
-              width: 60px;
-              height: 25px;
+              width: 100%;
+              padding: 5px 16px;
               position: absolute;
-              border-radius: 8px;
-              bottom: 10px;
-              right: 10px;
-              margin-left: 10px;
+              border-bottom-right-radius: 8px;
+              bottom: 0%;
+              // right: 20%;
+              // margin-left: 10px;
               cursor: pointer;
             }
           }
@@ -2038,7 +2115,7 @@
     }
 
     &_Addfarmcontainer {
-      height: 100%;
+      height: 90%;
       width: 100%;
       background: $background;
       border-radius: 8px;
@@ -2053,32 +2130,61 @@
       &_Title {
         height: 60px;
         display: flex;
+        justify-content: space-between;
         font-size: 28px;
         padding-bottom: 8px;
         box-sizing: border-box;
         font-weight: 500;
+
+        &_Header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        &_ButtonAdd {
+          padding: 1px 4px;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          border-radius: 8px;
+          border: 2px solid transparent;
+          background: $background_element;
+          color: $color_text;
+          cursor: pointer;
+
+          &_Text {
+            display: flex;
+            align-items: center;
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            font-weight: 500;
+          }
+        }
       }
 
       &_Body {
         width: 100%;
-        height: calc(100% - 60px);
+        height: 90%;
+        padding: 15px 25px 15px 30px;
         background: $background_element;
         backdrop-filter: blur(4px);
         box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px,
           rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
         border-radius: 8px;
         outline: 2px solid $outline_color;
-        padding: 15px 25px 15px 30px;
         box-sizing: border-box;
-        display: flex;
-
+        // display: flex;
         overflow: auto;
         align-items: center;
 
-        &_Left {
-          width: 50%;
-          height: 100%;
+        &::-webkit-scrollbar {
+          display: none; /* Chrome, Safari và Opera */
+        }
 
+        &_Left {
           &_Items {
             display: flex;
             flex-direction: column;
@@ -2089,8 +2195,8 @@
               margin-top: 10px;
               padding: 5px 10px;
               box-sizing: border-box;
-              width: 90%;
-              max-width: 90%;
+              // width: 90%;
+              // max-width: 90%;
               height: 40px;
               max-height: 100px;
               border-radius: 8px;
@@ -2104,7 +2210,7 @@
 
         &_Right {
           user-select: none;
-          width: 50%;
+          // width: 50%;
           height: 100%;
           display: flex;
           align-items: center;
@@ -2113,7 +2219,7 @@
 
           &_Map {
             width: 100%;
-            margin-top: 10px;
+            margin-top: 30px;
             height: 300px;
             border-radius: 8px;
           }
@@ -2134,6 +2240,9 @@
               box-sizing: border-box;
               width: 100%;
               height: 40px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
               border-radius: 8px;
               font-size: 20px;
               outline: 2px solid $outline_color;
@@ -2189,18 +2298,224 @@
 
           &_Buttons {
             width: 100%;
-            height: 40px;
+            margin-top: 50px;
+            // height: 40px;
+            // display: flex;
+            // justify-content: flex-end;
+            // align-items: center;
+
+            &_Items {
+              width: 100%;
+              margin: 10px 0;
+              padding: 5px 10px;
+              box-sizing: border-box;
+
+              outline: 2px solid $outline_color;
+              background: $background_element;
+              color: $color_text;
+              cursor: pointer;
+              font-size: 20px;
+              border: 2px solid transparent;
+              border-radius: 8px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+
+              &:hover {
+                background: rgba(255, 255, 255, 0.9);
+                color: black;
+                border-color: rgb(33, 32, 32);
+              }
+            }
+          }
+        }
+
+        &_Qrbutton {
+          padding: 10px 10px;
+          box-sizing: border-box;
+          font-size: 21px;
+          font-weight: 500;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid transparent;
+          background: $background_element;
+          color: $color_text;
+          cursor: pointer;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.9);
+            color: black;
+            border-color: rgb(33, 32, 32);
+          }
+        }
+
+        &_State {
+          margin-top: 20px;
+          font-size: 25px;
+          display: flex;
+          align-items: center;
+        }
+
+        &::-webkit-scrollbar {
+          height: 1px;
+
+          scrollbar-width: thin;
+        }
+      }
+    }
+
+    &_Editfarmcontainer {
+      width: 100%;
+      height: 97%;
+      background: $background;
+      border-radius: 8px;
+
+      backdrop-filter: blur(2px);
+      box-shadow: rgba($box_shadow_color, 0.8) 0px 50px 100px -20px,
+        rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
+      will-change: width;
+      padding: 15px 15px;
+      box-sizing: border-box;
+
+      &_Title {
+        height: 60px;
+        display: flex;
+        font-size: 28px;
+        padding-bottom: 8px;
+        box-sizing: border-box;
+        font-weight: 500;
+      }
+
+      &_Body {
+        width: 100%;
+        height: 89%;
+        overflow-y: scroll;
+        background: $background_element;
+        backdrop-filter: blur(4px);
+        box-shadow: rgba($box_shadow_color, 0.7) 0px 15px 35px -20px,
+          rgba($box_shadow_color, 0.3) 0px 30px 60px -30px;
+        border-radius: 8px;
+        outline: 2px solid $outline_color;
+        padding: 15px 25px 15px 30px;
+        box-sizing: border-box;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        &_Left {
+          margin: 10px 0;
+
+          &_Items {
+            font-size: 23px;
+
+            &_Input {
+              color: $color_text;
+              margin-top: 10px;
+              padding: 8px 10px;
+              box-sizing: border-box;
+              width: 100%;
+              border-radius: 8px;
+              font-size: 20px;
+              outline: 2px solid $outline_color;
+              background-color: #ffffff00;
+              border: 2px solid transparent;
+            }
+          }
+        }
+
+        &_Right {
+          margin: 10px 0;
+          user-select: none;
+
+          &_Map {
+            width: 100%;
+            margin-top: 10px;
+            height: 300px;
+            border-radius: 8px;
+          }
+
+          &_Farmselection {
             display: flex;
-            justify-content: flex-end;
+            width: 100%;
+            justify-items: flex-start;
+            flex-direction: column;
+            font-size: 23px;
+            margin-right: auto;
+            position: relative;
+
+            &_Input {
+              color: $color_text;
+              margin-top: 10px;
+              padding: 8px 10px;
+              box-sizing: border-box;
+              width: 100%;
+              border-radius: 8px;
+              font-size: 20px;
+              outline: 2px solid $outline_color;
+              background-color: #ffffff00;
+              border: 2px solid transparent;
+
+              &:hover {
+                background: rgba(255, 255, 255, 0.9);
+                color: black;
+                border-color: rgb(33, 32, 32);
+              }
+            }
+
+            &_Dropbox {
+              position: absolute;
+              top: 0;
+              left: 0;
+              margin-top: 90px;
+              width: 100%;
+              height: 180px;
+              outline: 2px solid $outline_color;
+              animation: fadeup_listequipment 0.3s ease-in-out;
+              overflow-y: auto;
+              border-radius: 8px;
+              background: rgba(0, 0, 0, 0.85);
+              backdrop-filter: blur(5px);
+              box-shadow: rgba(0, 0, 0, 0.8) 0px 50px 100px -20px,
+                rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+
+              &_Items {
+                width: 100%;
+                height: 30px;
+                padding: 5px 10px;
+                box-sizing: border-box;
+                margin-top: 15px;
+                display: flex;
+                align-items: center;
+                font-size: 20px;
+                font-weight: 500;
+                cursor: pointer;
+
+                &:hover {
+                  background-color: rgba(255, 255, 255, 0.7);
+                }
+              }
+
+              &::-webkit-scrollbar {
+                height: 1px;
+                scrollbar-width: thin;
+              }
+            }
+          }
+
+          &_Buttons {
+            margin: 30px 0 0 0;
+            width: 100%;
+            display: flex;
             align-items: center;
 
             &_Items {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              padding: 5px 10px;
+              width: 100%;
+              padding: 8px 10px;
               box-sizing: border-box;
-              height: 40px;
+
               outline: 2px solid $outline_color;
               background: $background_element;
               color: $color_text;
@@ -2258,7 +2573,7 @@
     }
 
     &_Usercontainer {
-      height: 100%;
+      // height: 90%;
       width: 100%;
       background: $background;
       border-radius: 8px;

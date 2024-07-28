@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
   Routes,
+  useNavigate,
 } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
@@ -20,10 +21,11 @@ import Addfarm from "./components/Home/newfarm";
 import User from "./components/Home/user";
 import Editfarm from "./components/Home/editfarm";
 import Adminpage from "./components/Admin/admin";
+import History from "./components/History/History";
 //
 import { AuthContext } from "./components/Context/AuthContext";
 function App() {
-
+  const navigate = useNavigate()
   const [weatherState, setWeatherState] = useState(true);
   const [addDeviceState, setAddDeviceState] = useState("");
   const [location,setLocation] = useState({
@@ -54,6 +56,7 @@ function App() {
      );
      // console.log(res.data[0].user_name_);
      if (res.status) {
+      // console.log(res.data[0])
       authDispatch({
         type: "SET_LOGIN",
         payload: { status: true},
@@ -62,6 +65,36 @@ function App() {
          type: "SET_USER",
          payload: res.data[0],
        })
+       if (sessionStorage.getItem("last_click") == 1) {
+        navigate("/dashboard")
+       }
+       else if (sessionStorage.getItem("last_click") == 2) {
+        const id_esp = sessionStorage.getItem("last_farm")
+        navigate(`/farm/${id_esp}`);
+       }
+       else if (sessionStorage.getItem("last_click") == 3) {
+        const last_service = sessionStorage.getItem("last_service")
+        if (last_service == "farm")
+        {
+          setAddDeviceState("farm");
+          navigate(`/addfarm/${(res.data[0])["id_user_"]}`);
+        }
+        else 
+        {
+          setAddDeviceState("equipment");
+
+          const id_esp = sessionStorage.getItem("last_farm")
+          navigate(`/addfarm/${id_esp}`);
+        }
+        
+       }
+       else if (sessionStorage.getItem("last_click") == 4) {
+        navigate("/usersetting");
+       }
+       else if (sessionStorage.getItem("last_click") == 5) {
+        const id_esp = sessionStorage.getItem("last_farm")
+        navigate(`/history/${id_esp}`);
+       }
 
      }};
    checkApi();
@@ -214,6 +247,10 @@ function App() {
                 <Route
                   path="/usersetting"
                   element={<User weatherState={weatherState} />}
+                />
+                <Route
+                  path="/history/:id"
+                  element={<History weatherState={weatherState} />}
                 />
                 <Route path="*" element={<Navigate to="/dashboard" />} />
               </Routes>
