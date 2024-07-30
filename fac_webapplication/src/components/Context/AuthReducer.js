@@ -1,8 +1,10 @@
 const INITIAL_STATE = {
-  URL: "http://10.101.172.53:8080",
+  URL: "http://103.130.211.141:8080",
   login: {},
   user: {},
-farmct:{},
+  farmsct:[],
+  currentFarm: {},
+  currentDevice: {},
 };
 const AuthReducer = (state, action) => {
   //action = {type, payload: {tab, visual, setting, lastid, name, control}}
@@ -26,7 +28,17 @@ const AuthReducer = (state, action) => {
     case "SET_FARM":
       return {
         ...state,
-        farmct: action.payload, 
+        farmsct : action.payload, 
+      }
+      case "SET_CURRENT_FARM":
+      return {
+        ...state,
+        currentFarm : action.payload, 
+      }
+      case "SET_CURRENT_DEVICE":  
+      return {
+        ...state,
+        currentDevice : action.payload, 
       }
     default:
       return state;

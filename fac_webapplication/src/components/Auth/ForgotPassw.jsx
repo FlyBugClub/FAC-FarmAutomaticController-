@@ -172,31 +172,78 @@ const ForgotPassw = () => {
       </BrowserView>
 
       <MobileView className="Auth_MobileView">
-        <div style={{ width: "100%", height: "100%" }}>
-          <div className="Auth_MobileView_Logo">
-            <div className="Auth_MobileView_Logo_Image">
-              <img src="/icons/Bug(Trắng).png" alt="" />
-            </div>
-            <div>
-              <div className="div1">Tưới tiêu tự động</div>
-              <div className="div2">Giải pháp hoàn hảo cho nhà nông</div>
+        <div>
+          <div>
+            <div className="Auth_MobileView_Title">
+              <h1>Quên mật khẩu</h1>
+              <p>Đặt lại mật khẩu</p>
             </div>
           </div>
-
-          <form className="Auth_MobileView_Region" onSubmit={handleSubmit}>
-            <div className="Auth_MobileView_Region_Input ">
-              <div>
-                <FiMail color="white" size={24} />
+          <form className="Auth_MobileView_Container" onSubmit={handleSubmit}>
+            <div className="Auth_MobileView_Container_Form">
+              <div className="Auth_MobileView_Container_Form_Body">
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_MobileView_Container_Form_Body_Item_Content ${
+                      errorEmail ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Input">
+                      <input
+                        type="text"
+                        placeholder="Nhập Email"
+                        value={email}
+                        onChange={handleChangEmail}
+                      />
+                    </div>
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Icon">
+                      <FiMail color={errorEmail ? "red" : "white"} size={24} />
+                    </div>
+                  </div>
+                  <div className="Auth_MobileView_Container_Form_Body_Item_Validate">
+                    {errorEmail}
+                  </div>
+                </div>
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    className={`Auth_MobileView_Container_Form_Body_Item_Content ${
+                      errorOtp ? "Error" : ""
+                    }`}
+                  >
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Input">
+                      <input
+                        type="text"
+                        placeholder="Nhập mã OTP"
+                        value={otp}
+                        onChange={handleChangOTP}
+                      />
+                    </div>
+                    <div className="Auth_MobileView_Container_Form_Body_Item_Content_Icon">
+                      <CiBarcode color={errorOtp ? "red" : "white"} size={24} />
+                    </div>
+                  </div>
+                  <div className="Auth_MobileView_Container_Form_Body_Item_Validate">
+                    {errorOtp}
+                  </div>
+                </div>
+                <div className="Auth_MobileView_Container_Form_Body_Item">
+                  <div
+                    onClick={handleSendOtp}
+                    className="Auth_MobileView_Container_Form_Body_Item_OTP"
+                  >
+                    <p>Gửi mã OTP</p>
+                  </div>
+                </div>
               </div>
-              <input
-                type="text"
-                placeholder="Email"
-                value={email}
-                onChange={handleChangEmail}
-              ></input>
-            </div>
-            <div className="Auth_MobileView_Region_Button">
-              <button type="submit">Gửi</button>
+              <div className="Auth_MobileView_Container_Form_Footer">
+                <button type="submit">Xác nhận</button>
+                <div className="Auth_MobileView_Container_Form_Footer_Choice">
+                  <div onClick={() => navigate("/login")}>
+                    Quay lại trang đăng nhập?
+                  </div>
+                  <div onClick={() => navigate("/login")}>Đăng nhập</div>
+                </div>
+              </div>
             </div>
           </form>
         </div>

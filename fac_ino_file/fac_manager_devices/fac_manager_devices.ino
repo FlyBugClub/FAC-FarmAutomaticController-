@@ -13,8 +13,11 @@ NTPClient timeClient(ntpUDP, ntpServer, ntpPort);
 
 const long timeZoneOffset = 7 * 3600;  // Đổi thành số giây
 
-String ssid = "DAT_MOBILE";
-String password = "ktd01042013";
+// String ssid = "DAT_MOBILE";
+// String password = "ktd01042013";
+
+String ssid = "Basic Coffee";
+String password = "";
 
 const char* mqtt_server = "broker.emqx.io";
 const uint16_t mqtt_port = 1883;
@@ -54,7 +57,7 @@ Pump pumps[NUM_PUMPS] = {
   { 4, "manual", "off", false }
 };
 unsigned long lastSendTime = 0;
-const unsigned long sendInterval = 5000;
+const unsigned long sendInterval = 1000;
 
 void savePayloadSumToEEPROM(const String& payload_sum) {
   for (int i = 0; i < payload_sum.length(); ++i) {
@@ -190,10 +193,24 @@ unsigned long getCurrentSecondsFromMidnight() {
   int hour = currentTimeStruct->tm_hour;
   int minute = currentTimeStruct->tm_min;
   int second = currentTimeStruct->tm_sec;
-  
+
   totalSeconds = hour * 3600 + minute * 60 + second;
 
   return totalSeconds;
+}
+
+void checkAndProcessPumpStateChanges(String payload_sum, unsigned long currentSeconds) {
+  bool anyPumpStateChanged = false;
+
+  // Kiểm tra nếu có bất kỳ trạng thái bơm nào thay đổi
+  for (int i = 0; i < 4; i++) {
+    if (pumpControllers.isPumpStateChange[i]) {
+      mqttConn.publish(char_x_send_to_client, payload_sum.c_str());
+      savePayloadSumToEEPROM(payload_sum);
+      pumpControllers.prevPumpState[i] = pumpControllers.pumpState[i];
+      pumpControllers.isPumpStateChange[i] = false;
+    }
+  }
 }
 void setup() {
   Serial.begin(9600);
@@ -230,6 +247,7 @@ void setup() {
       pump["index"] = pumps[i].index;
       pump["payload"]["action"] = pumps[i].action;
       pump["payload"]["messages"] = pumps[i].message;
+      pump["payload"]["status"] = pumps[i].isOn;
     }
     serializeJson(doc, initialPayload);
     savePayloadSumToEEPROM(initialPayload);
@@ -248,35 +266,52 @@ void loop() {
   }
 
   String payload_sum = loadPayloadSumFromEEPROM();
- unsigned long currentSeconds = getCurrentSecondsFromMidnight();
+  unsigned long currentSeconds = getCurrentSecondsFromMidnight();
 
 
-if (mqttConn.isMessagesArrive) {
+  if (mqttConn.isMessagesArrive) {
+    String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
 
-  String updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
-  payload_sum = updatedPayload;
-  savePayloadSumToEEPROM(payload_sum);
-  mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
-  // Serial.print("char_x_send_to_client: ");
-  // Serial.println(char_x_send_to_client);
-  // Serial.print("char_x_client_to_server: ");
-  // Serial.println(char_x_client_to_server);
-  // Serial.print("char_x_last_will_message: ");
-  // Serial.println(char_x_last_will_message);
-  mqttConn.isMessagesArrive = false;
-}
-pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
-checkAndSendPumpState();
-unsigned long currentMillis = millis();
+    pumpControllers.processPumpAction(updatedPayload.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
+    updatedPayload = pumpControllers.handleNewMessages(mqttConn.currentAction, mqttConn.currentMessage, mqttConn.currentIndex, payload_sum.c_str());
 
+    if (payload_sum != updatedPayload) {
+      mqttConn.publish(char_x_send_to_client, updatedPayload.c_str());
+      payload_sum = updatedPayload;
+      savePayloadSumToEEPROM(payload_sum);
+    }
 
-// if (currentMillis - lastSendTime >= sendInterval) {
-//   lastSendTime = currentMillis;
+    mqttConn.isMessagesArrive = false;
+  }
+
+  checkAndProcessPumpStateChanges(payload_sum, currentSeconds);
+  pumpControllers.processPumpAction(payload_sum.c_str(), pumpPins, NUM_PUMPS, currentSeconds);
+  // checkAndSendPumpState();
+  unsigned long currentMillis = millis();
 
 
-//   checkAndSendSensorState();
-// }
-// Cập nhật payload_sum từ handleNewMessages
+  // if (currentMillis - lastSendTime >= sendInterval) {
+  //   lastSendTime = currentMillis;
 
-mqttConn.loop();
+
+  //  mqttConn.publish(char_x_send_to_client, payload_sum.c_str());
+  // }
+  // Cập nhật payload_sum từ handleNewMessages
+  StaticJsonDocument<1024> doc;
+  DeserializationError error = deserializeJson(doc, payload_sum);
+  for (JsonObject pump : doc.as<JsonArray>()) {
+    int index = pump["index"];
+    String action = pump["payload"]["action"].as<String>();
+    String message = pump["payload"]["messages"].as<String>();
+    bool status = pump["payload"]["status"];  
+
+    status = pumpControllers.pumpState[index - 1];
+
+    pump["payload"]["status"] = status;
+  }
+
+  char updated_payload_sum[1024];
+  serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
+  savePayloadSumToEEPROM(updated_payload_sum);
+  mqttConn.loop();
 }

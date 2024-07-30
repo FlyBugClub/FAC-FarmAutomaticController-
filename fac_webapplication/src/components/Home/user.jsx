@@ -90,7 +90,66 @@ const User = ({ weatherState }) => {
                 </div>
 
             </BrowserView>
-            <MobileView>
+            <MobileView className="Fac_Home_Mobile" style={weatherState ? { paddingLeft: "0" } : { paddingLeft: "0px" }}>
+                <div className="Fac_Home_Mobile_Usercontainer">
+                    <div className="Fac_Home_Mobile_Addfarmcontainer_Title">
+                        <MdArrowBackIosNew size={28} style={{ marginRight: "10px", paddingTop: "7px", cursor: "pointer" }} onClick={() => navigate(-1)} />
+                        <div style={{ width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            User
+                        </div>
+                    </div>
+                    <div className="Fac_Home_Mobile_Usercontainer_Body">
+                        <div className="Fac_Home_Mobile_Usercontainer_Body_Userinfo">
+                            <img className="Fac_Home_Mobile_Usercontainer_Body_Userinfo_Image" src="/icons/user.png" alt="" />
+                            <div className="Fac_Home_Mobile_Usercontainer_Body_Userinfo_Name">
+                                <div style={{ display: "flex", alignItems: "center" }}>
+
+                                    Name: {user.user_name_}
+                                    <FiSettings size={20} style={{ marginLeft: "15px", paddingTop: "5px", cursor: "pointer" }} />
+                                </div>
+                                <div style={{ marginTop: "5px" }}>
+                                    Email: {user.gmail_}
+                                </div>
+                                <div style={{ marginTop: "5px" }}>
+                                    SDT: {user.phone_no_}
+                                </div>
+
+                            </div>
+                        </div>
+                        <div className="Fac_Home_Mobile_Usercontainer_Body_Language">
+                            <TbMessageLanguage size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Language:
+                            <div className="Fac_Home_Mobile_Usercontainer_Body_Language_Options" onClick={() => setlanguageState(!languageState)}>
+                                {language}
+                                <RiArrowDownSFill size={22} style={{ marginLeft: "10px" }} />
+                                {
+                                    languageState ?
+                                        <div className="Fac_Home_Mobile_Usercontainer_Body_Language_Options_Dropbox">
+                                            <div className="Fac_Home_Mobile_Usercontainer_Body_Language_Options_Dropbox_Items" onClick={() => setlanguage("Vietnamese")}>
+                                                Vietnamese
+                                            </div>
+                                            <div className="Fac_Home_Mobile_Usercontainer_Body_Language_Options_Dropbox_Items" onClick={() => setlanguage("English")}>
+                                                English
+                                            </div>
+                                        </div>
+                                        :
+                                        <></>
+                                }
+
+                            </div>
+                        </div>
+                        <div className="Fac_Home_Mobile_Usercontainer_Body_Items">
+                            <RiVipCrownLine size={25} style={{ marginRight: "30px", marginTop: "5px" }} /> Upgrade
+                        </div>
+                        <div className="Fac_Home_Mobile_Usercontainer_Body_Items">
+                            <BiCheckShield size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Change password
+                        </div>
+                        <div className="Fac_Home_Mobile_Usercontainer_Body_Items" onClick={() => handleLogout()} >
+                            <FiUserMinus size={26} style={{ marginRight: "30px", marginTop: "5px" }} /> Log out
+                        </div>
+
+                    </div>
+
+                </div>
 
             </MobileView>
 
