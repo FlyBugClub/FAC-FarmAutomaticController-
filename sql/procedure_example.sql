@@ -22,7 +22,7 @@ EXEC dbo.insert_device_pro N'
 --EXPECT RESULT state	status
 --				203		id sensor and id equipment has been exists
 
-EXEC dbo.edit_device_pro 'BC0001' , 'ESP0004', 'dongnho',4
+EXEC dbo.edit_equipment_pro 'BC0001' , 'ESP0004', 'dongnho',4
 --EXPECT RESULT state	status
 --				200		success
 
@@ -120,4 +120,11 @@ EXEC [dbo].[add_farm_pro] 'ESP0032' ,'CT0001'
 /*	EXPECT RESULT
 	_state	_status
 	200		success
+*/
+EXEC dbo.edit_esp_user_pro 'CT0002', '240323110428'
+/*	Success RESULT
+	_state	_status
+	200		success
+	FAILED RESULT
+	202		Can not change user 
 */
