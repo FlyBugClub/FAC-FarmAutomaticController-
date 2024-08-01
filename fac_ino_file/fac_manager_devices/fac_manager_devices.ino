@@ -47,12 +47,14 @@ struct Pump {
   bool isOn;
   String lastPayloadSent;
 };
+
 Pump pumps[NUM_PUMPS] = {
   { 1, "manual", "off", false },
   { 2, "auto", "80", false },
   { 3, "manual", "off", false },
   { 4, "manual", "off", false }
 };
+
 unsigned long lastSendTime = 0;
 const unsigned long sendInterval = 1000;
 
@@ -63,6 +65,7 @@ void savePayloadSumToEEPROM(const String& payload_sum) {
   EEPROM.write(payload_sum.length(), '\0');
   EEPROM.commit();
 }
+
 bool isJsonPayloadValid(const String& payload) {
   // Tạo một bộ đệm đủ lớn để chứa dữ liệu JSON
   StaticJsonDocument<512> doc;
@@ -95,6 +98,7 @@ bool isJsonPayloadValid(const String& payload) {
 
   return true;
 }
+
 String loadPayloadSumFromEEPROM() {
   char buffer[512];
   size_t i;
@@ -105,6 +109,7 @@ String loadPayloadSumFromEEPROM() {
   buffer[i] = '\0';
   return String(buffer);
 }
+
 bool previousPumpState[4] = { false, false, false, false };
 
 void checkAndSendPumpState() {
@@ -150,6 +155,7 @@ void checkAndProcessPumpStateChanges(String payload_sum, unsigned long currentSe
     }
   }
 }
+
 void setup() {
   Serial.begin(9600);
   EEPROM.begin(512);
@@ -194,6 +200,7 @@ void setup() {
   timeClient.begin();
   timeClient.setTimeOffset(timeZoneOffset);
 }
+
 void loop() {
   timeClient.update();
   if (!wifiConn.isConnected()) {
@@ -241,7 +248,7 @@ void loop() {
     int index = pump["index"];
     String action = pump["payload"]["action"].as<String>();
     String message = pump["payload"]["messages"].as<String>();
-    bool status = pump["payload"]["status"];  
+    bool status = pump["payload"]["status"];
 
     status = pumpControllers.pumpState[index - 1];
 
