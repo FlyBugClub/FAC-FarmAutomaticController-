@@ -6,7 +6,6 @@ PumpController::PumpController() {
   } else {
     Serial.println("SHT31 sensor 1 initialized successfully!");
   }
-
 }
 char* PumpController::handleNewMessages(String currentAction, String currentMessage, int currentIndex, const char* payload_sum) {
   StaticJsonDocument<2048> doc;  // Dung lượng tối đa cho bộ nhớ tạm thời
@@ -88,12 +87,18 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
             pumpState[index - 1] = false;
             Serial.println(pumpPin);
             Serial.println("off");
+            if (pumpState[index - 1] != prevPumpState[index - 1]) {
+              isPumpStateChange[index - 1] = true;
+            }
           } else {
             if (humidity < threshold && statusStr == "on") {
               digitalWrite(pumpPin, HIGH);
               pumpState[index - 1] = true;
               Serial.println(pumpPin);
               Serial.println("on");
+              if (pumpState[index - 1] != prevPumpState[index - 1]) {
+                isPumpStateChange[index - 1] = true;
+              }
             }
           }
           lastWateringTime[index - 1] = currentSeconds;
@@ -133,8 +138,6 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
 }
 
 
-
-
 void PumpController::handleScheduleTimes(int pumpPin, int index, String times[], int numTimes, unsigned long currentSeconds, int wateringTimeSeconds) {
   // Calculate current millis
 
@@ -162,13 +165,7 @@ void PumpController::handleScheduleTimes(int pumpPin, int index, String times[],
       pumpState[index - 1] = false;
     }
     if (pumpState[index - 1] != prevPumpState[index - 1]) {
-      Serial.println(pumpState[index - 1]);
       isPumpStateChange[index - 1] = true;
-    } else {
-      isPumpStateChange[index - 1] = false;
-      Serial.println(pumpState[index - 1]);
     }
   }
 }
-
-
