@@ -1,3 +1,15 @@
+@media screen and (max-width: 900px) {
+    .Fac_Admin_Web_Menu
+    {
+        display: none !important;
+    }
+}
+@media screen and (max-width: 1116px) {
+    .Fac_Admin_Web_Manager_Esp_Header_Center_Search
+    {
+        display: none !important;
+    }
+}
 .Fac_Admin
 {
     width: 100%;
@@ -50,12 +62,24 @@
                 {
                     margin-right: 10px;
                     margin-top: 2px;
+                    transition: transform 0.5s ease; /* Hiệu ứng chuyển đổi trong 0.5 giây với độ trễ là ease */
+
                 }
                 &:hover
                 {
 
                     border-radius: 5px;
                     background-color: #a3a0a0;
+                }
+                .Device
+                {
+                    transition: transform 0.5s ease; /* Hiệu ứng chuyển đổi trong 0.5 giây với độ trễ là ease */
+
+                    &::after
+                    {
+                        transform: rotate(90deg);
+                    }
+
                 }
             }
         }
@@ -234,6 +258,7 @@
                         &_Title
                         {
                             color: $color_text;
+                            padding-left:15px ;
                             font-size: 32px;
                             font-weight: bold;
                             overflow: hidden;
@@ -356,6 +381,8 @@
                             overflow-y: scroll;
                             scrollbar-width: none;
                             background-color: rgba($color: #78A083, $alpha: 0.35);
+                            border-bottom-left-radius: 15px ;
+                            border-bottom-right-radius: 15px ;
                             &::-webkit-scrollbar
                             {
                                 display: none;
@@ -374,11 +401,19 @@
                                     flex: 1;
                                     padding-top: 12px;
                                     padding-bottom: 12px;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
+                                    text-wrap: nowrap;
                                     text-align: center;
                                     font-size: 20px;
                                     font-weight: 450;
                                     color: white;
-                                    outline: black 1.5px solid;
+                                    border-bottom: black 3px solid;
+                                    border-right: black 3px solid;
+                                    &:last-child
+                                    {
+                                        border-right: none  ;
+                                    }
                                  
 
                                 }
