@@ -9,6 +9,8 @@ import { FiChevronDown } from "react-icons/fi";
 import"./qrcode.jsx"
 import QrcodeView from "./qrcode.jsx";
 import { EspView } from "./esp.jsx";
+import { SensorView } from "./sensor.jsx";
+import { EquipmentView } from "./equipment.jsx";
 
 
 const Adminpage = () => {
@@ -35,11 +37,11 @@ const Adminpage = () => {
                 return <EspView />
             case 3:
                 console.log("Equipment");
-                return <QrcodeView/>
+                return <EquipmentView/>
             case 4:
                 console.log("Sensor");
-                return <QrcodeView/>
-            default:
+                return <SensorView/>
+            default:    
                 return ;
         }
     }
@@ -53,15 +55,7 @@ const Adminpage = () => {
                         Create Qr Code
                     </div>
                     <div className="Fac_Admin_Web_Menu_Items" onClick={()=>{handleDeviceMenuState()}}>
-                        {deviceMenuState ? 
-                            (
-                                <FiChevronDown size={24} className="Icon" />
-                            )
-                            :
-                            (
-                                <FiChevronRight size={24} className="Icon"/>
-                            )
-                        }
+                        <FiChevronDown size={24} className="Icon Device" />
                         Device
                     </div>
                     <div style={deviceMenuState?{height:"0px", margin:"0px",padding:"0px"}:{}}>
