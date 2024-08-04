@@ -1191,149 +1191,102 @@ const Farm = ({ weatherState, handleAddDevice }) => {
                   )}
                 </div>
               </div>
-              {mode == "Manual" ? (
-                <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body">
-                  <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control">
-                    <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer">
-                      Bump:
-                      {bumperState ? (
-                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                          ON
-                          <MdCircle
-                            size={15}
-                            color="#8AFF02"
-                            style={{ marginLeft: "10px" }}
-                          />
-                        </div>
-                      ) : (
-                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                          OFF
-                          <MdCircle
-                            size={15}
-                            color="#FE0707"
-                            style={{ marginLeft: "10px" }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <label className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch">
-                      <input
-                        className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch_Input"
-                        type="checkbox"
-                        checked={modeState}
-                        onChange={() => {
-                          setModeState(!modeState);
-                        }}
-                      />
-                      <span className="slider round"></span>
-                    </label>
-                  </div>
-                </div>
-              ) : mode == "Automatic" ? (
-                <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body">
-                  <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control">
-                    <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer">
-                      Bump:
-                      {bumperState ? (
-                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                          ON
-                          <MdCircle
-                            size={15}
-                            color="#8AFF02"
-                            style={{ marginLeft: "10px" }}
-                          />
-                        </div>
-                      ) : (
-                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                          OFF
-                          <MdCircle
-                            size={15}
-                            color="#FE0707"
-                            style={{ marginLeft: "10px" }}
-                          />
-                        </div>
-                      )}
-                    </div>
+              { mode == "Manual" ?
+                    <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body">
+                      <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control">
+                        <label className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch">
+                          <input className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { handleModeToggleChange() }} />
+                          <span className="slider round"></span>
+                        </label>
 
-                    <label className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch">
-                      <input
-                        className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch_Input"
-                        type="checkbox"
-                        checked={modeState}
-                        onChange={() => {
-                          setModeState(!modeState);
-                        }}
-                      />
-                      <span className="slider round"></span>
-                    </label>
-                  </div>
-                  <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Slidecontainer">
-                    <input
-                      type="range"
-                      min="60"
-                      max="100"
-                      value={value}
-                      onChange={handleChange}
-                      ref={sliderRef} // Sử dụng ref ở đây
-                      className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Slidecontainer_Slider"
-                    />
-                    <div style={{ marginLeft: "10px", fontSize: "20px" }}>
-                      {value}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body">
-                  <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control">
-                    <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer">
-                      Bump:
-                      {bumperState ? (
-                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                          ON
-                          <MdCircle
-                            size={15}
-                            color="#8AFF02"
-                            style={{ marginLeft: "10px" }}
-                          />
+                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer">
+                          Bump:
+                          {bumperState ?
+                            <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                              ON
+                              <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
+                            </div>
+                            :
+                            <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                              OFF
+                              <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
+                            </div>
+                          }
                         </div>
-                      ) : (
-                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
-                          OFF
-                          <MdCircle
-                            size={15}
-                            color="#FE0707"
-                            style={{ marginLeft: "10px" }}
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    <label className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch">
-                      <input
-                        className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch_Input"
-                        type="checkbox"
-                        checked={modeState}
-                        onChange={() => {
-                          setModeState(!modeState);
-                        }}
-                      />
-                      <span className="slider round"></span>
-                    </label>
-                  </div>
-                  <div
-                    className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Timecontainer"
-                    onClick={() => {
-                      setTimeTableState(!timeTableState);
-                    }}
-                  >
-                    {timeList.map((time, index) => (
-                      <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Timecontainer_Times" key={index}>
-                        {time}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    </div>
+
+                    : mode == "Automatic" ?
+                      <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body">
+                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control">
+                          <label className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch">
+                            <input className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { handleModeToggleChange() }} />
+                            <span className="slider round"></span>
+                          </label>
+
+                          <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer">
+                            Bump:
+                            {bumperState ?
+                              <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                                ON
+                                <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
+
+                              </div>
+                              :
+                              <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                                OFF
+                                <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
+
+                              </div>
+                            }
+                          </div>
+                        </div>
+                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Slidecontainer">
+                          <input
+                            type="range"
+                            min="60"
+                            max="100"
+                            value={value}
+                            onChange={handleChange}
+                            ref={sliderRef} // Sử dụng ref ở đây
+                            className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Slidecontainer_Slider"
+                          />
+                          <div style={{ marginLeft: "10px", fontSize: "20px" }}>{value}</div>
+                        </div>
+                      </div>
+                      :
+                      <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body">
+                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control">
+                          <label className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch">
+                            <input className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_switch_Input" type="checkbox" checked={modeState} onChange={() => { handleModeToggleChange() }} />
+                            <span className="slider round"></span>
+                          </label>
+
+                          <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer">
+                            Bump:
+                            {bumperState ?
+                              <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                                ON
+                                <MdCircle size={15} color="#8AFF02" style={{ marginLeft: "10px" }} />
+                              </div>
+                              :
+                              <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Statecontainer_State">
+                                OFF
+                                <MdCircle size={15} color="#FE0707" style={{ marginLeft: "10px" }} />
+                              </div>
+                            }
+                          </div>
+                        </div>
+                        <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Timecontainer" onClick={() => { setTimeTableState(!timeTableState) }}>
+                          {timeList.map((time, index) => (
+                            <div className="Fac_Home_Mobile_Farmcontainer_Controller_Body_Control_Timecontainer_Times" key={index}>
+                              {time}
+                            </div>
+                          ))}
+                        </div>
+
+                      </div>
+                }
             </div>
             {timeTableState ? (
               <div
