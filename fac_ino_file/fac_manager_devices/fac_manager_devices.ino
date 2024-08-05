@@ -47,13 +47,14 @@ struct Pump {
   bool isOn;
   String lastPayloadSent;
 };
+
 Pump pumps[NUM_PUMPS] = {
   { 1, "manual", "off", false },
   { 2, "auto", "80", false },
   { 3, "manual", "off", false },
   { 4, "manual", "off", false }
 };
-unsigned long lastSendTime = 0;
+
 const unsigned long sendInterval = 1000;
 
 void savePayloadSumToEEPROM(const String& payload_sum) {
@@ -63,6 +64,7 @@ void savePayloadSumToEEPROM(const String& payload_sum) {
   EEPROM.write(payload_sum.length(), '\0');
   EEPROM.commit();
 }
+
 bool isJsonPayloadValid(const String& payload) {
   // Tạo một bộ đệm đủ lớn để chứa dữ liệu JSON
   StaticJsonDocument<512> doc;
@@ -95,6 +97,7 @@ bool isJsonPayloadValid(const String& payload) {
 
   return true;
 }
+
 String loadPayloadSumFromEEPROM() {
   char buffer[512];
   size_t i;
@@ -105,6 +108,7 @@ String loadPayloadSumFromEEPROM() {
   buffer[i] = '\0';
   return String(buffer);
 }
+
 bool previousPumpState[4] = { false, false, false, false };
 
 void checkAndSendPumpState() {
@@ -150,9 +154,59 @@ void checkAndProcessPumpStateChanges(String payload_sum, unsigned long currentSe
     }
   }
 }
+
+
+// Thay đổi độ ẩm chênh lệch cho phép
+const float HUMIDITY_THRESHOLD = 0.5;
+
+// Thay đổi thời gian gửi dữ liệu (5 phút)
+const unsigned long SEND_INTERVAL = 5 * 60 * 1000;  // 5 phút tính bằng milliseconds
+
+// Biến lưu trữ thời gian gửi dữ liệu trước đó
+unsigned long lastSendTime = 0;
+
+// Biến lưu trữ độ ẩm trước đó
+float previousHumidity = -1;
+
+// Hàm gửi dữ liệu cảm biến qua MQTT
+void sendSensorData(const String& idesp) {
+  // Đọc dữ liệu từ cảm biến
+  float humidity = pumpControllers.sht31.readHumidity();
+  float temperature = pumpControllers.sht31.readTemperature();
+
+  // In ra giá trị cảm biến
+  Serial.print("Humidity: ");
+  Serial.println(humidity);
+  Serial.print("Temperature: ");
+  Serial.println(temperature);
+  Serial.print("id_esp: ");
+  Serial.println(idesp);
+
+  // Tạo đối tượng JSON
+  StaticJsonDocument<200> jsonDoc;
+  jsonDoc["idesp"] = idesp;
+  jsonDoc["humid"] = humidity;
+  jsonDoc["temp"] = temperature;
+
+  // Chuyển đổi đối tượng JSON thành chuỗi
+  String jsonString;
+  serializeJson(jsonDoc, jsonString);
+
+  // Gửi chuỗi JSON qua MQTT
+  mqttConn.publish("FlyBug__sensorData", jsonString.c_str());
+
+  // Cập nhật độ ẩm trước đó
+  previousHumidity = humidity;
+  // Cập nhật thời gian gửi dữ liệu
+  lastSendTime = millis();
+}
+
+
 void setup() {
   Serial.begin(9600);
   EEPROM.begin(512);
+  previousHumidity = pumpControllers.sht31.readHumidity();
+  lastSendTime = millis();
   String initialPayload = loadPayloadSumFromEEPROM();
   bool validPayload = isJsonPayloadValid(initialPayload);
   WiFiConnection::WifiCredentials wifiCreds = wifiConn.activateAPMode();
@@ -194,6 +248,7 @@ void setup() {
   timeClient.begin();
   timeClient.setTimeOffset(timeZoneOffset);
 }
+
 void loop() {
   timeClient.update();
   if (!wifiConn.isConnected()) {
@@ -241,15 +296,24 @@ void loop() {
     int index = pump["index"];
     String action = pump["payload"]["action"].as<String>();
     String message = pump["payload"]["messages"].as<String>();
-    bool status = pump["payload"]["status"];  
+    bool status = pump["payload"]["status"];
 
     status = pumpControllers.pumpState[index - 1];
 
     pump["payload"]["status"] = status;
   }
 
-  char updated_payload_sum[1024];
-  serializeJson(doc, updated_payload_sum, sizeof(updated_payload_sum));
-  savePayloadSumToEEPROM(updated_payload_sum);
+  unsigned long currentTime = millis();
+  float currentHumidity = pumpControllers.sht31.readHumidity();
+
+ // Kiểm tra điều kiện gửi dữ liệu
+  if (abs(currentHumidity - previousHumidity) >= HUMIDITY_THRESHOLD || 
+      (currentTime - lastSendTime >= SEND_INTERVAL)) {
+    // Gửi dữ liệu
+    sendSensorData(id_esp);
+  }
+
+
+
   mqttConn.loop();
 }
