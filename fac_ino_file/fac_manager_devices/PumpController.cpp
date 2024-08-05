@@ -78,8 +78,7 @@ void PumpController::processPumpAction(const char* payload_sum, const int pumpPi
         char* status = strtok(NULL, " ");
         String statusStr = String(status);
         float humidity = sht31.readHumidity();
-        Serial.println("humidity");
-        Serial.println(humidity);
+
 
         if (currentSeconds - lastWateringTime[index - 1] >= 5) {
           if (pumpState[index - 1]) {
