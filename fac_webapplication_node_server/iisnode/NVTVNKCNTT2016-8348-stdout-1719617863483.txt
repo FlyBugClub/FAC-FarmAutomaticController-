@@ -1,6 +1,0 @@
-Example app listening at http://localhost:\\.\pipe\951d2dba-9bd1-43e1-9ed2-5ee850cc4d30
-connected
-Connected to MQTT broker
-Subscribed to topic 'sensorData'
-Received message from topic 'sensorData': {"id_esp":"c1323f","index":4,"temperature":0,"humidity":0}
-c1323f

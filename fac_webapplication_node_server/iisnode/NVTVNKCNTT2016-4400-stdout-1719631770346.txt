@@ -1,4 +1,0 @@
-Example app listening at http://localhost:\\.\pipe\7e7f0eaa-e837-4db2-9cbb-c12b8d4d1199
-connected
-Connected to MQTT broker
-Subscribed to topic 'sensorData'
