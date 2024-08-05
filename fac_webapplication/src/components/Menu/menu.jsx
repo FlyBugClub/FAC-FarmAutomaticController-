@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { FaRegAddressBook } from "react-icons/fa6";
 
 import { AuthContext } from "../Context/AuthContext";
+import { FaRegAddressBook } from "react-icons/fa6";
+
 const Menu = ({ handleWeather, weatherState }) => {
   const { URL, login, user, authDispatch } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -75,7 +77,7 @@ const Menu = ({ handleWeather, weatherState }) => {
                                     </div>
 
                                 </div>
-                                <div className="Fac_Menu_Web_Container_Dropbox_Options" onClick={() => { navigate("/usersetting"); sessionStorage.setItem("last_click",4 );;setUserState("") }}>
+                                <div className="Fac_Menu_Web_Container_Dropbox_Options" onClick={() => { navigate("/usersetting"); setUserState("") }}>
                                     <FiSettings style={{ marginRight: "10px" }} />
                                     Account
                                 </div>

@@ -23,6 +23,7 @@
     "react-qr-scanner": "^1.0.0-alpha.11",
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
+    "react-table": "^7.8.0",
     "react-time-picker": "^7.0.0",
     "react-toastify": "^10.0.5",
     "recharts": "^2.10.4",
