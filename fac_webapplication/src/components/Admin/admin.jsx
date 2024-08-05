@@ -9,8 +9,8 @@ import { FiChevronDown } from "react-icons/fi";
 import"./qrcode.jsx"
 import QrcodeView from "./qrcode.jsx";
 import { EspView } from "./esp.jsx";
-import { SensorView } from "./sensor.jsx";
-import { EquipmentView } from "./equipment.jsx";
+// import { SensorView } from "./sensor.jsx";
+// import { EquipmentView } from "./equipment.jsx";
 
 
 const Adminpage = () => {
@@ -37,10 +37,10 @@ const Adminpage = () => {
                 return <EspView />
             case 3:
                 console.log("Equipment");
-                return <EquipmentView/>
+                // return <EquipmentView/>
             case 4:
                 console.log("Sensor");
-                return <SensorView/>
+                // return <SensorView/>
             default:    
                 return ;
         }
@@ -80,8 +80,6 @@ const Adminpage = () => {
                 </div>
                 {handleFacWebAdminView()}   
                
-
-                </div>
 
             </BrowserView>
             <MobileView>
