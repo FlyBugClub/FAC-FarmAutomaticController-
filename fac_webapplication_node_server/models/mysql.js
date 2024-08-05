@@ -95,8 +95,6 @@ const SELECT = async (select, table) => {
 
 const executeScarlarFunction = async (table) => {
   return new Promise(async (resolve, reject) => {
-    
-
     const result = await sql.query(
       "select " + table + " "
     );
@@ -108,7 +106,6 @@ const executeScarlarFunction = async (table) => {
 
 const executeJsonProcedure = async (pro_name, params) => {
   try {
-
     // console.log(`EXEC ${pro_name} N'${params.toString()}'`)
     const result = await sql.query(`EXEC ${pro_name} N'${JSON.stringify(params, null, 2)}'`);
     return result;
@@ -123,9 +120,8 @@ const executeProcedure = async (pro_name, params) => {
     // Tạo chuỗi tham số từ đối số 'params'
     let paramStr = '';
     if (params && params.length > 0) {
-      paramStr = params.map(param => `'${param}'`).join(', ');
+      paramStr = params.map(param => typeof param === 'number' ? param : `N'${param}'`).join(', ');
     }
-    console.log("hahahahahahahaha")
     console.log(`EXEC ${pro_name} ${paramStr}`)
     // Gọi stored procedure và trả về kết quả
     const result = await sql.query(`EXEC ${pro_name} ${paramStr}`);

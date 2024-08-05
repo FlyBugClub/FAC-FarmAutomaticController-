@@ -4,13 +4,13 @@ const getDashboard = async (id_user) => {
   return new Promise(async (resolve, reject) => {
     try {
       let res = await db.SELECT("*", "get_dashboard('" + id_user + "')");
-      console.log(res);
       resolve({ status: true, data: res.recordsets[0] });
     } catch (error) {
       resolve({ status: false, code: 255, message: "Error System" });
     }
   });
 };
+
 const getEspInfo = async (id_esp,id_equipment) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -81,6 +81,17 @@ const getSchedule = async (id) => {
   });
 }
 
+const getAvailableIndex = async (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await db.SELECT("*", "dbo.getAvailableIndex('" + id + "')");
+      resolve({ status: true, data: res.recordsets[0] });
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  });
+}
+
 const editLastStatus = async (body) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -129,7 +140,27 @@ const insertEquipment = async (body) => {
 const editEquipment = async (body) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let res = await db.executeProcedure("dbo.edit_device_pro", body);
+      let res = await db.executeProcedure("dbo.edit_equipment_pro", body);
+      if (res.recordset[0].state == 200)
+        {
+          resolve({ status: true});
+
+        }
+        else
+        {
+          resolve({ status: false});
+
+        }
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  });
+};
+
+const insertSchedule = async (body) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await db.executeProcedure("dbo.insert_schedule_pro", body);
       resolve({ status: true});
     } catch (error) {
       resolve({ status: false, code: 255, message: "Error System" });
@@ -137,6 +168,60 @@ const editEquipment = async (body) => {
   });
 };
 
+const deleteSchedule = async (body) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await db.executeProcedure("dbo.delete_schedule_pro", body);
+      resolve({ status: true});
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  });
+};
+
+
+const editOffsetSchedule = async (body) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await db.executeProcedure("dbo.edit_schedule_pro", body);
+      resolve({ status: true});
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  });
+};
+
+const getAvailableSensor = async ()=>{
+  return new Promise ( async (resolve,reject)=>{
+    try{
+      let res = await db.SELECT("*","get_available_sensor()")
+      resolve({status: true,data: res.recordsets[0] })
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  })
+}
+
+const getAvailableEquipment = async ()=>{
+  return new Promise ( async (resolve,reject)=>{
+    try{
+      let res = await db.SELECT("*","get_available_equipment()")
+      resolve({status: true,data: res.recordsets[0] })
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  })
+}
+const getAvailableEsp = async ()=>{
+  return new Promise ( async (resolve,reject)=>{
+    try{
+      let res = await db.SELECT("*","get_available_esp()")
+      resolve({status: true,data: res.recordsets[0] })
+    } catch (error) {
+      resolve({ status: false, code: 255, message: "Error System" });
+    }
+  })
+}
 module.exports = {
    getDashboard,
    getEspInfo ,
@@ -147,6 +232,14 @@ module.exports = {
    editEquipment,
    insertFarm,
    editFarm,
-   getSchedule};
+   getSchedule,
+   insertSchedule,
+   deleteSchedule,
+   editOffsetSchedule,
+   getAvailableIndex,
+   getAvailableSensor,
+   getAvailableEquipment,
+   getAvailableEsp,
+  };
 
 // select * from Customer_Occupation("18")
