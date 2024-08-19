@@ -31,15 +31,22 @@ const host = [
   "http://192.168.1.21:3000",
   "http://192.168.0.210:3000",
   "http://192.168.1.5:3000",
+  "http://192.168.0.104:3000",
+  "http://103.130.211.141:8080",
 
 ];
 
-// Middleware Configuration
 app.use(cors({
-  origin: host,
-  credentials: true,
-  optionsSuccessStatus: 200,
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true); // Cho phép nguồn này
+    } else {
+      callback(new Error('Not allowed by CORS')); // Chặn nguồn không được phép
+    }
+  },
+  credentials: true,  // Hỗ trợ credentials (cookie, sessions, etc.)
 }));
+
 app.use(bodyParser.json());
 
 // Routes
