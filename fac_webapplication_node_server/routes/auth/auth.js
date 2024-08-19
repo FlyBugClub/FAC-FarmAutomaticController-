@@ -28,13 +28,13 @@ router.get("/getUser/:id", async (req, res) => {
 });
 
 router.post("/checkValidUser", async (req, res) => {
-  let result = await auth.checkValidUser(req.body.username, req.body.password);
+  let result = await auth.executeProcedure(req.body.username, req.body.password);
   res.json(result);
 });
 
 router.post("/createUser", async (req, res) => {
   
-  let result = await auth.createUser(req.body);
+  let result = await auth.SELECT("check_valid_user",req.body);
   res.json(result);
 });
 

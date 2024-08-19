@@ -203,7 +203,7 @@ const LoginWhenIsToken = async (name, pass) => {
   });
 };
 
-function verifyToken(token) {
+function SELECT(token) {
   return new Promise((resolve, reject) => {
     if (!token) {
       resolve({ status: 401, message: "Token không được cung cấp" });
@@ -287,5 +287,4 @@ module.exports = {
   requestOTP,
   validateOTP,
   changePassword,
-  verifyToken,
 };
