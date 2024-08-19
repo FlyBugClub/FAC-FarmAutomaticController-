@@ -37,14 +37,9 @@ const host = [
 ];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true); // Cho phép nguồn này
-    } else {
-      callback(new Error('Not allowed by CORS')); // Chặn nguồn không được phép
-    }
-  },
-  credentials: true,  // Hỗ trợ credentials (cookie, sessions, etc.)
+  origin: host,
+  credentials: true,
+  optionsSuccessStatus: 200,
 }));
 
 app.use(bodyParser.json());
